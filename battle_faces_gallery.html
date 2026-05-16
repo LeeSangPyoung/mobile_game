@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>장수 이미지 세트 비교</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 28px;
+    background: #17110b;
+    color: #f7d56e;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  }
+  h1 {
+    margin: 0 0 8px;
+    font-size: 30px;
+    letter-spacing: -0.02em;
+  }
+  .sub {
+    margin: 0 0 22px;
+    color: #c5a86b;
+    font-size: 15px;
+  }
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 0 16px;
+    background: linear-gradient(180deg, #17110b 70%, rgba(23,17,11,0));
+  }
+  input {
+    width: min(420px, 100%);
+    height: 40px;
+    padding: 0 14px;
+    border: 1px solid #7b5724;
+    border-radius: 8px;
+    background: #24190f;
+    color: #ffe188;
+    font-size: 15px;
+    outline: none;
+  }
+  .count { color: #a98a50; font-size: 14px; }
+  .audit {
+    margin-left: auto;
+    color: #d2b36b;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .audit.ok { color: #8fd48a; }
+  .audit.bad { color: #ff8f75; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(520px, 1fr));
+    gap: 18px;
+  }
+  .row {
+    border: 1px solid #79551f;
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #24190f, #110b07);
+  }
+  .name {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #664719;
+    color: #ffe188;
+    font-size: 18px;
+    font-weight: 800;
+  }
+  .name small {
+    color: #a98a50;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .badges {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .badge {
+    padding: 3px 7px;
+    border: 1px solid #806329;
+    border-radius: 999px;
+    color: #e9c96d;
+    background: #2c1d0e;
+    font-size: 11px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .badge.fixed {
+    border-color: #5f8a4f;
+    color: #9fe090;
+    background: #1b2c18;
+  }
+  .badge.sample {
+    border-color: #9d7e32;
+    color: #ffe188;
+    background: #3b2a11;
+  }
+  .badge.review {
+    border-color: #b35c3f;
+    color: #ffb39f;
+    background: #3a1710;
+  }
+  .sets {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .panel {
+    min-width: 0;
+    border-right: 1px solid #4d3616;
+  }
+  .panel:last-child { border-right: 0; }
+  .label {
+    padding: 8px 10px;
+    border-bottom: 1px solid #3d2a12;
+    background: #1a120b;
+    color: #c5a86b;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+  .art {
+    height: 260px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 12px;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      radial-gradient(circle at 50% 18%, rgba(255,212,91,0.16), transparent 44%),
+      #21170e;
+    background-size: 28px 28px, 28px 28px, 100% 100%, 100% 100%;
+  }
+  .art.face,
+  .art.battle { align-items: center; }
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 16px rgba(0,0,0,0.62));
+  }
+  .battle img { transform: scale(1.02); }
+  .file {
+    padding: 8px 10px 10px;
+    border-top: 1px solid #3d2a12;
+    color: #f7d56e;
+    font-size: 12px;
+    word-break: break-all;
+  }
+  .panel.missing .art {
+    align-items: center;
+    color: #ff9a7a;
+    font-size: 13px;
+    font-weight: 800;
+  }
+  .panel.missing .file {
+    color: #ff9a7a;
+  }
+  @media (max-width: 720px) {
+    body { padding: 18px; }
+    h1 { font-size: 24px; }
+    .grid { grid-template-columns: 1fr; }
+    .sets { grid-template-columns: 1fr; }
+    .panel { border-right: 0; border-bottom: 1px solid #4d3616; }
+    .panel:last-child { border-bottom: 0; }
+    .art { height: 240px; }
+  }
+</style>
+</head>
+<body>
+<h1>장수 이미지 세트 비교</h1>
+<p class="sub">조조 샘플 기준으로 전신, 기존 얼굴, 전투신 전용 얼굴을 한 번에 비교합니다. 빨간 배지는 재작업 우선 후보입니다.</p>
+<div class="toolbar">
+  <input id="search" type="search" placeholder="이름 또는 파일명 검색">
+  <div class="count" id="count"></div>
+  <div class="audit" id="audit">검수 중...</div>
+</div>
+<main class="grid" id="grid"></main>
+
+<script>
+const generals = [
+  ['cao_cao', '조조'],
+  ['cao_xing', '조흥'],
+  ['dian_wei', '전위'],
+  ['dong_zhuo', '동탁'],
+  ['gan_ning', '감녕'],
+  ['guan_yu', '관우'],
+  ['guo_jia', '곽가'],
+  ['huang_gai', '황개'],
+  ['huang_zhong', '황충'],
+  ['liu_bei', '유비'],
+  ['lu_bu', '여포'],
+  ['lu_xun', '육손'],
+  ['ma_chao', '마초'],
+  ['meng_huo', '맹획'],
+  ['pang_tong', '방통'],
+  ['sima_yi', '사마의'],
+  ['sun_ce', '손책'],
+  ['sun_quan', '손권'],
+  ['taishi_ci', '태사자'],
+  ['wen_chou', '문추'],
+  ['xiahou_dun', '하후돈'],
+  ['xu_chu', '허저'],
+  ['xu_huang', '서황'],
+  ['yan_liang', '안량'],
+  ['yuan_shao', '원소'],
+  ['zhang_fei', '장비'],
+  ['zhang_liao', '장료'],
+  ['zhao_yun', '조운'],
+  ['zhou_yu', '주유'],
+  ['zhuge_liang', '제갈량'],
+];
+
+const grid = document.getElementById('grid');
+const count = document.getElementById('count');
+const search = document.getElementById('search');
+const audit = document.getElementById('audit');
+const shoulderFixed = new Set(['cao_xing', 'gan_ning', 'guo_jia', 'lu_xun', 'ma_chao']);
+const sample = new Set(['cao_cao']);
+const needsReview = new Set([]);
+let loaded = 0;
+let failed = 0;
+const expectedImages = generals.length * 3;
+
+function card([id, name]) {
+  const file = `${id}.png`;
+  const row = document.createElement('section');
+  row.className = 'row';
+  row.dataset.key = `${id} ${name}`.toLowerCase();
+  const fixedBadge = shoulderFixed.has(id) ? '<span class="badge fixed">어깨 수정 반영</span>' : '';
+  const sampleBadge = sample.has(id) ? '<span class="badge sample">기준 샘플</span>' : '';
+  const reviewBadge = needsReview.has(id) ? '<span class="badge review">재작업 우선</span>' : '';
+  row.innerHTML = `
+    <div class="name">
+      <span>${name}</span>
+      <span class="badges">${sampleBadge}${fixedBadge}${reviewBadge}<small>${file}</small></span>
+    </div>
+    <div class="sets">
+      <div class="panel">
+        <div class="label">전신</div>
+        <div class="art"><img src="assets/generals/busts/${file}" alt="${name} 전신"></div>
+        <div class="file">busts/${file}</div>
+      </div>
+      <div class="panel">
+        <div class="label">얼굴</div>
+        <div class="art face"><img src="assets/generals/faces/${file}" alt="${name} 얼굴"></div>
+        <div class="file">faces/${file}</div>
+      </div>
+      <div class="panel">
+        <div class="label">전투신</div>
+        <div class="art battle"><img src="assets/generals/battle_faces/${file}?v=all-face-neck-alpha-20260510" alt="${name} 전투신"></div>
+        <div class="file">battle_faces/${file}</div>
+      </div>
+    </div>
+  `;
+  return row;
+}
+
+const rows = generals.map(card);
+rows.forEach(row => grid.appendChild(row));
+
+function updateAudit() {
+  const checked = loaded + failed;
+  audit.textContent = failed
+    ? `이미지 ${checked}/${expectedImages}, 누락 ${failed}`
+    : `이미지 ${checked}/${expectedImages}`;
+  audit.className = `audit ${checked === expectedImages && !failed ? 'ok' : failed ? 'bad' : ''}`;
+}
+
+grid.querySelectorAll('img').forEach(img => {
+  img.addEventListener('load', () => {
+    loaded++;
+    updateAudit();
+  });
+  img.addEventListener('error', () => {
+    failed++;
+    const panel = img.closest('.panel');
+    panel.classList.add('missing');
+    img.closest('.art').textContent = '이미지 누락';
+    updateAudit();
+  });
+});
+updateAudit();
+
+function filterRows() {
+  const q = search.value.trim().toLowerCase();
+  let shown = 0;
+  rows.forEach(row => {
+    const ok = !q || row.dataset.key.includes(q);
+    row.style.display = ok ? '' : 'none';
+    if (ok) shown++;
+  });
+  count.textContent = `${shown} / ${generals.length}`;
+}
+
+search.addEventListener('input', filterRows);
+filterRows();
+</script>
+</body>
+</html>

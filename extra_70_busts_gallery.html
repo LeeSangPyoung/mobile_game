@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>추가 장수 70명 전신 후보</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 28px;
+    background: #17110b;
+    color: #f7d56e;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  }
+  h1 { margin: 0 0 8px; font-size: 30px; }
+  .sub { margin: 0 0 22px; color: #c5a86b; font-size: 15px; }
+  .toolbar {
+    position: sticky; top: 0; z-index: 2;
+    display: flex; gap: 10px; align-items: center;
+    padding: 12px 0 16px;
+    background: linear-gradient(180deg, #17110b 70%, rgba(23,17,11,0));
+  }
+  input {
+    width: min(420px, 100%); height: 40px; padding: 0 14px;
+    border: 1px solid #7b5724; border-radius: 8px;
+    background: #24190f; color: #ffe188; font-size: 15px; outline: none;
+  }
+  .count, .audit { color: #a98a50; font-size: 14px; white-space: nowrap; }
+  .audit { margin-left: auto; font-weight: 800; }
+  .audit.ok { color: #8fd48a; }
+  .audit.bad { color: #ff8f75; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    min-width: 0;
+    border: 1px solid #79551f;
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #24190f, #110b07);
+  }
+  .name {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: baseline;
+    padding: 11px 12px;
+    border-bottom: 1px solid #664719;
+    color: #ffe188;
+    font-size: 17px;
+    font-weight: 800;
+  }
+  .name small {
+    min-width: 0;
+    color: #a98a50;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .art {
+    height: 330px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 14px;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      radial-gradient(circle at 50% 18%, rgba(255,212,91,0.16), transparent 44%),
+      #21170e;
+    background-size: 28px 28px, 28px 28px, 100% 100%, 100% 100%;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 16px rgba(0,0,0,0.62));
+  }
+  .file {
+    padding: 8px 10px 10px;
+    border-top: 1px solid #3d2a12;
+    color: #f7d56e;
+    font-size: 12px;
+    word-break: break-all;
+  }
+  .base {
+    color: #a98a50;
+    font-size: 11px;
+  }
+  .missing .art {
+    align-items: center;
+    color: #ff9a7a;
+    font-size: 13px;
+    font-weight: 800;
+  }
+  @media (max-width: 720px) {
+    body { padding: 18px; }
+    h1 { font-size: 24px; }
+    .toolbar { align-items: flex-start; flex-direction: column; }
+    .audit { margin-left: 0; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+    .art { height: 260px; }
+  }
+</style>
+</head>
+<body>
+<h1>추가 장수 70명 전신 후보</h1>
+<p class="sub">기존 busts 에셋 문법을 유지한 스타일 잠금 후보입니다. 기존 34명 파일명과 중복되지 않게 생성했습니다.</p>
+<div class="toolbar">
+  <input id="search" type="search" placeholder="이름 또는 파일명 검색">
+  <div class="count" id="count"></div>
+  <div class="audit" id="audit">검수 중...</div>
+</div>
+<main class="grid" id="grid"></main>
+<script>
+const generals = [
+  ['hua_xiong', '화웅', 'zhang_fei'],
+  ['gao_shun', '고순', 'zhang_liao'],
+  ['chen_gong', '진궁', 'guo_jia'],
+  ['li_ru', '이유', 'sima_yi'],
+  ['li_jue', '이각', 'yan_liang'],
+  ['guo_si', '곽사', 'wen_chou'],
+  ['zhang_ji', '장제', 'xu_huang'],
+  ['zhang_xiu', '장수', 'zhao_yun'],
+  ['jia_xu', '가후', 'pang_tong'],
+  ['xun_yu', '순욱', 'zhuge_liang'],
+  ['xun_you', '순유', 'guo_jia'],
+  ['cheng_yu', '정욱', 'sima_yi'],
+  ['cao_ren', '조인', 'xiahou_dun'],
+  ['cao_hong', '조홍', 'xu_huang'],
+  ['cao_pi', '조비', 'sun_quan'],
+  ['cao_zhang', '조창', 'ma_chao'],
+  ['cao_zhi', '조식', 'zhou_yu'],
+  ['cao_ang', '조앙', 'zhao_yun'],
+  ['cao_chun', '조순', 'zhang_liao'],
+  ['cao_rui', '조예', 'yuan_shao'],
+  ['xiahou_yuan', '하후연', 'huang_zhong'],
+  ['xiahou_ba', '하후패', 'ma_chao'],
+  ['man_chong', '만총', 'xu_huang'],
+  ['wang_shuang', '왕쌍', 'xu_chu'],
+  ['deng_ai', '등애', 'zhang_liao'],
+  ['zhong_hui', '종회', 'guo_jia'],
+  ['wen_yang', '문앙', 'zhao_yun'],
+  ['guanqiu_jian', '관구검', 'xiahou_dun'],
+  ['wen_qin', '문흠', 'yan_liang'],
+  ['wei_yan', '위연', 'zhang_fei'],
+  ['jiang_wei', '강유', 'zhao_yun'],
+  ['ma_dai', '마대', 'ma_chao'],
+  ['ma_su', '마속', 'lu_xun'],
+  ['fa_zheng', '법정', 'sima_yi'],
+  ['ma_liang', '마량', 'zhuge_liang'],
+  ['jian_yong', '간옹', 'liu_bei'],
+  ['mi_zhu', '미축', 'sun_quan'],
+  ['guan_ping', '관평', 'guan_yu'],
+  ['guan_xing', '관흥', 'guan_yu'],
+  ['zhang_bao', '장포', 'zhang_fei'],
+  ['zhou_cang', '주창', 'wen_chou'],
+  ['liao_hua', '요화', 'liu_bei'],
+  ['wang_ping', '왕평', 'zhang_liao'],
+  ['yan_yan', '엄안', 'huang_zhong'],
+  ['wu_yi', '오의', 'zhao_yun'],
+  ['li_yan', '이엄', 'xu_huang'],
+  ['meng_da', '맹달', 'sun_ce'],
+  ['huang_quan', '황권', 'zhuge_liang'],
+  ['liu_feng', '유봉', 'liu_bei'],
+  ['sun_jian', '손견', 'sun_ce'],
+  ['lu_su', '노숙', 'zhou_yu'],
+  ['zhang_zhao', '장소', 'zhuge_liang'],
+  ['zhang_hong', '장굉', 'guo_jia'],
+  ['cheng_pu', '정보', 'huang_gai'],
+  ['han_dang', '한당', 'taishi_ci'],
+  ['zu_mao', '조무', 'sun_ce'],
+  ['ling_tong', '능통', 'gan_ning'],
+  ['zhou_tai', '주태', 'taishi_ci'],
+  ['ding_feng', '정봉', 'xu_huang'],
+  ['xu_sheng', '서성', 'sun_ce'],
+  ['zhu_huan', '주환', 'sun_quan'],
+  ['zhu_zhi', '주치', 'huang_gai'],
+  ['zhu_ran', '주연', 'lu_xun'],
+  ['lu_kang', '육항', 'lu_xun'],
+  ['zhang_ren', '장임', 'huang_zhong'],
+  ['ji_ling', '기령', 'yan_liang'],
+  ['gongsun_zan', '공손찬', 'ma_chao'],
+  ['ma_teng', '마등', 'ma_chao'],
+  ['han_sui', '한수', 'yuan_shao'],
+  ['zhang_jiao', '장각', 'pang_tong'],
+];
+const grid = document.getElementById('grid');
+const count = document.getElementById('count');
+const search = document.getElementById('search');
+const audit = document.getElementById('audit');
+let loaded = 0;
+let failed = 0;
+
+function card([id, name, base]) {
+  const file = `${id}.png`;
+  const card = document.createElement('section');
+  card.className = 'card';
+  card.dataset.key = `${id} ${name} ${base}`.toLowerCase();
+  card.innerHTML = `
+    <div class="name">
+      <span>${name}</span>
+      <small>${file}</small>
+    </div>
+    <div class="art"><img src="assets/generals/busts_extra_70/${file}" alt="${name} 전신"></div>
+    <div class="file">busts_extra_70/${file} <span class="base">base: ${base}</span></div>
+  `;
+  return card;
+}
+
+const cards = generals.map(card);
+cards.forEach(card => grid.appendChild(card));
+
+function updateAudit() {
+  const checked = loaded + failed;
+  audit.textContent = failed
+    ? `이미지 ${checked}/${generals.length}, 누락 ${failed}`
+    : `이미지 ${checked}/${generals.length}`;
+  audit.className = `audit ${checked === generals.length && !failed ? 'ok' : failed ? 'bad' : ''}`;
+}
+
+grid.querySelectorAll('img').forEach(img => {
+  img.addEventListener('load', () => { loaded++; updateAudit(); });
+  img.addEventListener('error', () => {
+    failed++;
+    const card = img.closest('.card');
+    card.classList.add('missing');
+    img.closest('.art').textContent = '이미지 누락';
+    updateAudit();
+  });
+});
+updateAudit();
+
+function filterCards() {
+  const q = search.value.trim().toLowerCase();
+  let shown = 0;
+  cards.forEach(card => {
+    const ok = !q || card.dataset.key.includes(q);
+    card.style.display = ok ? '' : 'none';
+    if (ok) shown++;
+  });
+  count.textContent = `${shown} / ${generals.length}`;
+}
+search.addEventListener('input', filterCards);
+filterCards();
+</script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>진짜 신규 기준 200명 전신 갤러리</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 28px; background: #17110b; color: #f7d56e; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; }
+  h1 { margin: 0 0 8px; font-size: 30px; }
+  .sub { margin: 0 0 18px; color: #c5a86b; line-height: 1.45; }
+  .warning { margin: 0 0 18px; padding: 12px 14px; border: 1px solid #8f6422; border-radius: 8px; background: #21170e; color: #ffd978; line-height: 1.45; }
+  .toolbar { position: sticky; top: 0; z-index: 2; display: flex; gap: 10px; align-items: center; padding: 12px 0 16px; background: linear-gradient(180deg, #17110b 70%, rgba(23,17,11,0)); }
+  input { width: min(420px, 100%); height: 40px; padding: 0 14px; border: 1px solid #7b5724; border-radius: 8px; background: #24190f; color: #ffe188; font-size: 15px; outline: none; }
+  .count, .audit { color: #a98a50; font-size: 14px; white-space: nowrap; }
+  .audit { margin-left: auto; font-weight: 800; }
+  .audit.ok { color: #8fd48a; }
+  .audit.bad { color: #ff8f75; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+  .card { min-width: 0; border: 1px solid #79551f; border-radius: 8px; overflow: hidden; background: linear-gradient(180deg, #24190f, #110b07); }
+  .name { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; padding: 11px 12px; border-bottom: 1px solid #664719; color: #ffe188; font-size: 17px; font-weight: 800; }
+  .name small { min-width: 0; color: #a98a50; font-size: 12px; font-weight: 700; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tag { margin-left: 8px; color: #8fd48a; font-size: 11px; font-weight: 800; }
+  .art { height: 330px; display: flex; align-items: flex-end; justify-content: center; padding: 14px; background: linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), radial-gradient(circle at 50% 18%, rgba(255,212,91,0.16), transparent 44%), #21170e; background-size: 28px 28px, 28px 28px, 100% 100%, 100% 100%; }
+  img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 14px 16px rgba(0,0,0,0.62)); }
+  .file { padding: 8px 10px 10px; border-top: 1px solid #3d2a12; color: #f7d56e; font-size: 12px; word-break: break-all; }
+  .source { display: block; margin-top: 4px; color: #a98a50; font-size: 11px; line-height: 1.35; }
+  .missing .art { align-items: center; color: #ff9a7a; font-size: 13px; font-weight: 900; text-align: center; }
+  .missing .file { color: #ff9a7a; }
+  @media (max-width: 720px) { body { padding: 18px; } h1 { font-size: 24px; } .toolbar { align-items: flex-start; flex-direction: column; } .audit { margin-left: 0; } .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } .art { height: 260px; } }
+</style>
+</head>
+<body>
+<h1>진짜 신규 기준 200명 전신 갤러리</h1>
+<p class="sub">기존 승인 30명은 그대로 쓰고, 나머지 170명은 새 렌더가 들어와야 채워지는 구조입니다.</p>
+<p class="warning">복제/색변경 후보는 여기서 사용하지 않습니다. 이미지가 없으면 빈칸으로 두고 `렌더 대기`로 표시합니다.</p>
+<div class="toolbar"><input id="search" type="search" placeholder="이름, 파일명, 상태 검색"><div class="count" id="count"></div><div class="audit" id="audit">검수 중...</div></div>
+<main class="grid" id="grid"></main>
+<script>
+const generals = [
+  {slug: 'cao_cao', ko: '조조', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'cao_xing', ko: '조흥', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'dian_wei', ko: '전위', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'dong_zhuo', ko: '동탁', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'gan_ning', ko: '감녕', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'guan_yu', ko: '관우', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'guo_jia', ko: '곽가', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'huang_gai', ko: '황개', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'huang_zhong', ko: '황충', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'liu_bei', ko: '유비', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'lu_bu', ko: '여포', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'lu_xun', ko: '육손', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'ma_chao', ko: '마초', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'meng_huo', ko: '맹획', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'pang_tong', ko: '방통', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'sima_yi', ko: '사마의', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'sun_ce', ko: '손책', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'sun_quan', ko: '손권', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'taishi_ci', ko: '태사자', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'wen_chou', ko: '문추', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'xiahou_dun', ko: '하후돈', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'xu_chu', ko: '허저', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'xu_huang', ko: '서황', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'yan_liang', ko: '안량', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'yuan_shao', ko: '원소', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'zhang_fei', ko: '장비', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'zhang_liao', ko: '장료', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'zhao_yun', ko: '조운', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'zhou_yu', ko: '주유', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'zhuge_liang', ko: '제갈량', group: '기존 승인 30', assetDir: 'busts', status: 'done', body: "approved original", weapon: "approved original", palette: "approved original"},
+  {slug: 'zhang_he', ko: '장합', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "curved saber held low", palette: "silver-blue armor, dark cape, restrained red cords"},
+  {slug: 'yu_jin', ko: '우금', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "heavy mace", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'yue_jin', ko: '악진', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "long spear with tassel", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'li_dian', ko: '이전', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "pair of short axes", palette: "deep navy, gunmetal, bright gold, small royal blue gems"},
+  {slug: 'cao_ren', ko: '조인', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "curved saber held low", palette: "deep navy, gunmetal, bright gold, small royal blue gems"},
+  {slug: 'cao_hong', ko: '조홍', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "rectangular command tablet", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'cao_pi', ko: '조비', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "crescent halberd", palette: "silver-blue armor, dark cape, restrained red cords"},
+  {slug: 'cao_zhi', ko: '조식', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "folding war fan", palette: "silver-blue armor, dark cape, restrained red cords"},
+  {slug: 'cao_zhang', ko: '조창', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "pair of short axes", palette: "silver-blue armor, dark cape, restrained red cords"},
+  {slug: 'cao_ang', ko: '조앙', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "tower shield and short sword", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'cao_rui', ko: '조예', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "hooked polearm", palette: "deep navy, gunmetal, bright gold, small royal blue gems"},
+  {slug: 'cao_shuang', ko: '조상', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "scroll case and ritual staff", palette: "deep navy, gunmetal, bright gold, small royal blue gems"},
+  {slug: 'cao_zhen', ko: '조진', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "heavy mace", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'cao_xiu', ko: '조휴', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "young noble officer with clean face, slim waist, and oversized shoulder guards", weapon: "pair of short axes", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'xiahou_yuan', ko: '하후연', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "pair of short axes", palette: "silver-blue armor, dark cape, restrained red cords"},
+  {slug: 'xiahou_ba', ko: '하후패', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "rectangular command tablet", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'cheng_yu', ko: '정욱', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "crescent halberd", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'xun_yu', ko: '순욱', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "rectangular command tablet", palette: "silver-blue armor, dark cape, restrained red cords"},
+  {slug: 'xun_you', ko: '순유', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "pair of short axes", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'jia_xu', ko: '가후', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "tower shield and short sword", palette: "deep navy, gunmetal, bright gold, small royal blue gems"},
+  {slug: 'man_chong', ko: '만총', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "bow with quiver", palette: "silver-blue armor, dark cape, restrained red cords"},
+  {slug: 'zhong_yao', ko: '종요', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "single broad dao sword", palette: "silver-blue armor, dark cape, restrained red cords"},
+  {slug: 'deng_ai', ko: '등애', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "young noble officer with clean face, slim waist, and oversized shoulder guards", weapon: "heavy mace", palette: "deep navy, gunmetal, bright gold, small royal blue gems"},
+  {slug: 'zhong_hui', ko: '종회', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "folding war fan", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'guo_huai', ko: '곽회', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "tower shield and short sword", palette: "silver-blue armor, dark cape, restrained red cords"},
+  {slug: 'wang_ping', ko: '왕평', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "crescent halberd", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'wen_pin', ko: '문빙', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "single broad dao sword", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'zang_ba', ko: '장패', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "hooked polearm", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'li_tong', ko: '이통', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "pair of short axes", palette: "deep navy, gunmetal, bright gold, small royal blue gems"},
+  {slug: 'han_hao', ko: '한호', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "rectangular command tablet", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'lu_qian', ko: '여건', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "curved saber held low", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'mao_jie', ko: '모개', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "single broad dao sword", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'liu_ye', ko: '유엽', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "rectangular command tablet", palette: "black lacquer, cobalt cloth, polished gold trim"},
+  {slug: 'kuai_yue', ko: '괴월', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "scroll case and ritual staff", palette: "silver-blue armor, dark cape, restrained red cords"},
+  {slug: 'kuai_liang', ko: '괴량', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "pair of short axes", palette: "deep navy, gunmetal, bright gold, small royal blue gems"},
+  {slug: 'cai_mao', ko: '채모', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "scroll case and ritual staff", palette: "silver-blue armor, dark cape, restrained red cords"},
+  {slug: 'zhang_yun', ko: '장윤', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "heavy mace", palette: "silver-blue armor, dark cape, restrained red cords"},
+  {slug: 'xu_sheng', ko: '서성', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "single broad dao sword", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents"},
+  {slug: 'ding_feng', ko: '정봉', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "scroll case and ritual staff", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents"},
+  {slug: 'han_dang', ko: '한당', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "single broad dao sword", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents"},
+  {slug: 'cheng_pu', ko: '정보', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "single broad dao sword", palette: "teal blue cape, dark bronze armor, gold trim"},
+  {slug: 'zhou_tai', ko: '주태', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "tower shield and short sword", palette: "teal blue cape, dark bronze armor, gold trim"},
+  {slug: 'jiang_qin', ko: '장흠', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "single broad dao sword", palette: "warm crimson armor with white robe panels"},
+  {slug: 'ling_tong', ko: '능통', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "crescent halberd", palette: "teal blue cape, dark bronze armor, gold trim"},
+  {slug: 'lu_su', ko: '노숙', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "single broad dao sword", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents"},
+  {slug: 'zhang_zhao', ko: '장소', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "pair of short axes", palette: "warm crimson armor with white robe panels"},
+  {slug: 'zhang_hong', ko: '장굉', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "heavy mace", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents"},
+  {slug: 'zhu_zhi', ko: '주치', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "single broad dao sword", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents"},
+  {slug: 'zhu_huan', ko: '주환', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "heavy mace", palette: "teal blue cape, dark bronze armor, gold trim"},
+  {slug: 'zhu_ran', ko: '주연', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "crescent halberd", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents"},
+  {slug: 'bu_zhi', ko: '보즐', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "hooked polearm", palette: "teal blue cape, dark bronze armor, gold trim"},
+  {slug: 'kan_ze', ko: '감택', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "folding war fan", palette: "warm crimson armor with white robe panels"},
+  {slug: 'yu_fan', ko: '우번', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "crescent halberd", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents"},
+  {slug: 'he_qi', ko: '하제', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "tower shield and short sword", palette: "warm crimson armor with white robe panels"},
+  {slug: 'pan_zhang', ko: '반장', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "rectangular command tablet", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents"},
+  {slug: 'ma_zhong_wu', ko: '마충', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "heavy mace", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents"},
+  {slug: 'quan_cong', ko: '전종', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "curved saber held low", palette: "teal blue cape, dark bronze armor, gold trim"},
+  {slug: 'sun_jian', ko: '손견', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "bow with quiver", palette: "warm crimson armor with white robe panels"},
+  {slug: 'sun_shao', ko: '손소', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "rectangular command tablet", palette: "warm crimson armor with white robe panels"},
+  {slug: 'sun_huan', ko: '손환', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "folding war fan", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents"},
+  {slug: 'sun_luban', ko: '손노반', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "ritual staff", palette: "teal blue cape, dark bronze armor, gold trim"},
+  {slug: 'sun_luyu', ko: '손노육', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "ritual staff", palette: "teal blue cape, dark bronze armor, gold trim"},
+  {slug: 'daqiao', ko: '대교', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "folding war fan", palette: "teal blue cape, dark bronze armor, gold trim"},
+  {slug: 'xiaoqiao', ko: '소교', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "short spear with tassel", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents"},
+  {slug: 'lian_shi', ko: '연사', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "ritual staff", palette: "teal blue cape, dark bronze armor, gold trim"},
+  {slug: 'guan_ping', ko: '관평', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "young noble officer with clean face, slim waist, and oversized shoulder guards", weapon: "rectangular command tablet", palette: "green cloak, black armor, gold trim, cream cloth"},
+  {slug: 'guan_xing', ko: '관흥', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "folding war fan", palette: "green cloak, black armor, gold trim, cream cloth"},
+  {slug: 'guan_suo', ko: '관색', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "single broad dao sword", palette: "deep red cloth, dark armor, gold ornaments"},
+  {slug: 'guan_yinping', ko: '관은병', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "ritual staff", palette: "green cloak, black armor, gold trim, cream cloth"},
+  {slug: 'zhang_bao', ko: '장포', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "tower shield and short sword", palette: "green cloak, black armor, gold trim, cream cloth"},
+  {slug: 'liu_shan', ko: '유선', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "bow with quiver", palette: "green cloak, black armor, gold trim, cream cloth"},
+  {slug: 'liu_feng', ko: '유봉', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "crescent halberd", palette: "white and blue armor with gold trim"},
+  {slug: 'ma_su', ko: '마속', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "folding war fan", palette: "white and blue armor with gold trim"},
+  {slug: 'ma_liang', ko: '마량', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "heavy mace", palette: "white and blue armor with gold trim"},
+  {slug: 'jiang_wei', ko: '강유', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "hooked polearm", palette: "deep red cloth, dark armor, gold ornaments"},
+  {slug: 'wei_yan', ko: '위연', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "long spear with tassel", palette: "white and blue armor with gold trim"},
+  {slug: 'fa_zheng', ko: '법정', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "folding war fan", palette: "deep red cloth, dark armor, gold ornaments"},
+  {slug: 'jian_yong', ko: '간옹', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "crescent halberd", palette: "white and blue armor with gold trim"},
+  {slug: 'mi_zhu', ko: '미축', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "long spear with tassel", palette: "deep red cloth, dark armor, gold ornaments"},
+  {slug: 'mi_fang', ko: '미방', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "heavy mace", palette: "green cloak, black armor, gold trim, cream cloth"},
+  {slug: 'sun_qian', ko: '손건', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "heavy mace", palette: "green cloak, black armor, gold trim, cream cloth"},
+  {slug: 'liao_hua', ko: '요화', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "bow with quiver", palette: "white and blue armor with gold trim"},
+  {slug: 'zhou_cang', ko: '주창', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "scroll case and ritual staff", palette: "deep red cloth, dark armor, gold ornaments"},
+  {slug: 'ma_dai', ko: '마대', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "hooked polearm", palette: "green cloak, black armor, gold trim, cream cloth"},
+  {slug: 'yan_yan', ko: '엄안', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "pair of short axes", palette: "green cloak, black armor, gold trim, cream cloth"},
+  {slug: 'li_yan', ko: '이엄', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "hooked polearm", palette: "deep red cloth, dark armor, gold ornaments"},
+  {slug: 'fei_yi', ko: '비의', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "scroll case and ritual staff", palette: "white and blue armor with gold trim"},
+  {slug: 'dong_yun', ko: '동윤', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "heavy mace", palette: "green cloak, black armor, gold trim, cream cloth"},
+  {slug: 'jiang_wan', ko: '장완', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "single broad dao sword", palette: "white and blue armor with gold trim"},
+  {slug: 'huang_quan', ko: '황권', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "scroll case and ritual staff", palette: "white and blue armor with gold trim"},
+  {slug: 'chen_dao', ko: '진도', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "bow with quiver", palette: "green cloak, black armor, gold trim, cream cloth"},
+  {slug: 'fu_shi_ren', ko: '부사인', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "curved saber held low", palette: "white and blue armor with gold trim"},
+  {slug: 'meng_da', ko: '맹달', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "long spear with tassel", palette: "white and blue armor with gold trim"},
+  {slug: 'zhang_song', ko: '장송', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "curved saber held low", palette: "green cloak, black armor, gold trim, cream cloth"},
+  {slug: 'li_hui', ko: '이회', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "folding war fan", palette: "deep red cloth, dark armor, gold ornaments"},
+  {slug: 'huo_jun', ko: '곽준', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "hooked polearm", palette: "deep red cloth, dark armor, gold ornaments"},
+  {slug: 'sha_moke', ko: '사마가', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "hooked polearm", palette: "green cloak, black armor, gold trim, cream cloth"},
+  {slug: 'zhuge_zhan', ko: '제갈첨', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "hooked polearm", palette: "deep red cloth, dark armor, gold ornaments"},
+  {slug: 'zhuge_jin', ko: '제갈근', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "curved saber held low", palette: "deep red cloth, dark armor, gold ornaments"},
+  {slug: 'zhuge_dan', ko: '제갈탄', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "hooked polearm", palette: "deep red cloth, dark armor, gold ornaments"},
+  {slug: 'zhang_yi_shu', ko: '장익', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "pair of short axes", palette: "white and blue armor with gold trim"},
+  {slug: 'dong_jue', ko: '동궐', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "single broad dao sword", palette: "green cloak, black armor, gold trim, cream cloth"},
+  {slug: 'yuan_tan', ko: '원담', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "bow with quiver", palette: "blue-gray steel with fur and brown leather"},
+  {slug: 'yuan_xi', ko: '원희', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "crescent halberd", palette: "blue-gray steel with fur and brown leather"},
+  {slug: 'yuan_shang', ko: '원상', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "heavy mace", palette: "sand gold, dark leather, weathered bronze, muted red cords"},
+  {slug: 'tian_feng', ko: '전풍', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "crescent halberd", palette: "sand gold, dark leather, weathered bronze, muted red cords"},
+  {slug: 'ju_shou', ko: '저수', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "scroll case and ritual staff", palette: "blue-gray steel with fur and brown leather"},
+  {slug: 'shen_pei', ko: '심배', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "long spear with tassel", palette: "blue-gray steel with fur and brown leather"},
+  {slug: 'feng_ji', ko: '봉기', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "single broad dao sword", palette: "sand gold, dark leather, weathered bronze, muted red cords"},
+  {slug: 'guo_tu', ko: '곽도', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "long spear with tassel", palette: "black armor, ochre cape, gold trim"},
+  {slug: 'xin_ping', ko: '신평', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "tower shield and short sword", palette: "black armor, ochre cape, gold trim"},
+  {slug: 'xin_pi', ko: '신비', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "bow with quiver", palette: "blue-gray steel with fur and brown leather"},
+  {slug: 'gao_lan', ko: '고람', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "tower shield and short sword", palette: "blue-gray steel with fur and brown leather"},
+  {slug: 'zhang_bu', ko: '장무', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "pair of short axes", palette: "black armor, ochre cape, gold trim"},
+  {slug: 'gongsun_zan', ko: '공손찬', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "young noble officer with clean face, slim waist, and oversized shoulder guards", weapon: "tower shield and short sword", palette: "black armor, ochre cape, gold trim"},
+  {slug: 'gongsun_du', ko: '공손도', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "bow with quiver", palette: "blue-gray steel with fur and brown leather"},
+  {slug: 'gongsun_kang', ko: '공손강', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "folding war fan", palette: "black armor, ochre cape, gold trim"},
+  {slug: 'gongsun_yuan', ko: '공손연', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "long spear with tassel", palette: "black armor, ochre cape, gold trim"},
+  {slug: 'liu_biao', ko: '유표', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "single broad dao sword", palette: "sand gold, dark leather, weathered bronze, muted red cords"},
+  {slug: 'liu_zhang', ko: '유장', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "tower shield and short sword", palette: "blue-gray steel with fur and brown leather"},
+  {slug: 'liu_yao', ko: '유요', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "tower shield and short sword", palette: "black armor, ochre cape, gold trim"},
+  {slug: 'liu_yu', ko: '유우', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "rectangular command tablet", palette: "black armor, ochre cape, gold trim"},
+  {slug: 'tao_qian', ko: '도겸', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "long spear with tassel", palette: "black armor, ochre cape, gold trim"},
+  {slug: 'kong_rong', ko: '공융', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "heavy mace", palette: "blue-gray steel with fur and brown leather"},
+  {slug: 'zhang_lu', ko: '장로', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "young noble officer with clean face, slim waist, and oversized shoulder guards", weapon: "crescent halberd", palette: "blue-gray steel with fur and brown leather"},
+  {slug: 'zhang_ren', ko: '장임', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "single broad dao sword", palette: "blue-gray steel with fur and brown leather"},
+  {slug: 'yan_pu', ko: '염포', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "scroll case and ritual staff", palette: "blue-gray steel with fur and brown leather"},
+  {slug: 'ma_teng', ko: '마등', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "curved saber held low", palette: "blue-gray steel with fur and brown leather"},
+  {slug: 'han_sui', ko: '한수', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "heavy mace", palette: "sand gold, dark leather, weathered bronze, muted red cords"},
+  {slug: 'cheng_yin', ko: '성의', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "rectangular command tablet", palette: "sand gold, dark leather, weathered bronze, muted red cords"},
+  {slug: 'liang_xing', ko: '양흥', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "single broad dao sword", palette: "blue-gray steel with fur and brown leather"},
+  {slug: 'hou_xuan', ko: '후선', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "bow with quiver", palette: "black armor, ochre cape, gold trim"},
+  {slug: 'cheng_gongying', ko: '성공영', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "young noble officer with clean face, slim waist, and oversized shoulder guards", weapon: "tower shield and short sword", palette: "sand gold, dark leather, weathered bronze, muted red cords"},
+  {slug: 'dong_cheng', ko: '동승', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "bow with quiver", palette: "yellow ochre cloth, dark iron armor, rough gold plates"},
+  {slug: 'he_jin', ko: '하진', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "court official commander with ceremonial robe armor and compact toy-like proportions", weapon: "rectangular command tablet", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth"},
+  {slug: 'zhang_rang', ko: '장양', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "court official commander with ceremonial robe armor and compact toy-like proportions", weapon: "rectangular command tablet", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth"},
+  {slug: 'emperor_xian', ko: '헌제', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "court official commander with ceremonial robe armor and compact toy-like proportions", weapon: "rectangular command tablet", palette: "yellow ochre cloth, dark iron armor, rough gold plates"},
+  {slug: 'wang_yun', ko: '왕윤', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "court official commander with ceremonial robe armor and compact toy-like proportions", weapon: "rectangular command tablet", palette: "purple-black robe armor with gold talismans"},
+  {slug: 'diao_chan', ko: '초선', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "ritual staff", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth"},
+  {slug: 'li_jue', ko: '이각', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "folding war fan", palette: "yellow ochre cloth, dark iron armor, rough gold plates"},
+  {slug: 'guo_si', ko: '곽사', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "pair of short axes", palette: "purple-black robe armor with gold talismans"},
+  {slug: 'fan_chou', ko: '번조', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "rectangular command tablet", palette: "purple-black robe armor with gold talismans"},
+  {slug: 'zhang_ji', ko: '장제', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "scroll case and ritual staff", palette: "yellow ochre cloth, dark iron armor, rough gold plates"},
+  {slug: 'zhang_xiu', ko: '장수', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "long spear with tassel", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth"},
+  {slug: 'hu_che_er', ko: '호거아', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "rectangular command tablet", palette: "yellow ochre cloth, dark iron armor, rough gold plates"},
+  {slug: 'zou_shi', ko: '추씨', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "slender sword", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth"},
+  {slug: 'hua_xiong', ko: '화웅', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "crescent halberd", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth"},
+  {slug: 'li_ru', ko: '이유', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "scroll case and ritual staff", palette: "yellow ochre cloth, dark iron armor, rough gold plates"},
+  {slug: 'yuan_shu', ko: '원술', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "lean spear officer with long vertical weapon silhouette", weapon: "curved saber held low", palette: "purple-black robe armor with gold talismans"},
+  {slug: 'ji_ling', ko: '기령', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "tower shield and short sword", palette: "purple-black robe armor with gold talismans"},
+  {slug: 'liu_xun', ko: '유훈', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "pair of short axes", palette: "yellow ochre cloth, dark iron armor, rough gold plates"},
+  {slug: 'chen_lan', ko: '진란', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "single broad dao sword", palette: "yellow ochre cloth, dark iron armor, rough gold plates"},
+  {slug: 'lei_bo', ko: '뇌박', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "curved saber held low", palette: "yellow ochre cloth, dark iron armor, rough gold plates"},
+  {slug: 'zhang_xun', ko: '장훈', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "folding war fan", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth"},
+  {slug: 'qiao_rui', ko: '교유', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "single broad dao sword", palette: "yellow ochre cloth, dark iron armor, rough gold plates"},
+  {slug: 'han_xian', ko: '한섬', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "rectangular command tablet", palette: "purple-black robe armor with gold talismans"},
+  {slug: 'yang_feng', ko: '양봉', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "rectangular command tablet", palette: "yellow ochre cloth, dark iron armor, rough gold plates"},
+  {slug: 'hua_tuo', ko: '화타', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elder mystic healer silhouette with robe armor, chunky boots, and small talisman accessories", weapon: "wooden staff with gold medical charm", palette: "purple-black robe armor with gold talismans"},
+  {slug: 'zuo_ci', ko: '좌자', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elder mystic healer silhouette with robe armor, chunky boots, and small talisman accessories", weapon: "wooden staff with gold medical charm", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth"},
+  {slug: 'yu_ji', ko: '우길', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elder mystic healer silhouette with robe armor, chunky boots, and small talisman accessories", weapon: "wooden staff with gold medical charm", palette: "purple-black robe armor with gold talismans"},
+  {slug: 'zhang_jiao', ko: '장각', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "heavy mace", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth"},
+  {slug: 'zhang_bao_yellow', ko: '장보', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "folding war fan", palette: "purple-black robe armor with gold talismans"},
+  {slug: 'zhang_liang_yellow', ko: '장량', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "tower shield and short sword", palette: "yellow ochre cloth, dark iron armor, rough gold plates"},
+  {slug: 'bo_cai', ko: '파재', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "heavy mace", palette: "purple-black robe armor with gold talismans"},
+  {slug: 'cheng_yuanzhi', ko: '정원지', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "long spear with tassel", palette: "purple-black robe armor with gold talismans"},
+  {slug: 'deng_mao', ko: '등무', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "scroll case and ritual staff", palette: "yellow ochre cloth, dark iron armor, rough gold plates"},
+  {slug: 'guan_hai', ko: '관해', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "curved saber held low", palette: "purple-black robe armor with gold talismans"},
+  {slug: 'pei_yuanshao', ko: '배원소', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "pair of short axes", palette: "purple-black robe armor with gold talismans"},
+  {slug: 'zhang_man_cheng', ko: '장만성', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "bow with quiver", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth"},
+  {slug: 'han_zhong', ko: '한충', group: '신규 렌더 170', assetDir: 'busts_real_170', status: 'render_pending', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "single broad dao sword", palette: "purple-black robe armor with gold talismans"},
+];
+const grid = document.getElementById('grid');
+const count = document.getElementById('count');
+const search = document.getElementById('search');
+const audit = document.getElementById('audit');
+let loaded = 0;
+let failed = 0;
+
+function card(item, index) {
+  const file = `${item.slug}.png`;
+  const card = document.createElement('section');
+  card.className = 'card';
+  card.dataset.key = `${item.slug} ${item.ko} ${item.group} ${item.status} ${item.body} ${item.weapon} ${item.palette}`.toLowerCase();
+  card.innerHTML = `
+    <div class="name"><span>${index + 1}. ${item.ko} <span class="tag">${item.group}</span></span><small>${file}</small></div>
+    <div class="art"><img src="assets/generals/${item.assetDir}/${file}?v=real-200-20260511" alt="${item.ko} 전신"></div>
+    <div class="file">${item.assetDir}/${file}<span class="source">status: ${item.status}<br>body: ${item.body}<br>weapon: ${item.weapon}<br>palette: ${item.palette}</span></div>
+  `;
+  return card;
+}
+
+const cards = generals.map(card);
+cards.forEach(card => grid.appendChild(card));
+function updateAudit() {
+  const checked = loaded + failed;
+  audit.textContent = failed ? `이미지 ${loaded}/${generals.length}, 렌더 대기 ${failed}` : `이미지 ${loaded}/${generals.length}`;
+  audit.className = `audit ${loaded === generals.length ? 'ok' : failed ? 'bad' : ''}`;
+}
+grid.querySelectorAll('img').forEach(img => {
+  img.addEventListener('load', () => { loaded++; updateAudit(); });
+  img.addEventListener('error', () => {
+    failed++;
+    const card = img.closest('.card');
+    card.classList.add('missing');
+    img.closest('.art').textContent = '렌더 대기';
+    updateAudit();
+  });
+});
+updateAudit();
+function filterCards() {
+  const q = search.value.trim().toLowerCase();
+  let shown = 0;
+  cards.forEach(card => {
+    const ok = !q || card.dataset.key.includes(q);
+    card.style.display = ok ? '' : 'none';
+    if (ok) shown++;
+  });
+  count.textContent = `${shown} / ${generals.length}`;
+}
+search.addEventListener('input', filterCards);
+filterCards();
+</script>
+</body>
+</html>

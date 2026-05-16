@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>진짜 신규 장수 170명 제작 큐</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 28px; background: #17110b; color: #f7d56e; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; }
+  h1 { margin: 0 0 8px; font-size: 30px; }
+  .sub { margin: 0 0 18px; color: #c5a86b; line-height: 1.45; }
+  .warning { margin: 0 0 18px; padding: 12px 14px; border: 1px solid #8f6422; border-radius: 8px; background: #21170e; color: #ffd978; line-height: 1.45; }
+  .toolbar { position: sticky; top: 0; z-index: 2; display: flex; gap: 10px; align-items: center; padding: 12px 0 16px; background: linear-gradient(180deg, #17110b 70%, rgba(23,17,11,0)); }
+  input { width: min(420px, 100%); height: 40px; padding: 0 14px; border: 1px solid #7b5724; border-radius: 8px; background: #24190f; color: #ffe188; font-size: 15px; outline: none; }
+  .count { color: #a98a50; font-weight: 800; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+  .card { border: 1px solid #79551f; border-radius: 8px; overflow: hidden; background: linear-gradient(180deg, #24190f, #110b07); }
+  .name { display: flex; justify-content: space-between; gap: 10px; padding: 11px 12px; border-bottom: 1px solid #664719; color: #ffe188; font-size: 17px; font-weight: 800; }
+  .tag { color: #8fd48a; font-size: 12px; font-weight: 900; }
+  .body { padding: 11px 12px; color: #d7be79; font-size: 13px; line-height: 1.45; }
+  .path { padding: 8px 12px 11px; border-top: 1px solid #3d2a12; color: #a98a50; font-size: 12px; word-break: break-all; }
+</style>
+</head>
+<body>
+<h1>진짜 신규 장수 170명 제작 큐</h1>
+<p class="sub">기존 30명은 유지하고, 나머지 170명은 복제/색변경 후보가 아니라 새 렌더가 필요한 대상으로 관리합니다.</p>
+<p class="warning">이 페이지는 완성 갤러리가 아닙니다. 각 카드의 body/weapon/palette가 실제 이미지 생성 프롬프트에 들어가며, 기존 원본을 베이스로 복사하지 않는 것이 통과 기준입니다.</p>
+<div class="toolbar"><input id="search" type="search" placeholder="이름, 파일명, 무기, 진영 검색"><div class="count" id="count"></div></div>
+<main class="grid" id="grid"></main>
+<script>
+const jobs = [
+  {slug: 'zhang_he', ko: '장합', faction: 'wei', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "curved saber held low", palette: "silver-blue armor, dark cape, restrained red cords", out: 'zhang_he.png'},
+  {slug: 'yu_jin', ko: '우금', faction: 'wei', body: "lean spear officer with long vertical weapon silhouette", weapon: "heavy mace", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'yu_jin.png'},
+  {slug: 'yue_jin', ko: '악진', faction: 'wei', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "long spear with tassel", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'yue_jin.png'},
+  {slug: 'li_dian', ko: '이전', faction: 'wei', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "pair of short axes", palette: "deep navy, gunmetal, bright gold, small royal blue gems", out: 'li_dian.png'},
+  {slug: 'cao_ren', ko: '조인', faction: 'wei', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "curved saber held low", palette: "deep navy, gunmetal, bright gold, small royal blue gems", out: 'cao_ren.png'},
+  {slug: 'cao_hong', ko: '조홍', faction: 'wei', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "rectangular command tablet", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'cao_hong.png'},
+  {slug: 'cao_pi', ko: '조비', faction: 'wei', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "crescent halberd", palette: "silver-blue armor, dark cape, restrained red cords", out: 'cao_pi.png'},
+  {slug: 'cao_zhi', ko: '조식', faction: 'wei', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "folding war fan", palette: "silver-blue armor, dark cape, restrained red cords", out: 'cao_zhi.png'},
+  {slug: 'cao_zhang', ko: '조창', faction: 'wei', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "pair of short axes", palette: "silver-blue armor, dark cape, restrained red cords", out: 'cao_zhang.png'},
+  {slug: 'cao_ang', ko: '조앙', faction: 'wei', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "tower shield and short sword", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'cao_ang.png'},
+  {slug: 'cao_rui', ko: '조예', faction: 'wei', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "hooked polearm", palette: "deep navy, gunmetal, bright gold, small royal blue gems", out: 'cao_rui.png'},
+  {slug: 'cao_shuang', ko: '조상', faction: 'wei', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "scroll case and ritual staff", palette: "deep navy, gunmetal, bright gold, small royal blue gems", out: 'cao_shuang.png'},
+  {slug: 'cao_zhen', ko: '조진', faction: 'wei', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "heavy mace", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'cao_zhen.png'},
+  {slug: 'cao_xiu', ko: '조휴', faction: 'wei', body: "young noble officer with clean face, slim waist, and oversized shoulder guards", weapon: "pair of short axes", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'cao_xiu.png'},
+  {slug: 'xiahou_yuan', ko: '하후연', faction: 'wei', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "pair of short axes", palette: "silver-blue armor, dark cape, restrained red cords", out: 'xiahou_yuan.png'},
+  {slug: 'xiahou_ba', ko: '하후패', faction: 'wei', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "rectangular command tablet", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'xiahou_ba.png'},
+  {slug: 'cheng_yu', ko: '정욱', faction: 'wei', body: "lean spear officer with long vertical weapon silhouette", weapon: "crescent halberd", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'cheng_yu.png'},
+  {slug: 'xun_yu', ko: '순욱', faction: 'wei', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "rectangular command tablet", palette: "silver-blue armor, dark cape, restrained red cords", out: 'xun_yu.png'},
+  {slug: 'xun_you', ko: '순유', faction: 'wei', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "pair of short axes", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'xun_you.png'},
+  {slug: 'jia_xu', ko: '가후', faction: 'wei', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "tower shield and short sword", palette: "deep navy, gunmetal, bright gold, small royal blue gems", out: 'jia_xu.png'},
+  {slug: 'man_chong', ko: '만총', faction: 'wei', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "bow with quiver", palette: "silver-blue armor, dark cape, restrained red cords", out: 'man_chong.png'},
+  {slug: 'zhong_yao', ko: '종요', faction: 'wei', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "single broad dao sword", palette: "silver-blue armor, dark cape, restrained red cords", out: 'zhong_yao.png'},
+  {slug: 'deng_ai', ko: '등애', faction: 'wei', body: "young noble officer with clean face, slim waist, and oversized shoulder guards", weapon: "heavy mace", palette: "deep navy, gunmetal, bright gold, small royal blue gems", out: 'deng_ai.png'},
+  {slug: 'zhong_hui', ko: '종회', faction: 'wei', body: "lean spear officer with long vertical weapon silhouette", weapon: "folding war fan", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'zhong_hui.png'},
+  {slug: 'guo_huai', ko: '곽회', faction: 'wei', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "tower shield and short sword", palette: "silver-blue armor, dark cape, restrained red cords", out: 'guo_huai.png'},
+  {slug: 'wang_ping', ko: '왕평', faction: 'wei', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "crescent halberd", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'wang_ping.png'},
+  {slug: 'wen_pin', ko: '문빙', faction: 'wei', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "single broad dao sword", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'wen_pin.png'},
+  {slug: 'zang_ba', ko: '장패', faction: 'wei', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "hooked polearm", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'zang_ba.png'},
+  {slug: 'li_tong', ko: '이통', faction: 'wei', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "pair of short axes", palette: "deep navy, gunmetal, bright gold, small royal blue gems", out: 'li_tong.png'},
+  {slug: 'han_hao', ko: '한호', faction: 'wei', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "rectangular command tablet", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'han_hao.png'},
+  {slug: 'lu_qian', ko: '여건', faction: 'wei', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "curved saber held low", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'lu_qian.png'},
+  {slug: 'mao_jie', ko: '모개', faction: 'wei', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "single broad dao sword", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'mao_jie.png'},
+  {slug: 'liu_ye', ko: '유엽', faction: 'wei', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "rectangular command tablet", palette: "black lacquer, cobalt cloth, polished gold trim", out: 'liu_ye.png'},
+  {slug: 'kuai_yue', ko: '괴월', faction: 'wei', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "scroll case and ritual staff", palette: "silver-blue armor, dark cape, restrained red cords", out: 'kuai_yue.png'},
+  {slug: 'kuai_liang', ko: '괴량', faction: 'wei', body: "lean spear officer with long vertical weapon silhouette", weapon: "pair of short axes", palette: "deep navy, gunmetal, bright gold, small royal blue gems", out: 'kuai_liang.png'},
+  {slug: 'cai_mao', ko: '채모', faction: 'wei', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "scroll case and ritual staff", palette: "silver-blue armor, dark cape, restrained red cords", out: 'cai_mao.png'},
+  {slug: 'zhang_yun', ko: '장윤', faction: 'wei', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "heavy mace", palette: "silver-blue armor, dark cape, restrained red cords", out: 'zhang_yun.png'},
+  {slug: 'xu_sheng', ko: '서성', faction: 'wu', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "single broad dao sword", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents", out: 'xu_sheng.png'},
+  {slug: 'ding_feng', ko: '정봉', faction: 'wu', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "scroll case and ritual staff", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents", out: 'ding_feng.png'},
+  {slug: 'han_dang', ko: '한당', faction: 'wu', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "single broad dao sword", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents", out: 'han_dang.png'},
+  {slug: 'cheng_pu', ko: '정보', faction: 'wu', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "single broad dao sword", palette: "teal blue cape, dark bronze armor, gold trim", out: 'cheng_pu.png'},
+  {slug: 'zhou_tai', ko: '주태', faction: 'wu', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "tower shield and short sword", palette: "teal blue cape, dark bronze armor, gold trim", out: 'zhou_tai.png'},
+  {slug: 'jiang_qin', ko: '장흠', faction: 'wu', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "single broad dao sword", palette: "warm crimson armor with white robe panels", out: 'jiang_qin.png'},
+  {slug: 'ling_tong', ko: '능통', faction: 'wu', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "crescent halberd", palette: "teal blue cape, dark bronze armor, gold trim", out: 'ling_tong.png'},
+  {slug: 'lu_su', ko: '노숙', faction: 'wu', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "single broad dao sword", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents", out: 'lu_su.png'},
+  {slug: 'zhang_zhao', ko: '장소', faction: 'wu', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "pair of short axes", palette: "warm crimson armor with white robe panels", out: 'zhang_zhao.png'},
+  {slug: 'zhang_hong', ko: '장굉', faction: 'wu', body: "lean spear officer with long vertical weapon silhouette", weapon: "heavy mace", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents", out: 'zhang_hong.png'},
+  {slug: 'zhu_zhi', ko: '주치', faction: 'wu', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "single broad dao sword", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents", out: 'zhu_zhi.png'},
+  {slug: 'zhu_huan', ko: '주환', faction: 'wu', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "heavy mace", palette: "teal blue cape, dark bronze armor, gold trim", out: 'zhu_huan.png'},
+  {slug: 'zhu_ran', ko: '주연', faction: 'wu', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "crescent halberd", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents", out: 'zhu_ran.png'},
+  {slug: 'bu_zhi', ko: '보즐', faction: 'wu', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "hooked polearm", palette: "teal blue cape, dark bronze armor, gold trim", out: 'bu_zhi.png'},
+  {slug: 'kan_ze', ko: '감택', faction: 'wu', body: "lean spear officer with long vertical weapon silhouette", weapon: "folding war fan", palette: "warm crimson armor with white robe panels", out: 'kan_ze.png'},
+  {slug: 'yu_fan', ko: '우번', faction: 'wu', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "crescent halberd", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents", out: 'yu_fan.png'},
+  {slug: 'he_qi', ko: '하제', faction: 'wu', body: "lean spear officer with long vertical weapon silhouette", weapon: "tower shield and short sword", palette: "warm crimson armor with white robe panels", out: 'he_qi.png'},
+  {slug: 'pan_zhang', ko: '반장', faction: 'wu', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "rectangular command tablet", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents", out: 'pan_zhang.png'},
+  {slug: 'ma_zhong_wu', ko: '마충', faction: 'wu', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "heavy mace", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents", out: 'ma_zhong_wu.png'},
+  {slug: 'quan_cong', ko: '전종', faction: 'wu', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "curved saber held low", palette: "teal blue cape, dark bronze armor, gold trim", out: 'quan_cong.png'},
+  {slug: 'sun_jian', ko: '손견', faction: 'wu', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "bow with quiver", palette: "warm crimson armor with white robe panels", out: 'sun_jian.png'},
+  {slug: 'sun_shao', ko: '손소', faction: 'wu', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "rectangular command tablet", palette: "warm crimson armor with white robe panels", out: 'sun_shao.png'},
+  {slug: 'sun_huan', ko: '손환', faction: 'wu', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "folding war fan", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents", out: 'sun_huan.png'},
+  {slug: 'sun_luban', ko: '손노반', faction: 'wu', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "ritual staff", palette: "teal blue cape, dark bronze armor, gold trim", out: 'sun_luban.png'},
+  {slug: 'sun_luyu', ko: '손노육', faction: 'wu', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "ritual staff", palette: "teal blue cape, dark bronze armor, gold trim", out: 'sun_luyu.png'},
+  {slug: 'daqiao', ko: '대교', faction: 'wu', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "folding war fan", palette: "teal blue cape, dark bronze armor, gold trim", out: 'daqiao.png'},
+  {slug: 'xiaoqiao', ko: '소교', faction: 'wu', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "short spear with tassel", palette: "red lacquer, ivory cloth, bright gold trim, blue gem accents", out: 'xiaoqiao.png'},
+  {slug: 'lian_shi', ko: '연사', faction: 'wu', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "ritual staff", palette: "teal blue cape, dark bronze armor, gold trim", out: 'lian_shi.png'},
+  {slug: 'guan_ping', ko: '관평', faction: 'shu', body: "young noble officer with clean face, slim waist, and oversized shoulder guards", weapon: "rectangular command tablet", palette: "green cloak, black armor, gold trim, cream cloth", out: 'guan_ping.png'},
+  {slug: 'guan_xing', ko: '관흥', faction: 'shu', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "folding war fan", palette: "green cloak, black armor, gold trim, cream cloth", out: 'guan_xing.png'},
+  {slug: 'guan_suo', ko: '관색', faction: 'shu', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "single broad dao sword", palette: "deep red cloth, dark armor, gold ornaments", out: 'guan_suo.png'},
+  {slug: 'guan_yinping', ko: '관은병', faction: 'shu', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "ritual staff", palette: "green cloak, black armor, gold trim, cream cloth", out: 'guan_yinping.png'},
+  {slug: 'zhang_bao', ko: '장포', faction: 'shu', body: "lean spear officer with long vertical weapon silhouette", weapon: "tower shield and short sword", palette: "green cloak, black armor, gold trim, cream cloth", out: 'zhang_bao.png'},
+  {slug: 'liu_shan', ko: '유선', faction: 'shu', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "bow with quiver", palette: "green cloak, black armor, gold trim, cream cloth", out: 'liu_shan.png'},
+  {slug: 'liu_feng', ko: '유봉', faction: 'shu', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "crescent halberd", palette: "white and blue armor with gold trim", out: 'liu_feng.png'},
+  {slug: 'ma_su', ko: '마속', faction: 'shu', body: "lean spear officer with long vertical weapon silhouette", weapon: "folding war fan", palette: "white and blue armor with gold trim", out: 'ma_su.png'},
+  {slug: 'ma_liang', ko: '마량', faction: 'shu', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "heavy mace", palette: "white and blue armor with gold trim", out: 'ma_liang.png'},
+  {slug: 'jiang_wei', ko: '강유', faction: 'shu', body: "lean spear officer with long vertical weapon silhouette", weapon: "hooked polearm", palette: "deep red cloth, dark armor, gold ornaments", out: 'jiang_wei.png'},
+  {slug: 'wei_yan', ko: '위연', faction: 'shu', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "long spear with tassel", palette: "white and blue armor with gold trim", out: 'wei_yan.png'},
+  {slug: 'fa_zheng', ko: '법정', faction: 'shu', body: "lean spear officer with long vertical weapon silhouette", weapon: "folding war fan", palette: "deep red cloth, dark armor, gold ornaments", out: 'fa_zheng.png'},
+  {slug: 'jian_yong', ko: '간옹', faction: 'shu', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "crescent halberd", palette: "white and blue armor with gold trim", out: 'jian_yong.png'},
+  {slug: 'mi_zhu', ko: '미축', faction: 'shu', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "long spear with tassel", palette: "deep red cloth, dark armor, gold ornaments", out: 'mi_zhu.png'},
+  {slug: 'mi_fang', ko: '미방', faction: 'shu', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "heavy mace", palette: "green cloak, black armor, gold trim, cream cloth", out: 'mi_fang.png'},
+  {slug: 'sun_qian', ko: '손건', faction: 'shu', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "heavy mace", palette: "green cloak, black armor, gold trim, cream cloth", out: 'sun_qian.png'},
+  {slug: 'liao_hua', ko: '요화', faction: 'shu', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "bow with quiver", palette: "white and blue armor with gold trim", out: 'liao_hua.png'},
+  {slug: 'zhou_cang', ko: '주창', faction: 'shu', body: "lean spear officer with long vertical weapon silhouette", weapon: "scroll case and ritual staff", palette: "deep red cloth, dark armor, gold ornaments", out: 'zhou_cang.png'},
+  {slug: 'ma_dai', ko: '마대', faction: 'shu', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "hooked polearm", palette: "green cloak, black armor, gold trim, cream cloth", out: 'ma_dai.png'},
+  {slug: 'yan_yan', ko: '엄안', faction: 'shu', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "pair of short axes", palette: "green cloak, black armor, gold trim, cream cloth", out: 'yan_yan.png'},
+  {slug: 'li_yan', ko: '이엄', faction: 'shu', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "hooked polearm", palette: "deep red cloth, dark armor, gold ornaments", out: 'li_yan.png'},
+  {slug: 'fei_yi', ko: '비의', faction: 'shu', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "scroll case and ritual staff", palette: "white and blue armor with gold trim", out: 'fei_yi.png'},
+  {slug: 'dong_yun', ko: '동윤', faction: 'shu', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "heavy mace", palette: "green cloak, black armor, gold trim, cream cloth", out: 'dong_yun.png'},
+  {slug: 'jiang_wan', ko: '장완', faction: 'shu', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "single broad dao sword", palette: "white and blue armor with gold trim", out: 'jiang_wan.png'},
+  {slug: 'huang_quan', ko: '황권', faction: 'shu', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "scroll case and ritual staff", palette: "white and blue armor with gold trim", out: 'huang_quan.png'},
+  {slug: 'chen_dao', ko: '진도', faction: 'shu', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "bow with quiver", palette: "green cloak, black armor, gold trim, cream cloth", out: 'chen_dao.png'},
+  {slug: 'fu_shi_ren', ko: '부사인', faction: 'shu', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "curved saber held low", palette: "white and blue armor with gold trim", out: 'fu_shi_ren.png'},
+  {slug: 'meng_da', ko: '맹달', faction: 'shu', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "long spear with tassel", palette: "white and blue armor with gold trim", out: 'meng_da.png'},
+  {slug: 'zhang_song', ko: '장송', faction: 'shu', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "curved saber held low", palette: "green cloak, black armor, gold trim, cream cloth", out: 'zhang_song.png'},
+  {slug: 'li_hui', ko: '이회', faction: 'shu', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "folding war fan", palette: "deep red cloth, dark armor, gold ornaments", out: 'li_hui.png'},
+  {slug: 'huo_jun', ko: '곽준', faction: 'shu', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "hooked polearm", palette: "deep red cloth, dark armor, gold ornaments", out: 'huo_jun.png'},
+  {slug: 'sha_moke', ko: '사마가', faction: 'shu', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "hooked polearm", palette: "green cloak, black armor, gold trim, cream cloth", out: 'sha_moke.png'},
+  {slug: 'zhuge_zhan', ko: '제갈첨', faction: 'shu', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "hooked polearm", palette: "deep red cloth, dark armor, gold ornaments", out: 'zhuge_zhan.png'},
+  {slug: 'zhuge_jin', ko: '제갈근', faction: 'shu', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "curved saber held low", palette: "deep red cloth, dark armor, gold ornaments", out: 'zhuge_jin.png'},
+  {slug: 'zhuge_dan', ko: '제갈탄', faction: 'shu', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "hooked polearm", palette: "deep red cloth, dark armor, gold ornaments", out: 'zhuge_dan.png'},
+  {slug: 'zhang_yi_shu', ko: '장익', faction: 'shu', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "pair of short axes", palette: "white and blue armor with gold trim", out: 'zhang_yi_shu.png'},
+  {slug: 'dong_jue', ko: '동궐', faction: 'shu', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "single broad dao sword", palette: "green cloak, black armor, gold trim, cream cloth", out: 'dong_jue.png'},
+  {slug: 'yuan_tan', ko: '원담', faction: 'northern', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "bow with quiver", palette: "blue-gray steel with fur and brown leather", out: 'yuan_tan.png'},
+  {slug: 'yuan_xi', ko: '원희', faction: 'northern', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "crescent halberd", palette: "blue-gray steel with fur and brown leather", out: 'yuan_xi.png'},
+  {slug: 'yuan_shang', ko: '원상', faction: 'northern', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "heavy mace", palette: "sand gold, dark leather, weathered bronze, muted red cords", out: 'yuan_shang.png'},
+  {slug: 'tian_feng', ko: '전풍', faction: 'northern', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "crescent halberd", palette: "sand gold, dark leather, weathered bronze, muted red cords", out: 'tian_feng.png'},
+  {slug: 'ju_shou', ko: '저수', faction: 'northern', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "scroll case and ritual staff", palette: "blue-gray steel with fur and brown leather", out: 'ju_shou.png'},
+  {slug: 'shen_pei', ko: '심배', faction: 'northern', body: "lean spear officer with long vertical weapon silhouette", weapon: "long spear with tassel", palette: "blue-gray steel with fur and brown leather", out: 'shen_pei.png'},
+  {slug: 'feng_ji', ko: '봉기', faction: 'northern', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "single broad dao sword", palette: "sand gold, dark leather, weathered bronze, muted red cords", out: 'feng_ji.png'},
+  {slug: 'guo_tu', ko: '곽도', faction: 'northern', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "long spear with tassel", palette: "black armor, ochre cape, gold trim", out: 'guo_tu.png'},
+  {slug: 'xin_ping', ko: '신평', faction: 'northern', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "tower shield and short sword", palette: "black armor, ochre cape, gold trim", out: 'xin_ping.png'},
+  {slug: 'xin_pi', ko: '신비', faction: 'northern', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "bow with quiver", palette: "blue-gray steel with fur and brown leather", out: 'xin_pi.png'},
+  {slug: 'gao_lan', ko: '고람', faction: 'northern', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "tower shield and short sword", palette: "blue-gray steel with fur and brown leather", out: 'gao_lan.png'},
+  {slug: 'zhang_bu', ko: '장무', faction: 'northern', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "pair of short axes", palette: "black armor, ochre cape, gold trim", out: 'zhang_bu.png'},
+  {slug: 'gongsun_zan', ko: '공손찬', faction: 'northern', body: "young noble officer with clean face, slim waist, and oversized shoulder guards", weapon: "tower shield and short sword", palette: "black armor, ochre cape, gold trim", out: 'gongsun_zan.png'},
+  {slug: 'gongsun_du', ko: '공손도', faction: 'northern', body: "lean spear officer with long vertical weapon silhouette", weapon: "bow with quiver", palette: "blue-gray steel with fur and brown leather", out: 'gongsun_du.png'},
+  {slug: 'gongsun_kang', ko: '공손강', faction: 'northern', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "folding war fan", palette: "black armor, ochre cape, gold trim", out: 'gongsun_kang.png'},
+  {slug: 'gongsun_yuan', ko: '공손연', faction: 'northern', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "long spear with tassel", palette: "black armor, ochre cape, gold trim", out: 'gongsun_yuan.png'},
+  {slug: 'liu_biao', ko: '유표', faction: 'northern', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "single broad dao sword", palette: "sand gold, dark leather, weathered bronze, muted red cords", out: 'liu_biao.png'},
+  {slug: 'liu_zhang', ko: '유장', faction: 'northern', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "tower shield and short sword", palette: "blue-gray steel with fur and brown leather", out: 'liu_zhang.png'},
+  {slug: 'liu_yao', ko: '유요', faction: 'northern', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "tower shield and short sword", palette: "black armor, ochre cape, gold trim", out: 'liu_yao.png'},
+  {slug: 'liu_yu', ko: '유우', faction: 'northern', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "rectangular command tablet", palette: "black armor, ochre cape, gold trim", out: 'liu_yu.png'},
+  {slug: 'tao_qian', ko: '도겸', faction: 'northern', body: "court official general with tall ceremonial headpiece and robe armor", weapon: "long spear with tassel", palette: "black armor, ochre cape, gold trim", out: 'tao_qian.png'},
+  {slug: 'kong_rong', ko: '공융', faction: 'northern', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "heavy mace", palette: "blue-gray steel with fur and brown leather", out: 'kong_rong.png'},
+  {slug: 'zhang_lu', ko: '장로', faction: 'northern', body: "young noble officer with clean face, slim waist, and oversized shoulder guards", weapon: "crescent halberd", palette: "blue-gray steel with fur and brown leather", out: 'zhang_lu.png'},
+  {slug: 'zhang_ren', ko: '장임', faction: 'northern', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "single broad dao sword", palette: "blue-gray steel with fur and brown leather", out: 'zhang_ren.png'},
+  {slug: 'yan_pu', ko: '염포', faction: 'northern', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "scroll case and ritual staff", palette: "blue-gray steel with fur and brown leather", out: 'yan_pu.png'},
+  {slug: 'ma_teng', ko: '마등', faction: 'northern', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "curved saber held low", palette: "blue-gray steel with fur and brown leather", out: 'ma_teng.png'},
+  {slug: 'han_sui', ko: '한수', faction: 'northern', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "heavy mace", palette: "sand gold, dark leather, weathered bronze, muted red cords", out: 'han_sui.png'},
+  {slug: 'cheng_yin', ko: '성의', faction: 'northern', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "rectangular command tablet", palette: "sand gold, dark leather, weathered bronze, muted red cords", out: 'cheng_yin.png'},
+  {slug: 'liang_xing', ko: '양흥', faction: 'northern', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "single broad dao sword", palette: "blue-gray steel with fur and brown leather", out: 'liang_xing.png'},
+  {slug: 'hou_xuan', ko: '후선', faction: 'northern', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "bow with quiver", palette: "black armor, ochre cape, gold trim", out: 'hou_xuan.png'},
+  {slug: 'cheng_gongying', ko: '성공영', faction: 'northern', body: "young noble officer with clean face, slim waist, and oversized shoulder guards", weapon: "tower shield and short sword", palette: "sand gold, dark leather, weathered bronze, muted red cords", out: 'cheng_gongying.png'},
+  {slug: 'dong_cheng', ko: '동승', faction: 'rebel', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "bow with quiver", palette: "yellow ochre cloth, dark iron armor, rough gold plates", out: 'dong_cheng.png'},
+  {slug: 'he_jin', ko: '하진', faction: 'rebel', body: "court official commander with ceremonial robe armor and compact toy-like proportions", weapon: "rectangular command tablet", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth", out: 'he_jin.png'},
+  {slug: 'zhang_rang', ko: '장양', faction: 'rebel', body: "court official commander with ceremonial robe armor and compact toy-like proportions", weapon: "rectangular command tablet", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth", out: 'zhang_rang.png'},
+  {slug: 'emperor_xian', ko: '헌제', faction: 'rebel', body: "court official commander with ceremonial robe armor and compact toy-like proportions", weapon: "rectangular command tablet", palette: "yellow ochre cloth, dark iron armor, rough gold plates", out: 'emperor_xian.png'},
+  {slug: 'wang_yun', ko: '왕윤', faction: 'rebel', body: "court official commander with ceremonial robe armor and compact toy-like proportions", weapon: "rectangular command tablet", palette: "purple-black robe armor with gold talismans", out: 'wang_yun.png'},
+  {slug: 'diao_chan', ko: '초선', faction: 'rebel', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "ritual staff", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth", out: 'diao_chan.png'},
+  {slug: 'li_jue', ko: '이각', faction: 'rebel', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "folding war fan", palette: "yellow ochre cloth, dark iron armor, rough gold plates", out: 'li_jue.png'},
+  {slug: 'guo_si', ko: '곽사', faction: 'rebel', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "pair of short axes", palette: "purple-black robe armor with gold talismans", out: 'guo_si.png'},
+  {slug: 'fan_chou', ko: '번조', faction: 'rebel', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "rectangular command tablet", palette: "purple-black robe armor with gold talismans", out: 'fan_chou.png'},
+  {slug: 'zhang_ji', ko: '장제', faction: 'rebel', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "scroll case and ritual staff", palette: "yellow ochre cloth, dark iron armor, rough gold plates", out: 'zhang_ji.png'},
+  {slug: 'zhang_xiu', ko: '장수', faction: 'rebel', body: "lean spear officer with long vertical weapon silhouette", weapon: "long spear with tassel", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth", out: 'zhang_xiu.png'},
+  {slug: 'hu_che_er', ko: '호거아', faction: 'rebel', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "rectangular command tablet", palette: "yellow ochre cloth, dark iron armor, rough gold plates", out: 'hu_che_er.png'},
+  {slug: 'zou_shi', ko: '추씨', faction: 'rebel', body: "compact heroic female general with blocky game proportions, armored dress panels, and oversized boots", weapon: "slender sword", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth", out: 'zou_shi.png'},
+  {slug: 'hua_xiong', ko: '화웅', faction: 'rebel', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "crescent halberd", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth", out: 'hua_xiong.png'},
+  {slug: 'li_ru', ko: '이유', faction: 'rebel', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "scroll case and ritual staff", palette: "yellow ochre cloth, dark iron armor, rough gold plates", out: 'li_ru.png'},
+  {slug: 'yuan_shu', ko: '원술', faction: 'rebel', body: "lean spear officer with long vertical weapon silhouette", weapon: "curved saber held low", palette: "purple-black robe armor with gold talismans", out: 'yuan_shu.png'},
+  {slug: 'ji_ling', ko: '기령', faction: 'rebel', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "tower shield and short sword", palette: "purple-black robe armor with gold talismans", out: 'ji_ling.png'},
+  {slug: 'liu_xun', ko: '유훈', faction: 'rebel', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "pair of short axes", palette: "yellow ochre cloth, dark iron armor, rough gold plates", out: 'liu_xun.png'},
+  {slug: 'chen_lan', ko: '진란', faction: 'rebel', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "single broad dao sword", palette: "yellow ochre cloth, dark iron armor, rough gold plates", out: 'chen_lan.png'},
+  {slug: 'lei_bo', ko: '뇌박', faction: 'rebel', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "curved saber held low", palette: "yellow ochre cloth, dark iron armor, rough gold plates", out: 'lei_bo.png'},
+  {slug: 'zhang_xun', ko: '장훈', faction: 'rebel', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "folding war fan", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth", out: 'zhang_xun.png'},
+  {slug: 'qiao_rui', ko: '교유', faction: 'rebel', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "single broad dao sword", palette: "yellow ochre cloth, dark iron armor, rough gold plates", out: 'qiao_rui.png'},
+  {slug: 'han_xian', ko: '한섬', faction: 'rebel', body: "older strategist with narrow shoulders, long sleeves, and scroll pouch", weapon: "rectangular command tablet", palette: "purple-black robe armor with gold talismans", out: 'han_xian.png'},
+  {slug: 'yang_feng', ko: '양봉', faction: 'rebel', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "rectangular command tablet", palette: "yellow ochre cloth, dark iron armor, rough gold plates", out: 'yang_feng.png'},
+  {slug: 'hua_tuo', ko: '화타', faction: 'rebel', body: "elder mystic healer silhouette with robe armor, chunky boots, and small talisman accessories", weapon: "wooden staff with gold medical charm", palette: "purple-black robe armor with gold talismans", out: 'hua_tuo.png'},
+  {slug: 'zuo_ci', ko: '좌자', faction: 'rebel', body: "elder mystic healer silhouette with robe armor, chunky boots, and small talisman accessories", weapon: "wooden staff with gold medical charm", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth", out: 'zuo_ci.png'},
+  {slug: 'yu_ji', ko: '우길', faction: 'rebel', body: "elder mystic healer silhouette with robe armor, chunky boots, and small talisman accessories", weapon: "wooden staff with gold medical charm", palette: "purple-black robe armor with gold talismans", out: 'yu_ji.png'},
+  {slug: 'zhang_jiao', ko: '장각', faction: 'rebel', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "heavy mace", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth", out: 'zhang_jiao.png'},
+  {slug: 'zhang_bao_yellow', ko: '장보', faction: 'rebel', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "folding war fan", palette: "purple-black robe armor with gold talismans", out: 'zhang_bao_yellow.png'},
+  {slug: 'zhang_liang_yellow', ko: '장량', faction: 'rebel', body: "short square Roblox-like commander with huge boots and compact torso", weapon: "tower shield and short sword", palette: "yellow ochre cloth, dark iron armor, rough gold plates", out: 'zhang_liang_yellow.png'},
+  {slug: 'bo_cai', ko: '파재', faction: 'rebel', body: "wild rebel warlord with rough hair, uneven pauldrons, and aggressive stance", weapon: "heavy mace", palette: "purple-black robe armor with gold talismans", out: 'bo_cai.png'},
+  {slug: 'cheng_yuanzhi', ko: '정원지', faction: 'rebel', body: "masked or scarred veteran with one exposed eye and heavy brow", weapon: "long spear with tassel", palette: "purple-black robe armor with gold talismans", out: 'cheng_yuanzhi.png'},
+  {slug: 'deng_mao', ko: '등무', faction: 'rebel', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "scroll case and ritual staff", palette: "yellow ochre cloth, dark iron armor, rough gold plates", out: 'deng_mao.png'},
+  {slug: 'guan_hai', ko: '관해', faction: 'rebel', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "curved saber held low", palette: "purple-black robe armor with gold talismans", out: 'guan_hai.png'},
+  {slug: 'pei_yuanshao', ko: '배원소', faction: 'rebel', body: "broad heavy infantry bruiser with barrel chest and thick arms", weapon: "pair of short axes", palette: "purple-black robe armor with gold talismans", out: 'pei_yuanshao.png'},
+  {slug: 'zhang_man_cheng', ko: '장만성', faction: 'rebel', body: "elegant fan-bearing tactician with cape panels and calm expression", weapon: "bow with quiver", palette: "black and crimson armor, harsh gold spikes, smoky dark cloth", out: 'zhang_man_cheng.png'},
+  {slug: 'han_zhong', ko: '한충', faction: 'rebel', body: "frontier cavalry archer with quiver, layered fur collar, and asymmetrical armor", weapon: "single broad dao sword", palette: "purple-black robe armor with gold talismans", out: 'han_zhong.png'},
+];
+const grid = document.getElementById('grid');
+const search = document.getElementById('search');
+const count = document.getElementById('count');
+function card(job, index) {
+  const el = document.createElement('section');
+  el.className = 'card';
+  el.dataset.key = `${job.slug} ${job.ko} ${job.faction} ${job.body} ${job.weapon} ${job.palette}`.toLowerCase();
+  el.innerHTML = `
+    <div class="name"><span>${index + 1}. ${job.ko}</span><span class="tag">${job.faction}</span></div>
+    <div class="body"><b>body</b>: ${job.body}<br><b>weapon</b>: ${job.weapon}<br><b>palette</b>: ${job.palette}</div>
+    <div class="path">${job.out}</div>
+  `;
+  return el;
+}
+const cards = jobs.map(card);
+cards.forEach(el => grid.appendChild(el));
+function filter() {
+  const q = search.value.trim().toLowerCase();
+  let shown = 0;
+  cards.forEach(el => {
+    const ok = !q || el.dataset.key.includes(q);
+    el.style.display = ok ? '' : 'none';
+    if (ok) shown++;
+  });
+  count.textContent = `${shown} / ${jobs.length}`;
+}
+search.addEventListener('input', filter);
+filter();
+</script>
+</body>
+</html>

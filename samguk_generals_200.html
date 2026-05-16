@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>삼국지 장수 200명</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #211816;
+      --muted: #74665e;
+      --paper: #f6f1e7;
+      --line: #ded1bd;
+      --red: #aa2d32;
+      --teal: #176965;
+      --green: #55713a;
+      --blue: #315f91;
+      --gold: #b88222;
+      --dark: #17110e;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(90deg, rgba(33, 24, 22, 0.04) 1px, transparent 1px),
+        linear-gradient(rgba(33, 24, 22, 0.035) 1px, transparent 1px),
+        var(--paper);
+      background-size: 34px 34px;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    }
+
+    .hero {
+      min-height: 260px;
+      display: grid;
+      align-items: end;
+      padding: 40px 22px 26px;
+      color: #fff8e8;
+      background:
+        linear-gradient(120deg, rgba(23, 17, 14, 0.96), rgba(58, 30, 27, 0.9) 48%, rgba(31, 82, 77, 0.84)),
+        repeating-linear-gradient(90deg, rgba(255, 248, 232, 0.08) 0 1px, transparent 1px 30px);
+      background-size: cover;
+      background-position: center 22%;
+      border-bottom: 5px solid var(--red);
+    }
+
+    .hero-inner,
+    .wrap {
+      width: min(1160px, 100%);
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 6vw, 72px);
+      line-height: 0.95;
+      letter-spacing: 0;
+      text-shadow: 0 3px 14px rgba(0, 0, 0, 0.38);
+    }
+
+    .hero-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 14px;
+      color: #f3d892;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 11px;
+      border: 1px solid rgba(255, 248, 232, 0.34);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.22);
+      color: #fff8e8;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      border-bottom: 1px solid var(--line);
+      background: rgba(246, 241, 231, 0.95);
+      backdrop-filter: blur(12px);
+    }
+
+    .toolbar-inner {
+      width: min(1160px, 100%);
+      margin: 0 auto;
+      padding: 14px 22px;
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    input {
+      width: 100%;
+      height: 42px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffbf2;
+      color: var(--ink);
+      font: inherit;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(170, 45, 50, 0.13);
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    button {
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffbf2;
+      color: var(--ink);
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    button.active {
+      border-color: var(--red);
+      background: var(--red);
+      color: #fff8e8;
+    }
+
+    .tabs {
+      width: min(1160px, 100%);
+      margin: 0 auto;
+      padding: 0 22px 14px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .tab {
+      min-width: 96px;
+      background: #fff4de;
+    }
+
+    .tab.active {
+      border-color: var(--dark);
+      background: var(--dark);
+      color: #fff8e8;
+    }
+
+    .wrap {
+      padding: 22px;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      min-height: 76px;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 251, 242, 0.82);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 26px;
+      line-height: 1;
+      color: var(--red);
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(174px, 1fr));
+      gap: 10px;
+    }
+
+    .card {
+      min-width: 0;
+      min-height: 106px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffbf2;
+      box-shadow: 0 8px 18px rgba(33, 24, 22, 0.07);
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .force {
+      padding: 3px 7px;
+      border-radius: 999px;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .force[data-force="위"] { background: var(--blue); }
+    .force[data-force="촉"] { background: var(--green); }
+    .force[data-force="오"] { background: var(--teal); }
+    .force[data-force="군웅"] { background: var(--gold); }
+    .force[data-force="황건"] { background: #8352a0; }
+    .force[data-force="기타"] { background: #62564d; }
+
+    .name {
+      align-self: center;
+      margin: 8px 0;
+      font-size: 23px;
+      font-weight: 900;
+      letter-spacing: 0;
+      word-break: keep-all;
+    }
+
+    .slug {
+      min-width: 0;
+      color: var(--muted);
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .empty {
+      display: none;
+      padding: 32px 0 40px;
+      color: var(--muted);
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 14px;
+    }
+
+    .asset-card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffbf2;
+      box-shadow: 0 8px 18px rgba(33, 24, 22, 0.07);
+    }
+
+    .asset-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 11px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .asset-name {
+      min-width: 0;
+      font-size: 18px;
+      font-weight: 900;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sprite-stage {
+      height: 286px;
+      display: grid;
+      place-items: end center;
+      padding: 12px 12px 8px;
+      background:
+        linear-gradient(90deg, rgba(33, 24, 22, 0.04) 1px, transparent 1px),
+        linear-gradient(rgba(33, 24, 22, 0.04) 1px, transparent 1px),
+        radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.9), rgba(238, 226, 207, 0.82) 56%, rgba(220, 204, 178, 0.88));
+      background-size: 24px 24px, 24px 24px, 100% 100%;
+    }
+
+    .sprite-stage img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 13px 11px rgba(33, 24, 22, 0.24));
+    }
+
+    .render-pending {
+      align-self: center;
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .render-pending strong {
+      color: var(--red);
+      font-size: 18px;
+    }
+
+    .asset-meta {
+      display: grid;
+      gap: 3px;
+      padding: 9px 11px 11px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .asset-meta span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .art-note {
+      color: var(--gold);
+    }
+
+    .asset-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 0 11px 11px;
+    }
+
+    .asset-actions button {
+      height: 34px;
+      padding: 0 8px;
+      font-size: 12px;
+    }
+
+    @media (max-width: 760px) {
+      .hero {
+        min-height: 225px;
+        padding-top: 34px;
+      }
+
+      .toolbar-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .filters {
+        justify-content: flex-start;
+      }
+
+      .tabs {
+        overflow-x: auto;
+      }
+
+      .summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(138px, 1fr));
+      }
+
+      .name {
+        font-size: 21px;
+      }
+
+      .asset-grid {
+        grid-template-columns: repeat(auto-fill, minmax(154px, 1fr));
+      }
+
+      .sprite-stage {
+        height: 236px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <h1>삼국지 장수 200명</h1>
+      <div class="hero-line">
+        <span class="badge">총 200명</span>
+        <span class="badge" id="renderStatus">전신 200/200 완료</span>
+        <span class="badge">위 · 촉 · 오 · 군웅 · 황건</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toolbar" aria-label="장수 필터">
+    <div class="tabs" role="tablist" aria-label="보기 전환">
+      <button class="tab active" type="button" data-tab="roster" role="tab" aria-selected="true">명단</button>
+      <button class="tab" type="button" data-tab="art" role="tab" aria-selected="false">전신 이미지</button>
+    </div>
+    <div class="toolbar-inner">
+      <input id="search" type="search" placeholder="이름 검색" autocomplete="off">
+      <div class="filters" id="filters"></div>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section class="panel active" id="rosterPanel">
+      <section class="summary" id="summary" aria-label="세력별 인원"></section>
+      <section class="grid" id="grid" aria-label="장수 200명 목록"></section>
+    </section>
+    <section class="panel" id="artPanel">
+      <section class="asset-grid" id="artGrid" aria-label="장수 200명 전신 이미지"></section>
+    </section>
+    <p class="empty" id="empty">검색 결과 없음</p>
+  </main>
+
+  <script>
+    const generals = [
+      { slug: "cao_cao", name: "조조", force: "위" },
+      { slug: "cao_xing", name: "조흥", force: "군웅" },
+      { slug: "dian_wei", name: "전위", force: "위" },
+      { slug: "dong_zhuo", name: "동탁", force: "군웅" },
+      { slug: "gan_ning", name: "감녕", force: "오" },
+      { slug: "guan_yu", name: "관우", force: "촉" },
+      { slug: "guo_jia", name: "곽가", force: "위" },
+      { slug: "huang_gai", name: "황개", force: "오" },
+      { slug: "huang_zhong", name: "황충", force: "촉" },
+      { slug: "liu_bei", name: "유비", force: "촉" },
+      { slug: "lu_bu", name: "여포", force: "군웅" },
+      { slug: "lu_xun", name: "육손", force: "오" },
+      { slug: "ma_chao", name: "마초", force: "촉" },
+      { slug: "meng_huo", name: "맹획", force: "군웅" },
+      { slug: "pang_tong", name: "방통", force: "촉" },
+      { slug: "sima_yi", name: "사마의", force: "위" },
+      { slug: "sun_ce", name: "손책", force: "오" },
+      { slug: "sun_quan", name: "손권", force: "오" },
+      { slug: "taishi_ci", name: "태사자", force: "오" },
+      { slug: "wen_chou", name: "문추", force: "군웅" },
+      { slug: "xiahou_dun", name: "하후돈", force: "위" },
+      { slug: "xu_chu", name: "허저", force: "위" },
+      { slug: "xu_huang", name: "서황", force: "위" },
+      { slug: "yan_liang", name: "안량", force: "군웅" },
+      { slug: "yuan_shao", name: "원소", force: "군웅" },
+      { slug: "zhang_fei", name: "장비", force: "촉" },
+      { slug: "zhang_liao", name: "장료", force: "위" },
+      { slug: "zhao_yun", name: "조운", force: "촉" },
+      { slug: "zhou_yu", name: "주유", force: "오" },
+      { slug: "zhuge_liang", name: "제갈량", force: "촉" },
+      { slug: "zhang_he", name: "장합", force: "위" },
+      { slug: "yu_jin", name: "우금", force: "위" },
+      { slug: "yue_jin", name: "악진", force: "위" },
+      { slug: "li_dian", name: "이전", force: "위" },
+      { slug: "cao_ren", name: "조인", force: "위" },
+      { slug: "cao_hong", name: "조홍", force: "위" },
+      { slug: "cao_pi", name: "조비", force: "위" },
+      { slug: "cao_zhi", name: "조식", force: "위" },
+      { slug: "cao_zhang", name: "조창", force: "위" },
+      { slug: "cao_ang", name: "조앙", force: "위" },
+      { slug: "cao_rui", name: "조예", force: "위" },
+      { slug: "cao_shuang", name: "조상", force: "위" },
+      { slug: "cao_zhen", name: "조진", force: "위" },
+      { slug: "cao_xiu", name: "조휴", force: "위" },
+      { slug: "xiahou_yuan", name: "하후연", force: "위" },
+      { slug: "xiahou_ba", name: "하후패", force: "촉" },
+      { slug: "cheng_yu", name: "정욱", force: "위" },
+      { slug: "xun_yu", name: "순욱", force: "위" },
+      { slug: "xun_you", name: "순유", force: "위" },
+      { slug: "jia_xu", name: "가후", force: "위" },
+      { slug: "man_chong", name: "만총", force: "위" },
+      { slug: "zhong_yao", name: "종요", force: "위" },
+      { slug: "deng_ai", name: "등애", force: "위" },
+      { slug: "zhong_hui", name: "종회", force: "위" },
+      { slug: "guo_huai", name: "곽회", force: "위" },
+      { slug: "wang_ping", name: "왕평", force: "촉" },
+      { slug: "wen_pin", name: "문빙", force: "위" },
+      { slug: "zang_ba", name: "장패", force: "위" },
+      { slug: "li_tong", name: "이통", force: "위" },
+      { slug: "han_hao", name: "한호", force: "위" },
+      { slug: "lu_qian", name: "여건", force: "위" },
+      { slug: "mao_jie", name: "모개", force: "위" },
+      { slug: "liu_ye", name: "유엽", force: "위" },
+      { slug: "kuai_yue", name: "괴월", force: "군웅" },
+      { slug: "kuai_liang", name: "괴량", force: "군웅" },
+      { slug: "cai_mao", name: "채모", force: "군웅" },
+      { slug: "zhang_yun", name: "장윤", force: "군웅" },
+      { slug: "xu_sheng", name: "서성", force: "오" },
+      { slug: "ding_feng", name: "정봉", force: "오" },
+      { slug: "han_dang", name: "한당", force: "오" },
+      { slug: "cheng_pu", name: "정보", force: "오" },
+      { slug: "zhou_tai", name: "주태", force: "오" },
+      { slug: "jiang_qin", name: "장흠", force: "오" },
+      { slug: "ling_tong", name: "능통", force: "오" },
+      { slug: "lu_su", name: "노숙", force: "오" },
+      { slug: "zhang_zhao", name: "장소", force: "오" },
+      { slug: "zhang_hong", name: "장굉", force: "오" },
+      { slug: "zhu_zhi", name: "주치", force: "오" },
+      { slug: "zhu_huan", name: "주환", force: "오" },
+      { slug: "zhu_ran", name: "주연", force: "오" },
+      { slug: "bu_zhi", name: "보즐", force: "오" },
+      { slug: "kan_ze", name: "감택", force: "오" },
+      { slug: "yu_fan", name: "우번", force: "오" },
+      { slug: "he_qi", name: "하제", force: "오" },
+      { slug: "pan_zhang", name: "반장", force: "오" },
+      { slug: "ma_zhong_wu", name: "마충", force: "오" },
+      { slug: "quan_cong", name: "전종", force: "오" },
+      { slug: "sun_jian", name: "손견", force: "오" },
+      { slug: "sun_shao", name: "손소", force: "오" },
+      { slug: "sun_huan", name: "손환", force: "오" },
+      { slug: "sun_luban", name: "손노반", force: "오" },
+      { slug: "sun_luyu", name: "손노육", force: "오" },
+      { slug: "daqiao", name: "대교", force: "오" },
+      { slug: "xiaoqiao", name: "소교", force: "오" },
+      { slug: "lian_shi", name: "연사", force: "오" },
+      { slug: "guan_ping", name: "관평", force: "촉" },
+      { slug: "guan_xing", name: "관흥", force: "촉" },
+      { slug: "guan_suo", name: "관색", force: "촉" },
+      { slug: "guan_yinping", name: "관은병", force: "촉" },
+      { slug: "zhang_bao", name: "장포", force: "촉" },
+      { slug: "liu_shan", name: "유선", force: "촉" },
+      { slug: "liu_feng", name: "유봉", force: "촉" },
+      { slug: "ma_su", name: "마속", force: "촉" },
+      { slug: "ma_liang", name: "마량", force: "촉" },
+      { slug: "jiang_wei", name: "강유", force: "촉" },
+      { slug: "wei_yan", name: "위연", force: "촉" },
+      { slug: "fa_zheng", name: "법정", force: "촉" },
+      { slug: "jian_yong", name: "간옹", force: "촉" },
+      { slug: "mi_zhu", name: "미축", force: "촉" },
+      { slug: "mi_fang", name: "미방", force: "촉" },
+      { slug: "sun_qian", name: "손건", force: "촉" },
+      { slug: "liao_hua", name: "요화", force: "촉" },
+      { slug: "zhou_cang", name: "주창", force: "촉" },
+      { slug: "ma_dai", name: "마대", force: "촉" },
+      { slug: "yan_yan", name: "엄안", force: "촉" },
+      { slug: "li_yan", name: "이엄", force: "촉" },
+      { slug: "fei_yi", name: "비의", force: "촉" },
+      { slug: "dong_yun", name: "동윤", force: "촉" },
+      { slug: "jiang_wan", name: "장완", force: "촉" },
+      { slug: "huang_quan", name: "황권", force: "촉" },
+      { slug: "chen_dao", name: "진도", force: "촉" },
+      { slug: "fu_shi_ren", name: "부사인", force: "촉" },
+      { slug: "meng_da", name: "맹달", force: "촉" },
+      { slug: "zhang_song", name: "장송", force: "촉" },
+      { slug: "li_hui", name: "이회", force: "촉" },
+      { slug: "huo_jun", name: "곽준", force: "촉" },
+      { slug: "sha_moke", name: "사마가", force: "군웅" },
+      { slug: "zhuge_zhan", name: "제갈첨", force: "촉" },
+      { slug: "zhuge_jin", name: "제갈근", force: "오" },
+      { slug: "zhuge_dan", name: "제갈탄", force: "위" },
+      { slug: "zhang_yi_shu", name: "장익", force: "촉" },
+      { slug: "dong_jue", name: "동궐", force: "촉" },
+      { slug: "yuan_tan", name: "원담", force: "군웅" },
+      { slug: "yuan_xi", name: "원희", force: "군웅" },
+      { slug: "yuan_shang", name: "원상", force: "군웅" },
+      { slug: "tian_feng", name: "전풍", force: "군웅" },
+      { slug: "ju_shou", name: "저수", force: "군웅" },
+      { slug: "shen_pei", name: "심배", force: "군웅" },
+      { slug: "feng_ji", name: "봉기", force: "군웅" },
+      { slug: "guo_tu", name: "곽도", force: "군웅" },
+      { slug: "xin_ping", name: "신평", force: "군웅" },
+      { slug: "xin_pi", name: "신비", force: "위" },
+      { slug: "gao_lan", name: "고람", force: "군웅" },
+      { slug: "zhang_bu", name: "장무", force: "군웅" },
+      { slug: "gongsun_zan", name: "공손찬", force: "군웅" },
+      { slug: "gongsun_du", name: "공손도", force: "군웅" },
+      { slug: "gongsun_kang", name: "공손강", force: "군웅" },
+      { slug: "gongsun_yuan", name: "공손연", force: "군웅" },
+      { slug: "liu_biao", name: "유표", force: "군웅" },
+      { slug: "liu_zhang", name: "유장", force: "군웅" },
+      { slug: "liu_yao", name: "유요", force: "군웅" },
+      { slug: "liu_yu", name: "유우", force: "군웅" },
+      { slug: "tao_qian", name: "도겸", force: "군웅" },
+      { slug: "kong_rong", name: "공융", force: "군웅" },
+      { slug: "zhang_lu", name: "장로", force: "군웅" },
+      { slug: "zhang_ren", name: "장임", force: "군웅" },
+      { slug: "yan_pu", name: "염포", force: "군웅" },
+      { slug: "ma_teng", name: "마등", force: "군웅" },
+      { slug: "han_sui", name: "한수", force: "군웅" },
+      { slug: "cheng_yin", name: "성의", force: "군웅" },
+      { slug: "liang_xing", name: "양흥", force: "군웅" },
+      { slug: "hou_xuan", name: "후선", force: "군웅" },
+      { slug: "cheng_gongying", name: "성공영", force: "군웅" },
+      { slug: "dong_cheng", name: "동승", force: "기타" },
+      { slug: "he_jin", name: "하진", force: "기타" },
+      { slug: "zhang_rang", name: "장양", force: "기타" },
+      { slug: "emperor_xian", name: "헌제", force: "기타" },
+      { slug: "wang_yun", name: "왕윤", force: "기타" },
+      { slug: "diao_chan", name: "초선", force: "기타" },
+      { slug: "li_jue", name: "이각", force: "군웅" },
+      { slug: "guo_si", name: "곽사", force: "군웅" },
+      { slug: "fan_chou", name: "번조", force: "군웅" },
+      { slug: "zhang_ji", name: "장제", force: "군웅" },
+      { slug: "zhang_xiu", name: "장수", force: "군웅" },
+      { slug: "hu_che_er", name: "호거아", force: "군웅" },
+      { slug: "zou_shi", name: "추씨", force: "군웅" },
+      { slug: "hua_xiong", name: "화웅", force: "군웅" },
+      { slug: "li_ru", name: "이유", force: "군웅" },
+      { slug: "yuan_shu", name: "원술", force: "군웅" },
+      { slug: "ji_ling", name: "기령", force: "군웅" },
+      { slug: "liu_xun", name: "유훈", force: "군웅" },
+      { slug: "chen_lan", name: "진란", force: "군웅" },
+      { slug: "lei_bo", name: "뇌박", force: "군웅" },
+      { slug: "zhang_xun", name: "장훈", force: "군웅" },
+      { slug: "qiao_rui", name: "교유", force: "군웅" },
+      { slug: "han_xian", name: "한섬", force: "군웅" },
+      { slug: "yang_feng", name: "양봉", force: "군웅" },
+      { slug: "hua_tuo", name: "화타", force: "기타" },
+      { slug: "zuo_ci", name: "좌자", force: "기타" },
+      { slug: "yu_ji", name: "우길", force: "기타" },
+      { slug: "zhang_jiao", name: "장각", force: "황건" },
+      { slug: "zhang_bao_yellow", name: "장보", force: "황건" },
+      { slug: "zhang_liang_yellow", name: "장량", force: "황건" },
+      { slug: "bo_cai", name: "파재", force: "황건" },
+      { slug: "cheng_yuanzhi", name: "정원지", force: "황건" },
+      { slug: "deng_mao", name: "등무", force: "황건" },
+      { slug: "guan_hai", name: "관해", force: "황건" },
+      { slug: "pei_yuanshao", name: "배원소", force: "황건" },
+      { slug: "zhang_man_cheng", name: "장만성", force: "황건" },
+      { slug: "han_zhong", name: "한충", force: "황건" }
+    ];
+
+    const forceOrder = ["전체", "위", "촉", "오", "군웅", "황건", "기타"];
+    const renderDir = "assets/generals/mobile_fullbody";
+    const assetVersion = "20260516_fullbody_200_v2";
+    let activeForce = "전체";
+    let activeTab = "roster";
+    const grid = document.querySelector("#grid");
+    const artGrid = document.querySelector("#artGrid");
+    const search = document.querySelector("#search");
+    const filters = document.querySelector("#filters");
+    const summary = document.querySelector("#summary");
+    const empty = document.querySelector("#empty");
+    const renderStatus = document.querySelector("#renderStatus");
+    const tabs = [...document.querySelectorAll(".tab")];
+    const panels = {
+      roster: document.querySelector("#rosterPanel"),
+      art: document.querySelector("#artPanel")
+    };
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    function renderFilters() {
+      filters.innerHTML = forceOrder.map((force) => {
+        return `<button type="button" class="${force === activeForce ? "active" : ""}" data-filter="${force}">${force}</button>`;
+      }).join("");
+    }
+
+    function renderSummary(visible) {
+      const total = visible.length;
+      const counts = forceOrder.slice(1).map((force) => ({
+        force,
+        count: visible.filter((general) => general.force === force).length
+      }));
+      summary.innerHTML = [
+        { force: "표시", count: total },
+        ...counts.filter((item) => item.count > 0).slice(0, 3)
+      ].map((item) => {
+        return `<div class="stat"><strong>${item.count}</strong><span>${item.force}</span></div>`;
+      }).join("");
+    }
+
+    function visibleGenerals() {
+      const keyword = search.value.trim().toLowerCase();
+      return generals.filter((general) => {
+        const matchesForce = activeForce === "전체" || general.force === activeForce;
+        const text = `${general.name} ${general.slug} ${general.force}`.toLowerCase();
+        return matchesForce && text.includes(keyword);
+      });
+    }
+
+    function renderGrid(visible) {
+      grid.innerHTML = visible.map((general) => {
+        const number = generals.indexOf(general) + 1;
+        return `
+          <article class="card">
+            <div class="topline">
+              <span>#${String(number).padStart(3, "0")}</span>
+              <span class="force" data-force="${general.force}">${general.force}</span>
+            </div>
+            <div class="name">${general.name}</div>
+            <div class="slug">${general.slug}</div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderArtGrid(visible) {
+      artGrid.innerHTML = visible.map((general) => {
+        const number = generals.indexOf(general) + 1;
+        const assetPath = `${renderDir}/${general.slug}.png`;
+        const src = `${assetPath}?v=${assetVersion}`;
+        return `
+          <article class="asset-card" data-slug="${escapeHtml(general.slug)}">
+            <div class="asset-head">
+              <div class="asset-name">${escapeHtml(general.name)}</div>
+              <span class="force" data-force="${general.force}">${general.force}</span>
+            </div>
+            <div class="sprite-stage">
+              <img src="${escapeHtml(src)}" alt="${escapeHtml(general.name)} 전신 캐릭터" data-src="${escapeHtml(src)}" data-slug="${escapeHtml(general.slug)}">
+            </div>
+            <div class="asset-meta">
+              <span>#${String(number).padStart(3, "0")} · ${escapeHtml(general.slug)}</span>
+              <span>${escapeHtml(assetPath)}</span>
+              <span class="art-note">신규 4-5등신 모바일 게임 PNG</span>
+            </div>
+          </article>
+        `;
+      }).join("");
+      wireRenderImages();
+    }
+
+    function wireRenderImages() {
+      let failed = 0;
+      const updateStatus = () => {
+        renderStatus.textContent = `전신 ${generals.length - failed}/${generals.length} 완료`;
+      };
+      updateStatus();
+      artGrid.querySelectorAll("img[data-src]").forEach((img) => {
+        img.addEventListener("error", () => {
+          failed += 1;
+          const stage = img.closest(".sprite-stage");
+          stage.innerHTML = `
+            <div class="render-pending">
+              <strong>렌더 대기</strong>
+              <span>${escapeHtml(img.dataset.slug)}.png</span>
+            </div>
+          `;
+          updateStatus();
+        }, { once: true });
+      });
+    }
+
+    function renderViews() {
+      const visible = visibleGenerals();
+      renderGrid(visible);
+      renderArtGrid(visible);
+      empty.style.display = visible.length ? "none" : "block";
+      renderSummary(visible);
+    }
+
+    function switchTab(tabName) {
+      activeTab = tabName;
+      tabs.forEach((tab) => {
+        const selected = tab.dataset.tab === activeTab;
+        tab.classList.toggle("active", selected);
+        tab.setAttribute("aria-selected", String(selected));
+      });
+      Object.entries(panels).forEach(([name, panel]) => {
+        panel.classList.toggle("active", name === activeTab);
+      });
+    }
+
+    filters.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-filter]");
+      if (!button) return;
+      activeForce = button.dataset.filter;
+      renderFilters();
+      renderViews();
+    });
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        location.hash = tab.dataset.tab === "art" ? "art" : "roster";
+        switchTab(tab.dataset.tab);
+      });
+    });
+
+    window.addEventListener("hashchange", () => {
+      switchTab(location.hash === "#art" ? "art" : "roster");
+    });
+
+    search.addEventListener("input", renderViews);
+    renderFilters();
+    renderViews();
+    switchTab(location.hash === "#art" ? "art" : "roster");
+  </script>
+</body>
+</html>

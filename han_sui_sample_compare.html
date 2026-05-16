@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한수 샘플 비교</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 28px;
+    background: #17110b;
+    color: #f7d56e;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  }
+  h1 {
+    margin: 0 0 8px;
+    font-size: 30px;
+  }
+  .sub {
+    margin: 0 0 22px;
+    color: #c5a86b;
+    font-size: 15px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    border: 1px solid #79551f;
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #24190f, #110b07);
+  }
+  .card.new {
+    border-color: #c2932f;
+    box-shadow: 0 0 0 1px rgba(255, 207, 94, 0.16);
+  }
+  .name {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: baseline;
+    padding: 12px 14px;
+    border-bottom: 1px solid #664719;
+    color: #ffe188;
+    font-size: 20px;
+    font-weight: 900;
+  }
+  .name small {
+    color: #a98a50;
+    font-size: 13px;
+    font-weight: 800;
+    text-align: right;
+  }
+  .new .name small {
+    color: #8fd48a;
+  }
+  .art {
+    height: 520px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 16px;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      radial-gradient(circle at 50% 18%, rgba(255,212,91,0.16), transparent 44%),
+      #21170e;
+    background-size: 36px 36px, 36px 36px, 100% 100%, 100% 100%;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 16px rgba(0,0,0,0.62));
+  }
+  .file {
+    min-height: 48px;
+    padding: 10px 14px;
+    border-top: 1px solid #3d2a12;
+    color: #f7d56e;
+    font-size: 13px;
+    word-break: break-all;
+  }
+  @media (max-width: 720px) {
+    body { padding: 18px; }
+    h1 { font-size: 24px; }
+    .art { height: 390px; }
+  }
+</style>
+</head>
+<body>
+<h1>새 장수 전신 샘플 비교</h1>
+<p class="sub">앞쪽 두 칸이 새 샘플이고, 뒤쪽은 기존 원본 전신 에셋입니다.</p>
+<main class="grid">
+  <article class="card new">
+    <div class="name">육항 <small>새 샘플</small></div>
+    <div class="art"><img src="assets/generals/busts_real_samples/lu_kang_sample_01.png" alt="육항 새 샘플"></div>
+    <div class="file">assets/generals/busts_real_samples/lu_kang_sample_01.png</div>
+  </article>
+  <article class="card new">
+    <div class="name">한수 <small>새 샘플</small></div>
+    <div class="art"><img src="assets/generals/busts_real_samples/han_sui_sample_01.png" alt="한수 새 샘플"></div>
+    <div class="file">assets/generals/busts_real_samples/han_sui_sample_01.png</div>
+  </article>
+  <article class="card">
+    <div class="name">장비 <small>원본</small></div>
+    <div class="art"><img src="assets/generals/busts/zhang_fei.png" alt="장비 원본"></div>
+    <div class="file">assets/generals/busts/zhang_fei.png</div>
+  </article>
+  <article class="card">
+    <div class="name">하후돈 <small>원본</small></div>
+    <div class="art"><img src="assets/generals/busts/xiahou_dun.png" alt="하후돈 원본"></div>
+    <div class="file">assets/generals/busts/xiahou_dun.png</div>
+  </article>
+  <article class="card">
+    <div class="name">장료 <small>원본</small></div>
+    <div class="art"><img src="assets/generals/busts/zhang_liao.png" alt="장료 원본"></div>
+    <div class="file">assets/generals/busts/zhang_liao.png</div>
+  </article>
+  <article class="card">
+    <div class="name">조운 <small>원본</small></div>
+    <div class="art"><img src="assets/generals/busts/zhao_yun.png" alt="조운 원본"></div>
+    <div class="file">assets/generals/busts/zhao_yun.png</div>
+  </article>
+</main>
+</body>
+</html>

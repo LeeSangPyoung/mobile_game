@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>장수 전신 이미지 30명</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+    background: #19130e;
+    color: #f6dfad;
+  }
+  h1 { margin: 0 0 6px; font-size: 24px; }
+  p { margin: 0 0 20px; color: #c9aa72; }
+  h2 { margin: 28px 0 12px; font-size: 18px; color: #ffd978; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    border: 1px solid #6f5128;
+    border-radius: 8px;
+    background:
+      radial-gradient(circle at 50% 12%, rgba(255, 214, 93, 0.18), transparent 45%),
+      linear-gradient(180deg, #2c2017, #120d09);
+    overflow: hidden;
+  }
+  .art {
+    height: 220px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 10px;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 12px 14px rgba(0,0,0,0.55));
+  }
+  .name {
+    padding: 10px 12px;
+    border-top: 1px solid #6f5128;
+    font-size: 13px;
+    color: #f8d77a;
+    word-break: break-all;
+  }
+</style>
+</head>
+<body>
+<h1>장수 전신 이미지 30명</h1>
+<p>현재 게임에 적용된 로블록스풍 리마스터와 백업된 기존 원본을 비교합니다.</p>
+<h2>리마스터 샘플</h2>
+<div class="grid">
+  <div class="card">
+    <div class="art"><img src="assets/generals/busts_original_20260508/dong_zhuo.png" alt="dong_zhuo original"></div>
+    <div class="name">기존 원본: dong_zhuo.png</div>
+  </div>
+  <div class="card">
+    <div class="art"><img src="assets/generals/busts/dong_zhuo.png" alt="dong_zhuo current remastered"></div>
+    <div class="name">현재 적용: dong_zhuo.png</div>
+  </div>
+</div>
+<h2>백업된 기존 원본 30명</h2>
+<div class="grid" id="grid"></div>
+<h2>현재 적용된 로블록스풍 리마스터 30명</h2>
+<div class="grid" id="remasterGrid"></div>
+<h2>현재 적용된 로블록스풍 얼굴 30명</h2>
+<div class="grid" id="faceGrid"></div>
+<h2>전쟁터용 표정 샘플 3개</h2>
+<div class="grid" id="battleFaceGrid"></div>
+<script>
+const files = [
+  'cao_cao.png',
+  'cao_xing.png',
+  'dian_wei.png',
+  'dong_zhuo.png',
+  'gan_ning.png',
+  'guan_yu.png',
+  'guo_jia.png',
+  'huang_gai.png',
+  'huang_zhong.png',
+  'liu_bei.png',
+  'lu_bu.png',
+  'lu_xun.png',
+  'ma_chao.png',
+  'meng_huo.png',
+  'pang_tong.png',
+  'sima_yi.png',
+  'sun_ce.png',
+  'sun_quan.png',
+  'taishi_ci.png',
+  'wen_chou.png',
+  'xiahou_dun.png',
+  'xu_chu.png',
+  'xu_huang.png',
+  'yan_liang.png',
+  'yuan_shao.png',
+  'zhang_fei.png',
+  'zhang_liao.png',
+  'zhao_yun.png',
+  'zhou_yu.png',
+  'zhuge_liang.png',
+];
+
+const grid = document.getElementById('grid');
+for (const file of files) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="art"><img src="assets/generals/busts/${file}" alt="${file}"></div>
+    <div class="name">backup: ${file}</div>
+  `;
+  card.querySelector('img').src = `assets/generals/busts_original_20260508/${file}`;
+  grid.appendChild(card);
+}
+
+const remasterGrid = document.getElementById('remasterGrid');
+for (const file of files) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="art"><img src="assets/generals/busts/${file}" alt="${file} remastered"></div>
+    <div class="name">current: ${file}</div>
+  `;
+  remasterGrid.appendChild(card);
+}
+
+const faceGrid = document.getElementById('faceGrid');
+for (const file of files) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="art"><img src="assets/generals/faces/${file}" alt="${file} face"></div>
+    <div class="name">face: ${file}</div>
+  `;
+  faceGrid.appendChild(card);
+}
+
+const battleFaces = [
+  ['zhang_fei_laugh.png', '박장대소'],
+  ['cao_cao_stern.png', '정색/신중'],
+  ['liu_bei_sad.png', '슬픔/걱정'],
+];
+const battleFaceGrid = document.getElementById('battleFaceGrid');
+for (const [file, label] of battleFaces) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="art"><img src="tmp/battle_faces_samples/final/${file}" alt="${label}"></div>
+    <div class="name">${label}: ${file}</div>
+  `;
+  battleFaceGrid.appendChild(card);
+}
+</script>
+</body>
+</html>

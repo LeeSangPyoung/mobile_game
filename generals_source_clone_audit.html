@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>장수 후보 source base 감사</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 28px;
+    background: #17110b;
+    color: #f7d56e;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  }
+  h1 { margin: 0 0 8px; font-size: 30px; }
+  .sub { margin: 0 0 22px; color: #c5a86b; font-size: 15px; line-height: 1.45; }
+  .base {
+    margin-bottom: 24px;
+    border: 1px solid #79551f;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #120c07;
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #664719;
+    background: #24190f;
+  }
+  h2 { margin: 0; font-size: 20px; }
+  header span { color: #8fd48a; font-weight: 800; }
+  .compare {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 14px;
+    padding: 14px;
+  }
+  .original, .card {
+    border: 1px solid #4d3616;
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #24190f, #110b07);
+  }
+  .derived {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .name {
+    padding: 9px 10px;
+    border-bottom: 1px solid #3d2a12;
+    color: #ffe188;
+    font-weight: 800;
+  }
+  .name small { float: right; color: #8fd48a; font-size: 12px; }
+  .art {
+    height: 280px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 10px;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      radial-gradient(circle at 50% 18%, rgba(255,212,91,0.16), transparent 44%),
+      #21170e;
+    background-size: 28px 28px, 28px 28px, 100% 100%, 100% 100%;
+  }
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 16px rgba(0,0,0,0.62));
+  }
+  .meta {
+    min-height: 44px;
+    padding: 8px 10px;
+    border-top: 1px solid #3d2a12;
+    color: #c5a86b;
+    font-size: 12px;
+    line-height: 1.35;
+    word-break: break-all;
+  }
+  @media (max-width: 800px) {
+    body { padding: 18px; }
+    .compare { grid-template-columns: 1fr; }
+    .derived { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+    .art { height: 240px; }
+  }
+</style>
+</head>
+<body>
+<h1>장수 후보 source base 감사</h1>
+<p class="sub">추가 70명 + 추가 100명이 어떤 원본 전신에서 파생됐는지 숨기지 않고 보여주는 검수 페이지입니다. 같은 source base에 많이 몰린 후보는 신규 캐릭터가 아니라 변형 후보로 봐야 합니다.</p>
+
+            <section class="base">
+              <header>
+                <h2>ma_chao.png</h2>
+                <span>8 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/ma_chao.png?v=audit-20260511" alt="ma_chao"></div>
+                  <div class="meta">busts/ma_chao.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">조창 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/cao_zhang.png?v=audit-20260511" alt="조창"></div>
+              <div class="meta">cao_zhang.png<br>palette: gold_white / emblem: tiger</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">하후패 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/xiahou_ba.png?v=audit-20260511" alt="하후패"></div>
+              <div class="meta">xiahou_ba.png<br>palette: white_blue / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">마대 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/ma_dai.png?v=audit-20260511" alt="마대"></div>
+              <div class="meta">ma_dai.png<br>palette: white_blue / emblem: horse</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">공손찬 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/gongsun_zan.png?v=audit-20260511" alt="공손찬"></div>
+              <div class="meta">gongsun_zan.png<br>palette: white_blue / emblem: horse</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">마등 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/ma_teng.png?v=audit-20260511" alt="마등"></div>
+              <div class="meta">ma_teng.png<br>palette: gold_white / emblem: horse</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">화흠 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/hua_xin.png?v=audit-20260511" alt="화흠"></div>
+              <div class="meta">hua_xin.png<br>palette: white_gold / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">진도 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/chen_dao.png?v=audit-20260511" alt="진도"></div>
+              <div class="meta">chen_dao.png<br>palette: white_blue / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">염우 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/yan_yu.png?v=audit-20260511" alt="염우"></div>
+              <div class="meta">yan_yu.png<br>palette: gold_brown / emblem: spear</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>sun_ce.png</h2>
+                <span>8 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/sun_ce.png?v=audit-20260511" alt="sun_ce"></div>
+                  <div class="meta">busts/sun_ce.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">맹달 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/meng_da.png?v=audit-20260511" alt="맹달"></div>
+              <div class="meta">meng_da.png<br>palette: red_gold / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손견 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/sun_jian.png?v=audit-20260511" alt="손견"></div>
+              <div class="meta">sun_jian.png<br>palette: red_gold / emblem: tiger</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">조무 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/zu_mao.png?v=audit-20260511" alt="조무"></div>
+              <div class="meta">zu_mao.png<br>palette: red_gold / emblem: sword</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">서성 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/xu_sheng.png?v=audit-20260511" alt="서성"></div>
+              <div class="meta">xu_sheng.png<br>palette: red_gold / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">조모 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/cao_mao.png?v=audit-20260511" alt="조모"></div>
+              <div class="meta">cao_mao.png<br>palette: red_gold / emblem: sword</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">초주 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/qiao_zhou.png?v=audit-20260511" alt="초주"></div>
+              <div class="meta">qiao_zhou.png<br>palette: white_gold / emblem: fan</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손호 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sun_hao.png?v=audit-20260511" alt="손호"></div>
+              <div class="meta">sun_hao.png<br>palette: blue_gold / emblem: sword</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손준 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sun_jun.png?v=audit-20260511" alt="손준"></div>
+              <div class="meta">sun_jun.png<br>palette: bronze_blue / emblem: sword</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>xu_huang.png</h2>
+                <span>8 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/xu_huang.png?v=audit-20260511" alt="xu_huang"></div>
+                  <div class="meta">busts/xu_huang.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">장제 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/zhang_ji.png?v=audit-20260511" alt="장제"></div>
+              <div class="meta">zhang_ji.png<br>palette: bronze_blue / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">조홍 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/cao_hong.png?v=audit-20260511" alt="조홍"></div>
+              <div class="meta">cao_hong.png<br>palette: steel_blue / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">만총 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/man_chong.png?v=audit-20260511" alt="만총"></div>
+              <div class="meta">man_chong.png<br>palette: bronze_blue / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">이엄 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/li_yan.png?v=audit-20260511" alt="이엄"></div>
+              <div class="meta">li_yan.png<br>palette: bronze_blue / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">정봉 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/ding_feng.png?v=audit-20260511" alt="정봉"></div>
+              <div class="meta">ding_feng.png<br>palette: steel_blue / emblem: axe</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">주령 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/zhu_ling.png?v=audit-20260511" alt="주령"></div>
+              <div class="meta">zhu_ling.png<br>palette: steel_blue / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손례 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sun_li.png?v=audit-20260511" alt="손례"></div>
+              <div class="meta">sun_li.png<br>palette: bronze_blue / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손익 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sun_yi.png?v=audit-20260511" alt="손익"></div>
+              <div class="meta">sun_yi.png<br>palette: blue_gold / emblem: spear</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>zhao_yun.png</h2>
+                <span>8 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/zhao_yun.png?v=audit-20260511" alt="zhao_yun"></div>
+                  <div class="meta">busts/zhao_yun.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">장수 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/zhang_xiu.png?v=audit-20260511" alt="장수"></div>
+              <div class="meta">zhang_xiu.png<br>palette: teal_gold / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">조앙 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/cao_ang.png?v=audit-20260511" alt="조앙"></div>
+              <div class="meta">cao_ang.png<br>palette: white_blue / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">문앙 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/wen_yang.png?v=audit-20260511" alt="문앙"></div>
+              <div class="meta">wen_yang.png<br>palette: white_blue / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">강유 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/jiang_wei.png?v=audit-20260511" alt="강유"></div>
+              <div class="meta">jiang_wei.png<br>palette: white_blue / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">오의 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/wu_yi.png?v=audit-20260511" alt="오의"></div>
+              <div class="meta">wu_yi.png<br>palette: blue_gold / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">진태 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/chen_tai.png?v=audit-20260511" alt="진태"></div>
+              <div class="meta">chen_tai.png<br>palette: steel_blue / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">양호 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/yang_hu.png?v=audit-20260511" alt="양호"></div>
+              <div class="meta">yang_hu.png<br>palette: blue_gold / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">마충(촉) <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/ma_zhong_shu.png?v=audit-20260511" alt="마충(촉)"></div>
+              <div class="meta">ma_zhong_shu.png<br>palette: bronze_blue / emblem: spear</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>guo_jia.png</h2>
+                <span>7 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/guo_jia.png?v=audit-20260511" alt="guo_jia"></div>
+                  <div class="meta">busts/guo_jia.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">진궁 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/chen_gong.png?v=audit-20260511" alt="진궁"></div>
+              <div class="meta">chen_gong.png<br>palette: violet_black / emblem: moon</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">순유 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/xun_you.png?v=audit-20260511" alt="순유"></div>
+              <div class="meta">xun_you.png<br>palette: blue_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">종회 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/zhong_hui.png?v=audit-20260511" alt="종회"></div>
+              <div class="meta">zhong_hui.png<br>palette: violet_black / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">장굉 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/zhang_hong.png?v=audit-20260511" alt="장굉"></div>
+              <div class="meta">zhang_hong.png<br>palette: blue_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">노초 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/lu_zhao.png?v=audit-20260511" alt="노초"></div>
+              <div class="meta">lu_zhao.png<br>palette: bronze_blue / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">호질 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/hu_zhi.png?v=audit-20260511" alt="호질"></div>
+              <div class="meta">hu_zhi.png<br>palette: steel_blue / emblem: mountain</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">제갈근 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/zhuge_jin.png?v=audit-20260511" alt="제갈근"></div>
+              <div class="meta">zhuge_jin.png<br>palette: white_blue / emblem: fan</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>sima_yi.png</h2>
+                <span>7 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/sima_yi.png?v=audit-20260511" alt="sima_yi"></div>
+                  <div class="meta">busts/sima_yi.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">이유 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/li_ru.png?v=audit-20260511" alt="이유"></div>
+              <div class="meta">li_ru.png<br>palette: dark_gold / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">정욱 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/cheng_yu.png?v=audit-20260511" alt="정욱"></div>
+              <div class="meta">cheng_yu.png<br>palette: dark_gold / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">법정 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/fa_zheng.png?v=audit-20260511" alt="법정"></div>
+              <div class="meta">fa_zheng.png<br>palette: violet_black / emblem: moon</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">가규 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/jia_kui.png?v=audit-20260511" alt="가규"></div>
+              <div class="meta">jia_kui.png<br>palette: dark_gold / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">장제(위) <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/jiang_ji.png?v=audit-20260511" alt="장제(위)"></div>
+              <div class="meta">jiang_ji.png<br>palette: blue_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">사마사 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sima_shi.png?v=audit-20260511" alt="사마사"></div>
+              <div class="meta">sima_shi.png<br>palette: violet_black / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손량 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sun_liang.png?v=audit-20260511" alt="손량"></div>
+              <div class="meta">sun_liang.png<br>palette: white_gold / emblem: diamond</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>zhang_liao.png</h2>
+                <span>7 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/zhang_liao.png?v=audit-20260511" alt="zhang_liao"></div>
+                  <div class="meta">busts/zhang_liao.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">고순 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/gao_shun.png?v=audit-20260511" alt="고순"></div>
+              <div class="meta">gao_shun.png<br>palette: steel_blue / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">조순 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/cao_chun.png?v=audit-20260511" alt="조순"></div>
+              <div class="meta">cao_chun.png<br>palette: steel_blue / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">등애 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/deng_ai.png?v=audit-20260511" alt="등애"></div>
+              <div class="meta">deng_ai.png<br>palette: steel_blue / emblem: mountain</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">왕평 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/wang_ping.png?v=audit-20260511" alt="왕평"></div>
+              <div class="meta">wang_ping.png<br>palette: steel_blue / emblem: mountain</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">여건 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/lu_qian.png?v=audit-20260511" alt="여건"></div>
+              <div class="meta">lu_qian.png<br>palette: blue_gold / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">장억 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/zhang_ni.png?v=audit-20260511" alt="장억"></div>
+              <div class="meta">zhang_ni.png<br>palette: bronze_blue / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">하제 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/he_qi.png?v=audit-20260511" alt="하제"></div>
+              <div class="meta">he_qi.png<br>palette: teal_gold / emblem: spear</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>zhuge_liang.png</h2>
+                <span>7 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/zhuge_liang.png?v=audit-20260511" alt="zhuge_liang"></div>
+                  <div class="meta">busts/zhuge_liang.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">순욱 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/xun_yu.png?v=audit-20260511" alt="순욱"></div>
+              <div class="meta">xun_yu.png<br>palette: white_blue / emblem: fan</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">마량 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/ma_liang.png?v=audit-20260511" alt="마량"></div>
+              <div class="meta">ma_liang.png<br>palette: white_blue / emblem: fan</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">황권 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/huang_quan.png?v=audit-20260511" alt="황권"></div>
+              <div class="meta">huang_quan.png<br>palette: white_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">장소 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/zhang_zhao.png?v=audit-20260511" alt="장소"></div>
+              <div class="meta">zhang_zhao.png<br>palette: white_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">괴월 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/kuai_yue.png?v=audit-20260511" alt="괴월"></div>
+              <div class="meta">kuai_yue.png<br>palette: white_gold / emblem: fan</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">제갈탄 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/zhuge_dan.png?v=audit-20260511" alt="제갈탄"></div>
+              <div class="meta">zhuge_dan.png<br>palette: white_blue / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">황승언 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/huang_chengyan.png?v=audit-20260511" alt="황승언"></div>
+              <div class="meta">huang_chengyan.png<br>palette: blue_gold / emblem: fan</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>guan_yu.png</h2>
+                <span>6 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/guan_yu.png?v=audit-20260511" alt="guan_yu"></div>
+                  <div class="meta">busts/guan_yu.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">관평 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/guan_ping.png?v=audit-20260511" alt="관평"></div>
+              <div class="meta">guan_ping.png<br>palette: green_gold / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">관흥 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/guan_xing.png?v=audit-20260511" alt="관흥"></div>
+              <div class="meta">guan_xing.png<br>palette: teal_gold / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">한호 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/han_hao.png?v=audit-20260511" alt="한호"></div>
+              <div class="meta">han_hao.png<br>palette: crimson_black / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">장익 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/zhang_yi.png?v=audit-20260511" alt="장익"></div>
+              <div class="meta">zhang_yi.png<br>palette: blue_gold / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">왕보 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/wang_fu.png?v=audit-20260511" alt="왕보"></div>
+              <div class="meta">wang_fu.png<br>palette: green_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">서곤 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/xu_kun.png?v=audit-20260511" alt="서곤"></div>
+              <div class="meta">xu_kun.png<br>palette: red_gold / emblem: spear</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>huang_gai.png</h2>
+                <span>6 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/huang_gai.png?v=audit-20260511" alt="huang_gai"></div>
+                  <div class="meta">busts/huang_gai.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">정보 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/cheng_pu.png?v=audit-20260511" alt="정보"></div>
+              <div class="meta">cheng_pu.png<br>palette: gold_brown / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">주치 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/zhu_zhi.png?v=audit-20260511" alt="주치"></div>
+              <div class="meta">zhu_zhi.png<br>palette: gold_brown / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">왕필 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/wang_bi.png?v=audit-20260511" alt="왕필"></div>
+              <div class="meta">wang_bi.png<br>palette: crimson_black / emblem: sword</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">비의 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/fei_yi.png?v=audit-20260511" alt="비의"></div>
+              <div class="meta">fei_yi.png<br>palette: white_blue / emblem: fan</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">감택 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/kan_ze.png?v=audit-20260511" alt="감택"></div>
+              <div class="meta">kan_ze.png<br>palette: blue_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">반장 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/pan_zhang.png?v=audit-20260511" alt="반장"></div>
+              <div class="meta">pan_zhang.png<br>palette: gold_brown / emblem: sword</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>huang_zhong.png</h2>
+                <span>6 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/huang_zhong.png?v=audit-20260511" alt="huang_zhong"></div>
+                  <div class="meta">busts/huang_zhong.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">하후연 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/xiahou_yuan.png?v=audit-20260511" alt="하후연"></div>
+              <div class="meta">xiahou_yuan.png<br>palette: gold_brown / emblem: bow</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">엄안 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/yan_yan.png?v=audit-20260511" alt="엄안"></div>
+              <div class="meta">yan_yan.png<br>palette: gold_brown / emblem: bow</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">장임 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/zhang_ren.png?v=audit-20260511" alt="장임"></div>
+              <div class="meta">zhang_ren.png<br>palette: gold_brown / emblem: bow</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">유엽 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/liu_ye.png?v=audit-20260511" alt="유엽"></div>
+              <div class="meta">liu_ye.png<br>palette: white_blue / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">동윤 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/dong_yun.png?v=audit-20260511" alt="동윤"></div>
+              <div class="meta">dong_yun.png<br>palette: blue_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">고옹 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/gu_yong.png?v=audit-20260511" alt="고옹"></div>
+              <div class="meta">gu_yong.png<br>palette: white_gold / emblem: scroll</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>liu_bei.png</h2>
+                <span>6 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/liu_bei.png?v=audit-20260511" alt="liu_bei"></div>
+                  <div class="meta">busts/liu_bei.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">간옹 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/jian_yong.png?v=audit-20260511" alt="간옹"></div>
+              <div class="meta">jian_yong.png<br>palette: green_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">요화 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/liao_hua.png?v=audit-20260511" alt="요화"></div>
+              <div class="meta">liao_hua.png<br>palette: green_gold / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">유봉 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/liu_feng.png?v=audit-20260511" alt="유봉"></div>
+              <div class="meta">liu_feng.png<br>palette: green_gold / emblem: sword</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">조환 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/cao_huan.png?v=audit-20260511" alt="조환"></div>
+              <div class="meta">cao_huan.png<br>palette: green_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">유장 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/liu_zhang.png?v=audit-20260511" alt="유장"></div>
+              <div class="meta">liu_zhang.png<br>palette: blue_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">이회 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/li_hui.png?v=audit-20260511" alt="이회"></div>
+              <div class="meta">li_hui.png<br>palette: bronze_blue / emblem: scroll</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>lu_xun.png</h2>
+                <span>6 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/lu_xun.png?v=audit-20260511" alt="lu_xun"></div>
+                  <div class="meta">busts/lu_xun.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">마속 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/ma_su.png?v=audit-20260511" alt="마속"></div>
+              <div class="meta">ma_su.png<br>palette: teal_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">주연 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/zhu_ran.png?v=audit-20260511" alt="주연"></div>
+              <div class="meta">zhu_ran.png<br>palette: teal_gold / emblem: flame</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">육항 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/lu_kang.png?v=audit-20260511" alt="육항"></div>
+              <div class="meta">lu_kang.png<br>palette: teal_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">진군 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/chen_qun.png?v=audit-20260511" alt="진군"></div>
+              <div class="meta">chen_qun.png<br>palette: violet_black / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">장완 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/jiang_wan.png?v=audit-20260511" alt="장완"></div>
+              <div class="meta">jiang_wan.png<br>palette: green_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">제갈각 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/zhuge_ke.png?v=audit-20260511" alt="제갈각"></div>
+              <div class="meta">zhuge_ke.png<br>palette: teal_gold / emblem: scroll</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>sun_quan.png</h2>
+                <span>6 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/sun_quan.png?v=audit-20260511" alt="sun_quan"></div>
+                  <div class="meta">busts/sun_quan.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">조비 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/cao_pi.png?v=audit-20260511" alt="조비"></div>
+              <div class="meta">cao_pi.png<br>palette: red_gold / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">미축 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/mi_zhu.png?v=audit-20260511" alt="미축"></div>
+              <div class="meta">mi_zhu.png<br>palette: white_gold / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">주환 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/zhu_huan.png?v=audit-20260511" alt="주환"></div>
+              <div class="meta">zhu_huan.png<br>palette: red_gold / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">조방 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/cao_fang.png?v=audit-20260511" alt="조방"></div>
+              <div class="meta">cao_fang.png<br>palette: white_blue / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">이적 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/yi_ji.png?v=audit-20260511" alt="이적"></div>
+              <div class="meta">yi_ji.png<br>palette: green_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">전종 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/quan_cong.png?v=audit-20260511" alt="전종"></div>
+              <div class="meta">quan_cong.png<br>palette: blue_gold / emblem: spear</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>taishi_ci.png</h2>
+                <span>6 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/taishi_ci.png?v=audit-20260511" alt="taishi_ci"></div>
+                  <div class="meta">busts/taishi_ci.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">한당 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/han_dang.png?v=audit-20260511" alt="한당"></div>
+              <div class="meta">han_dang.png<br>palette: blue_gold / emblem: bow</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">주태 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/zhou_tai.png?v=audit-20260511" alt="주태"></div>
+              <div class="meta">zhou_tai.png<br>palette: dark_red / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">이통 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/li_tong.png?v=audit-20260511" alt="이통"></div>
+              <div class="meta">li_tong.png<br>palette: steel_blue / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손건 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sun_qian.png?v=audit-20260511" alt="손건"></div>
+              <div class="meta">sun_qian.png<br>palette: white_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손등 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sun_deng.png?v=audit-20260511" alt="손등"></div>
+              <div class="meta">sun_deng.png<br>palette: white_blue / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">마충(오) <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/ma_zhong_wu.png?v=audit-20260511" alt="마충(오)"></div>
+              <div class="meta">ma_zhong_wu.png<br>palette: blue_gold / emblem: spear</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>yan_liang.png</h2>
+                <span>6 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/yan_liang.png?v=audit-20260511" alt="yan_liang"></div>
+                  <div class="meta">busts/yan_liang.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">이각 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/li_jue.png?v=audit-20260511" alt="이각"></div>
+              <div class="meta">li_jue.png<br>palette: crimson_black / emblem: axe</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">문흠 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/wen_qin.png?v=audit-20260511" alt="문흠"></div>
+              <div class="meta">wen_qin.png<br>palette: crimson_black / emblem: axe</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">기령 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/ji_ling.png?v=audit-20260511" alt="기령"></div>
+              <div class="meta">ji_ling.png<br>palette: crimson_black / emblem: halberd</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">신비 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/xin_pi.png?v=audit-20260511" alt="신비"></div>
+              <div class="meta">xin_pi.png<br>palette: blue_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">오반 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/wu_ban.png?v=audit-20260511" alt="오반"></div>
+              <div class="meta">wu_ban.png<br>palette: white_blue / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손광 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sun_kuang.png?v=audit-20260511" alt="손광"></div>
+              <div class="meta">sun_kuang.png<br>palette: white_gold / emblem: diamond</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>yuan_shao.png</h2>
+                <span>6 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/yuan_shao.png?v=audit-20260511" alt="yuan_shao"></div>
+                  <div class="meta">busts/yuan_shao.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">조예 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/cao_rui.png?v=audit-20260511" alt="조예"></div>
+              <div class="meta">cao_rui.png<br>palette: white_gold / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">한수 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/han_sui.png?v=audit-20260511" alt="한수"></div>
+              <div class="meta">han_sui.png<br>palette: gold_brown / emblem: moon</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">조상 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/cao_shuang.png?v=audit-20260511" alt="조상"></div>
+              <div class="meta">cao_shuang.png<br>palette: white_gold / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">사마소 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sima_zhao.png?v=audit-20260511" alt="사마소"></div>
+              <div class="meta">sima_zhao.png<br>palette: dark_gold / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">뇌동 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/lei_tong.png?v=audit-20260511" alt="뇌동"></div>
+              <div class="meta">lei_tong.png<br>palette: crimson_black / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">주방 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/zhou_fang.png?v=audit-20260511" alt="주방"></div>
+              <div class="meta">zhou_fang.png<br>palette: blue_gold / emblem: shield</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>zhang_fei.png</h2>
+                <span>6 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/zhang_fei.png?v=audit-20260511" alt="zhang_fei"></div>
+                  <div class="meta">busts/zhang_fei.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">화웅 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/hua_xiong.png?v=audit-20260511" alt="화웅"></div>
+              <div class="meta">hua_xiong.png<br>palette: crimson_black / emblem: flame</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">위연 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/wei_yan.png?v=audit-20260511" alt="위연"></div>
+              <div class="meta">wei_yan.png<br>palette: dark_red / emblem: fang</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">장포 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/zhang_bao.png?v=audit-20260511" alt="장포"></div>
+              <div class="meta">zhang_bao.png<br>palette: dark_red / emblem: fang</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">장패 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/zang_ba.png?v=audit-20260511" alt="장패"></div>
+              <div class="meta">zang_ba.png<br>palette: dark_red / emblem: axe</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">오란 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/wu_lan.png?v=audit-20260511" alt="오란"></div>
+              <div class="meta">wu_lan.png<br>palette: blue_gold / emblem: axe</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">진식 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/chen_shi.png?v=audit-20260511" alt="진식"></div>
+              <div class="meta">chen_shi.png<br>palette: crimson_black / emblem: shield</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>zhou_yu.png</h2>
+                <span>6 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/zhou_yu.png?v=audit-20260511" alt="zhou_yu"></div>
+                  <div class="meta">busts/zhou_yu.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">조식 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/cao_zhi.png?v=audit-20260511" alt="조식"></div>
+              <div class="meta">cao_zhi.png<br>palette: white_red / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">노숙 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/lu_su.png?v=audit-20260511" alt="노숙"></div>
+              <div class="meta">lu_su.png<br>palette: white_red / emblem: fan</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">곽회 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/guo_huai.png?v=audit-20260511" alt="곽회"></div>
+              <div class="meta">guo_huai.png<br>palette: blue_gold / emblem: mountain</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">고상 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/gao_xiang.png?v=audit-20260511" alt="고상"></div>
+              <div class="meta">gao_xiang.png<br>palette: gold_brown / emblem: bow</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">보즐 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/bu_zhi.png?v=audit-20260511" alt="보즐"></div>
+              <div class="meta">bu_zhi.png<br>palette: white_red / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">여범 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/lu_fan.png?v=audit-20260511" alt="여범"></div>
+              <div class="meta">lu_fan.png<br>palette: bronze_blue / emblem: fan</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>gan_ning.png</h2>
+                <span>5 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/gan_ning.png?v=audit-20260511" alt="gan_ning"></div>
+                  <div class="meta">busts/gan_ning.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">능통 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/ling_tong.png?v=audit-20260511" alt="능통"></div>
+              <div class="meta">ling_tong.png<br>palette: teal_gold / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">조우 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/cao_yu.png?v=audit-20260511" alt="조우"></div>
+              <div class="meta">cao_yu.png<br>palette: white_gold / emblem: fan</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">유언 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/liu_yan.png?v=audit-20260511" alt="유언"></div>
+              <div class="meta">liu_yan.png<br>palette: gold_brown / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">여몽 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/lu_meng.png?v=audit-20260511" alt="여몽"></div>
+              <div class="meta">lu_meng.png<br>palette: teal_gold / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">장흠 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/jiang_qin.png?v=audit-20260511" alt="장흠"></div>
+              <div class="meta">jiang_qin.png<br>palette: blue_gold / emblem: spear</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>pang_tong.png</h2>
+                <span>5 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/pang_tong.png?v=audit-20260511" alt="pang_tong"></div>
+                  <div class="meta">busts/pang_tong.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">가후 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/jia_xu.png?v=audit-20260511" alt="가후"></div>
+              <div class="meta">jia_xu.png<br>palette: violet_black / emblem: moon</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">장각 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/zhang_jiao.png?v=audit-20260511" alt="장각"></div>
+              <div class="meta">zhang_jiao.png<br>palette: yellow_tao / emblem: sun</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">종요 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/zhong_yao.png?v=audit-20260511" alt="종요"></div>
+              <div class="meta">zhong_yao.png<br>palette: dark_gold / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">장송 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/zhang_song.png?v=audit-20260511" alt="장송"></div>
+              <div class="meta">zhang_song.png<br>palette: violet_black / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손휴 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sun_xiu.png?v=audit-20260511" alt="손휴"></div>
+              <div class="meta">sun_xiu.png<br>palette: white_blue / emblem: diamond</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>wen_chou.png</h2>
+                <span>5 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/wen_chou.png?v=audit-20260511" alt="wen_chou"></div>
+                  <div class="meta">busts/wen_chou.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">곽사 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/guo_si.png?v=audit-20260511" alt="곽사"></div>
+              <div class="meta">guo_si.png<br>palette: dark_red / emblem: spike</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">주창 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/zhou_cang.png?v=audit-20260511" alt="주창"></div>
+              <div class="meta">zhou_cang.png<br>palette: dark_red / emblem: axe</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">동소 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/dong_zhao.png?v=audit-20260511" alt="동소"></div>
+              <div class="meta">dong_zhao.png<br>palette: green_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">미방 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/mi_fang.png?v=audit-20260511" alt="미방"></div>
+              <div class="meta">mi_fang.png<br>palette: red_gold / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손분 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sun_ben.png?v=audit-20260511" alt="손분"></div>
+              <div class="meta">sun_ben.png<br>palette: blue_gold / emblem: spear</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>xiahou_dun.png</h2>
+                <span>5 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/xiahou_dun.png?v=audit-20260511" alt="xiahou_dun"></div>
+                  <div class="meta">busts/xiahou_dun.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">조인 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/cao_ren.png?v=audit-20260511" alt="조인"></div>
+              <div class="meta">cao_ren.png<br>palette: blue_gold / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">관구검 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/guanqiu_jian.png?v=audit-20260511" alt="관구검"></div>
+              <div class="meta">guanqiu_jian.png<br>palette: blue_gold / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">조휴 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/cao_xiu.png?v=audit-20260511" alt="조휴"></div>
+              <div class="meta">cao_xiu.png<br>palette: steel_blue / emblem: sword</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">부사인 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/fu_shi_ren.png?v=audit-20260511" alt="부사인"></div>
+              <div class="meta">fu_shi_ren.png<br>palette: dark_red / emblem: sword</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손화 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sun_he.png?v=audit-20260511" alt="손화"></div>
+              <div class="meta">sun_he.png<br>palette: red_gold / emblem: scroll</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>cao_cao.png</h2>
+                <span>4 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/cao_cao.png?v=audit-20260511" alt="cao_cao"></div>
+                  <div class="meta">busts/cao_cao.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">조진 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/cao_zhen.png?v=audit-20260511" alt="조진"></div>
+              <div class="meta">cao_zhen.png<br>palette: blue_gold / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">문빙 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/wen_pin.png?v=audit-20260511" alt="문빙"></div>
+              <div class="meta">wen_pin.png<br>palette: bronze_blue / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">조뢰 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/zhao_lei.png?v=audit-20260511" alt="조뢰"></div>
+              <div class="meta">zhao_lei.png<br>palette: crimson_black / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">동습 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/dong_xi.png?v=audit-20260511" alt="동습"></div>
+              <div class="meta">dong_xi.png<br>palette: dark_red / emblem: axe</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>dian_wei.png</h2>
+                <span>4 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/dian_wei.png?v=audit-20260511" alt="dian_wei"></div>
+                  <div class="meta">busts/dian_wei.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">조덕 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/cao_de.png?v=audit-20260511" alt="조덕"></div>
+              <div class="meta">cao_de.png<br>palette: dark_gold / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">두예 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/du_yu.png?v=audit-20260511" alt="두예"></div>
+              <div class="meta">du_yu.png<br>palette: white_blue / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">향랑 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/xiang_lang.png?v=audit-20260511" alt="향랑"></div>
+              <div class="meta">xiang_lang.png<br>palette: blue_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손침 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sun_chen.png?v=audit-20260511" alt="손침"></div>
+              <div class="meta">sun_chen.png<br>palette: dark_red / emblem: diamond</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>xu_chu.png</h2>
+                <span>4 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/xu_chu.png?v=audit-20260511" alt="xu_chu"></div>
+                  <div class="meta">busts/xu_chu.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">왕쌍 <small>추가 70</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_70_colorfit/wang_shuang.png?v=audit-20260511" alt="왕쌍"></div>
+              <div class="meta">wang_shuang.png<br>palette: dark_gold / emblem: spike</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">사환 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/shi_huan.png?v=audit-20260511" alt="사환"></div>
+              <div class="meta">shi_huan.png<br>palette: dark_gold / emblem: spike</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">우금 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/niu_jin.png?v=audit-20260511" alt="우금"></div>
+              <div class="meta">niu_jin.png<br>palette: blue_gold / emblem: spike</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손보 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sun_fu.png?v=audit-20260511" alt="손보"></div>
+              <div class="meta">sun_fu.png<br>palette: red_gold / emblem: sword</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>cao_xing.png</h2>
+                <span>3 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/cao_xing.png?v=audit-20260511" alt="cao_xing"></div>
+                  <div class="meta">busts/cao_xing.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">조안민 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/cao_anmin.png?v=audit-20260511" alt="조안민"></div>
+              <div class="meta">cao_anmin.png<br>palette: crimson_black / emblem: spear</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">향충 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/xiang_chong.png?v=audit-20260511" alt="향충"></div>
+              <div class="meta">xiang_chong.png<br>palette: white_blue / emblem: shield</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">능조 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/ling_cao.png?v=audit-20260511" alt="능조"></div>
+              <div class="meta">ling_cao.png<br>palette: blue_gold / emblem: spear</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>dong_zhuo.png</h2>
+                <span>3 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/dong_zhuo.png?v=audit-20260511" alt="dong_zhuo"></div>
+                  <div class="meta">busts/dong_zhuo.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">조삭 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/cao_shuo.png?v=audit-20260511" alt="조삭"></div>
+              <div class="meta">cao_shuo.png<br>palette: blue_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">유선 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/liu_shan.png?v=audit-20260511" alt="유선"></div>
+              <div class="meta">liu_shan.png<br>palette: green_gold / emblem: diamond</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">유찬 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/liu_zan.png?v=audit-20260511" alt="유찬"></div>
+              <div class="meta">liu_zan.png<br>palette: teal_gold / emblem: spear</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>lu_bu.png</h2>
+                <span>3 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/lu_bu.png?v=audit-20260511" alt="lu_bu"></div>
+                  <div class="meta">busts/lu_bu.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">괴량 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/kuai_liang.png?v=audit-20260511" alt="괴량"></div>
+              <div class="meta">kuai_liang.png<br>palette: green_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">황호 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/huang_hao.png?v=audit-20260511" alt="황호"></div>
+              <div class="meta">huang_hao.png<br>palette: yellow_tao / emblem: moon</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">장온 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/zhang_wen_wu.png?v=audit-20260511" alt="장온"></div>
+              <div class="meta">zhang_wen_wu.png<br>palette: white_red / emblem: fan</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+            <section class="base">
+              <header>
+                <h2>meng_huo.png</h2>
+                <span>3 derived</span>
+              </header>
+              <div class="compare">
+                <section class="original">
+                  <div class="name">원본 베이스</div>
+                  <div class="art"><img src="assets/generals/busts/meng_huo.png?v=audit-20260511" alt="meng_huo"></div>
+                  <div class="meta">busts/meng_huo.png</div>
+                </section>
+                <div class="derived">
+            <section class="card">
+              <div class="name">왕랑 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/wang_lang.png?v=audit-20260511" alt="왕랑"></div>
+              <div class="meta">wang_lang.png<br>palette: gold_brown / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">왕련 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/wang_lian.png?v=audit-20260511" alt="왕련"></div>
+              <div class="meta">wang_lian.png<br>palette: green_gold / emblem: scroll</div>
+            </section>
+            
+
+            <section class="card">
+              <div class="name">손소 <small>추가 100</small></div>
+              <div class="art"><img src="assets/generals/busts_extra_100_colorfit/sun_shao.png?v=audit-20260511" alt="손소"></div>
+              <div class="meta">sun_shao.png<br>palette: blue_gold / emblem: sword</div>
+            </section>
+            </div>
+              </div>
+            </section>
+            
+</body>
+</html>

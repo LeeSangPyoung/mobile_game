@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>장합 1세트 검수</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 28px;
+    background: #17110b;
+    color: #f7d56e;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  }
+  h1 { margin: 0 0 8px; font-size: 30px; }
+  .sub { margin: 0 0 22px; color: #c5a86b; font-size: 15px; }
+  .row {
+    border: 1px solid #79551f;
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #24190f, #110b07);
+  }
+  .name {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #664719;
+    color: #ffe188;
+    font-size: 18px;
+    font-weight: 800;
+  }
+  .name small { color: #a98a50; font-size: 13px; }
+  .sets { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+  .panel { min-width: 0; border-right: 1px solid #4d3616; }
+  .panel:last-child { border-right: 0; }
+  .label {
+    padding: 8px 10px;
+    border-bottom: 1px solid #3d2a12;
+    background: #1a120b;
+    color: #c5a86b;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+  .art {
+    height: 520px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 14px;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      radial-gradient(circle at 50% 18%, rgba(255,212,91,0.16), transparent 44%),
+      #21170e;
+    background-size: 28px 28px, 28px 28px, 100% 100%, 100% 100%;
+  }
+  .art.face,
+  .art.battle { align-items: center; }
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 16px rgba(0,0,0,0.62));
+  }
+  .file {
+    padding: 8px 10px 10px;
+    border-top: 1px solid #3d2a12;
+    color: #f7d56e;
+    font-size: 12px;
+    word-break: break-all;
+  }
+  @media (max-width: 900px) {
+    body { padding: 18px; }
+    h1 { font-size: 24px; }
+    .sets { grid-template-columns: 1fr; }
+    .panel { border-right: 0; border-bottom: 1px solid #4d3616; }
+    .panel:last-child { border-bottom: 0; }
+    .art { height: 420px; }
+  }
+</style>
+</head>
+<body>
+<h1>장합 1세트 검수</h1>
+<p class="sub">전신, 얼굴, 전투신 3종을 기존 장수 이미지 세트 기준으로 다시 생성한 버전입니다.</p>
+
+<section class="row">
+  <div class="name">
+    <span>장합</span>
+    <small>zhang_he.png</small>
+  </div>
+  <div class="sets">
+    <div class="panel">
+      <div class="label">전신</div>
+      <div class="art"><img src="assets/generals/busts/zhang_he.png?v=zhang-he-regenerated-20260510" alt="장합 전신"></div>
+      <div class="file">assets/generals/busts/zhang_he.png</div>
+    </div>
+    <div class="panel">
+      <div class="label">얼굴</div>
+      <div class="art face"><img src="assets/generals/faces/zhang_he.png?v=zhang-he-regenerated-20260510" alt="장합 얼굴"></div>
+      <div class="file">assets/generals/faces/zhang_he.png</div>
+    </div>
+    <div class="panel">
+      <div class="label">전투신</div>
+      <div class="art battle"><img src="assets/generals/battle_faces/zhang_he.png?v=zhang-he-regenerated-20260510" alt="장합 전투신"></div>
+      <div class="file">assets/generals/battle_faces/zhang_he.png</div>
+    </div>
+  </div>
+</section>
+</body>
+</html>

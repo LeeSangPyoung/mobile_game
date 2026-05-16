@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>신규 생성 장수 모음</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 28px;
+    background: #17110b;
+    color: #f7d56e;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  }
+  h1 { margin: 0 0 8px; font-size: 30px; }
+  .sub { margin: 0 0 20px; color: #c5a86b; font-size: 15px; }
+  .summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0 0 18px;
+  }
+  .pill {
+    border: 1px solid #79551f;
+    border-radius: 8px;
+    padding: 9px 12px;
+    background: #24190f;
+    color: #ffe188;
+    font-size: 13px;
+    font-weight: 800;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(520px, 1fr));
+    gap: 18px;
+  }
+  .row {
+    border: 1px solid #79551f;
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #24190f, #110b07);
+  }
+  .name {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #664719;
+    color: #ffe188;
+    font-size: 18px;
+    font-weight: 800;
+  }
+  .name small { color: #a98a50; font-size: 13px; }
+  .sets { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+  .panel { min-width: 0; border-right: 1px solid #4d3616; }
+  .panel:last-child { border-right: 0; }
+  .label {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    border-bottom: 1px solid #3d2a12;
+    background: #1a120b;
+    color: #c5a86b;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .ok { color: #8fd48a; }
+  .pending { color: #ffb47a; }
+  .art {
+    height: 260px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 12px;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      radial-gradient(circle at 50% 18%, rgba(255,212,91,0.16), transparent 44%),
+      #21170e;
+    background-size: 28px 28px, 28px 28px, 100% 100%, 100% 100%;
+  }
+  .art.face, .art.battle { align-items: center; }
+  .art.empty {
+    align-items: center;
+    color: #ffb47a;
+    font-size: 14px;
+    font-weight: 900;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 16px rgba(0,0,0,0.62));
+  }
+  .file {
+    min-height: 42px;
+    padding: 8px 10px 10px;
+    border-top: 1px solid #3d2a12;
+    color: #f7d56e;
+    font-size: 12px;
+    word-break: break-all;
+  }
+  @media (max-width: 720px) {
+    body { padding: 18px; }
+    h1 { font-size: 24px; }
+    .grid { grid-template-columns: 1fr; }
+    .sets { grid-template-columns: 1fr; }
+    .panel { border-right: 0; border-bottom: 1px solid #4d3616; }
+    .panel:last-child { border-bottom: 0; }
+    .art { height: 240px; }
+  }
+</style>
+</head>
+<body>
+<h1>신규 생성 장수 모음</h1>
+<p class="sub">기존 30명 변형본은 제외하고, 새로 생성해서 실제 에셋 폴더에 넣은 신규 장수만 모았습니다.</p>
+<div class="summary">
+  <div class="pill">표시 장수: 4명</div>
+  <div class="pill">완성 세트: 3명</div>
+  <div class="pill">생성 이미지: 10장</div>
+</div>
+<main class="grid" id="grid"></main>
+
+<script>
+const generals = [
+  { id: 'zhang_he', name: '장합', done: ['busts', 'faces', 'battle_faces'] },
+  { id: 'yu_jin', name: '우금', done: ['busts', 'faces', 'battle_faces'] },
+  { id: 'yue_jin', name: '악진', done: ['busts', 'faces', 'battle_faces'] },
+  { id: 'li_dian', name: '이전', done: ['busts'] },
+];
+
+const labels = {
+  busts: ['전신', ''],
+  faces: ['얼굴', 'face'],
+  battle_faces: ['전투신', 'battle'],
+};
+
+function panel(g, type) {
+  const [label, className] = labels[type];
+  const exists = g.done.includes(type);
+  const file = `${type}/${g.id}.png`;
+  return `
+    <div class="panel">
+      <div class="label">
+        <span>${label}</span>
+        <span class="${exists ? 'ok' : 'pending'}">${exists ? '완료' : '대기'}</span>
+      </div>
+      <div class="art ${className} ${exists ? '' : 'empty'}">
+        ${exists ? `<img src="assets/generals/${file}?v=created-20260510" alt="${g.name} ${label}">` : '생성 대기'}
+      </div>
+      <div class="file">${exists ? file : '-'}</div>
+    </div>
+  `;
+}
+
+const grid = document.getElementById('grid');
+for (const [index, g] of generals.entries()) {
+  const row = document.createElement('section');
+  row.className = 'row';
+  row.innerHTML = `
+    <div class="name">
+      <span>${index + 1}. ${g.name}</span>
+      <small>${g.id}.png</small>
+    </div>
+    <div class="sets">
+      ${panel(g, 'busts')}
+      ${panel(g, 'faces')}
+      ${panel(g, 'battle_faces')}
+    </div>
+  `;
+  grid.appendChild(row);
+}
+</script>
+</body>
+</html>

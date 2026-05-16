@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>장수 200명 갤러리</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 28px;
+    background: #17110b;
+    color: #f7d56e;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  }
+  h1 { margin: 0 0 8px; font-size: 30px; }
+  .sub { margin: 0 0 22px; color: #c5a86b; font-size: 15px; line-height: 1.55; }
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 0 16px;
+    background: linear-gradient(180deg, #17110b 70%, rgba(23,17,11,0));
+  }
+  input {
+    width: min(420px, 100%);
+    height: 42px;
+    padding: 0 14px;
+    border: 1px solid #7b5724;
+    border-radius: 8px;
+    background: #24190f;
+    color: #ffe188;
+    font-size: 15px;
+    outline: none;
+  }
+  .count { color: #a98a50; font-size: 15px; font-weight: 800; white-space: nowrap; }
+  .audit { margin-left: auto; color: #8fd48a; font-size: 15px; font-weight: 900; white-space: nowrap; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    min-width: 0;
+    border: 1px solid #79551f;
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #24190f, #110b07);
+  }
+  .name {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: baseline;
+    padding: 12px 14px 8px;
+    color: #ffe188;
+    font-size: 19px;
+    font-weight: 900;
+  }
+  .name small {
+    min-width: 0;
+    color: #a98a50;
+    font-size: 12px;
+    font-weight: 800;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 14px 11px;
+    border-bottom: 1px solid #664719;
+    color: #82c875;
+    font-size: 12px;
+    font-weight: 900;
+  }
+  .meta em { color: #d2b36b; font-style: normal; }
+  .art {
+    height: 370px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 14px;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      radial-gradient(circle at 50% 18%, rgba(255,212,91,0.16), transparent 44%),
+      #21170e;
+    background-size: 30px 30px, 30px 30px, 100% 100%, 100% 100%;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 16px rgba(0,0,0,0.62));
+  }
+  .file {
+    padding: 9px 12px 11px;
+    border-top: 1px solid #3d2a12;
+    color: #f7d56e;
+    font-size: 12px;
+    word-break: break-all;
+  }
+  @media (max-width: 720px) {
+    body { padding: 18px; }
+    h1 { font-size: 24px; }
+    .toolbar { align-items: flex-start; flex-direction: column; }
+    .audit { margin-left: 0; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); }
+    .art { height: 275px; }
+  }
+</style>
+</head>
+<body>
+<h1>장수 200명 갤러리</h1>
+<p class="sub">1-30번은 기존 원본 고정입니다. 31-200번은 직접 생성본을 우선하고, 부족한 칸은 로컬 후보 에셋에서 중복 파일명 없이 빠르게 채운 버전입니다. 이후 눈에 띄는 복붙/유사 캐릭터는 교체 대상으로 보면 됩니다.</p>
+<div class="toolbar">
+  <input id="search" type="search" placeholder="이름, 파일명, 출처 검색">
+  <div class="count" id="count"></div>
+  <div class="audit" id="audit">이미지 200/200</div>
+</div>
+<main class="grid" id="grid">
+
+  <article class="card" data-name="조조" data-slug="cao_cao" data-source="원본">
+    <div class="name"><span>1. 조조</span><small>cao_cao.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/cao_cao.png" alt="조조"></div>
+    <div class="file">assets/generals/busts/cao_cao.png</div>
+  </article>
+
+  <article class="card" data-name="조흥" data-slug="cao_xing" data-source="원본">
+    <div class="name"><span>2. 조흥</span><small>cao_xing.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/cao_xing.png" alt="조흥"></div>
+    <div class="file">assets/generals/busts/cao_xing.png</div>
+  </article>
+
+  <article class="card" data-name="전위" data-slug="dian_wei" data-source="원본">
+    <div class="name"><span>3. 전위</span><small>dian_wei.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/dian_wei.png" alt="전위"></div>
+    <div class="file">assets/generals/busts/dian_wei.png</div>
+  </article>
+
+  <article class="card" data-name="동탁" data-slug="dong_zhuo" data-source="원본">
+    <div class="name"><span>4. 동탁</span><small>dong_zhuo.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/dong_zhuo.png" alt="동탁"></div>
+    <div class="file">assets/generals/busts/dong_zhuo.png</div>
+  </article>
+
+  <article class="card" data-name="감녕" data-slug="gan_ning" data-source="원본">
+    <div class="name"><span>5. 감녕</span><small>gan_ning.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/gan_ning.png" alt="감녕"></div>
+    <div class="file">assets/generals/busts/gan_ning.png</div>
+  </article>
+
+  <article class="card" data-name="관우" data-slug="guan_yu" data-source="원본">
+    <div class="name"><span>6. 관우</span><small>guan_yu.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/guan_yu.png" alt="관우"></div>
+    <div class="file">assets/generals/busts/guan_yu.png</div>
+  </article>
+
+  <article class="card" data-name="곽가" data-slug="guo_jia" data-source="원본">
+    <div class="name"><span>7. 곽가</span><small>guo_jia.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/guo_jia.png" alt="곽가"></div>
+    <div class="file">assets/generals/busts/guo_jia.png</div>
+  </article>
+
+  <article class="card" data-name="황개" data-slug="huang_gai" data-source="원본">
+    <div class="name"><span>8. 황개</span><small>huang_gai.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/huang_gai.png" alt="황개"></div>
+    <div class="file">assets/generals/busts/huang_gai.png</div>
+  </article>
+
+  <article class="card" data-name="황충" data-slug="huang_zhong" data-source="원본">
+    <div class="name"><span>9. 황충</span><small>huang_zhong.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/huang_zhong.png" alt="황충"></div>
+    <div class="file">assets/generals/busts/huang_zhong.png</div>
+  </article>
+
+  <article class="card" data-name="유비" data-slug="liu_bei" data-source="원본">
+    <div class="name"><span>10. 유비</span><small>liu_bei.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/liu_bei.png" alt="유비"></div>
+    <div class="file">assets/generals/busts/liu_bei.png</div>
+  </article>
+
+  <article class="card" data-name="여포" data-slug="lu_bu" data-source="원본">
+    <div class="name"><span>11. 여포</span><small>lu_bu.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/lu_bu.png" alt="여포"></div>
+    <div class="file">assets/generals/busts/lu_bu.png</div>
+  </article>
+
+  <article class="card" data-name="육손" data-slug="lu_xun" data-source="원본">
+    <div class="name"><span>12. 육손</span><small>lu_xun.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/lu_xun.png" alt="육손"></div>
+    <div class="file">assets/generals/busts/lu_xun.png</div>
+  </article>
+
+  <article class="card" data-name="마초" data-slug="ma_chao" data-source="원본">
+    <div class="name"><span>13. 마초</span><small>ma_chao.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/ma_chao.png" alt="마초"></div>
+    <div class="file">assets/generals/busts/ma_chao.png</div>
+  </article>
+
+  <article class="card" data-name="맹획" data-slug="meng_huo" data-source="원본">
+    <div class="name"><span>14. 맹획</span><small>meng_huo.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/meng_huo.png" alt="맹획"></div>
+    <div class="file">assets/generals/busts/meng_huo.png</div>
+  </article>
+
+  <article class="card" data-name="방통" data-slug="pang_tong" data-source="원본">
+    <div class="name"><span>15. 방통</span><small>pang_tong.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/pang_tong.png" alt="방통"></div>
+    <div class="file">assets/generals/busts/pang_tong.png</div>
+  </article>
+
+  <article class="card" data-name="사마의" data-slug="sima_yi" data-source="원본">
+    <div class="name"><span>16. 사마의</span><small>sima_yi.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/sima_yi.png" alt="사마의"></div>
+    <div class="file">assets/generals/busts/sima_yi.png</div>
+  </article>
+
+  <article class="card" data-name="손책" data-slug="sun_ce" data-source="원본">
+    <div class="name"><span>17. 손책</span><small>sun_ce.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/sun_ce.png" alt="손책"></div>
+    <div class="file">assets/generals/busts/sun_ce.png</div>
+  </article>
+
+  <article class="card" data-name="손권" data-slug="sun_quan" data-source="원본">
+    <div class="name"><span>18. 손권</span><small>sun_quan.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/sun_quan.png" alt="손권"></div>
+    <div class="file">assets/generals/busts/sun_quan.png</div>
+  </article>
+
+  <article class="card" data-name="태사자" data-slug="taishi_ci" data-source="원본">
+    <div class="name"><span>19. 태사자</span><small>taishi_ci.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/taishi_ci.png" alt="태사자"></div>
+    <div class="file">assets/generals/busts/taishi_ci.png</div>
+  </article>
+
+  <article class="card" data-name="문추" data-slug="wen_chou" data-source="원본">
+    <div class="name"><span>20. 문추</span><small>wen_chou.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/wen_chou.png" alt="문추"></div>
+    <div class="file">assets/generals/busts/wen_chou.png</div>
+  </article>
+
+  <article class="card" data-name="하후돈" data-slug="xiahou_dun" data-source="원본">
+    <div class="name"><span>21. 하후돈</span><small>xiahou_dun.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/xiahou_dun.png" alt="하후돈"></div>
+    <div class="file">assets/generals/busts/xiahou_dun.png</div>
+  </article>
+
+  <article class="card" data-name="허저" data-slug="xu_chu" data-source="원본">
+    <div class="name"><span>22. 허저</span><small>xu_chu.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/xu_chu.png" alt="허저"></div>
+    <div class="file">assets/generals/busts/xu_chu.png</div>
+  </article>
+
+  <article class="card" data-name="서황" data-slug="xu_huang" data-source="원본">
+    <div class="name"><span>23. 서황</span><small>xu_huang.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/xu_huang.png" alt="서황"></div>
+    <div class="file">assets/generals/busts/xu_huang.png</div>
+  </article>
+
+  <article class="card" data-name="안량" data-slug="yan_liang" data-source="원본">
+    <div class="name"><span>24. 안량</span><small>yan_liang.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/yan_liang.png" alt="안량"></div>
+    <div class="file">assets/generals/busts/yan_liang.png</div>
+  </article>
+
+  <article class="card" data-name="원소" data-slug="yuan_shao" data-source="원본">
+    <div class="name"><span>25. 원소</span><small>yuan_shao.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/yuan_shao.png" alt="원소"></div>
+    <div class="file">assets/generals/busts/yuan_shao.png</div>
+  </article>
+
+  <article class="card" data-name="장비" data-slug="zhang_fei" data-source="원본">
+    <div class="name"><span>26. 장비</span><small>zhang_fei.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/zhang_fei.png" alt="장비"></div>
+    <div class="file">assets/generals/busts/zhang_fei.png</div>
+  </article>
+
+  <article class="card" data-name="장료" data-slug="zhang_liao" data-source="원본">
+    <div class="name"><span>27. 장료</span><small>zhang_liao.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/zhang_liao.png" alt="장료"></div>
+    <div class="file">assets/generals/busts/zhang_liao.png</div>
+  </article>
+
+  <article class="card" data-name="조운" data-slug="zhao_yun" data-source="원본">
+    <div class="name"><span>28. 조운</span><small>zhao_yun.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/zhao_yun.png" alt="조운"></div>
+    <div class="file">assets/generals/busts/zhao_yun.png</div>
+  </article>
+
+  <article class="card" data-name="주유" data-slug="zhou_yu" data-source="원본">
+    <div class="name"><span>29. 주유</span><small>zhou_yu.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/zhou_yu.png" alt="주유"></div>
+    <div class="file">assets/generals/busts/zhou_yu.png</div>
+  </article>
+
+  <article class="card" data-name="제갈량" data-slug="zhuge_liang" data-source="원본">
+    <div class="name"><span>30. 제갈량</span><small>zhuge_liang.png</small></div>
+    <div class="meta"><b>기존 30</b><em>원본</em></div>
+    <div class="art"><img src="assets/generals/busts/zhuge_liang.png" alt="제갈량"></div>
+    <div class="file">assets/generals/busts/zhuge_liang.png</div>
+  </article>
+
+  <article class="card" data-name="조앙" data-slug="cao_ang" data-source="직접생성">
+    <div class="name"><span>31. 조앙</span><small>cao_ang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_ang.png" alt="조앙"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_ang.png</div>
+  </article>
+
+  <article class="card" data-name="조홍" data-slug="cao_hong" data-source="직접생성">
+    <div class="name"><span>32. 조홍</span><small>cao_hong.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_hong.png" alt="조홍"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_hong.png</div>
+  </article>
+
+  <article class="card" data-name="조비" data-slug="cao_pi" data-source="직접생성">
+    <div class="name"><span>33. 조비</span><small>cao_pi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_pi.png" alt="조비"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_pi.png</div>
+  </article>
+
+  <article class="card" data-name="조인" data-slug="cao_ren" data-source="직접생성">
+    <div class="name"><span>34. 조인</span><small>cao_ren.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_ren.png" alt="조인"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_ren.png</div>
+  </article>
+
+  <article class="card" data-name="조예" data-slug="cao_rui" data-source="직접생성">
+    <div class="name"><span>35. 조예</span><small>cao_rui.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_rui.png" alt="조예"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_rui.png</div>
+  </article>
+
+  <article class="card" data-name="조상" data-slug="cao_shuang" data-source="직접생성">
+    <div class="name"><span>36. 조상</span><small>cao_shuang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_shuang.png" alt="조상"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_shuang.png</div>
+  </article>
+
+  <article class="card" data-name="조휴" data-slug="cao_xiu" data-source="직접생성">
+    <div class="name"><span>37. 조휴</span><small>cao_xiu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_xiu.png" alt="조휴"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_xiu.png</div>
+  </article>
+
+  <article class="card" data-name="조창" data-slug="cao_zhang" data-source="직접생성">
+    <div class="name"><span>38. 조창</span><small>cao_zhang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_zhang.png" alt="조창"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_zhang.png</div>
+  </article>
+
+  <article class="card" data-name="조진" data-slug="cao_zhen" data-source="직접생성">
+    <div class="name"><span>39. 조진</span><small>cao_zhen.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_zhen.png" alt="조진"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_zhen.png</div>
+  </article>
+
+  <article class="card" data-name="조식" data-slug="cao_zhi" data-source="직접생성">
+    <div class="name"><span>40. 조식</span><small>cao_zhi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_zhi.png" alt="조식"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_zhi.png</div>
+  </article>
+
+  <article class="card" data-name="정욱" data-slug="cheng_yu" data-source="직접생성">
+    <div class="name"><span>41. 정욱</span><small>cheng_yu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cheng_yu.png" alt="정욱"></div>
+    <div class="file">assets/generals/busts_fast_170/cheng_yu.png</div>
+  </article>
+
+  <article class="card" data-name="등애" data-slug="deng_ai" data-source="직접생성">
+    <div class="name"><span>42. 등애</span><small>deng_ai.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/deng_ai.png" alt="등애"></div>
+    <div class="file">assets/generals/busts_fast_170/deng_ai.png</div>
+  </article>
+
+  <article class="card" data-name="한수" data-slug="han_sui" data-source="직접생성">
+    <div class="name"><span>43. 한수</span><small>han_sui.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/han_sui.png" alt="한수"></div>
+    <div class="file">assets/generals/busts_fast_170/han_sui.png</div>
+  </article>
+
+  <article class="card" data-name="가후" data-slug="jia_xu" data-source="직접생성">
+    <div class="name"><span>44. 가후</span><small>jia_xu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/jia_xu.png" alt="가후"></div>
+    <div class="file">assets/generals/busts_fast_170/jia_xu.png</div>
+  </article>
+
+  <article class="card" data-name="이전" data-slug="li_dian" data-source="직접생성">
+    <div class="name"><span>45. 이전</span><small>li_dian.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/li_dian.png" alt="이전"></div>
+    <div class="file">assets/generals/busts_fast_170/li_dian.png</div>
+  </article>
+
+  <article class="card" data-name="육항" data-slug="lu_kang" data-source="직접생성">
+    <div class="name"><span>46. 육항</span><small>lu_kang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/lu_kang.png" alt="육항"></div>
+    <div class="file">assets/generals/busts_fast_170/lu_kang.png</div>
+  </article>
+
+  <article class="card" data-name="만총" data-slug="man_chong" data-source="직접생성">
+    <div class="name"><span>47. 만총</span><small>man_chong.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/man_chong.png" alt="만총"></div>
+    <div class="file">assets/generals/busts_fast_170/man_chong.png</div>
+  </article>
+
+  <article class="card" data-name="하후패" data-slug="xiahou_ba" data-source="직접생성">
+    <div class="name"><span>48. 하후패</span><small>xiahou_ba.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/xiahou_ba.png" alt="하후패"></div>
+    <div class="file">assets/generals/busts_fast_170/xiahou_ba.png</div>
+  </article>
+
+  <article class="card" data-name="하후연" data-slug="xiahou_yuan" data-source="직접생성">
+    <div class="name"><span>49. 하후연</span><small>xiahou_yuan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/xiahou_yuan.png" alt="하후연"></div>
+    <div class="file">assets/generals/busts_fast_170/xiahou_yuan.png</div>
+  </article>
+
+  <article class="card" data-name="순유" data-slug="xun_you" data-source="직접생성">
+    <div class="name"><span>50. 순유</span><small>xun_you.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/xun_you.png" alt="순유"></div>
+    <div class="file">assets/generals/busts_fast_170/xun_you.png</div>
+  </article>
+
+  <article class="card" data-name="순욱" data-slug="xun_yu" data-source="직접생성">
+    <div class="name"><span>51. 순욱</span><small>xun_yu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/xun_yu.png" alt="순욱"></div>
+    <div class="file">assets/generals/busts_fast_170/xun_yu.png</div>
+  </article>
+
+  <article class="card" data-name="우금" data-slug="yu_jin" data-source="직접생성">
+    <div class="name"><span>52. 우금</span><small>yu_jin.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/yu_jin.png" alt="우금"></div>
+    <div class="file">assets/generals/busts_fast_170/yu_jin.png</div>
+  </article>
+
+  <article class="card" data-name="악진" data-slug="yue_jin" data-source="직접생성">
+    <div class="name"><span>53. 악진</span><small>yue_jin.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/yue_jin.png" alt="악진"></div>
+    <div class="file">assets/generals/busts_fast_170/yue_jin.png</div>
+  </article>
+
+  <article class="card" data-name="장합" data-slug="zhang_he" data-source="직접생성">
+    <div class="name"><span>54. 장합</span><small>zhang_he.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhang_he.png" alt="장합"></div>
+    <div class="file">assets/generals/busts_fast_170/zhang_he.png</div>
+  </article>
+
+  <article class="card" data-name="종요" data-slug="zhong_yao" data-source="직접생성">
+    <div class="name"><span>55. 종요</span><small>zhong_yao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>직접생성</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhong_yao.png" alt="종요"></div>
+    <div class="file">assets/generals/busts_fast_170/zhong_yao.png</div>
+  </article>
+
+  <article class="card" data-name="조순" data-slug="cao_chun" data-source="후보70색감">
+    <div class="name"><span>56. 조순</span><small>cao_chun.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_chun.png" alt="조순"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_chun.png</div>
+  </article>
+
+  <article class="card" data-name="진궁" data-slug="chen_gong" data-source="후보70색감">
+    <div class="name"><span>57. 진궁</span><small>chen_gong.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/chen_gong.png" alt="진궁"></div>
+    <div class="file">assets/generals/busts_fast_170/chen_gong.png</div>
+  </article>
+
+  <article class="card" data-name="정보" data-slug="cheng_pu" data-source="후보70색감">
+    <div class="name"><span>58. 정보</span><small>cheng_pu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cheng_pu.png" alt="정보"></div>
+    <div class="file">assets/generals/busts_fast_170/cheng_pu.png</div>
+  </article>
+
+  <article class="card" data-name="정봉" data-slug="ding_feng" data-source="후보70색감">
+    <div class="name"><span>59. 정봉</span><small>ding_feng.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/ding_feng.png" alt="정봉"></div>
+    <div class="file">assets/generals/busts_fast_170/ding_feng.png</div>
+  </article>
+
+  <article class="card" data-name="법정" data-slug="fa_zheng" data-source="후보70색감">
+    <div class="name"><span>60. 법정</span><small>fa_zheng.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/fa_zheng.png" alt="법정"></div>
+    <div class="file">assets/generals/busts_fast_170/fa_zheng.png</div>
+  </article>
+
+  <article class="card" data-name="고순" data-slug="gao_shun" data-source="후보70색감">
+    <div class="name"><span>61. 고순</span><small>gao_shun.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/gao_shun.png" alt="고순"></div>
+    <div class="file">assets/generals/busts_fast_170/gao_shun.png</div>
+  </article>
+
+  <article class="card" data-name="공손찬" data-slug="gongsun_zan" data-source="후보70색감">
+    <div class="name"><span>62. 공손찬</span><small>gongsun_zan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/gongsun_zan.png" alt="공손찬"></div>
+    <div class="file">assets/generals/busts_fast_170/gongsun_zan.png</div>
+  </article>
+
+  <article class="card" data-name="관평" data-slug="guan_ping" data-source="후보70색감">
+    <div class="name"><span>63. 관평</span><small>guan_ping.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/guan_ping.png" alt="관평"></div>
+    <div class="file">assets/generals/busts_fast_170/guan_ping.png</div>
+  </article>
+
+  <article class="card" data-name="관흥" data-slug="guan_xing" data-source="후보70색감">
+    <div class="name"><span>64. 관흥</span><small>guan_xing.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/guan_xing.png" alt="관흥"></div>
+    <div class="file">assets/generals/busts_fast_170/guan_xing.png</div>
+  </article>
+
+  <article class="card" data-name="관구검" data-slug="guanqiu_jian" data-source="후보70색감">
+    <div class="name"><span>65. 관구검</span><small>guanqiu_jian.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/guanqiu_jian.png" alt="관구검"></div>
+    <div class="file">assets/generals/busts_fast_170/guanqiu_jian.png</div>
+  </article>
+
+  <article class="card" data-name="곽사" data-slug="guo_si" data-source="후보70색감">
+    <div class="name"><span>66. 곽사</span><small>guo_si.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/guo_si.png" alt="곽사"></div>
+    <div class="file">assets/generals/busts_fast_170/guo_si.png</div>
+  </article>
+
+  <article class="card" data-name="한당" data-slug="han_dang" data-source="후보70색감">
+    <div class="name"><span>67. 한당</span><small>han_dang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/han_dang.png" alt="한당"></div>
+    <div class="file">assets/generals/busts_fast_170/han_dang.png</div>
+  </article>
+
+  <article class="card" data-name="화웅" data-slug="hua_xiong" data-source="후보70색감">
+    <div class="name"><span>68. 화웅</span><small>hua_xiong.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/hua_xiong.png" alt="화웅"></div>
+    <div class="file">assets/generals/busts_fast_170/hua_xiong.png</div>
+  </article>
+
+  <article class="card" data-name="황권" data-slug="huang_quan" data-source="후보70색감">
+    <div class="name"><span>69. 황권</span><small>huang_quan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/huang_quan.png" alt="황권"></div>
+    <div class="file">assets/generals/busts_fast_170/huang_quan.png</div>
+  </article>
+
+  <article class="card" data-name="기령" data-slug="ji_ling" data-source="후보70색감">
+    <div class="name"><span>70. 기령</span><small>ji_ling.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/ji_ling.png" alt="기령"></div>
+    <div class="file">assets/generals/busts_fast_170/ji_ling.png</div>
+  </article>
+
+  <article class="card" data-name="간옹" data-slug="jian_yong" data-source="후보70색감">
+    <div class="name"><span>71. 간옹</span><small>jian_yong.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/jian_yong.png" alt="간옹"></div>
+    <div class="file">assets/generals/busts_fast_170/jian_yong.png</div>
+  </article>
+
+  <article class="card" data-name="강유" data-slug="jiang_wei" data-source="후보70색감">
+    <div class="name"><span>72. 강유</span><small>jiang_wei.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/jiang_wei.png" alt="강유"></div>
+    <div class="file">assets/generals/busts_fast_170/jiang_wei.png</div>
+  </article>
+
+  <article class="card" data-name="이각" data-slug="li_jue" data-source="후보70색감">
+    <div class="name"><span>73. 이각</span><small>li_jue.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/li_jue.png" alt="이각"></div>
+    <div class="file">assets/generals/busts_fast_170/li_jue.png</div>
+  </article>
+
+  <article class="card" data-name="이유" data-slug="li_ru" data-source="후보70색감">
+    <div class="name"><span>74. 이유</span><small>li_ru.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/li_ru.png" alt="이유"></div>
+    <div class="file">assets/generals/busts_fast_170/li_ru.png</div>
+  </article>
+
+  <article class="card" data-name="이엄" data-slug="li_yan" data-source="후보70색감">
+    <div class="name"><span>75. 이엄</span><small>li_yan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/li_yan.png" alt="이엄"></div>
+    <div class="file">assets/generals/busts_fast_170/li_yan.png</div>
+  </article>
+
+  <article class="card" data-name="요화" data-slug="liao_hua" data-source="후보70색감">
+    <div class="name"><span>76. 요화</span><small>liao_hua.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/liao_hua.png" alt="요화"></div>
+    <div class="file">assets/generals/busts_fast_170/liao_hua.png</div>
+  </article>
+
+  <article class="card" data-name="능통" data-slug="ling_tong" data-source="후보70색감">
+    <div class="name"><span>77. 능통</span><small>ling_tong.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/ling_tong.png" alt="능통"></div>
+    <div class="file">assets/generals/busts_fast_170/ling_tong.png</div>
+  </article>
+
+  <article class="card" data-name="유봉" data-slug="liu_feng" data-source="후보70색감">
+    <div class="name"><span>78. 유봉</span><small>liu_feng.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/liu_feng.png" alt="유봉"></div>
+    <div class="file">assets/generals/busts_fast_170/liu_feng.png</div>
+  </article>
+
+  <article class="card" data-name="노숙" data-slug="lu_su" data-source="후보70색감">
+    <div class="name"><span>79. 노숙</span><small>lu_su.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/lu_su.png" alt="노숙"></div>
+    <div class="file">assets/generals/busts_fast_170/lu_su.png</div>
+  </article>
+
+  <article class="card" data-name="마대" data-slug="ma_dai" data-source="후보70색감">
+    <div class="name"><span>80. 마대</span><small>ma_dai.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/ma_dai.png" alt="마대"></div>
+    <div class="file">assets/generals/busts_fast_170/ma_dai.png</div>
+  </article>
+
+  <article class="card" data-name="마량" data-slug="ma_liang" data-source="후보70색감">
+    <div class="name"><span>81. 마량</span><small>ma_liang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/ma_liang.png" alt="마량"></div>
+    <div class="file">assets/generals/busts_fast_170/ma_liang.png</div>
+  </article>
+
+  <article class="card" data-name="마속" data-slug="ma_su" data-source="후보70색감">
+    <div class="name"><span>82. 마속</span><small>ma_su.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/ma_su.png" alt="마속"></div>
+    <div class="file">assets/generals/busts_fast_170/ma_su.png</div>
+  </article>
+
+  <article class="card" data-name="마등" data-slug="ma_teng" data-source="후보70색감">
+    <div class="name"><span>83. 마등</span><small>ma_teng.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/ma_teng.png" alt="마등"></div>
+    <div class="file">assets/generals/busts_fast_170/ma_teng.png</div>
+  </article>
+
+  <article class="card" data-name="맹달" data-slug="meng_da" data-source="후보70색감">
+    <div class="name"><span>84. 맹달</span><small>meng_da.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/meng_da.png" alt="맹달"></div>
+    <div class="file">assets/generals/busts_fast_170/meng_da.png</div>
+  </article>
+
+  <article class="card" data-name="미축" data-slug="mi_zhu" data-source="후보70색감">
+    <div class="name"><span>85. 미축</span><small>mi_zhu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/mi_zhu.png" alt="미축"></div>
+    <div class="file">assets/generals/busts_fast_170/mi_zhu.png</div>
+  </article>
+
+  <article class="card" data-name="손견" data-slug="sun_jian" data-source="후보70색감">
+    <div class="name"><span>86. 손견</span><small>sun_jian.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_jian.png" alt="손견"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_jian.png</div>
+  </article>
+
+  <article class="card" data-name="왕평" data-slug="wang_ping" data-source="후보70색감">
+    <div class="name"><span>87. 왕평</span><small>wang_ping.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/wang_ping.png" alt="왕평"></div>
+    <div class="file">assets/generals/busts_fast_170/wang_ping.png</div>
+  </article>
+
+  <article class="card" data-name="왕쌍" data-slug="wang_shuang" data-source="후보70색감">
+    <div class="name"><span>88. 왕쌍</span><small>wang_shuang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/wang_shuang.png" alt="왕쌍"></div>
+    <div class="file">assets/generals/busts_fast_170/wang_shuang.png</div>
+  </article>
+
+  <article class="card" data-name="위연" data-slug="wei_yan" data-source="후보70색감">
+    <div class="name"><span>89. 위연</span><small>wei_yan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/wei_yan.png" alt="위연"></div>
+    <div class="file">assets/generals/busts_fast_170/wei_yan.png</div>
+  </article>
+
+  <article class="card" data-name="문흠" data-slug="wen_qin" data-source="후보70색감">
+    <div class="name"><span>90. 문흠</span><small>wen_qin.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/wen_qin.png" alt="문흠"></div>
+    <div class="file">assets/generals/busts_fast_170/wen_qin.png</div>
+  </article>
+
+  <article class="card" data-name="문앙" data-slug="wen_yang" data-source="후보70색감">
+    <div class="name"><span>91. 문앙</span><small>wen_yang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/wen_yang.png" alt="문앙"></div>
+    <div class="file">assets/generals/busts_fast_170/wen_yang.png</div>
+  </article>
+
+  <article class="card" data-name="오의" data-slug="wu_yi" data-source="후보70색감">
+    <div class="name"><span>92. 오의</span><small>wu_yi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/wu_yi.png" alt="오의"></div>
+    <div class="file">assets/generals/busts_fast_170/wu_yi.png</div>
+  </article>
+
+  <article class="card" data-name="서성" data-slug="xu_sheng" data-source="후보70색감">
+    <div class="name"><span>93. 서성</span><small>xu_sheng.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/xu_sheng.png" alt="서성"></div>
+    <div class="file">assets/generals/busts_fast_170/xu_sheng.png</div>
+  </article>
+
+  <article class="card" data-name="엄안" data-slug="yan_yan" data-source="후보70색감">
+    <div class="name"><span>94. 엄안</span><small>yan_yan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/yan_yan.png" alt="엄안"></div>
+    <div class="file">assets/generals/busts_fast_170/yan_yan.png</div>
+  </article>
+
+  <article class="card" data-name="장포" data-slug="zhang_bao" data-source="후보70색감">
+    <div class="name"><span>95. 장포</span><small>zhang_bao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhang_bao.png" alt="장포"></div>
+    <div class="file">assets/generals/busts_fast_170/zhang_bao.png</div>
+  </article>
+
+  <article class="card" data-name="장굉" data-slug="zhang_hong" data-source="후보70색감">
+    <div class="name"><span>96. 장굉</span><small>zhang_hong.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhang_hong.png" alt="장굉"></div>
+    <div class="file">assets/generals/busts_fast_170/zhang_hong.png</div>
+  </article>
+
+  <article class="card" data-name="장제" data-slug="zhang_ji" data-source="후보70색감">
+    <div class="name"><span>97. 장제</span><small>zhang_ji.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhang_ji.png" alt="장제"></div>
+    <div class="file">assets/generals/busts_fast_170/zhang_ji.png</div>
+  </article>
+
+  <article class="card" data-name="장각" data-slug="zhang_jiao" data-source="후보70색감">
+    <div class="name"><span>98. 장각</span><small>zhang_jiao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhang_jiao.png" alt="장각"></div>
+    <div class="file">assets/generals/busts_fast_170/zhang_jiao.png</div>
+  </article>
+
+  <article class="card" data-name="장임" data-slug="zhang_ren" data-source="후보70색감">
+    <div class="name"><span>99. 장임</span><small>zhang_ren.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhang_ren.png" alt="장임"></div>
+    <div class="file">assets/generals/busts_fast_170/zhang_ren.png</div>
+  </article>
+
+  <article class="card" data-name="장수" data-slug="zhang_xiu" data-source="후보70색감">
+    <div class="name"><span>100. 장수</span><small>zhang_xiu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhang_xiu.png" alt="장수"></div>
+    <div class="file">assets/generals/busts_fast_170/zhang_xiu.png</div>
+  </article>
+
+  <article class="card" data-name="장소" data-slug="zhang_zhao" data-source="후보70색감">
+    <div class="name"><span>101. 장소</span><small>zhang_zhao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhang_zhao.png" alt="장소"></div>
+    <div class="file">assets/generals/busts_fast_170/zhang_zhao.png</div>
+  </article>
+
+  <article class="card" data-name="종회" data-slug="zhong_hui" data-source="후보70색감">
+    <div class="name"><span>102. 종회</span><small>zhong_hui.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhong_hui.png" alt="종회"></div>
+    <div class="file">assets/generals/busts_fast_170/zhong_hui.png</div>
+  </article>
+
+  <article class="card" data-name="주창" data-slug="zhou_cang" data-source="후보70색감">
+    <div class="name"><span>103. 주창</span><small>zhou_cang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhou_cang.png" alt="주창"></div>
+    <div class="file">assets/generals/busts_fast_170/zhou_cang.png</div>
+  </article>
+
+  <article class="card" data-name="주태" data-slug="zhou_tai" data-source="후보70색감">
+    <div class="name"><span>104. 주태</span><small>zhou_tai.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhou_tai.png" alt="주태"></div>
+    <div class="file">assets/generals/busts_fast_170/zhou_tai.png</div>
+  </article>
+
+  <article class="card" data-name="주환" data-slug="zhu_huan" data-source="후보70색감">
+    <div class="name"><span>105. 주환</span><small>zhu_huan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhu_huan.png" alt="주환"></div>
+    <div class="file">assets/generals/busts_fast_170/zhu_huan.png</div>
+  </article>
+
+  <article class="card" data-name="주연" data-slug="zhu_ran" data-source="후보70색감">
+    <div class="name"><span>106. 주연</span><small>zhu_ran.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhu_ran.png" alt="주연"></div>
+    <div class="file">assets/generals/busts_fast_170/zhu_ran.png</div>
+  </article>
+
+  <article class="card" data-name="주치" data-slug="zhu_zhi" data-source="후보70색감">
+    <div class="name"><span>107. 주치</span><small>zhu_zhi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhu_zhi.png" alt="주치"></div>
+    <div class="file">assets/generals/busts_fast_170/zhu_zhi.png</div>
+  </article>
+
+  <article class="card" data-name="조무" data-slug="zu_mao" data-source="후보70색감">
+    <div class="name"><span>108. 조무</span><small>zu_mao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보70색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zu_mao.png" alt="조무"></div>
+    <div class="file">assets/generals/busts_fast_170/zu_mao.png</div>
+  </article>
+
+  <article class="card" data-name="보즐" data-slug="bu_zhi" data-source="후보100색감">
+    <div class="name"><span>109. 보즐</span><small>bu_zhi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/bu_zhi.png" alt="보즐"></div>
+    <div class="file">assets/generals/busts_fast_170/bu_zhi.png</div>
+  </article>
+
+  <article class="card" data-name="조안민" data-slug="cao_anmin" data-source="후보100색감">
+    <div class="name"><span>110. 조안민</span><small>cao_anmin.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_anmin.png" alt="조안민"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_anmin.png</div>
+  </article>
+
+  <article class="card" data-name="조덕" data-slug="cao_de" data-source="후보100색감">
+    <div class="name"><span>111. 조덕</span><small>cao_de.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_de.png" alt="조덕"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_de.png</div>
+  </article>
+
+  <article class="card" data-name="조방" data-slug="cao_fang" data-source="후보100색감">
+    <div class="name"><span>112. 조방</span><small>cao_fang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_fang.png" alt="조방"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_fang.png</div>
+  </article>
+
+  <article class="card" data-name="조환" data-slug="cao_huan" data-source="후보100색감">
+    <div class="name"><span>113. 조환</span><small>cao_huan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_huan.png" alt="조환"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_huan.png</div>
+  </article>
+
+  <article class="card" data-name="조모" data-slug="cao_mao" data-source="후보100색감">
+    <div class="name"><span>114. 조모</span><small>cao_mao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_mao.png" alt="조모"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_mao.png</div>
+  </article>
+
+  <article class="card" data-name="조삭" data-slug="cao_shuo" data-source="후보100색감">
+    <div class="name"><span>115. 조삭</span><small>cao_shuo.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_shuo.png" alt="조삭"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_shuo.png</div>
+  </article>
+
+  <article class="card" data-name="조우" data-slug="cao_yu" data-source="후보100색감">
+    <div class="name"><span>116. 조우</span><small>cao_yu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/cao_yu.png" alt="조우"></div>
+    <div class="file">assets/generals/busts_fast_170/cao_yu.png</div>
+  </article>
+
+  <article class="card" data-name="진도" data-slug="chen_dao" data-source="후보100색감">
+    <div class="name"><span>117. 진도</span><small>chen_dao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/chen_dao.png" alt="진도"></div>
+    <div class="file">assets/generals/busts_fast_170/chen_dao.png</div>
+  </article>
+
+  <article class="card" data-name="진군" data-slug="chen_qun" data-source="후보100색감">
+    <div class="name"><span>118. 진군</span><small>chen_qun.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/chen_qun.png" alt="진군"></div>
+    <div class="file">assets/generals/busts_fast_170/chen_qun.png</div>
+  </article>
+
+  <article class="card" data-name="진식" data-slug="chen_shi" data-source="후보100색감">
+    <div class="name"><span>119. 진식</span><small>chen_shi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/chen_shi.png" alt="진식"></div>
+    <div class="file">assets/generals/busts_fast_170/chen_shi.png</div>
+  </article>
+
+  <article class="card" data-name="진태" data-slug="chen_tai" data-source="후보100색감">
+    <div class="name"><span>120. 진태</span><small>chen_tai.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/chen_tai.png" alt="진태"></div>
+    <div class="file">assets/generals/busts_fast_170/chen_tai.png</div>
+  </article>
+
+  <article class="card" data-name="동습" data-slug="dong_xi" data-source="후보100색감">
+    <div class="name"><span>121. 동습</span><small>dong_xi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/dong_xi.png" alt="동습"></div>
+    <div class="file">assets/generals/busts_fast_170/dong_xi.png</div>
+  </article>
+
+  <article class="card" data-name="동윤" data-slug="dong_yun" data-source="후보100색감">
+    <div class="name"><span>122. 동윤</span><small>dong_yun.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/dong_yun.png" alt="동윤"></div>
+    <div class="file">assets/generals/busts_fast_170/dong_yun.png</div>
+  </article>
+
+  <article class="card" data-name="동소" data-slug="dong_zhao" data-source="후보100색감">
+    <div class="name"><span>123. 동소</span><small>dong_zhao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/dong_zhao.png" alt="동소"></div>
+    <div class="file">assets/generals/busts_fast_170/dong_zhao.png</div>
+  </article>
+
+  <article class="card" data-name="두예" data-slug="du_yu" data-source="후보100색감">
+    <div class="name"><span>124. 두예</span><small>du_yu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/du_yu.png" alt="두예"></div>
+    <div class="file">assets/generals/busts_fast_170/du_yu.png</div>
+  </article>
+
+  <article class="card" data-name="비의" data-slug="fei_yi" data-source="후보100색감">
+    <div class="name"><span>125. 비의</span><small>fei_yi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/fei_yi.png" alt="비의"></div>
+    <div class="file">assets/generals/busts_fast_170/fei_yi.png</div>
+  </article>
+
+  <article class="card" data-name="부사인" data-slug="fu_shi_ren" data-source="후보100색감">
+    <div class="name"><span>126. 부사인</span><small>fu_shi_ren.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/fu_shi_ren.png" alt="부사인"></div>
+    <div class="file">assets/generals/busts_fast_170/fu_shi_ren.png</div>
+  </article>
+
+  <article class="card" data-name="고상" data-slug="gao_xiang" data-source="후보100색감">
+    <div class="name"><span>127. 고상</span><small>gao_xiang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/gao_xiang.png" alt="고상"></div>
+    <div class="file">assets/generals/busts_fast_170/gao_xiang.png</div>
+  </article>
+
+  <article class="card" data-name="고옹" data-slug="gu_yong" data-source="후보100색감">
+    <div class="name"><span>128. 고옹</span><small>gu_yong.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/gu_yong.png" alt="고옹"></div>
+    <div class="file">assets/generals/busts_fast_170/gu_yong.png</div>
+  </article>
+
+  <article class="card" data-name="곽회" data-slug="guo_huai" data-source="후보100색감">
+    <div class="name"><span>129. 곽회</span><small>guo_huai.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/guo_huai.png" alt="곽회"></div>
+    <div class="file">assets/generals/busts_fast_170/guo_huai.png</div>
+  </article>
+
+  <article class="card" data-name="한호" data-slug="han_hao" data-source="후보100색감">
+    <div class="name"><span>130. 한호</span><small>han_hao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/han_hao.png" alt="한호"></div>
+    <div class="file">assets/generals/busts_fast_170/han_hao.png</div>
+  </article>
+
+  <article class="card" data-name="하제" data-slug="he_qi" data-source="후보100색감">
+    <div class="name"><span>131. 하제</span><small>he_qi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/he_qi.png" alt="하제"></div>
+    <div class="file">assets/generals/busts_fast_170/he_qi.png</div>
+  </article>
+
+  <article class="card" data-name="호질" data-slug="hu_zhi" data-source="후보100색감">
+    <div class="name"><span>132. 호질</span><small>hu_zhi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/hu_zhi.png" alt="호질"></div>
+    <div class="file">assets/generals/busts_fast_170/hu_zhi.png</div>
+  </article>
+
+  <article class="card" data-name="화흠" data-slug="hua_xin" data-source="후보100색감">
+    <div class="name"><span>133. 화흠</span><small>hua_xin.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/hua_xin.png" alt="화흠"></div>
+    <div class="file">assets/generals/busts_fast_170/hua_xin.png</div>
+  </article>
+
+  <article class="card" data-name="황승언" data-slug="huang_chengyan" data-source="후보100색감">
+    <div class="name"><span>134. 황승언</span><small>huang_chengyan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/huang_chengyan.png" alt="황승언"></div>
+    <div class="file">assets/generals/busts_fast_170/huang_chengyan.png</div>
+  </article>
+
+  <article class="card" data-name="황호" data-slug="huang_hao" data-source="후보100색감">
+    <div class="name"><span>135. 황호</span><small>huang_hao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/huang_hao.png" alt="황호"></div>
+    <div class="file">assets/generals/busts_fast_170/huang_hao.png</div>
+  </article>
+
+  <article class="card" data-name="가규" data-slug="jia_kui" data-source="후보100색감">
+    <div class="name"><span>136. 가규</span><small>jia_kui.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/jia_kui.png" alt="가규"></div>
+    <div class="file">assets/generals/busts_fast_170/jia_kui.png</div>
+  </article>
+
+  <article class="card" data-name="장제(위)" data-slug="jiang_ji" data-source="후보100색감">
+    <div class="name"><span>137. 장제(위)</span><small>jiang_ji.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/jiang_ji.png" alt="장제(위)"></div>
+    <div class="file">assets/generals/busts_fast_170/jiang_ji.png</div>
+  </article>
+
+  <article class="card" data-name="장흠" data-slug="jiang_qin" data-source="후보100색감">
+    <div class="name"><span>138. 장흠</span><small>jiang_qin.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/jiang_qin.png" alt="장흠"></div>
+    <div class="file">assets/generals/busts_fast_170/jiang_qin.png</div>
+  </article>
+
+  <article class="card" data-name="장완" data-slug="jiang_wan" data-source="후보100색감">
+    <div class="name"><span>139. 장완</span><small>jiang_wan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/jiang_wan.png" alt="장완"></div>
+    <div class="file">assets/generals/busts_fast_170/jiang_wan.png</div>
+  </article>
+
+  <article class="card" data-name="감택" data-slug="kan_ze" data-source="후보100색감">
+    <div class="name"><span>140. 감택</span><small>kan_ze.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/kan_ze.png" alt="감택"></div>
+    <div class="file">assets/generals/busts_fast_170/kan_ze.png</div>
+  </article>
+
+  <article class="card" data-name="괴량" data-slug="kuai_liang" data-source="후보100색감">
+    <div class="name"><span>141. 괴량</span><small>kuai_liang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/kuai_liang.png" alt="괴량"></div>
+    <div class="file">assets/generals/busts_fast_170/kuai_liang.png</div>
+  </article>
+
+  <article class="card" data-name="괴월" data-slug="kuai_yue" data-source="후보100색감">
+    <div class="name"><span>142. 괴월</span><small>kuai_yue.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/kuai_yue.png" alt="괴월"></div>
+    <div class="file">assets/generals/busts_fast_170/kuai_yue.png</div>
+  </article>
+
+  <article class="card" data-name="뇌동" data-slug="lei_tong" data-source="후보100색감">
+    <div class="name"><span>143. 뇌동</span><small>lei_tong.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/lei_tong.png" alt="뇌동"></div>
+    <div class="file">assets/generals/busts_fast_170/lei_tong.png</div>
+  </article>
+
+  <article class="card" data-name="이회" data-slug="li_hui" data-source="후보100색감">
+    <div class="name"><span>144. 이회</span><small>li_hui.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/li_hui.png" alt="이회"></div>
+    <div class="file">assets/generals/busts_fast_170/li_hui.png</div>
+  </article>
+
+  <article class="card" data-name="이통" data-slug="li_tong" data-source="후보100색감">
+    <div class="name"><span>145. 이통</span><small>li_tong.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/li_tong.png" alt="이통"></div>
+    <div class="file">assets/generals/busts_fast_170/li_tong.png</div>
+  </article>
+
+  <article class="card" data-name="능조" data-slug="ling_cao" data-source="후보100색감">
+    <div class="name"><span>146. 능조</span><small>ling_cao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/ling_cao.png" alt="능조"></div>
+    <div class="file">assets/generals/busts_fast_170/ling_cao.png</div>
+  </article>
+
+  <article class="card" data-name="유선" data-slug="liu_shan" data-source="후보100색감">
+    <div class="name"><span>147. 유선</span><small>liu_shan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/liu_shan.png" alt="유선"></div>
+    <div class="file">assets/generals/busts_fast_170/liu_shan.png</div>
+  </article>
+
+  <article class="card" data-name="유언" data-slug="liu_yan" data-source="후보100색감">
+    <div class="name"><span>148. 유언</span><small>liu_yan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/liu_yan.png" alt="유언"></div>
+    <div class="file">assets/generals/busts_fast_170/liu_yan.png</div>
+  </article>
+
+  <article class="card" data-name="유엽" data-slug="liu_ye" data-source="후보100색감">
+    <div class="name"><span>149. 유엽</span><small>liu_ye.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/liu_ye.png" alt="유엽"></div>
+    <div class="file">assets/generals/busts_fast_170/liu_ye.png</div>
+  </article>
+
+  <article class="card" data-name="유찬" data-slug="liu_zan" data-source="후보100색감">
+    <div class="name"><span>150. 유찬</span><small>liu_zan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/liu_zan.png" alt="유찬"></div>
+    <div class="file">assets/generals/busts_fast_170/liu_zan.png</div>
+  </article>
+
+  <article class="card" data-name="유장" data-slug="liu_zhang" data-source="후보100색감">
+    <div class="name"><span>151. 유장</span><small>liu_zhang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/liu_zhang.png" alt="유장"></div>
+    <div class="file">assets/generals/busts_fast_170/liu_zhang.png</div>
+  </article>
+
+  <article class="card" data-name="여범" data-slug="lu_fan" data-source="후보100색감">
+    <div class="name"><span>152. 여범</span><small>lu_fan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/lu_fan.png" alt="여범"></div>
+    <div class="file">assets/generals/busts_fast_170/lu_fan.png</div>
+  </article>
+
+  <article class="card" data-name="여몽" data-slug="lu_meng" data-source="후보100색감">
+    <div class="name"><span>153. 여몽</span><small>lu_meng.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/lu_meng.png" alt="여몽"></div>
+    <div class="file">assets/generals/busts_fast_170/lu_meng.png</div>
+  </article>
+
+  <article class="card" data-name="여건" data-slug="lu_qian" data-source="후보100색감">
+    <div class="name"><span>154. 여건</span><small>lu_qian.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/lu_qian.png" alt="여건"></div>
+    <div class="file">assets/generals/busts_fast_170/lu_qian.png</div>
+  </article>
+
+  <article class="card" data-name="노초" data-slug="lu_zhao" data-source="후보100색감">
+    <div class="name"><span>155. 노초</span><small>lu_zhao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/lu_zhao.png" alt="노초"></div>
+    <div class="file">assets/generals/busts_fast_170/lu_zhao.png</div>
+  </article>
+
+  <article class="card" data-name="마충(촉)" data-slug="ma_zhong_shu" data-source="후보100색감">
+    <div class="name"><span>156. 마충(촉)</span><small>ma_zhong_shu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/ma_zhong_shu.png" alt="마충(촉)"></div>
+    <div class="file">assets/generals/busts_fast_170/ma_zhong_shu.png</div>
+  </article>
+
+  <article class="card" data-name="마충" data-slug="ma_zhong_wu" data-source="후보100색감">
+    <div class="name"><span>157. 마충</span><small>ma_zhong_wu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/ma_zhong_wu.png" alt="마충"></div>
+    <div class="file">assets/generals/busts_fast_170/ma_zhong_wu.png</div>
+  </article>
+
+  <article class="card" data-name="미방" data-slug="mi_fang" data-source="후보100색감">
+    <div class="name"><span>158. 미방</span><small>mi_fang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/mi_fang.png" alt="미방"></div>
+    <div class="file">assets/generals/busts_fast_170/mi_fang.png</div>
+  </article>
+
+  <article class="card" data-name="우금" data-slug="niu_jin" data-source="후보100색감">
+    <div class="name"><span>159. 우금</span><small>niu_jin.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/niu_jin.png" alt="우금"></div>
+    <div class="file">assets/generals/busts_fast_170/niu_jin.png</div>
+  </article>
+
+  <article class="card" data-name="반장" data-slug="pan_zhang" data-source="후보100색감">
+    <div class="name"><span>160. 반장</span><small>pan_zhang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/pan_zhang.png" alt="반장"></div>
+    <div class="file">assets/generals/busts_fast_170/pan_zhang.png</div>
+  </article>
+
+  <article class="card" data-name="초주" data-slug="qiao_zhou" data-source="후보100색감">
+    <div class="name"><span>161. 초주</span><small>qiao_zhou.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/qiao_zhou.png" alt="초주"></div>
+    <div class="file">assets/generals/busts_fast_170/qiao_zhou.png</div>
+  </article>
+
+  <article class="card" data-name="전종" data-slug="quan_cong" data-source="후보100색감">
+    <div class="name"><span>162. 전종</span><small>quan_cong.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/quan_cong.png" alt="전종"></div>
+    <div class="file">assets/generals/busts_fast_170/quan_cong.png</div>
+  </article>
+
+  <article class="card" data-name="사환" data-slug="shi_huan" data-source="후보100색감">
+    <div class="name"><span>163. 사환</span><small>shi_huan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/shi_huan.png" alt="사환"></div>
+    <div class="file">assets/generals/busts_fast_170/shi_huan.png</div>
+  </article>
+
+  <article class="card" data-name="사마사" data-slug="sima_shi" data-source="후보100색감">
+    <div class="name"><span>164. 사마사</span><small>sima_shi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sima_shi.png" alt="사마사"></div>
+    <div class="file">assets/generals/busts_fast_170/sima_shi.png</div>
+  </article>
+
+  <article class="card" data-name="사마소" data-slug="sima_zhao" data-source="후보100색감">
+    <div class="name"><span>165. 사마소</span><small>sima_zhao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sima_zhao.png" alt="사마소"></div>
+    <div class="file">assets/generals/busts_fast_170/sima_zhao.png</div>
+  </article>
+
+  <article class="card" data-name="손분" data-slug="sun_ben" data-source="후보100색감">
+    <div class="name"><span>166. 손분</span><small>sun_ben.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_ben.png" alt="손분"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_ben.png</div>
+  </article>
+
+  <article class="card" data-name="손침" data-slug="sun_chen" data-source="후보100색감">
+    <div class="name"><span>167. 손침</span><small>sun_chen.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_chen.png" alt="손침"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_chen.png</div>
+  </article>
+
+  <article class="card" data-name="손등" data-slug="sun_deng" data-source="후보100색감">
+    <div class="name"><span>168. 손등</span><small>sun_deng.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_deng.png" alt="손등"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_deng.png</div>
+  </article>
+
+  <article class="card" data-name="손보" data-slug="sun_fu" data-source="후보100색감">
+    <div class="name"><span>169. 손보</span><small>sun_fu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_fu.png" alt="손보"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_fu.png</div>
+  </article>
+
+  <article class="card" data-name="손호" data-slug="sun_hao" data-source="후보100색감">
+    <div class="name"><span>170. 손호</span><small>sun_hao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_hao.png" alt="손호"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_hao.png</div>
+  </article>
+
+  <article class="card" data-name="손화" data-slug="sun_he" data-source="후보100색감">
+    <div class="name"><span>171. 손화</span><small>sun_he.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_he.png" alt="손화"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_he.png</div>
+  </article>
+
+  <article class="card" data-name="손준" data-slug="sun_jun" data-source="후보100색감">
+    <div class="name"><span>172. 손준</span><small>sun_jun.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_jun.png" alt="손준"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_jun.png</div>
+  </article>
+
+  <article class="card" data-name="손광" data-slug="sun_kuang" data-source="후보100색감">
+    <div class="name"><span>173. 손광</span><small>sun_kuang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_kuang.png" alt="손광"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_kuang.png</div>
+  </article>
+
+  <article class="card" data-name="손례" data-slug="sun_li" data-source="후보100색감">
+    <div class="name"><span>174. 손례</span><small>sun_li.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_li.png" alt="손례"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_li.png</div>
+  </article>
+
+  <article class="card" data-name="손량" data-slug="sun_liang" data-source="후보100색감">
+    <div class="name"><span>175. 손량</span><small>sun_liang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_liang.png" alt="손량"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_liang.png</div>
+  </article>
+
+  <article class="card" data-name="손건" data-slug="sun_qian" data-source="후보100색감">
+    <div class="name"><span>176. 손건</span><small>sun_qian.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_qian.png" alt="손건"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_qian.png</div>
+  </article>
+
+  <article class="card" data-name="손소" data-slug="sun_shao" data-source="후보100색감">
+    <div class="name"><span>177. 손소</span><small>sun_shao.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_shao.png" alt="손소"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_shao.png</div>
+  </article>
+
+  <article class="card" data-name="손휴" data-slug="sun_xiu" data-source="후보100색감">
+    <div class="name"><span>178. 손휴</span><small>sun_xiu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_xiu.png" alt="손휴"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_xiu.png</div>
+  </article>
+
+  <article class="card" data-name="손익" data-slug="sun_yi" data-source="후보100색감">
+    <div class="name"><span>179. 손익</span><small>sun_yi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/sun_yi.png" alt="손익"></div>
+    <div class="file">assets/generals/busts_fast_170/sun_yi.png</div>
+  </article>
+
+  <article class="card" data-name="왕필" data-slug="wang_bi" data-source="후보100색감">
+    <div class="name"><span>180. 왕필</span><small>wang_bi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/wang_bi.png" alt="왕필"></div>
+    <div class="file">assets/generals/busts_fast_170/wang_bi.png</div>
+  </article>
+
+  <article class="card" data-name="왕보" data-slug="wang_fu" data-source="후보100색감">
+    <div class="name"><span>181. 왕보</span><small>wang_fu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/wang_fu.png" alt="왕보"></div>
+    <div class="file">assets/generals/busts_fast_170/wang_fu.png</div>
+  </article>
+
+  <article class="card" data-name="왕랑" data-slug="wang_lang" data-source="후보100색감">
+    <div class="name"><span>182. 왕랑</span><small>wang_lang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/wang_lang.png" alt="왕랑"></div>
+    <div class="file">assets/generals/busts_fast_170/wang_lang.png</div>
+  </article>
+
+  <article class="card" data-name="왕련" data-slug="wang_lian" data-source="후보100색감">
+    <div class="name"><span>183. 왕련</span><small>wang_lian.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/wang_lian.png" alt="왕련"></div>
+    <div class="file">assets/generals/busts_fast_170/wang_lian.png</div>
+  </article>
+
+  <article class="card" data-name="문빙" data-slug="wen_pin" data-source="후보100색감">
+    <div class="name"><span>184. 문빙</span><small>wen_pin.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/wen_pin.png" alt="문빙"></div>
+    <div class="file">assets/generals/busts_fast_170/wen_pin.png</div>
+  </article>
+
+  <article class="card" data-name="오반" data-slug="wu_ban" data-source="후보100색감">
+    <div class="name"><span>185. 오반</span><small>wu_ban.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/wu_ban.png" alt="오반"></div>
+    <div class="file">assets/generals/busts_fast_170/wu_ban.png</div>
+  </article>
+
+  <article class="card" data-name="오란" data-slug="wu_lan" data-source="후보100색감">
+    <div class="name"><span>186. 오란</span><small>wu_lan.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/wu_lan.png" alt="오란"></div>
+    <div class="file">assets/generals/busts_fast_170/wu_lan.png</div>
+  </article>
+
+  <article class="card" data-name="향충" data-slug="xiang_chong" data-source="후보100색감">
+    <div class="name"><span>187. 향충</span><small>xiang_chong.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/xiang_chong.png" alt="향충"></div>
+    <div class="file">assets/generals/busts_fast_170/xiang_chong.png</div>
+  </article>
+
+  <article class="card" data-name="향랑" data-slug="xiang_lang" data-source="후보100색감">
+    <div class="name"><span>188. 향랑</span><small>xiang_lang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/xiang_lang.png" alt="향랑"></div>
+    <div class="file">assets/generals/busts_fast_170/xiang_lang.png</div>
+  </article>
+
+  <article class="card" data-name="신비" data-slug="xin_pi" data-source="후보100색감">
+    <div class="name"><span>189. 신비</span><small>xin_pi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/xin_pi.png" alt="신비"></div>
+    <div class="file">assets/generals/busts_fast_170/xin_pi.png</div>
+  </article>
+
+  <article class="card" data-name="서곤" data-slug="xu_kun" data-source="후보100색감">
+    <div class="name"><span>190. 서곤</span><small>xu_kun.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/xu_kun.png" alt="서곤"></div>
+    <div class="file">assets/generals/busts_fast_170/xu_kun.png</div>
+  </article>
+
+  <article class="card" data-name="염우" data-slug="yan_yu" data-source="후보100색감">
+    <div class="name"><span>191. 염우</span><small>yan_yu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/yan_yu.png" alt="염우"></div>
+    <div class="file">assets/generals/busts_fast_170/yan_yu.png</div>
+  </article>
+
+  <article class="card" data-name="양호" data-slug="yang_hu" data-source="후보100색감">
+    <div class="name"><span>192. 양호</span><small>yang_hu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/yang_hu.png" alt="양호"></div>
+    <div class="file">assets/generals/busts_fast_170/yang_hu.png</div>
+  </article>
+
+  <article class="card" data-name="이적" data-slug="yi_ji" data-source="후보100색감">
+    <div class="name"><span>193. 이적</span><small>yi_ji.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/yi_ji.png" alt="이적"></div>
+    <div class="file">assets/generals/busts_fast_170/yi_ji.png</div>
+  </article>
+
+  <article class="card" data-name="장패" data-slug="zang_ba" data-source="후보100색감">
+    <div class="name"><span>194. 장패</span><small>zang_ba.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zang_ba.png" alt="장패"></div>
+    <div class="file">assets/generals/busts_fast_170/zang_ba.png</div>
+  </article>
+
+  <article class="card" data-name="장억" data-slug="zhang_ni" data-source="후보100색감">
+    <div class="name"><span>195. 장억</span><small>zhang_ni.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhang_ni.png" alt="장억"></div>
+    <div class="file">assets/generals/busts_fast_170/zhang_ni.png</div>
+  </article>
+
+  <article class="card" data-name="장송" data-slug="zhang_song" data-source="후보100색감">
+    <div class="name"><span>196. 장송</span><small>zhang_song.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhang_song.png" alt="장송"></div>
+    <div class="file">assets/generals/busts_fast_170/zhang_song.png</div>
+  </article>
+
+  <article class="card" data-name="장온" data-slug="zhang_wen_wu" data-source="후보100색감">
+    <div class="name"><span>197. 장온</span><small>zhang_wen_wu.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhang_wen_wu.png" alt="장온"></div>
+    <div class="file">assets/generals/busts_fast_170/zhang_wen_wu.png</div>
+  </article>
+
+  <article class="card" data-name="장익" data-slug="zhang_yi" data-source="후보100색감">
+    <div class="name"><span>198. 장익</span><small>zhang_yi.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhang_yi.png" alt="장익"></div>
+    <div class="file">assets/generals/busts_fast_170/zhang_yi.png</div>
+  </article>
+
+  <article class="card" data-name="조뢰" data-slug="zhao_lei" data-source="후보100색감">
+    <div class="name"><span>199. 조뢰</span><small>zhao_lei.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhao_lei.png" alt="조뢰"></div>
+    <div class="file">assets/generals/busts_fast_170/zhao_lei.png</div>
+  </article>
+
+  <article class="card" data-name="주방" data-slug="zhou_fang" data-source="후보100색감">
+    <div class="name"><span>200. 주방</span><small>zhou_fang.png</small></div>
+    <div class="meta"><b>신규 170</b><em>후보100색감</em></div>
+    <div class="art"><img src="assets/generals/busts_fast_170/zhou_fang.png" alt="주방"></div>
+    <div class="file">assets/generals/busts_fast_170/zhou_fang.png</div>
+  </article>
+</main>
+<script>
+const cards = [...document.querySelectorAll('.card')];
+const search = document.getElementById('search');
+const count = document.getElementById('count');
+function update() {
+  const q = search.value.trim().toLowerCase();
+  let visible = 0;
+  for (const card of cards) {
+    const hay = `${card.dataset.name} ${card.dataset.slug} ${card.dataset.source}`.toLowerCase();
+    const show = !q || hay.includes(q);
+    card.style.display = show ? '' : 'none';
+    if (show) visible++;
+  }
+  count.textContent = `${visible} / ${cards.length}`;
+}
+search.addEventListener('input', update);
+update();
+</script>
+</body>
+</html>

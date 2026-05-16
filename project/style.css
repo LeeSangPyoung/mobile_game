@@ -1,0 +1,654 @@
+/* ============================================================
+   三國 메인 화면 — Roblox 스타일, CSS only
+   - BEM 네이밍
+   - CSS 변수로 테마 토큰
+   - 모든 이미지 placeholder 위치는 [data-img] 속성으로 마킹
+     (나중에 background-image 적용 시 attribute selector 활용)
+   ============================================================ */
+
+/* ===== 0. 토큰 (CSS Variables) ===== */
+:root {
+  /* 색 */
+  --c-bg-deep:     #0c1226;
+  --c-bg-mid:      #1a2348;
+  --c-bg-soft:     #2a3870;
+  --c-gold:        #ffd23f;
+  --c-gold-deep:   #c89438;
+  --c-red:         #c1121f;
+  --c-red-deep:    #6a0808;
+  --c-blue:        #3a78d8;
+  --c-blue-deep:   #1a3868;
+  --c-green:       #4ade80;
+  --c-green-deep:  #16a34a;
+  --c-dark:        #2a1f18;
+  --c-dark-deep:   #15100c;
+  --c-stroke:      #1a1208;
+  --c-text:        #fff5b8;
+  --c-text-mute:   #a89878;
+  --c-path:        #8a6a3a;
+
+  /* 라운드 */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 22px;
+  --r-pill: 999px;
+
+  /* 그림자 (입체감) */
+  --sh-sm: 0 2px 0 var(--c-stroke), 0 3px 6px rgba(0,0,0,0.4);
+  --sh-md: 0 4px 0 var(--c-stroke), 0 6px 14px rgba(0,0,0,0.5);
+  --sh-lg: 0 6px 0 var(--c-stroke), 0 12px 22px rgba(0,0,0,0.6);
+  --sh-cta: inset 0 3px 0 rgba(255,255,255,0.45),
+            inset 0 -3px 0 rgba(0,0,0,0.3),
+            0 6px 0 var(--c-stroke),
+            0 12px 22px rgba(0,0,0,0.6);
+
+  /* 트랜지션 */
+  --ease: cubic-bezier(.22,.9,.25,1.2);
+  --t-fast: 0.12s var(--ease);
+  --t-mid:  0.2s  var(--ease);
+
+  /* 사이즈 */
+  --frame-w: 430px;
+}
+
+/* ===== 1. 리셋 + 베이스 ===== */
+* {
+  box-sizing: border-box;
+  margin: 0; padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none; -webkit-user-select: none;
+}
+html, body {
+  height: 100%;
+  font-family: 'Noto Serif KR', 'Apple SD Gothic Neo', sans-serif;
+  background: #050302;
+  color: var(--c-text);
+  overflow: hidden;
+}
+button {
+  font-family: inherit; color: inherit;
+  background: none; border: none; cursor: pointer;
+}
+
+/* ============================================================
+   메인 컨테이너 (모바일 프레임 — 데스크톱에서도 폰 비율 유지)
+   ============================================================ */
+.app {
+  position: fixed;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 100%; max-width: var(--frame-w);
+  height: 100vh; height: 100dvh;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  background: linear-gradient(180deg,
+    var(--c-bg-deep) 0%,
+    var(--c-bg-mid)  50%,
+    var(--c-bg-deep) 100%);
+  box-shadow: 0 0 80px rgba(0,0,0,0.9);
+}
+
+/* ============================================================
+   1. 상단바
+   ============================================================ */
+.topbar {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 6px;
+  padding: calc(8px + env(safe-area-inset-top)) 8px 8px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0) 100%);
+  z-index: 5;
+}
+.topbar__profile { grid-column: 1; grid-row: 1; }
+.topbar__actions { grid-column: 2; grid-row: 1; align-self: center; }
+.topbar__currencies {
+  grid-column: 1 / span 2; grid-row: 2;
+  display: flex; gap: 6px;
+}
+
+/* 프로필 박스 */
+.profile {
+  display: flex; align-items: center; gap: 6px;
+  background: linear-gradient(180deg, rgba(20,12,8,0.85), rgba(40,24,16,0.92));
+  border: 2px solid var(--c-gold); border-radius: var(--r-md);
+  padding: 3px 12px 3px 3px;
+  box-shadow: var(--sh-sm);
+}
+.profile__avatar {
+  /* TODO: 이미지 교체 → background-image: url(assets/avatar_lord.png) */
+  width: 38px; height: 38px; border-radius: var(--r-sm);
+  background: radial-gradient(circle at 30% 25%, #fff8d8, var(--c-gold), var(--c-gold-deep));
+  border: 2px solid var(--c-stroke);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.profile__info { display: flex; flex-direction: column; gap: 3px; min-width: 100px; }
+.profile__name {
+  font-size: 12px; font-weight: 900; letter-spacing: 0.5px;
+}
+.profile__lv { color: var(--c-gold); margin-left: 4px; font-size: 11px; }
+.profile__bar {
+  width: 110px; height: 7px;
+  background: var(--c-dark-deep); border-radius: 4px;
+  border: 1px solid var(--c-stroke); overflow: hidden;
+  position: relative;
+}
+.profile__bar-fill {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, var(--c-green), var(--c-green-deep));
+  transition: width 0.4s var(--ease);
+}
+
+/* 재화 pill */
+.currency {
+  display: flex; align-items: center; gap: 5px;
+  background: linear-gradient(180deg, rgba(20,12,8,0.9), rgba(40,24,16,0.9));
+  border: 2px solid var(--c-gold); border-radius: var(--r-pill);
+  padding: 3px 4px 3px 4px;
+  font-size: 12px; font-weight: 900;
+  color: var(--c-text);
+  box-shadow: var(--sh-sm);
+  transition: transform var(--t-fast);
+}
+.currency:hover { transform: translateY(-1px); }
+.currency__icon {
+  /* TODO: 이미지 교체 → background-image: url(assets/icon_*.png) */
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  border: 1.5px solid var(--c-stroke);
+}
+.currency--gold .currency__icon { background: linear-gradient(180deg, var(--c-gold), var(--c-gold-deep)); }
+.currency--gem  .currency__icon { background: linear-gradient(180deg, #5fb4e8, #2864c8); }
+.currency__value { padding: 0 4px; min-width: 40px; }
+.currency__plus {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--c-green); color: var(--c-stroke);
+  border: 1.5px solid var(--c-stroke);
+  font-size: 12px; font-weight: 900; line-height: 14px;
+  transition: transform var(--t-fast);
+}
+.currency__plus:hover { transform: scale(1.15); }
+.currency__plus:active { transform: scale(0.85); }
+
+/* 우측 아이콘 버튼 */
+.topbar__actions { display: flex; gap: 5px; }
+.icon-btn {
+  width: 32px; height: 32px;
+  background: linear-gradient(180deg, rgba(20,12,8,0.9), rgba(40,24,16,0.9));
+  border: 2px solid var(--c-gold); border-radius: 50%;
+  color: var(--c-text); font-size: 14px; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--sh-sm);
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+}
+.icon-btn:hover { transform: translateY(-2px) scale(1.06); box-shadow: var(--sh-md); }
+.icon-btn:active { transform: translateY(2px) scale(0.94); box-shadow: 0 1px 0 var(--c-stroke); }
+
+/* ============================================================
+   2. 중앙 캐릭터 영역 + 타이틀 + CTA
+   ============================================================ */
+.stage {
+  flex: 0 0 auto;
+  position: relative;
+  height: 360px;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 8px 12px 12px;
+}
+.stage__bg {
+  /* TODO: 이미지 교체 → background-image: url(assets/bg_main.png) */
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 110% 60% at 50% 30%,
+    rgba(58, 80, 160, 0.5) 0%,
+    transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+.stage__title {
+  position: relative; z-index: 2;
+  font-size: 56px; font-weight: 900; letter-spacing: 6px;
+  color: var(--c-red);
+  -webkit-text-stroke: 4px var(--c-stroke); paint-order: stroke fill;
+  text-shadow: 0 4px 0 var(--c-stroke), 0 8px 18px rgba(0,0,0,0.65);
+  line-height: 1; margin-top: 6px;
+}
+.stage__chapter-tag {
+  position: relative; z-index: 2;
+  align-self: flex-end;
+  margin: -22px 22% 0 0;
+  background: var(--c-red); color: var(--c-text);
+  font-size: 11px; font-weight: 900; letter-spacing: 1px;
+  padding: 3px 8px;
+  border: 2px solid var(--c-stroke); border-radius: 6px;
+  transform: rotate(7deg);
+  box-shadow: var(--sh-sm);
+}
+
+/* 캐릭터 (3박스) */
+.characters {
+  flex: 1 1 auto;
+  position: relative; z-index: 2;
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+  width: 100%;
+  padding: 0 95px 0 4px; /* 우측 모드 카드 영역 비움 */
+}
+.character {
+  /* TODO: 이미지 교체 → background-image: url(assets/char_*.png) */
+  flex: 1; max-width: 86px;
+  aspect-ratio: 3 / 5;
+  border: 3px solid var(--c-stroke); border-radius: var(--r-md);
+  box-shadow: var(--sh-md);
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  padding-bottom: 8px;
+  position: relative;
+  transition: transform var(--t-mid), box-shadow var(--t-mid);
+  cursor: pointer;
+}
+.character:hover {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow: var(--sh-lg);
+}
+.character:active { transform: translateY(2px); }
+.character__name {
+  font-size: 12px; font-weight: 900; letter-spacing: 1px;
+  -webkit-text-stroke: 1px var(--c-stroke); paint-order: stroke fill;
+}
+.character--guanyu {
+  background:
+    radial-gradient(ellipse at center 35%, rgba(255,255,255,0.15), transparent 65%),
+    linear-gradient(180deg, #1e6a3a, #0a2818);
+}
+.character--cao {
+  background:
+    radial-gradient(ellipse at center 35%, rgba(255,255,255,0.15), transparent 65%),
+    linear-gradient(180deg, #6a1818, #2a0606);
+}
+.character--zhuge {
+  background:
+    radial-gradient(ellipse at center 35%, rgba(255,255,255,0.15), transparent 65%),
+    linear-gradient(180deg, #5a5a78, #1c1c2c);
+}
+.character--guanyu .character__name { color: #6effa0; }
+.character--cao    .character__name { color: #ff8a8a; }
+.character--zhuge  .character__name { color: #a8c8ff; }
+
+/* 출정 CTA */
+.cta-start {
+  /* TODO: 이미지 교체 → background-image: url(assets/btn_start.png) (큰 버튼) */
+  position: relative; z-index: 2;
+  margin: 8px 0 0;
+  padding: 14px 36px;
+  background: linear-gradient(180deg, var(--c-gold) 0%, #ff9a3a 60%, var(--c-red) 100%);
+  border: 4px solid var(--c-stroke); border-radius: 32px;
+  color: #fff; font-size: 22px; font-weight: 900; letter-spacing: 4px;
+  -webkit-text-stroke: 2px var(--c-stroke); paint-order: stroke fill;
+  box-shadow: var(--sh-cta);
+  display: inline-flex; align-items: center; gap: 8px;
+  animation: ctaJump 1.4s ease-in-out infinite;
+  transition: transform var(--t-fast);
+}
+.cta-start:hover { animation-play-state: paused; transform: scale(1.05); }
+.cta-start:active {
+  animation: none;
+  transform: translateY(4px);
+  box-shadow: inset 0 3px 0 rgba(255,255,255,0.45), 0 2px 0 var(--c-stroke);
+}
+.cta-start__stage {
+  background: #fff5b8; color: var(--c-red);
+  font-size: 12px; padding: 2px 8px; border-radius: 6px;
+  border: 2px solid var(--c-stroke);
+  -webkit-text-stroke: 0; font-weight: 900;
+  letter-spacing: 1px;
+}
+@keyframes ctaJump {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+
+/* ============================================================
+   3. 우측 카드 패널 (3 모드)
+   ============================================================ */
+.side-panel {
+  position: absolute;
+  top: 130px; right: 6px;
+  display: flex; flex-direction: column; gap: 8px;
+  z-index: 4;
+}
+.mode-card {
+  /* TODO: 이미지 교체 → background-image: url(assets/panel_*.png) */
+  width: 78px; padding: 6px;
+  border: 3px solid var(--c-stroke); border-radius: var(--r-md);
+  box-shadow: var(--sh-md);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  color: var(--c-text);
+  transition: transform var(--t-mid), box-shadow var(--t-mid);
+  position: relative;
+  overflow: hidden;
+}
+.mode-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.18), transparent 40%);
+  pointer-events: none;
+}
+.mode-card:hover {
+  transform: translateX(-4px) translateY(-2px) scale(1.05);
+  box-shadow: var(--sh-lg);
+}
+.mode-card:active {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 0 2px 0 var(--c-stroke);
+}
+.mode-card--red  { background: linear-gradient(180deg, #8a1818, var(--c-red-deep)); }
+.mode-card--blue { background: linear-gradient(180deg, #1e3a6a, #0a1830); }
+.mode-card--dark { background: linear-gradient(180deg, #5a3818, #2a1810); }
+
+.mode-card__icon {
+  /* TODO: 이미지 교체 → background-image: url(assets/icon_*.png) */
+  width: 100%; height: 40px;
+  background: rgba(0,0,0,0.35);
+  border: 2px solid var(--c-stroke); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: var(--c-gold);
+}
+.mode-card__label {
+  font-size: 11px; font-weight: 900; letter-spacing: 0.5px;
+  -webkit-text-stroke: 0.5px var(--c-stroke); paint-order: stroke fill;
+}
+.mode-card__badge {
+  position: absolute; top: 4px; right: 4px;
+  background: var(--c-green); color: var(--c-stroke);
+  font-size: 9px; font-weight: 900;
+  padding: 1px 5px;
+  border: 1.5px solid var(--c-stroke); border-radius: 6px;
+}
+
+/* ============================================================
+   4. 월드맵 (스테이지 노드 + 곡선 길)
+   ============================================================ */
+.worldmap {
+  flex: 1 1 auto;
+  position: relative;
+  min-height: 200px;
+  background:
+    radial-gradient(ellipse 100% 80% at 50% 100%, #4ea84a 0%, #2d6a2d 50%, transparent 75%),
+    linear-gradient(180deg, transparent 0%, #1a2818 100%);
+  border-top: 3px solid var(--c-stroke);
+  overflow: hidden;
+  padding: 8px 12px 12px;
+}
+.worldmap__chapter {
+  position: relative; z-index: 3;
+  display: flex; justify-content: space-between; align-items: center;
+  background: linear-gradient(180deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5));
+  border: 2px solid var(--c-gold); border-radius: 10px;
+  padding: 5px 12px;
+  font-size: 11px; font-weight: 900;
+  color: var(--c-text);
+  box-shadow: var(--sh-sm);
+}
+.worldmap__chapter b { color: var(--c-gold); }
+.worldmap__path {
+  position: absolute;
+  top: 50px; left: 0; right: 0; bottom: 8px;
+  width: 100%; height: calc(100% - 58px);
+  pointer-events: none; z-index: 1;
+}
+.worldmap__nodes {
+  position: absolute;
+  top: 50px; left: 0; right: 0; bottom: 8px;
+  z-index: 2;
+}
+.node {
+  /* TODO: 이미지 교체 → background-image: url(assets/node_castle_*.png) */
+  position: absolute;
+  width: 46px; height: 46px;
+  border: 3px solid var(--c-stroke); border-radius: 50%;
+  background: linear-gradient(180deg, #cccccc, #888888);
+  box-shadow: var(--sh-sm);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--c-stroke); font-size: 16px; font-weight: 900;
+  transform: translate(-50%, -50%);
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+}
+.node:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+  box-shadow: var(--sh-md);
+}
+.node:active { transform: translate(-50%, -50%) scale(0.92); }
+.node--cleared {
+  background: linear-gradient(180deg, var(--c-gold), #ffb800);
+}
+.node--current {
+  background: linear-gradient(180deg, #6effa0, var(--c-green-deep));
+  color: #fff;
+  -webkit-text-stroke: 1px var(--c-stroke); paint-order: stroke fill;
+  animation: nodePulse 1.4s ease-in-out infinite;
+}
+.node--locked {
+  opacity: 0.65;
+  background: linear-gradient(180deg, #555, #2a2a2a);
+  color: var(--c-text-mute);
+}
+.node--boss {
+  width: 54px; height: 54px;
+  background: linear-gradient(180deg, #ff8d6b, var(--c-red));
+  color: #fff;
+  -webkit-text-stroke: 1px var(--c-stroke); paint-order: stroke fill;
+}
+@keyframes nodePulse {
+  0%, 100% { box-shadow: var(--sh-sm); }
+  50%      { box-shadow: 0 2px 0 var(--c-stroke), 0 0 22px #6effa0; }
+}
+
+/* ============================================================
+   5. 하단 네비게이션
+   ============================================================ */
+.navbar {
+  flex: 0 0 auto;
+  height: calc(64px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: linear-gradient(180deg, #3a1f14, var(--c-dark-deep));
+  border-top: 3px solid var(--c-gold);
+  display: flex; align-items: center; justify-content: space-around;
+  z-index: 5;
+}
+.nav-item {
+  flex: 1; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px;
+  color: #c89060; font-size: 10px; font-weight: 900;
+  transition: transform var(--t-fast), color var(--t-fast);
+}
+.nav-item:hover { transform: translateY(-2px); color: var(--c-text); }
+.nav-item:active { transform: translateY(2px); }
+.nav-item__icon {
+  /* TODO: 이미지 교체 → background-image: url(assets/nav_*.png) */
+  font-size: 20px; line-height: 1;
+}
+
+/* 중앙 강조 탭 (전투) */
+.nav-item--center {
+  flex: 0 0 64px;
+  width: 64px; height: 64px;
+  margin-top: -22px;
+  background: radial-gradient(circle at 30% 25%, #fff8d8, var(--c-gold), var(--c-gold-deep));
+  border: 3px solid var(--c-stroke); border-radius: 50%;
+  color: var(--c-red); font-size: 14px;
+  box-shadow: var(--sh-md);
+  -webkit-text-stroke: 1px var(--c-stroke); paint-order: stroke fill;
+}
+.nav-item--center:hover { transform: translateY(-4px) scale(1.08); color: var(--c-red); }
+.nav-item--center:active { transform: translateY(2px) scale(0.94); box-shadow: 0 2px 0 var(--c-stroke); }
+.nav-item--center .nav-item__icon { font-size: 26px; }
+
+/* ============================================================
+   6. 토스트 (JS에서 띄움)
+   ============================================================ */
+.toast {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: linear-gradient(180deg, rgba(40,24,16,0.95), rgba(20,12,8,0.95));
+  color: var(--c-gold);
+  border: 2px solid var(--c-gold); border-radius: var(--r-md);
+  padding: 12px 20px;
+  font-size: 14px; font-weight: 900; letter-spacing: 1px;
+  box-shadow: var(--sh-lg);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+  z-index: 100;
+  white-space: nowrap;
+}
+.toast.is-show {
+  opacity: 1; transform: translate(-50%, -50%) scale(1);
+}
+
+/* ============================================================
+   7. 클릭 ripple (JS가 .ripple 생성)
+   ============================================================ */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 230, 150, 0.55);
+  pointer-events: none;
+  transform: scale(0);
+  animation: rippleAnim 0.5s ease-out forwards;
+  mix-blend-mode: screen;
+}
+@keyframes rippleAnim {
+  to { transform: scale(3.5); opacity: 0; }
+}
+
+/* ============================================================
+   ATLAS — 단일 이미지 스프라이트 시트 시스템
+   - 모든 UI 그래픽은 assets/ui_atlas.png 에서 background-position으로 잘라 사용
+   - 기존 data-img 시스템은 [data-atlas] 가 있는 요소에서는 우선 적용
+   - 성능: 이미지 1장만 다운로드 → HTTP 요청 최소화
+   ============================================================ */
+:root {
+  --atlas-url: url('./assets/ui_atlas.png');
+  --atlas-w: 2400px;   /* 원본 atlas 가로 크기 */
+  --atlas-h: 800px;    /* 원본 atlas 세로 크기 */
+}
+/* atlas 스케일 — 모바일 프레임용 비율
+   1.0 = 원본, 0.27 = 폰 화면용 축소 */
+:root { --atlas-scale: 0.27; }
+
+.atlas {
+  background-image: var(--atlas-url);
+  background-repeat: no-repeat;
+  display: inline-block;
+  /* atlas 전체를 --atlas-scale 비율로 축소해서 깔아둠.
+     각 슬롯의 width/height/background-position 도 같은 비율로 적용해야 함 */
+  background-size: calc(var(--atlas-w) * var(--atlas-scale))
+                   calc(var(--atlas-h) * var(--atlas-scale));
+  background-color: transparent;
+}
+/* atlas가 적용된 요소는 기존 placeholder gradient 제거 */
+.atlas.character,
+.atlas.cta-start,
+.atlas.hero-section { background-color: transparent; }
+
+/* ===== 슬롯 정의 (원본 atlas 좌표/크기, --atlas-scale 비율로 자동 축소) =====
+   원본 스펙:
+     character (각): 300x400 @ (-40,-120) (-380,-120) (-720,-120)
+     btn-start:      500x180 @ (-40,-560)
+     bg-main:        1100x500 @ (-1100,-120) — cover 사용
+     panel:          220x80
+     node:           80x80
+*/
+.atlas.character--guanyu {
+  width:  calc(300px * var(--atlas-scale));
+  height: calc(400px * var(--atlas-scale));
+  background-position: calc(-40px * var(--atlas-scale)) calc(-120px * var(--atlas-scale));
+}
+.atlas.character--cao {
+  width:  calc(300px * var(--atlas-scale));
+  height: calc(400px * var(--atlas-scale));
+  background-position: calc(-380px * var(--atlas-scale)) calc(-120px * var(--atlas-scale));
+}
+.atlas.character--zhuge {
+  width:  calc(300px * var(--atlas-scale));
+  height: calc(400px * var(--atlas-scale));
+  background-position: calc(-720px * var(--atlas-scale)) calc(-120px * var(--atlas-scale));
+}
+.atlas.btn-start {
+  width:  calc(500px * var(--atlas-scale) * 1.4);  /* 출정은 좀 더 크게 */
+  height: calc(180px * var(--atlas-scale) * 1.4);
+  background-size: calc(var(--atlas-w) * var(--atlas-scale) * 1.4)
+                   calc(var(--atlas-h) * var(--atlas-scale) * 1.4);
+  background-position: calc(-40px * var(--atlas-scale) * 1.4) calc(-560px * var(--atlas-scale) * 1.4);
+  border-color: transparent;
+  box-shadow: var(--sh-md);
+  padding: 0;
+}
+.atlas.bg-main {
+  width: 100%;
+  height: 100%;
+  /* bg는 슬롯 cover로 풀필 */
+  background-size: cover;
+  background-position: center center;
+  /* atlas 안의 bg-main 영역만 보이게 — clip-path 대신 별도 ratio */
+  /* 단순화: 전체 atlas를 cover로 깔되, 메인 BG 슬롯이 중앙에 오도록 position 조정 */
+}
+.atlas.panel-pvp,
+.atlas.panel-tower,
+.atlas.panel-guild {
+  width:  calc(220px * var(--atlas-scale) * 1.1);
+  height: calc(80px  * var(--atlas-scale) * 1.1);
+  background-size: calc(var(--atlas-w) * var(--atlas-scale) * 1.1)
+                   calc(var(--atlas-h) * var(--atlas-scale) * 1.1);
+}
+.atlas.panel-pvp   { background-position: calc(-560px * var(--atlas-scale) * 1.1) calc(-560px * var(--atlas-scale) * 1.1); }
+.atlas.panel-tower { background-position: calc(-800px * var(--atlas-scale) * 1.1) calc(-560px * var(--atlas-scale) * 1.1); }
+.atlas.panel-guild { background-position: calc(-1040px* var(--atlas-scale) * 1.1) calc(-560px * var(--atlas-scale) * 1.1); }
+
+.atlas.node-cleared,
+.atlas.node-current,
+.atlas.node-locked,
+.atlas.node-boss {
+  width:  calc(80px * var(--atlas-scale) * 1.5);
+  height: calc(80px * var(--atlas-scale) * 1.5);
+  background-size: calc(var(--atlas-w) * var(--atlas-scale) * 1.5)
+                   calc(var(--atlas-h) * var(--atlas-scale) * 1.5);
+  border: 0;
+  background-color: transparent;
+}
+.atlas.node-cleared { background-position: calc(-1300px * var(--atlas-scale) * 1.5) calc(-660px * var(--atlas-scale) * 1.5); }
+.atlas.node-current { background-position: calc(-1390px * var(--atlas-scale) * 1.5) calc(-660px * var(--atlas-scale) * 1.5); }
+.atlas.node-locked  { background-position: calc(-1480px * var(--atlas-scale) * 1.5) calc(-660px * var(--atlas-scale) * 1.5); }
+.atlas.node-boss    { background-position: calc(-1570px * var(--atlas-scale) * 1.5) calc(-660px * var(--atlas-scale) * 1.5); }
+
+/* ===== atlas 적용된 .character / .cta-start 의 텍스트 라벨은 위쪽에 떠 있도록 ===== */
+.atlas.character { position: relative; }
+.atlas.character .character__name {
+  position: absolute; bottom: 8px; left: 0; right: 0; text-align: center;
+}
+
+/* ============================================================
+   8. 반응형
+   ============================================================ */
+/* 작은 폰 (< 360px): 폰트/버튼 더 작게 */
+@media (max-width: 360px) {
+  :root { --frame-w: 100%; }
+  .stage__title { font-size: 44px; letter-spacing: 4px; }
+  .stage { height: 320px; }
+  .character { max-width: 72px; }
+  .mode-card { width: 66px; }
+  .characters { padding-right: 80px; }
+  .cta-start { padding: 12px 28px; font-size: 18px; }
+}
+/* 태블릿/데스크톱: 폰 프레임 유지하되 살짝 크게 */
+@media (min-width: 768px) {
+  :root { --frame-w: 460px; }
+}
+/* 가로 모드: 안전하게 폰 비율 유지 */
+@media (orientation: landscape) and (max-height: 500px) {
+  .app { height: 100vh; }
+  .stage { height: 260px; }
+  .worldmap { min-height: 140px; }
+}

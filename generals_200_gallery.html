@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>삼국지 장수 200명 전신 후보 검수</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 28px;
+    background: #17110b;
+    color: #f7d56e;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  }
+  h1 { margin: 0 0 8px; font-size: 30px; }
+  .sub { margin: 0 0 22px; color: #c5a86b; font-size: 15px; }
+  .toolbar {
+    position: sticky; top: 0; z-index: 2;
+    display: flex; gap: 10px; align-items: center;
+    padding: 12px 0 16px;
+    background: linear-gradient(180deg, #17110b 70%, rgba(23,17,11,0));
+  }
+  .warning {
+    margin: 0 0 18px;
+    padding: 12px 14px;
+    border: 1px solid #8f6422;
+    border-radius: 8px;
+    background: #21170e;
+    color: #ffd978;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  input {
+    width: min(420px, 100%); height: 40px; padding: 0 14px;
+    border: 1px solid #7b5724; border-radius: 8px;
+    background: #24190f; color: #ffe188; font-size: 15px; outline: none;
+  }
+  .count, .audit { color: #a98a50; font-size: 14px; white-space: nowrap; }
+  .audit { margin-left: auto; font-weight: 800; }
+  .audit.ok { color: #8fd48a; }
+  .audit.bad { color: #ff8f75; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    min-width: 0;
+    border: 1px solid #79551f;
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #24190f, #110b07);
+  }
+  .name {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: baseline;
+    padding: 11px 12px;
+    border-bottom: 1px solid #664719;
+    color: #ffe188;
+    font-size: 17px;
+    font-weight: 800;
+  }
+  .name small {
+    min-width: 0;
+    color: #a98a50;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tag {
+    margin-left: 8px;
+    color: #8fd48a;
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .art {
+    height: 330px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 14px;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      radial-gradient(circle at 50% 18%, rgba(255,212,91,0.16), transparent 44%),
+      #21170e;
+    background-size: 28px 28px, 28px 28px, 100% 100%, 100% 100%;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 16px rgba(0,0,0,0.62));
+  }
+  .file {
+    padding: 8px 10px 10px;
+    border-top: 1px solid #3d2a12;
+    color: #f7d56e;
+    font-size: 12px;
+    word-break: break-all;
+  }
+  .source {
+    display: block;
+    margin-top: 4px;
+    color: #a98a50;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .missing .art {
+    align-items: center;
+    color: #ff9a7a;
+    font-size: 13px;
+    font-weight: 800;
+  }
+  @media (max-width: 720px) {
+    body { padding: 18px; }
+    h1 { font-size: 24px; }
+    .toolbar { align-items: flex-start; flex-direction: column; }
+    .audit { margin-left: 0; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+    .art { height: 260px; }
+  }
+</style>
+</head>
+<body>
+<h1>삼국지 장수 200명 전신 후보 검수</h1>
+<p class="sub">기존 30명 + 추가 70명 + 추가 100명입니다. 전신 이미지만 모아 검수합니다.</p>
+<p class="warning">주의: 추가 장수는 신규 원화 완성본이 아니라 기존 원본을 기반으로 만든 후보입니다. 각 카드 하단에 source base / palette / emblem을 표시해 어떤 원본에서 파생됐는지 숨기지 않습니다.</p>
+<div class="toolbar">
+  <input id="search" type="search" placeholder="이름 또는 파일명 검색">
+  <div class="count" id="count"></div>
+  <div class="audit" id="audit">검수 중...</div>
+</div>
+<main class="grid" id="grid"></main>
+<script>
+const generals = [
+  {slug: 'cao_cao', ko: '조조', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'cao_xing', ko: '조흥', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'dian_wei', ko: '전위', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'dong_zhuo', ko: '동탁', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'gan_ning', ko: '감녕', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'guan_yu', ko: '관우', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'guo_jia', ko: '곽가', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'huang_gai', ko: '황개', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'huang_zhong', ko: '황충', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'liu_bei', ko: '유비', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'lu_bu', ko: '여포', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'lu_xun', ko: '육손', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'ma_chao', ko: '마초', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'meng_huo', ko: '맹획', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'pang_tong', ko: '방통', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'sima_yi', ko: '사마의', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'sun_ce', ko: '손책', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'sun_quan', ko: '손권', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'taishi_ci', ko: '태사자', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'wen_chou', ko: '문추', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'xiahou_dun', ko: '하후돈', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'xu_chu', ko: '허저', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'xu_huang', ko: '서황', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'yan_liang', ko: '안량', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'yuan_shao', ko: '원소', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'zhang_fei', ko: '장비', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'zhang_liao', ko: '장료', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'zhao_yun', ko: '조운', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'zhou_yu', ko: '주유', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'zhuge_liang', ko: '제갈량', group: '기존 30', assetDir: 'busts', sourceBase: 'original', palette: 'original', emblem: 'original'},
+  {slug: 'hua_xiong', ko: '화웅', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhang_fei', palette: 'crimson_black', emblem: 'flame'},
+  {slug: 'gao_shun', ko: '고순', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhang_liao', palette: 'steel_blue', emblem: 'spear'},
+  {slug: 'chen_gong', ko: '진궁', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'guo_jia', palette: 'violet_black', emblem: 'moon'},
+  {slug: 'li_ru', ko: '이유', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'sima_yi', palette: 'dark_gold', emblem: 'diamond'},
+  {slug: 'li_jue', ko: '이각', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'yan_liang', palette: 'crimson_black', emblem: 'axe'},
+  {slug: 'guo_si', ko: '곽사', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'wen_chou', palette: 'dark_red', emblem: 'spike'},
+  {slug: 'zhang_ji', ko: '장제', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'xu_huang', palette: 'bronze_blue', emblem: 'shield'},
+  {slug: 'zhang_xiu', ko: '장수', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhao_yun', palette: 'teal_gold', emblem: 'spear'},
+  {slug: 'jia_xu', ko: '가후', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'pang_tong', palette: 'violet_black', emblem: 'moon'},
+  {slug: 'xun_yu', ko: '순욱', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhuge_liang', palette: 'white_blue', emblem: 'fan'},
+  {slug: 'xun_you', ko: '순유', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'guo_jia', palette: 'blue_gold', emblem: 'scroll'},
+  {slug: 'cheng_yu', ko: '정욱', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'sima_yi', palette: 'dark_gold', emblem: 'diamond'},
+  {slug: 'cao_ren', ko: '조인', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'xiahou_dun', palette: 'blue_gold', emblem: 'shield'},
+  {slug: 'cao_hong', ko: '조홍', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'xu_huang', palette: 'steel_blue', emblem: 'spear'},
+  {slug: 'cao_pi', ko: '조비', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'sun_quan', palette: 'red_gold', emblem: 'diamond'},
+  {slug: 'cao_zhang', ko: '조창', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'ma_chao', palette: 'gold_white', emblem: 'tiger'},
+  {slug: 'cao_zhi', ko: '조식', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhou_yu', palette: 'white_red', emblem: 'scroll'},
+  {slug: 'cao_ang', ko: '조앙', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhao_yun', palette: 'white_blue', emblem: 'spear'},
+  {slug: 'cao_chun', ko: '조순', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhang_liao', palette: 'steel_blue', emblem: 'shield'},
+  {slug: 'cao_rui', ko: '조예', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'yuan_shao', palette: 'white_gold', emblem: 'diamond'},
+  {slug: 'xiahou_yuan', ko: '하후연', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'huang_zhong', palette: 'gold_brown', emblem: 'bow'},
+  {slug: 'xiahou_ba', ko: '하후패', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'ma_chao', palette: 'white_blue', emblem: 'spear'},
+  {slug: 'man_chong', ko: '만총', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'xu_huang', palette: 'bronze_blue', emblem: 'shield'},
+  {slug: 'wang_shuang', ko: '왕쌍', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'xu_chu', palette: 'dark_gold', emblem: 'spike'},
+  {slug: 'deng_ai', ko: '등애', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhang_liao', palette: 'steel_blue', emblem: 'mountain'},
+  {slug: 'zhong_hui', ko: '종회', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'guo_jia', palette: 'violet_black', emblem: 'diamond'},
+  {slug: 'wen_yang', ko: '문앙', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhao_yun', palette: 'white_blue', emblem: 'spear'},
+  {slug: 'guanqiu_jian', ko: '관구검', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'xiahou_dun', palette: 'blue_gold', emblem: 'shield'},
+  {slug: 'wen_qin', ko: '문흠', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'yan_liang', palette: 'crimson_black', emblem: 'axe'},
+  {slug: 'wei_yan', ko: '위연', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhang_fei', palette: 'dark_red', emblem: 'fang'},
+  {slug: 'jiang_wei', ko: '강유', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhao_yun', palette: 'white_blue', emblem: 'spear'},
+  {slug: 'ma_dai', ko: '마대', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'ma_chao', palette: 'white_blue', emblem: 'horse'},
+  {slug: 'ma_su', ko: '마속', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'lu_xun', palette: 'teal_gold', emblem: 'scroll'},
+  {slug: 'fa_zheng', ko: '법정', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'sima_yi', palette: 'violet_black', emblem: 'moon'},
+  {slug: 'ma_liang', ko: '마량', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhuge_liang', palette: 'white_blue', emblem: 'fan'},
+  {slug: 'jian_yong', ko: '간옹', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'liu_bei', palette: 'green_gold', emblem: 'scroll'},
+  {slug: 'mi_zhu', ko: '미축', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'sun_quan', palette: 'white_gold', emblem: 'diamond'},
+  {slug: 'guan_ping', ko: '관평', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'guan_yu', palette: 'green_gold', emblem: 'spear'},
+  {slug: 'guan_xing', ko: '관흥', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'guan_yu', palette: 'teal_gold', emblem: 'spear'},
+  {slug: 'zhang_bao', ko: '장포', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhang_fei', palette: 'dark_red', emblem: 'fang'},
+  {slug: 'zhou_cang', ko: '주창', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'wen_chou', palette: 'dark_red', emblem: 'axe'},
+  {slug: 'liao_hua', ko: '요화', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'liu_bei', palette: 'green_gold', emblem: 'shield'},
+  {slug: 'wang_ping', ko: '왕평', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhang_liao', palette: 'steel_blue', emblem: 'mountain'},
+  {slug: 'yan_yan', ko: '엄안', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'huang_zhong', palette: 'gold_brown', emblem: 'bow'},
+  {slug: 'wu_yi', ko: '오의', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhao_yun', palette: 'blue_gold', emblem: 'spear'},
+  {slug: 'li_yan', ko: '이엄', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'xu_huang', palette: 'bronze_blue', emblem: 'shield'},
+  {slug: 'meng_da', ko: '맹달', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'sun_ce', palette: 'red_gold', emblem: 'spear'},
+  {slug: 'huang_quan', ko: '황권', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhuge_liang', palette: 'white_gold', emblem: 'scroll'},
+  {slug: 'liu_feng', ko: '유봉', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'liu_bei', palette: 'green_gold', emblem: 'sword'},
+  {slug: 'sun_jian', ko: '손견', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'sun_ce', palette: 'red_gold', emblem: 'tiger'},
+  {slug: 'lu_su', ko: '노숙', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhou_yu', palette: 'white_red', emblem: 'fan'},
+  {slug: 'zhang_zhao', ko: '장소', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'zhuge_liang', palette: 'white_gold', emblem: 'scroll'},
+  {slug: 'zhang_hong', ko: '장굉', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'guo_jia', palette: 'blue_gold', emblem: 'scroll'},
+  {slug: 'cheng_pu', ko: '정보', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'huang_gai', palette: 'gold_brown', emblem: 'shield'},
+  {slug: 'han_dang', ko: '한당', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'taishi_ci', palette: 'blue_gold', emblem: 'bow'},
+  {slug: 'zu_mao', ko: '조무', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'sun_ce', palette: 'red_gold', emblem: 'sword'},
+  {slug: 'ling_tong', ko: '능통', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'gan_ning', palette: 'teal_gold', emblem: 'spear'},
+  {slug: 'zhou_tai', ko: '주태', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'taishi_ci', palette: 'dark_red', emblem: 'shield'},
+  {slug: 'ding_feng', ko: '정봉', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'xu_huang', palette: 'steel_blue', emblem: 'axe'},
+  {slug: 'xu_sheng', ko: '서성', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'sun_ce', palette: 'red_gold', emblem: 'spear'},
+  {slug: 'zhu_huan', ko: '주환', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'sun_quan', palette: 'red_gold', emblem: 'shield'},
+  {slug: 'zhu_zhi', ko: '주치', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'huang_gai', palette: 'gold_brown', emblem: 'shield'},
+  {slug: 'zhu_ran', ko: '주연', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'lu_xun', palette: 'teal_gold', emblem: 'flame'},
+  {slug: 'lu_kang', ko: '육항', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'lu_xun', palette: 'teal_gold', emblem: 'scroll'},
+  {slug: 'zhang_ren', ko: '장임', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'huang_zhong', palette: 'gold_brown', emblem: 'bow'},
+  {slug: 'ji_ling', ko: '기령', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'yan_liang', palette: 'crimson_black', emblem: 'halberd'},
+  {slug: 'gongsun_zan', ko: '공손찬', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'ma_chao', palette: 'white_blue', emblem: 'horse'},
+  {slug: 'ma_teng', ko: '마등', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'ma_chao', palette: 'gold_white', emblem: 'horse'},
+  {slug: 'han_sui', ko: '한수', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'yuan_shao', palette: 'gold_brown', emblem: 'moon'},
+  {slug: 'zhang_jiao', ko: '장각', group: '추가 70', assetDir: 'busts_extra_70_colorfit', sourceBase: 'pang_tong', palette: 'yellow_tao', emblem: 'sun'},
+  {slug: 'cao_zhen', ko: '조진', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'cao_cao', palette: 'blue_gold', emblem: 'shield'},
+  {slug: 'cao_xiu', ko: '조휴', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'xiahou_dun', palette: 'steel_blue', emblem: 'sword'},
+  {slug: 'cao_shuang', ko: '조상', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'yuan_shao', palette: 'white_gold', emblem: 'diamond'},
+  {slug: 'cao_fang', ko: '조방', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'sun_quan', palette: 'white_blue', emblem: 'diamond'},
+  {slug: 'cao_mao', ko: '조모', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'sun_ce', palette: 'red_gold', emblem: 'sword'},
+  {slug: 'cao_huan', ko: '조환', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'liu_bei', palette: 'green_gold', emblem: 'scroll'},
+  {slug: 'cao_anmin', ko: '조안민', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'cao_xing', palette: 'crimson_black', emblem: 'spear'},
+  {slug: 'cao_de', ko: '조덕', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'dian_wei', palette: 'dark_gold', emblem: 'diamond'},
+  {slug: 'cao_shuo', ko: '조삭', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'dong_zhuo', palette: 'blue_gold', emblem: 'scroll'},
+  {slug: 'cao_yu', ko: '조우', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'gan_ning', palette: 'white_gold', emblem: 'fan'},
+  {slug: 'li_tong', ko: '이통', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'taishi_ci', palette: 'steel_blue', emblem: 'spear'},
+  {slug: 'lu_qian', ko: '여건', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhang_liao', palette: 'blue_gold', emblem: 'shield'},
+  {slug: 'zang_ba', ko: '장패', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhang_fei', palette: 'dark_red', emblem: 'axe'},
+  {slug: 'zhu_ling', ko: '주령', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'xu_huang', palette: 'steel_blue', emblem: 'spear'},
+  {slug: 'han_hao', ko: '한호', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'guan_yu', palette: 'crimson_black', emblem: 'shield'},
+  {slug: 'shi_huan', ko: '사환', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'xu_chu', palette: 'dark_gold', emblem: 'spike'},
+  {slug: 'lu_zhao', ko: '노초', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'guo_jia', palette: 'bronze_blue', emblem: 'spear'},
+  {slug: 'wang_bi', ko: '왕필', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'huang_gai', palette: 'crimson_black', emblem: 'sword'},
+  {slug: 'liu_ye', ko: '유엽', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'huang_zhong', palette: 'white_blue', emblem: 'scroll'},
+  {slug: 'kuai_yue', ko: '괴월', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhuge_liang', palette: 'white_gold', emblem: 'fan'},
+  {slug: 'kuai_liang', ko: '괴량', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'lu_bu', palette: 'green_gold', emblem: 'scroll'},
+  {slug: 'jia_kui', ko: '가규', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'sima_yi', palette: 'dark_gold', emblem: 'shield'},
+  {slug: 'chen_qun', ko: '진군', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'lu_xun', palette: 'violet_black', emblem: 'scroll'},
+  {slug: 'hua_xin', ko: '화흠', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'ma_chao', palette: 'white_gold', emblem: 'diamond'},
+  {slug: 'wang_lang', ko: '왕랑', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'meng_huo', palette: 'gold_brown', emblem: 'scroll'},
+  {slug: 'zhong_yao', ko: '종요', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'pang_tong', palette: 'dark_gold', emblem: 'diamond'},
+  {slug: 'dong_zhao', ko: '동소', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'wen_chou', palette: 'green_gold', emblem: 'scroll'},
+  {slug: 'xin_pi', ko: '신비', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'yan_liang', palette: 'blue_gold', emblem: 'scroll'},
+  {slug: 'chen_tai', ko: '진태', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhao_yun', palette: 'steel_blue', emblem: 'spear'},
+  {slug: 'guo_huai', ko: '곽회', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhou_yu', palette: 'blue_gold', emblem: 'mountain'},
+  {slug: 'sun_li', ko: '손례', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'xu_huang', palette: 'bronze_blue', emblem: 'shield'},
+  {slug: 'niu_jin', ko: '우금', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'xu_chu', palette: 'blue_gold', emblem: 'spike'},
+  {slug: 'wen_pin', ko: '문빙', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'cao_cao', palette: 'bronze_blue', emblem: 'shield'},
+  {slug: 'jiang_ji', ko: '장제(위)', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'sima_yi', palette: 'blue_gold', emblem: 'scroll'},
+  {slug: 'hu_zhi', ko: '호질', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'guo_jia', palette: 'steel_blue', emblem: 'mountain'},
+  {slug: 'zhuge_dan', ko: '제갈탄', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhuge_liang', palette: 'white_blue', emblem: 'diamond'},
+  {slug: 'sima_shi', ko: '사마사', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'sima_yi', palette: 'violet_black', emblem: 'diamond'},
+  {slug: 'sima_zhao', ko: '사마소', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'yuan_shao', palette: 'dark_gold', emblem: 'diamond'},
+  {slug: 'du_yu', ko: '두예', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'dian_wei', palette: 'white_blue', emblem: 'scroll'},
+  {slug: 'yang_hu', ko: '양호', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhao_yun', palette: 'blue_gold', emblem: 'spear'},
+  {slug: 'zhang_song', ko: '장송', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'pang_tong', palette: 'violet_black', emblem: 'scroll'},
+  {slug: 'liu_zhang', ko: '유장', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'liu_bei', palette: 'blue_gold', emblem: 'scroll'},
+  {slug: 'liu_yan', ko: '유언', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'gan_ning', palette: 'gold_brown', emblem: 'scroll'},
+  {slug: 'zhang_yi', ko: '장익', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'guan_yu', palette: 'blue_gold', emblem: 'spear'},
+  {slug: 'fei_yi', ko: '비의', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'huang_gai', palette: 'white_blue', emblem: 'fan'},
+  {slug: 'dong_yun', ko: '동윤', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'huang_zhong', palette: 'blue_gold', emblem: 'scroll'},
+  {slug: 'jiang_wan', ko: '장완', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'lu_xun', palette: 'green_gold', emblem: 'scroll'},
+  {slug: 'huang_hao', ko: '황호', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'lu_bu', palette: 'yellow_tao', emblem: 'moon'},
+  {slug: 'chen_dao', ko: '진도', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'ma_chao', palette: 'white_blue', emblem: 'spear'},
+  {slug: 'wang_lian', ko: '왕련', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'meng_huo', palette: 'green_gold', emblem: 'scroll'},
+  {slug: 'qiao_zhou', ko: '초주', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'sun_ce', palette: 'white_gold', emblem: 'fan'},
+  {slug: 'yi_ji', ko: '이적', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'sun_quan', palette: 'green_gold', emblem: 'scroll'},
+  {slug: 'sun_qian', ko: '손건', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'taishi_ci', palette: 'white_gold', emblem: 'scroll'},
+  {slug: 'mi_fang', ko: '미방', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'wen_chou', palette: 'red_gold', emblem: 'shield'},
+  {slug: 'fu_shi_ren', ko: '부사인', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'xiahou_dun', palette: 'dark_red', emblem: 'sword'},
+  {slug: 'wu_ban', ko: '오반', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'yan_liang', palette: 'white_blue', emblem: 'spear'},
+  {slug: 'wu_lan', ko: '오란', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhang_fei', palette: 'blue_gold', emblem: 'axe'},
+  {slug: 'lei_tong', ko: '뇌동', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'yuan_shao', palette: 'crimson_black', emblem: 'spear'},
+  {slug: 'zhang_ni', ko: '장억', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhang_liao', palette: 'bronze_blue', emblem: 'spear'},
+  {slug: 'gao_xiang', ko: '고상', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhou_yu', palette: 'gold_brown', emblem: 'bow'},
+  {slug: 'ma_zhong_shu', ko: '마충(촉)', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhao_yun', palette: 'bronze_blue', emblem: 'spear'},
+  {slug: 'wang_fu', ko: '왕보', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'guan_yu', palette: 'green_gold', emblem: 'scroll'},
+  {slug: 'zhao_lei', ko: '조뢰', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'cao_cao', palette: 'crimson_black', emblem: 'spear'},
+  {slug: 'huang_chengyan', ko: '황승언', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhuge_liang', palette: 'blue_gold', emblem: 'fan'},
+  {slug: 'li_hui', ko: '이회', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'liu_bei', palette: 'bronze_blue', emblem: 'scroll'},
+  {slug: 'chen_shi', ko: '진식', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhang_fei', palette: 'crimson_black', emblem: 'shield'},
+  {slug: 'xiang_chong', ko: '향충', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'cao_xing', palette: 'white_blue', emblem: 'shield'},
+  {slug: 'xiang_lang', ko: '향랑', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'dian_wei', palette: 'blue_gold', emblem: 'scroll'},
+  {slug: 'liu_shan', ko: '유선', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'dong_zhuo', palette: 'green_gold', emblem: 'diamond'},
+  {slug: 'yan_yu', ko: '염우', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'ma_chao', palette: 'gold_brown', emblem: 'spear'},
+  {slug: 'lu_meng', ko: '여몽', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'gan_ning', palette: 'teal_gold', emblem: 'spear'},
+  {slug: 'zhuge_jin', ko: '제갈근', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'guo_jia', palette: 'white_blue', emblem: 'fan'},
+  {slug: 'zhuge_ke', ko: '제갈각', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'lu_xun', palette: 'teal_gold', emblem: 'scroll'},
+  {slug: 'quan_cong', ko: '전종', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'sun_quan', palette: 'blue_gold', emblem: 'spear'},
+  {slug: 'bu_zhi', ko: '보즐', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhou_yu', palette: 'white_red', emblem: 'scroll'},
+  {slug: 'kan_ze', ko: '감택', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'huang_gai', palette: 'blue_gold', emblem: 'scroll'},
+  {slug: 'gu_yong', ko: '고옹', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'huang_zhong', palette: 'white_gold', emblem: 'scroll'},
+  {slug: 'zhang_wen_wu', ko: '장온', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'lu_bu', palette: 'white_red', emblem: 'fan'},
+  {slug: 'sun_shao', ko: '손소', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'meng_huo', palette: 'blue_gold', emblem: 'sword'},
+  {slug: 'sun_xiu', ko: '손휴', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'pang_tong', palette: 'white_blue', emblem: 'diamond'},
+  {slug: 'sun_liang', ko: '손량', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'sima_yi', palette: 'white_gold', emblem: 'diamond'},
+  {slug: 'sun_hao', ko: '손호', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'sun_ce', palette: 'blue_gold', emblem: 'sword'},
+  {slug: 'sun_deng', ko: '손등', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'taishi_ci', palette: 'white_blue', emblem: 'diamond'},
+  {slug: 'sun_he', ko: '손화', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'xiahou_dun', palette: 'red_gold', emblem: 'scroll'},
+  {slug: 'sun_ben', ko: '손분', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'wen_chou', palette: 'blue_gold', emblem: 'spear'},
+  {slug: 'sun_fu', ko: '손보', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'xu_chu', palette: 'red_gold', emblem: 'sword'},
+  {slug: 'sun_yi', ko: '손익', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'xu_huang', palette: 'blue_gold', emblem: 'spear'},
+  {slug: 'sun_kuang', ko: '손광', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'yan_liang', palette: 'white_gold', emblem: 'diamond'},
+  {slug: 'zhou_fang', ko: '주방', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'yuan_shao', palette: 'blue_gold', emblem: 'shield'},
+  {slug: 'he_qi', ko: '하제', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhang_liao', palette: 'teal_gold', emblem: 'spear'},
+  {slug: 'lu_fan', ko: '여범', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'zhou_yu', palette: 'bronze_blue', emblem: 'fan'},
+  {slug: 'jiang_qin', ko: '장흠', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'gan_ning', palette: 'blue_gold', emblem: 'spear'},
+  {slug: 'pan_zhang', ko: '반장', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'huang_gai', palette: 'gold_brown', emblem: 'sword'},
+  {slug: 'ma_zhong_wu', ko: '마충(오)', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'taishi_ci', palette: 'blue_gold', emblem: 'spear'},
+  {slug: 'dong_xi', ko: '동습', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'cao_cao', palette: 'dark_red', emblem: 'axe'},
+  {slug: 'ling_cao', ko: '능조', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'cao_xing', palette: 'blue_gold', emblem: 'spear'},
+  {slug: 'sun_jun', ko: '손준', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'sun_ce', palette: 'bronze_blue', emblem: 'sword'},
+  {slug: 'sun_chen', ko: '손침', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'dian_wei', palette: 'dark_red', emblem: 'diamond'},
+  {slug: 'liu_zan', ko: '유찬', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'dong_zhuo', palette: 'teal_gold', emblem: 'spear'},
+  {slug: 'xu_kun', ko: '서곤', group: '추가 100', assetDir: 'busts_extra_100_colorfit', sourceBase: 'guan_yu', palette: 'red_gold', emblem: 'spear'},
+];
+const grid = document.getElementById('grid');
+const count = document.getElementById('count');
+const search = document.getElementById('search');
+const audit = document.getElementById('audit');
+let loaded = 0;
+let failed = 0;
+
+function card(item, index) {
+  const file = `${item.slug}.png`;
+  const card = document.createElement('section');
+  card.className = 'card';
+  card.dataset.key = `${item.slug} ${item.ko} ${item.group} ${item.sourceBase} ${item.palette}`.toLowerCase();
+  card.innerHTML = `
+    <div class="name">
+      <span>${index + 1}. ${item.ko} <span class="tag">${item.group}</span></span>
+      <small>${file}</small>
+    </div>
+    <div class="art"><img src="assets/generals/${item.assetDir}/${file}?v=roster200-20260511" alt="${item.ko} 전신"></div>
+    <div class="file">
+      ${item.assetDir}/${file}
+      <span class="source">source: ${item.sourceBase} / palette: ${item.palette} / emblem: ${item.emblem}</span>
+    </div>
+  `;
+  return card;
+}
+
+const cards = generals.map(card);
+cards.forEach(card => grid.appendChild(card));
+
+function updateAudit() {
+  const checked = loaded + failed;
+  audit.textContent = failed
+    ? `이미지 ${checked}/${generals.length}, 누락 ${failed}`
+    : `이미지 ${checked}/${generals.length}`;
+  audit.className = `audit ${checked === generals.length && !failed ? 'ok' : failed ? 'bad' : ''}`;
+}
+
+grid.querySelectorAll('img').forEach(img => {
+  img.addEventListener('load', () => { loaded++; updateAudit(); });
+  img.addEventListener('error', () => {
+    failed++;
+    const card = img.closest('.card');
+    card.classList.add('missing');
+    img.closest('.art').textContent = '이미지 누락';
+    updateAudit();
+  });
+});
+updateAudit();
+
+function filterCards() {
+  const q = search.value.trim().toLowerCase();
+  let shown = 0;
+  cards.forEach(card => {
+    const ok = !q || card.dataset.key.includes(q);
+    card.style.display = ok ? '' : 'none';
+    if (ok) shown++;
+  });
+  count.textContent = `${shown} / ${generals.length}`;
+}
+search.addEventListener('input', filterCards);
+filterCards();
+</script>
+</body>
+</html>

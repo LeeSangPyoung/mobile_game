@@ -1,0 +1,36 @@
+# 빌드 산출물
+app/android/app/build/
+app/android/build/
+app/android/.gradle/
+app/android/local.properties
+app/android/app/src/main/assets/
+app/node_modules/
+app/www/
+
+# macOS / 에디터
+.DS_Store
+.vscode/
+.idea/
+
+# 로그/임시
+*.log
+tmp/
+
+# 백업 / 실험 변형
+prototype.bak.html
+prototype.designerA.html
+prototype.designerB.html
+prototype.victoryA.html
+prototype.victoryB.html
+prototype.victoryC.html
+assets/map.png.bak
+
+# 미사용 대용량 장수 이미지 실험 (prototype.html에서 미참조)
+assets/generals/busts_extra_70/
+assets/generals/busts_extra_70_colorfit/
+assets/generals/busts_extra_100/
+assets/generals/busts_extra_100_colorfit/
+assets/generals/busts_new_170/
+assets/generals/busts_fast_170/
+assets/generals/mobile_fullbody/
+assets/generals/battle_faces/

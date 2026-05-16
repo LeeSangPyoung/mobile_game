@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>여정 지도 버튼 테스트</title>
+  <style>
+    :root {
+      --page-bg: #111311;
+      --gold: #f5c76f;
+      --gold-deep: #9b6530;
+      --ink: #22160c;
+      --green: #183c25;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(245, 199, 111, 0.12), transparent 38%),
+        #0e100f;
+      color: #f8e5bd;
+      font-family: ui-serif, Georgia, "Apple SD Gothic Neo", "Noto Serif KR", serif;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+    }
+
+    .viewer {
+      width: min(100%, 390px);
+      height: min(100vh - 36px, 820px);
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 10px;
+    }
+
+    .chapter-tabs {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .chapter-tab {
+      height: 34px;
+      border: 1px solid rgba(245, 199, 111, 0.5);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #2b2a20, #171711);
+      color: #f2d493;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 2px 0 rgba(0,0,0,0.55);
+    }
+
+    .chapter-tab.is-active {
+      background: linear-gradient(180deg, #3d2a14, #1e1409);
+      color: #fff2bd;
+      border-color: var(--gold);
+    }
+
+    .phone-frame {
+      min-height: 0;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #080908;
+      border: 1px solid rgba(255, 232, 160, 0.25);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+    }
+
+    .map-scroll {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(245,199,111,0.55) rgba(0,0,0,0.25);
+    }
+
+    .journey-map {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 307 / 1024;
+      min-height: 940px;
+      background-image: var(--map-bg);
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      isolation: isolate;
+    }
+
+    .journey-map::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.2), transparent 13%, transparent 87%, rgba(0,0,0,0.15)),
+        linear-gradient(90deg, rgba(0,0,0,0.2), transparent 9%, transparent 91%, rgba(0,0,0,0.2));
+      z-index: 1;
+    }
+
+    .chapter-title {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      width: min(72%, 240px);
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      border: 3px solid #c6944d;
+      background:
+        linear-gradient(180deg, rgba(31, 70, 43, 0.98), rgba(18, 48, 30, 0.98));
+      box-shadow:
+        inset 0 0 0 2px rgba(255, 228, 149, 0.52),
+        inset 0 2px 0 rgba(255,255,255,0.16),
+        4px 6px 0 rgba(0,0,0,0.68),
+        0 8px 18px rgba(0,0,0,0.28);
+      color: #ffe8af;
+      font-size: clamp(24px, 8.1vw, 33px);
+      font-weight: 900;
+      letter-spacing: 0;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.7);
+      white-space: nowrap;
+    }
+
+    .stage-node {
+      --size: clamp(40px, 12.5vw, 48px);
+      position: absolute;
+      left: calc(var(--x) * 1%);
+      top: calc(var(--y) * 1%);
+      z-index: 4;
+      width: var(--size);
+      height: var(--size);
+      transform: translate(-50%, -50%);
+      border: 0;
+      border-radius: 50%;
+      padding: 0;
+      cursor: pointer;
+      color: #fff1c9;
+      background: transparent;
+      -webkit-tap-highlight-color: transparent;
+      filter: drop-shadow(4px 6px 2px rgba(0,0,0,0.58));
+    }
+
+    .stage-node::before {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      background:
+        conic-gradient(from 25deg, #2b180c, #f4c46a, #6f401a, #ffe09a, #2b180c);
+      box-shadow: inset 0 0 0 2px rgba(34, 20, 10, 0.75);
+    }
+
+    .stage-node::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 31% 22%, #fff0b8 0 8%, #c58b3c 30%, #62401e 66%, #20140b 100%);
+      border: 2px solid #140d08;
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,0.42),
+        inset 0 -4px 5px rgba(0,0,0,0.48);
+    }
+
+    .stage-node span {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(18px, 5.1vw, 22px);
+      font-weight: 900;
+      line-height: 1;
+      color: #fff4cd;
+      text-shadow:
+        0 2px 0 #2a170a,
+        1px 0 0 #2a170a,
+        -1px 0 0 #2a170a;
+    }
+
+    .stage-node.is-cleared::after {
+      background: radial-gradient(circle at 31% 22%, #fff9c7 0 9%, #f4c94f 38%, #9c6823 72%, #281707 100%);
+    }
+
+    .stage-node.is-current {
+      --size: clamp(48px, 14.5vw, 56px);
+      z-index: 7;
+      animation: currentPulse 1.35s ease-in-out infinite;
+    }
+
+    .stage-node.is-current::before {
+      inset: -9px;
+      background: conic-gradient(from 25deg, #4c0708, #ffdc72, #c92520, #fff0a9, #4c0708);
+      box-shadow: 0 0 20px rgba(255, 188, 73, 0.75);
+    }
+
+    .stage-node.is-current::after {
+      background: radial-gradient(circle at 31% 22%, #fff4b5 0 8%, #fa7654 34%, #bd1620 68%, #4a0508 100%);
+    }
+
+    .stage-node.is-locked {
+      --size: clamp(34px, 10.5vw, 42px);
+      opacity: 0.9;
+      filter: grayscale(0.55) drop-shadow(3px 5px 2px rgba(0,0,0,0.55));
+    }
+
+    .stage-node.is-locked::before {
+      background: conic-gradient(from 25deg, #222, #aaa, #565656, #d6d6d0, #222);
+    }
+
+    .stage-node.is-locked::after {
+      background: radial-gradient(circle at 31% 22%, #ededde 0 8%, #88887f 42%, #3a3a36 100%);
+    }
+
+    .stage-node.is-boss {
+      --size: clamp(52px, 15.2vw, 62px);
+    }
+
+    .stage-node.is-boss span {
+      font-size: clamp(16px, 4.7vw, 20px);
+    }
+
+    @keyframes currentPulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -56%) scale(1.04); }
+    }
+
+    @media (max-width: 380px) {
+      body { padding: 0; }
+      .viewer { width: 100%; height: 100vh; gap: 0; }
+      .chapter-tabs { padding: 8px; background: #10110f; }
+      .phone-frame { border-radius: 0; border: 0; }
+      .journey-map { min-height: 1024px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="viewer" aria-label="여정 지도 미리보기">
+    <nav class="chapter-tabs" aria-label="챕터 선택">
+      <button class="chapter-tab is-active" type="button" data-chapter="1">1</button>
+      <button class="chapter-tab" type="button" data-chapter="2">2</button>
+      <button class="chapter-tab" type="button" data-chapter="3">3</button>
+      <button class="chapter-tab" type="button" data-chapter="4">4</button>
+      <button class="chapter-tab" type="button" data-chapter="5">5</button>
+    </nav>
+
+    <section class="phone-frame">
+      <div class="map-scroll">
+        <div class="journey-map" id="journeyMap"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const CHAPTERS = [
+      { title: '1-20 여정', start: 1, bg: './assets/maps/chapter1.png' },
+      { title: '21-40 여정', start: 21, bg: './assets/maps/chapter2.png' },
+      { title: '41-60 여정', start: 41, bg: './assets/maps/chapter3.png' },
+      { title: '61-80 여정', start: 61, bg: './assets/maps/chapter4.png' },
+      { title: '81-100 여정', start: 81, bg: './assets/maps/chapter5.png' },
+    ];
+
+    const PINS = [
+      [48, 94], [61, 89], [42, 84], [54, 79], [36, 74],
+      [49, 69], [63, 64], [46, 59], [58, 54], [40, 49],
+      [51, 44], [35, 39], [48, 34], [63, 30], [45, 27],
+      [55, 24], [37, 21], [49, 18], [59, 15], [50, 12],
+    ];
+
+    const map = document.getElementById('journeyMap');
+    const tabs = document.querySelectorAll('.chapter-tab');
+    let currentChapter = 0;
+    let selectedStage = 6;
+    const clearedThrough = 5;
+
+    function renderMap() {
+      const chapter = CHAPTERS[currentChapter];
+      map.style.setProperty('--map-bg', `url("${chapter.bg}")`);
+      map.innerHTML = `<div class="chapter-title">${chapter.title}</div>`;
+
+      PINS.forEach(([x, y], idx) => {
+        const stageNo = chapter.start + idx;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'stage-node';
+        button.style.setProperty('--x', x);
+        button.style.setProperty('--y', y);
+        button.setAttribute('aria-label', `${stageNo}장`);
+        button.dataset.stage = stageNo;
+
+        if (idx < clearedThrough) button.classList.add('is-cleared');
+        if (idx === selectedStage) button.classList.add('is-current');
+        if (idx > selectedStage + 4) button.classList.add('is-locked');
+        if (idx === 19) button.classList.add('is-boss');
+
+        button.innerHTML = `<span>${stageNo}</span>`;
+        button.addEventListener('click', () => {
+          if (button.classList.contains('is-locked')) return;
+          selectedStage = idx;
+          renderMap();
+        });
+        map.appendChild(button);
+      });
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        currentChapter = Number(tab.dataset.chapter) - 1;
+        selectedStage = 6;
+        tabs.forEach((el) => el.classList.toggle('is-active', el === tab));
+        renderMap();
+      });
+    });
+
+    renderMap();
+  </script>
+</body>
+</html>
