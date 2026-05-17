@@ -13275,13 +13275,36 @@ function startIntroDialog() {
   // 한 번만 바인딩
   if (!overlay._bound) {
     overlay._bound = true;
-    overlay.addEventListener('click', (e) => {
-      if (e.target && e.target.id === 'idgSkip') {
+    let lastIntroInputAt = 0;
+    let suppressIntroClickUntil = 0;
+    const handleIntroInput = (e) => {
+      if (!introDialog) return;
+      const now = performance.now();
+      if (e.type === 'click' && now < suppressIntroClickUntil) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      if (now - lastIntroInputAt < 120) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      lastIntroInputAt = now;
+      if (e.type !== 'click') suppressIntroClickUntil = now + 500;
+      e.preventDefault();
+      e.stopPropagation();
+      const skip = e.target && e.target.closest && e.target.closest('#idgSkip');
+      if (skip) {
         endIntroDialog();
       } else {
         advanceIntroDialog();
       }
-    });
+    };
+    overlay.addEventListener('pointerup', handleIntroInput, { passive: false });
+    overlay.addEventListener('touchend', handleIntroInput, { passive: false });
+    overlay.addEventListener('click', handleIntroInput, { passive: false });
+    overlay.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
   }
 }
 function _renderIntroLine() {
@@ -20777,6 +20800,11 @@ function loop(t) {
 // 디버그용 클릭 표시
 let lastClick = null;
 function pointerDownWrap(e) {
+  if (window._introDialogActive) {
+    e.preventDefault();
+    e.stopPropagation();
+    return;
+  }
   const p = getPos(e);
   lastClick = { x: p.x, y: p.y, t: performance.now() };
   pointerDown(e);
@@ -22661,6 +22689,8 @@ function closeTutorialOffer(accept) {
   /* War council intro: opposing commanders, battlefield tension. */
   #introDialog {
     align-items: stretch !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
     background:
       radial-gradient(circle at 50% 50%, rgba(255, 187, 72, 0.16), transparent 18%),
       linear-gradient(90deg, rgba(84, 12, 10, 0.58), transparent 38%, transparent 62%, rgba(10, 48, 82, 0.58)),
@@ -22835,6 +22865,8 @@ function closeTutorialOffer(accept) {
     display: none !important;
   }
   #introDialog .idg-skip {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
     background: rgba(8, 10, 16, 0.78) !important;
     border-color: rgba(255, 215, 96, 0.46) !important;
     box-shadow: 0 4px 12px rgba(0,0,0,0.55) !important;
