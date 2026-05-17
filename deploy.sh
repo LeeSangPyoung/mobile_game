@@ -4,7 +4,6 @@ cd /Users/leesp/workspace_game
 cp prototype.html app/www/index.html
 mkdir -p app/www/assets app/www/img
 rsync -a --delete --delete-excluded \
-  --exclude 'generals/battle_faces/' \
   --exclude 'generals/busts_extra_*/' \
   --exclude 'generals/busts_fast_170/' \
   --exclude 'generals/busts_new_170/' \

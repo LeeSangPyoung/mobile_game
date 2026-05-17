@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -102,15 +102,16 @@
     will-change: transform, opacity;
   }
   #msg::before {
-    content: "승 리";
+    content: "승리";
     position: absolute; top: -30px; left: 50%; transform: translateX(-50%) rotate(-1deg);
     width: 156px; height: 104px;
     display: flex; align-items: center; justify-content: center;
     padding-bottom: 12px;
     color: #fff6cf;
     font-family: 'Noto Serif KR', serif;
-    font-size: 34px; font-weight: 900; letter-spacing: 8px;
+    font-size: 38px; font-weight: 900; letter-spacing: 2px;
     line-height: 1;
+    white-space: nowrap;
     background:
       linear-gradient(90deg, rgba(84,4,4,0.35), transparent 18%, transparent 82%, rgba(84,4,4,0.35)),
       radial-gradient(circle at 36% 18%, rgba(255,255,255,0.24), transparent 34%),
@@ -126,26 +127,35 @@
     text-shadow: 0 3px 0 rgba(45,0,0,0.75);
   }
   #msg[data-result="confirm"]::before {
-    content: "퇴 각";
+    content: "퇴각";
+    top: -24px;
+    width: 134px;
+    height: 72px;
+    padding: 0 0 4px;
+    align-items: center;
+    border-radius: 16px;
+    clip-path: none;
     background:
-      linear-gradient(90deg, rgba(60,32,4,0.35), transparent 18%, transparent 82%, rgba(60,32,4,0.35)),
-      radial-gradient(circle at 36% 18%, rgba(255,255,255,0.28), transparent 34%),
-      linear-gradient(180deg, #f5b73a 0%, #c4811a 56%, #7a4604 100%);
+      radial-gradient(ellipse at 50% 13%, rgba(255,255,255,0.5), transparent 42%),
+      linear-gradient(180deg, #ffe58d 0%, #f2b536 58%, #d58716 100%);
     color: #2a1206;
-    text-shadow: 0 2px 0 rgba(255,236,180,0.55);
+    font-size: 31px;
+    letter-spacing: 5px;
+    line-height: 1;
+    text-shadow: 0 2px 0 rgba(255,236,180,0.72);
     border-color: #2a1206;
     box-shadow:
-      0 5px 0 #4a2a08,
-      0 12px 20px rgba(0,0,0,0.4),
-      inset 0 2px 0 rgba(255,250,220,0.45),
-      inset 0 -16px 24px rgba(80,40,4,0.35);
+      0 4px 0 #8a5a13,
+      0 11px 18px rgba(0,0,0,0.36),
+      inset 0 2px 0 rgba(255,250,220,0.55),
+      inset 0 -9px 16px rgba(80,40,4,0.18);
   }
   #msg[data-result="confirm"] #msgText {
     color: #2a1206; font-size: 17px; font-weight: 700; line-height: 1.5;
     margin-top: 6px;
   }
   #msg[data-result="defeat"]::before {
-    content: "패 배";
+    content: "패배";
     background:
       linear-gradient(90deg, rgba(0,0,0,0.34), transparent 18%, transparent 82%, rgba(0,0,0,0.34)),
       linear-gradient(180deg, #4b3a32 0%, #20120d 58%, #090403 100%);
@@ -5736,16 +5746,236 @@
     box-shadow: none !important;
   }
 
+  /* ===== 전투 직전 도발 컷씬 (만화풍) ===== */
+  #introDialog {
+    position: fixed; inset: 0;
+    z-index: 6000;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(120,30,20,0.18), transparent 38%),
+      radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.32), rgba(0,0,0,0.88) 70%),
+      linear-gradient(180deg, rgba(0,0,0,0.62), rgba(0,0,0,0.92));
+    backdrop-filter: blur(6px) saturate(1.1);
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    cursor: pointer;
+    animation: idgFadeIn 0.28s ease-out;
+  }
+  /* 화면 전체에 빠르게 도는 강조선 (속도감) */
+  #introDialog::before {
+    content: "";
+    position: absolute; inset: -10% -10% -10% -10%;
+    background:
+      repeating-linear-gradient(110deg, rgba(255,255,255,0.05) 0 2px, transparent 2px 22px);
+    opacity: 0.32;
+    animation: idgSpeed 1.6s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes idgSpeed { from { transform: translateX(0); } to { transform: translateX(-40px); } }
+  @keyframes idgFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .idg-stage {
+    position: relative;
+    width: 100%;
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 18px 18px calc(28px + env(safe-area-inset-bottom));
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .idg-portrait {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 44%;
+    aspect-ratio: 3 / 4;
+    border-radius: 16px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 30%, #4a2814, #1a0808 70%);
+    border: 3px solid #2a0810;
+    box-shadow:
+      0 0 0 2px #ffd060,
+      0 14px 28px rgba(0,0,0,0.7),
+      inset 0 2px 0 rgba(255,255,255,0.16);
+    transition: transform 0.36s cubic-bezier(.18,1.4,.32,1), filter 0.34s, box-shadow 0.34s;
+    filter: brightness(0.42) saturate(0.7) blur(0.4px);
+    transform: scale(0.94);
+  }
+  .idg-portrait.active {
+    filter: brightness(1.08) saturate(1.12);
+    transform: scale(1.06);
+    box-shadow:
+      0 0 0 4px #ffe07a,
+      0 0 38px rgba(255,200,80,0.78),
+      0 22px 38px rgba(0,0,0,0.7),
+      inset 0 2px 0 rgba(255,255,255,0.22);
+    z-index: 3;
+  }
+  .idg-portrait.idg-left { border-color: #5a0808; }
+  .idg-portrait.idg-left.active { box-shadow: 0 0 0 3px #ff6052, 0 0 28px rgba(255,80,60,0.55), 0 18px 32px rgba(0,0,0,0.7), inset 0 2px 0 rgba(255,255,255,0.2); }
+  .idg-portrait.idg-right { border-color: #08284a; }
+  .idg-portrait.idg-right.active { box-shadow: 0 0 0 3px #60c8ff, 0 0 28px rgba(80,180,255,0.55), 0 18px 32px rgba(0,0,0,0.7), inset 0 2px 0 rgba(255,255,255,0.2); }
+  .idg-portrait img {
+    width: 110%;
+    height: 110%;
+    object-fit: cover;
+    position: absolute;
+    left: -5%; top: -5%;
+    filter: drop-shadow(0 6px 8px rgba(0,0,0,0.5));
+  }
+  .idg-name {
+    position: absolute;
+    left: 50%; bottom: 8px;
+    transform: translateX(-50%);
+    padding: 4px 12px 5px;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 14px; font-weight: 900;
+    color: #fff5d8;
+    background: linear-gradient(180deg, rgba(20,8,4,0.94), rgba(8,3,1,0.94));
+    border: 1.5px solid #d8a936;
+    border-radius: 9px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.7);
+    white-space: nowrap;
+    letter-spacing: 1.2px;
+  }
+  .idg-portrait.idg-left .idg-name { color: #ffb0a0; border-color: #ff6052; }
+  .idg-portrait.idg-right .idg-name { color: #80d6ff; border-color: #60c8ff; }
+  .idg-bubble {
+    position: absolute;
+    left: 50%; bottom: 50%;
+    transform: translateX(-50%);
+    width: min(460px, 94%);
+    min-height: 92px;
+    padding: 20px 22px;
+    color: #2a0d05;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(255,255,255,0.7), transparent 25%),
+      repeating-linear-gradient(135deg, rgba(88,45,18,0.04) 0 2px, transparent 2px 9px),
+      linear-gradient(180deg, #fff1c7 0%, #e2b966 100%);
+    border: 3px solid #2a0810;
+    border-radius: 18px;
+    box-shadow:
+      0 0 0 3px #f0b531,
+      0 0 24px rgba(255,200,80,0.32),
+      0 18px 32px rgba(0,0,0,0.65),
+      inset 0 2px 0 rgba(255,248,219,0.45);
+    text-align: center;
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 900;
+    font-size: 20px;
+    line-height: 1.5;
+    letter-spacing: 0.3px;
+    word-break: keep-all;
+    white-space: pre-line;
+    opacity: 0;
+    animation: idgBubblePop 0.36s cubic-bezier(.18,1.5,.32,1) forwards;
+  }
+  .idg-bubble.from-left  { transform: translateX(-50%); }
+  .idg-bubble.from-right { transform: translateX(-50%); }
+  @keyframes idgBubblePop {
+    0% { opacity: 0; transform: translateX(-50%) translateY(8px) scale(0.92); }
+    100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  }
+  .idg-bubble::after, .idg-bubble::before {
+    content: "";
+    position: absolute;
+    bottom: -19px;
+    width: 0; height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 19px solid #f0b531;
+    transition: left 0.3s ease, right 0.3s ease;
+  }
+  .idg-bubble::after {
+    bottom: -15px;
+    border-left-width: 12px;
+    border-right-width: 12px;
+    border-top-width: 16px;
+    border-top-color: #fff1c7;
+  }
+  .idg-bubble.from-left::before,
+  .idg-bubble.from-left::after { left: 20%; right: auto; }
+  .idg-bubble.from-right::before,
+  .idg-bubble.from-right::after { right: 20%; left: auto; }
+  .idg-skip {
+    position: absolute;
+    top: max(14px, env(safe-area-inset-top));
+    right: max(14px, env(safe-area-inset-right));
+    z-index: 6001;
+    padding: 7px 14px 8px;
+    color: #fff;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px; font-weight: 800;
+    letter-spacing: 1px;
+    background: rgba(20,8,4,0.78);
+    border: 1.5px solid rgba(255,200,100,0.55);
+    border-radius: 999px;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+  }
+  .idg-skip:active { transform: translateY(1px); filter: brightness(0.92); }
+  .idg-hint {
+    position: absolute;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    left: 50%; transform: translateX(-50%);
+    color: rgba(255,245,216,0.62);
+    font-size: 11px; font-weight: 700; letter-spacing: 1px;
+    pointer-events: none;
+    animation: idgHintBlink 1.4s ease-in-out infinite;
+  }
+  @keyframes idgHintBlink { 0%,100% { opacity: 0.42; } 50% { opacity: 0.92; } }
+  @media (max-width: 390px) {
+    .idg-stage { padding: 14px 12px calc(22px + env(safe-area-inset-bottom)); }
+    .idg-bubble { font-size: 16px; padding: 13px 14px; bottom: 58%; }
+    .idg-name { font-size: 12px; }
+  }
+
   /* 선택 토스트 */
   #selectToast {
-    position: fixed; top: 18%; left: 50%; transform: translateX(-50%);
-    padding: 12px 24px; font-size: 16px; font-weight: 900; letter-spacing: 2px;
-    background: linear-gradient(180deg, #fff 0%, #fff5d8 100%);
-    color: #2a1810; border: 4px solid #2a1810; border-radius: 14px;
-    box-shadow: 0 5px 0 #2a1810, 0 12px 24px rgba(0,0,0,0.4);
+    position: fixed; top: 16%; left: 50%; transform: translateX(-50%);
+    min-width: min(320px, calc(100vw - 56px));
+    padding: 11px 18px 12px;
+    font-size: 15px; font-weight: 900; letter-spacing: 0;
+    text-align: center;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.76), transparent 34%),
+      linear-gradient(180deg, #f8fbff 0%, #d9e0ea 58%, #9aa8b8 100%);
+    color: #101722;
+    border: 1px solid rgba(68,82,99,0.74);
+    border-radius: 13px;
+    box-shadow:
+      0 0 0 2px rgba(236,243,255,0.46),
+      0 12px 28px rgba(0,0,0,0.48),
+      inset 0 1px 0 rgba(255,255,255,0.72);
     z-index: 150; pointer-events: none;
     opacity: 0; transition: opacity 0.18s;
     white-space: nowrap;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.72);
+  }
+  #selectToast::before {
+    content: none;
+    display: none;
+  }
+  #selectToast.toast-error {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.62), transparent 34%),
+      linear-gradient(180deg, #ffe0c7 0%, #d77855 62%, #8f2b22 100%);
+    border-color: rgba(92,23,17,0.76);
+    color: #240805;
+    text-shadow: 0 1px 0 rgba(255,232,210,0.64);
+  }
+  #selectToast.toast-error::before {
+    background: #6f1510;
+  }
+  #selectToast.toast-success {
+    border-color: rgba(68,82,99,0.80);
+    color: #101722;
   }
   #selectToast.show { opacity: 1; animation: toastPop 0.4s ease-out; }
   @keyframes toastPop {
@@ -5882,28 +6112,32 @@
     margin-top: 14px;
   }
   #msgStars span {
-    width: 44px; height: 44px;
+    width: 50px; height: 50px;
     display: inline-flex; align-items: center; justify-content: center;
-    font-size: 35px; line-height: 1;
-    font-family: 'Noto Serif KR', serif;
+    font-size: 0; line-height: 0;
+    color: transparent;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
     transform: rotate(-6deg);
-    filter: drop-shadow(0 4px 0 rgba(39,7,2,0.75));
+    filter: drop-shadow(0 7px 8px rgba(39,7,2,0.48));
   }
   #msgStars span:nth-child(2) {
-    width: 52px; height: 52px;
-    font-size: 42px;
+    width: 60px; height: 60px;
     transform: translateY(-5px);
   }
   #msgStars .star-on {
-    color: #ffdb37;
-    -webkit-text-stroke: 2px #5b1708;
-    text-shadow: 0 2px 0 #fff3a2, 0 0 14px rgba(255,211,47,0.5);
+    background-image: url('./assets/ui/result_star_on.png');
+    animation: resultStarGlow 1.8s ease-in-out infinite;
   }
   #msgStars .star-off {
-    color: #7f6a54;
-    -webkit-text-stroke: 2px #2a1208;
-    opacity: 0.62;
-    text-shadow: 0 1px 0 rgba(255,245,216,0.2);
+    background-image: url('./assets/ui/result_star_off.png');
+    opacity: 0.72;
+    filter: saturate(0.75) brightness(0.82) drop-shadow(0 5px 7px rgba(39,7,2,0.36));
+  }
+  @keyframes resultStarGlow {
+    0%, 100% { filter: drop-shadow(0 7px 8px rgba(39,7,2,0.48)) drop-shadow(0 0 7px rgba(255,206,53,0.20)); }
+    50% { filter: drop-shadow(0 7px 8px rgba(39,7,2,0.48)) drop-shadow(0 0 13px rgba(255,228,98,0.46)); }
   }
   #msgGold {
     position: relative; z-index: 1;
@@ -6772,7 +7006,7 @@
     top: max(8px, env(safe-area-inset-top)) !important;
     left: max(8px, env(safe-area-inset-left)) !important;
     min-width: 154px !important;
-    padding: 10px 11px !important;
+    padding: 10px 44px 10px 11px !important;
     border-radius: 16px !important;
     background: rgba(6, 12, 24, 0.64) !important;
     border: 1px solid rgba(255,255,255,0.13) !important;
@@ -7772,7 +8006,7 @@
     aspect-ratio: auto !important;
     background:
       linear-gradient(180deg, rgba(5,8,14,0.02) 0%, rgba(5,8,14,0.03) 48%, rgba(5,8,14,0.9) 100%),
-      url('./assets/main_hero_roblox_lubu_horse_01.png') center top / cover no-repeat !important;
+      url('./assets/main_hero_moonlit_navy_bgonly_02.png') center top / cover no-repeat !important;
     filter: none !important;
   }
   .home-hero {
@@ -8985,12 +9219,18 @@
     filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4)) !important;
   }
   #enhanceScreen .enh-fodder-slot .x {
-    top: 3px !important;
-    right: 5px !important;
-    color: #ffe58c !important;
-    font-size: 15px !important;
-    line-height: 1 !important;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.85) !important;
+    width: 22px !important;
+    height: 22px !important;
+    top: -7px !important;
+    right: -7px !important;
+    display: block !important;
+    overflow: hidden !important;
+    color: transparent !important;
+    background: url('./assets/ui/enh_icon_remove.png') center / 100% 100% no-repeat !important;
+    text-shadow: none !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    z-index: 5 !important;
   }
   #enhanceScreen .enh-fodder-name {
     padding: 14px 2px 4px !important;
@@ -9949,6 +10189,222 @@
     padding-top: 7px !important;
   }
 
+  /* Unified image-backed UI skin */
+  #stageSelect .top-stats-bar .ts-item,
+  #enhanceScreen .top-stats-bar .ts-item,
+  #upgradeScreen .top-stats-bar .ts-item {
+    height: 28px !important;
+    min-width: 0 !important;
+    padding: 0 7px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: url('./assets/ui/ui_stat_chip.png') center / 100% 100% no-repeat !important;
+    box-shadow: none !important;
+    line-height: 1 !important;
+  }
+  #stageSelect .topbar {
+    grid-template-columns: 42px minmax(0, 1fr) 0 !important;
+    min-height: 42px !important;
+    gap: 6px !important;
+    padding: 4px 9px !important;
+    background: rgba(6,12,24,0.5) !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+  #stageSelect .topbar .back,
+  #infoBack,
+  #gameBackBtn {
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: url('./assets/ui/ui_back_button.png') center / 100% 100% no-repeat !important;
+    box-shadow: none !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    text-shadow: none !important;
+    overflow: hidden !important;
+  }
+  #stageSelect .topbar .title {
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: url('./assets/ui/ui_header_title.png') center / 100% 100% no-repeat !important;
+    box-shadow: none !important;
+    color: #fff1c6 !important;
+    font-size: clamp(14px, 3.8vw, 18px) !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.45) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  #stageSelect .stage-map-wrap {
+    height: calc(100% - 94px) !important;
+  }
+
+  .deploy-back {
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    background: url('./assets/ui/ui_back_button.png') center / 100% 100% no-repeat !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+  #generalSelectScreen .deploy-top,
+  #generalManageScreen .deploy-top {
+    grid-template-columns: 42px minmax(0, 1fr) 58px !important;
+    min-height: 46px !important;
+    gap: 6px !important;
+  }
+  #generalSelectScreen .deploy-heading,
+  #generalManageScreen .deploy-heading,
+  #enhanceScreen .enh-title,
+  #upgradeScreen .upg-title {
+    min-height: 42px !important;
+    height: 42px !important;
+    padding: 0 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: url('./assets/ui/ui_header_blue_title.png') center / 100% 100% no-repeat !important;
+    box-shadow: none !important;
+    color: #fff2a8 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+  }
+  #generalSelectScreen .deploy-count,
+  #generalManageScreen .deploy-count,
+  #enhanceScreen .enh-pill,
+  #upgradeScreen .upg-gold {
+    min-height: 38px !important;
+    height: 38px !important;
+    padding: 0 7px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: url('./assets/ui/ui_pill_dark.png') center / 100% 100% no-repeat !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+    line-height: 1 !important;
+  }
+
+  .info-buttons button,
+  .deploy-actions button,
+  #msgButtons button,
+  .tut-next,
+  .stage-tutorial-btn,
+  #enhanceScreen .enh-go,
+  #upgradeScreen .upg-buy,
+  .er-action-btn {
+    min-height: 46px !important;
+    padding: 0 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: url('./assets/ui/ui_button_dark.png') center / 100% 100% no-repeat !important;
+    box-shadow: none !important;
+    color: #fff4d2 !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.55) !important;
+    overflow: hidden !important;
+  }
+  .info-buttons .primary,
+  .deploy-actions .deploy-primary,
+  #msgButtons button.btn-primary,
+  #enhanceScreen .enh-go,
+  #upgradeScreen .upg-buy:not(.disabled):not(.maxed),
+  .er-action-btn:not(.secondary),
+  .stage-tutorial-btn {
+    background-image: url('./assets/ui/ui_button_primary.png') !important;
+    color: #231302 !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.55) !important;
+  }
+  .deploy-actions .deploy-secondary,
+  .er-action-btn.secondary,
+  #infoUpg {
+    background-image: url('./assets/ui/ui_button_blue.png') !important;
+    color: #ffffff !important;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.45) !important;
+  }
+  #enhanceScreen .enh-go:disabled,
+  #upgradeScreen .upg-buy.disabled {
+    background-image: url('./assets/ui/ui_button_disabled.png') !important;
+    color: rgba(235,243,255,0.58) !important;
+    text-shadow: none !important;
+  }
+  #upgradeScreen .upg-buy {
+    min-height: 54px !important;
+  }
+
+  .formation-tab,
+  #enhanceScreen .enh-mode-tab {
+    min-height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: url('./assets/ui/ui_tab_idle.png') center / 100% 100% no-repeat !important;
+    box-shadow: none !important;
+    color: rgba(240,246,255,0.86) !important;
+    line-height: 1 !important;
+  }
+  .formation-tab.active,
+  #enhanceScreen .enh-mode-tab.active {
+    background-image: url('./assets/ui/ui_tab_active.png') !important;
+    color: #211302 !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.55) !important;
+  }
+
+  .side-rail-btn {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: url('./assets/ui/ui_square_tool.png') center / 100% 100% no-repeat !important;
+    box-shadow: none !important;
+  }
+  .home-dock button {
+    min-height: 42px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: url('./assets/ui/ui_dock_btn.png') center / 100% 100% no-repeat !important;
+    box-shadow: none !important;
+    color: #fff4d2 !important;
+  }
+  .manage-summary-card,
+  .formation-block,
+  .deploy-stage-bar,
+  .info-card {
+    border: 0 !important;
+    background:
+      radial-gradient(circle at 50% -18%, rgba(247,201,90,0.1), transparent 38%),
+      url('./assets/ui/ui_panel_soft.png') center / 100% 100% no-repeat !important;
+    box-shadow: none !important;
+  }
+
   /* Prisoner judgment scene pass */
   #prisonerScreen {
     align-items: stretch !important;
@@ -10233,6 +10689,10 @@
     transform: translateY(2px) scale(0.99) !important;
     filter: brightness(0.96) !important;
   }
+  #prisonerScreen .prison-speaker {
+    border-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
   #prisonerScreen .prison-cutin {
     left: 0 !important;
     right: 0 !important;
@@ -10353,6 +10813,9 @@
       <button class="side-rail-btn" id="btnMainExchange" aria-label="별 골드 교환">
         <span class="srb-icon srb-kor">星</span><span class="srb-label">별교환</span>
       </button>
+      <button class="side-rail-btn" id="btnMainSettings" aria-label="설정">
+        <span class="srb-icon srb-kor">設</span><span class="srb-label">설정</span>
+      </button>
     </div>
     <button class="tutorial-btn" id="btnTutorial" aria-label="튜토리얼">튜토리얼</button>
     <nav class="home-dock" aria-label="하단 메뉴">
@@ -10403,6 +10866,12 @@
 
   <div class="stage-quick-actions">
     <button class="stage-tutorial-btn" id="stageTutorialBtn" type="button" aria-label="튜토리얼">튜토리얼</button>
+    <button class="stage-tools-btn" id="stageToolsBtn" type="button" aria-label="관리 메뉴"></button>
+    <div class="stage-tools-menu" id="stageToolsMenu" aria-hidden="true">
+      <button type="button" data-stage-tool="generals">장수관리</button>
+      <button type="button" data-stage-tool="enhance">장수강화</button>
+      <button type="button" data-stage-tool="power">전투력관리</button>
+    </div>
   </div>
 
   <!-- 여정 지도 — 세로 스크롤, 구불구불한 길 + 핀 + 지명 -->
@@ -10445,7 +10914,7 @@
 <div id="generalSelectScreen" class="screen" style="display:none">
   <div class="deploy-shell">
     <div class="deploy-top">
-      <button class="deploy-back" id="deployBack" aria-label="뒤로가기">←</button>
+      <button class="deploy-back" id="deployBack" aria-label="뒤로가기"></button>
       <div class="deploy-heading">출 전 장 수</div>
       <div class="deploy-count" id="deployCount">0 / 10</div>
     </div>
@@ -10474,7 +10943,7 @@
 <div id="generalManageScreen" class="screen" style="display:none">
   <div class="deploy-shell">
     <div class="deploy-top">
-      <button class="deploy-back" id="manageBack" aria-label="뒤로가기">←</button>
+      <button class="deploy-back" id="manageBack" aria-label="뒤로가기"></button>
       <div class="deploy-heading">내 장수</div>
       <div class="deploy-count" id="manageCount">0명</div>
     </div>
@@ -10526,7 +10995,7 @@
     <div class="ts-item">⚔️ <span class="ts-bp">1000</span></div>
   </div>
   <div class="enh-header">
-    <button class="back-btn" id="enhBack">✓ 확인</button>
+    <button class="back-btn" id="enhBack" aria-label="뒤로가기"></button>
     <div class="enh-title">장수 강화</div>
     <div class="enh-pill" id="enhCostPill">★1 + 200G</div>
   </div>
@@ -10586,7 +11055,7 @@
     <div class="ts-item" onclick="showBpDetail()" style="cursor:pointer">⚔️ <span class="ts-bp">1000</span></div>
   </div>
   <div class="upg-header">
-    <button class="back-btn" id="upgBack">✓ 확인</button>
+    <button class="back-btn" id="upgBack" aria-label="뒤로가기"></button>
     <div class="upg-title">전투력 관리</div>
     <div class="upg-gold" id="upgGold">0 G</div>
   </div>
@@ -10606,6 +11075,7 @@
   <div style="color:#d4a850; font-weight:700; margin-top:4px; font-size:13px;" id="stageLabel"></div>
   <div id="dbg" style="display:none"></div>
   <div id="warning" style="display:none; color:#ff3040; font-weight:900; font-size:13px; margin-top:4px; text-shadow:0 0 6px #ff0010;">⚠ 성 함락 위기!</div>
+  <button id="gameBackBtn" style="display:none" aria-label="줄행랑">走</button>
   <div class="hint">
     <span style="color:#c0c8d0">창</span>>
     <span style="color:#c89060">기</span>>
@@ -10613,13 +11083,30 @@
     <span style="color:#c0c8d0">창</span>
   </div>
 </div>
-<button id="gameBackBtn" style="display:none" aria-label="퇴각">퇴각</button>
-
 <!-- ===== 결과 모달 ===== -->
 <div id="selectToast"></div>
 
 <div id="msgBackdrop"></div>
 <div id="msg"><div id="msgText"></div><div id="msgStars"></div><div id="msgButtons"></div></div>
+
+<!-- 전투 직전 만화풍 도발 컷씬 (적장 ↔ 아군 1대장) -->
+<div id="introDialog" style="display:none">
+  <div class="idg-skip" id="idgSkip">건너뛰기 ▶</div>
+  <div class="idg-stage">
+    <div class="idg-portrait idg-left" id="idgLeft">
+      <img id="idgLeftImg" alt="">
+      <div class="idg-name" id="idgLeftName"></div>
+    </div>
+    <div class="idg-portrait idg-right" id="idgRight">
+      <img id="idgRightImg" alt="">
+      <div class="idg-name" id="idgRightName"></div>
+    </div>
+    <div class="idg-bubble" id="idgBubble">
+      <div class="idg-line" id="idgLine"></div>
+    </div>
+    <div class="idg-hint" id="idgHint">탭해서 다음 ▸</div>
+  </div>
+</div>
 
 <!-- 튜토리얼 -->
 <div id="tutorial">
@@ -10858,6 +11345,11 @@ if (!SAVE.upgrades) SAVE.upgrades = { castleAtk: 0, castleDef: 0, prodRate: 0, u
 for (const k of ['castleAtk','castleDef','prodRate','unitAtk','unitDef']) {
   if (typeof SAVE.upgrades[k] !== 'number') SAVE.upgrades[k] = 0;
 }
+if (!SAVE.audioSettings || typeof SAVE.audioSettings !== 'object') SAVE.audioSettings = {};
+if (typeof SAVE.audioSettings.prepVolume !== 'number') SAVE.audioSettings.prepVolume = 45;
+if (typeof SAVE.audioSettings.battleVolume !== 'number') SAVE.audioSettings.battleVolume = 45;
+if (typeof SAVE.audioSettings.prepMuted !== 'boolean') SAVE.audioSettings.prepMuted = false;
+if (typeof SAVE.audioSettings.battleMuted !== 'boolean') SAVE.audioSettings.battleMuted = false;
 // 별 교환용 잔여 별
 if (typeof SAVE.starsAvailable !== 'number') {
   SAVE.starsAvailable = Object.values(SAVE.stars||{}).reduce((a,b)=>a+(b||0), 0);
@@ -10988,6 +11480,26 @@ const GENERAL_ROSTER = [
   { id: 'xu_huang', name: '서황', buffs: { castleAtk: 0.07, unitDef: 0.04 } },
   { id: 'wen_chou', name: '문추', buffs: { unitAtk: 0.06, unitDef: 0.02 } },
   { id: 'meng_huo', name: '맹획', buffs: { unitDef: 0.05, unitAtk: 0.04 } },
+  { id: 'hua_xiong', name: '화웅', buffs: { unitAtk: 0.07, castleAtk: 0.04 } },
+  { id: 'gao_shun', name: '고순', buffs: { unitDef: 0.07, castleAtk: 0.05 } },
+  { id: 'chen_gong', name: '진궁', buffs: { castleDef: 0.06, prodRate: 0.04 } },
+  { id: 'li_ru', name: '이유', buffs: { castleAtk: 0.05, prodRate: 0.05 } },
+  { id: 'li_jue', name: '이각', buffs: { unitAtk: 0.05, unitDef: 0.04 } },
+  { id: 'guo_si', name: '곽사', buffs: { unitAtk: 0.05, castleAtk: 0.03 } },
+  { id: 'zhang_ji', name: '장제', buffs: { castleDef: 0.05, unitDef: 0.04 } },
+  { id: 'zhang_xiu', name: '장수', buffs: { unitAtk: 0.06, unitDef: 0.04 } },
+  { id: 'jia_xu', name: '가후', buffs: { castleAtk: 0.06, castleDef: 0.05, prodRate: 0.03 } },
+  { id: 'xun_yu', name: '순욱', buffs: { prodRate: 0.08, castleDef: 0.05 } },
+  { id: 'xun_you', name: '순유', buffs: { unitDef: 0.05, prodRate: 0.05 } },
+  { id: 'cheng_yu', name: '정욱', buffs: { castleAtk: 0.05, castleDef: 0.05 } },
+  { id: 'cao_ren', name: '조인', buffs: { castleDef: 0.08, unitDef: 0.05 } },
+  { id: 'cao_hong', name: '조홍', buffs: { unitAtk: 0.05, castleDef: 0.04 } },
+  { id: 'cao_pi', name: '조비', buffs: { castleAtk: 0.05, castleDef: 0.05, prodRate: 0.03 } },
+  { id: 'cao_zhang', name: '조창', buffs: { unitAtk: 0.08, unitDef: 0.03 } },
+  { id: 'cao_zhi', name: '조식', buffs: { prodRate: 0.07, castleDef: 0.03 } },
+  { id: 'cao_ang', name: '조앙', buffs: { unitDef: 0.05, castleDef: 0.04 } },
+  { id: 'cao_chun', name: '조순', buffs: { unitAtk: 0.06, unitDef: 0.05 } },
+  { id: 'cao_rui', name: '조예', buffs: { castleDef: 0.06, prodRate: 0.04 } },
 ].map(g => ({
   ...g,
   stat: g.stat || formatGeneralBuffs(g.buffs),
@@ -11142,6 +11654,8 @@ function showScreen(name) {
   } else {
     document.body.classList.remove('in-game');
     if (typeof stopWeather === 'function') stopWeather();
+    // 도발 컷씬도 강제 종료 (게임 화면을 벗어났으면 컷씬도 필요 없음)
+    if (typeof endIntroDialog === 'function') try { endIntroDialog(); } catch(_) {}
     // 시뮬레이션 상태 초기화 — 다른 화면에서 백그라운드로 도는 일 막음
     if (typeof armies !== 'undefined') armies.length = 0;
     if (typeof arrows !== 'undefined') arrows.length = 0;
@@ -11263,6 +11777,27 @@ function showScreen(name) {
 
 let selectedStage = 0;
 let _postUpgradeStage = null;
+function setPostBattleReturnStage(idx) {
+  _postUpgradeStage = (typeof idx === 'number')
+    ? Math.max(0, Math.min(STAGES.length - 1, idx))
+    : null;
+  if (_postUpgradeStage != null) selectedStage = _postUpgradeStage;
+}
+function returnFromUtilityScreen() {
+  if (_postUpgradeStage != null) {
+    const idx = _postUpgradeStage;
+    _postUpgradeStage = null;
+    goToStageSelectAt(idx);
+  } else {
+    goToMenu();
+  }
+}
+function openPostBattleUtility(kind, idx) {
+  setPostBattleReturnStage(idx);
+  if (kind === 'generals') showGeneralManage();
+  else if (kind === 'enhance') showEnhanceScreen();
+  else if (kind === 'power') goToUpgrade();
+}
 function goToStageSelectAt(idx) {
   if (typeof idx === 'number') {
     selectedStage = Math.max(0, Math.min(STAGES.length - 1, idx));
@@ -11270,7 +11805,44 @@ function goToStageSelectAt(idx) {
   }
   showScreen('stageSelect');
   renderStageGrid();
+  updateStageTutorialEntry();
   refreshTopStats();
+}
+
+function shouldFeatureStageTutorial() {
+  return !SAVE.tutorialDone && !SAVE.tutorialPrompted;
+}
+
+function updateStageTutorialEntry() {
+  const wrap = document.querySelector('#stageSelect .stage-quick-actions');
+  const btn = document.getElementById('stageTutorialBtn');
+  if (!wrap || !btn) return;
+  const featured = shouldFeatureStageTutorial();
+  wrap.classList.toggle('is-featured', featured);
+  wrap.classList.toggle('is-compact', !featured);
+  closeStageToolsMenu();
+  btn.setAttribute('aria-label', featured ? '튜토리얼 시작' : '튜토리얼 다시 보기');
+  btn.title = featured ? '튜토리얼 시작' : '튜토리얼 다시 보기';
+}
+
+function closeStageToolsMenu() {
+  const btn = document.getElementById('stageToolsBtn');
+  const menu = document.getElementById('stageToolsMenu');
+  if (btn) btn.classList.remove('is-open');
+  if (menu) {
+    menu.classList.remove('is-open');
+    menu.setAttribute('aria-hidden', 'true');
+  }
+}
+
+function toggleStageToolsMenu() {
+  const btn = document.getElementById('stageToolsBtn');
+  const menu = document.getElementById('stageToolsMenu');
+  if (!btn || !menu) return;
+  const open = !menu.classList.contains('is-open');
+  btn.classList.toggle('is-open', open);
+  menu.classList.toggle('is-open', open);
+  menu.setAttribute('aria-hidden', open ? 'false' : 'true');
 }
 
 function goToMenu() {
@@ -11373,16 +11945,16 @@ function refreshTopStats() {
 function confirmExitBattle() {
   if (msgShown) return;
   const phrases = [
-    '여기서 군을 물릴 셈인가?\n전장의 사기는 다시 모으기 어렵소.',
-    '주공, 정녕 퇴각하시겠습니까?\n병사들의 피땀이 헛되이 흩어집니다.',
-    '아직 결판이 나지 않았습니다.\n진정 군기를 거두시겠습니까?',
-    '전선을 버리시겠습니까?\n패주(敗走)는 이번 전투를 포기함을 뜻합니다.',
+    '아직 결판이 나지 않았습니다. 군기를 거두시겠습니까?',
+    '전황은 아직 끝나지 않았습니다. 지금 물러나시겠습니까?',
+    '병사들이 명을 기다립니다. 정말 줄행랑치시겠습니까?',
+    '이 전투를 포기하고 진영으로 돌아가시겠습니까?',
   ];
   const text = phrases[Math.floor(Math.random() * phrases.length)];
   if (typeof showMsg === 'function') {
     showMsg(text, undefined, [
       { text: '계속 싸운다', variant: 'primary', action: () => {} },
-      { text: '퇴각한다', action: () => goToStageSelect() },
+      { text: '줄행랑', action: () => goToStageSelect() },
     ], undefined, 'confirm');
   } else if (confirm('전장에서 물러나시겠습니까?')) {
     goToStageSelect();
@@ -11406,6 +11978,7 @@ function goToStageSelect() {
   selectedStage = target;
   showScreen('stageSelect');
   renderStageGrid();
+  updateStageTutorialEntry();
   refreshTopStats();
 }
 function goToStageInfo(idx) {
@@ -11428,6 +12001,9 @@ function goToStageInfo(idx) {
   showScreen('stageInfo');
 }
 function launchTutorialStage() {
+  SAVE.tutorialPrompted = true;
+  saveProgress();
+  updateStageTutorialEntry();
   selectedStage = 0;
   startStage();
 }
@@ -11443,6 +12019,23 @@ const ENHANCE_SUCCESS = [0, 0.90, 0.60, 0.40, 0.15, 0.05]; // index = current lv
 const ENHANCE_FODDER = [0, 1, 2, 3, 4, 5];                 // 재료 수 (현재 lv → +1 시도)
 const ENHANCE_COST_STARS = 1;
 const ENHANCE_COST_GOLD = 200;
+function enhanceSuccessRate(lv, fodders) {
+  const baseRate = ENHANCE_SUCCESS[lv] || 0;
+  const maxFodder = ENHANCE_FODDER[lv] || 0;
+  if (!baseRate || !maxFodder) return 0;
+  const emptyRate = Math.max(0.01, baseRate * 0.12);
+  const normalGain = (baseRate - emptyRate) / maxFodder;
+  const bonusCap = Math.min(0.95, baseRate + 0.25);
+  const list = Array.isArray(fodders) ? fodders.slice(0, maxFodder) : [];
+  const rate = list.reduce((sum, f) => {
+    const flv = Math.max(1, Math.min(ENHANCE_MAX_LV, (f && f.lv) || 1));
+    return sum + normalGain * (1 + (flv - 1) * 0.35);
+  }, emptyRate);
+  return Math.max(0.01, Math.min(bonusCap, rate));
+}
+function enhanceSuccessPct(lv, fodders) {
+  return Math.round(enhanceSuccessRate(lv, fodders) * 100);
+}
 // === 장수 희귀도(등급) ===
 function generalScoreOf(g) {
   if (!g || !g.buffs) return 0;
@@ -12153,7 +12746,7 @@ function renderUpgrade() {
       }
       SAVE.upgrades[k] = lv + 1;
       saveProgress();
-      showSelectToast(`${def.label} Lv.${lv+1}`, '#4ade80');
+      showSelectToast(`전투력 상승 · ${def.label} Lv.${lv + 1}`, '#f4c756', 1350);
       renderUpgrade();
       refreshTopStats();
     });
@@ -12494,6 +13087,15 @@ function updateCinematic(dt) {
   if (ph.label) drawCinematicLabel(ph.label, ph.name === 'start');
   else drawCinematicLabel('');
   if (cinematic.phaseT >= ph.d) {
+    // 'mine' 페이즈 끝났으면 START 라벨 전에 만화풍 도발 컷씬 끼워넣기 (1회만)
+    if (ph.name === 'mine' && !cinematic._cutsceneTriggered) {
+      cinematic._cutsceneTriggered = true;
+      cinematic._waitingCutscene = true;
+      drawCinematicLabel('');
+      try { startIntroDialog(); } catch(_) {}
+      return true; // 컷씬 종료 대기 — 페이즈 멈춤
+    }
+    if (cinematic._waitingCutscene) return true;
     cinematic.idx++;
     cinematic.phaseT = 0;
     if (cinematic.idx >= cinematic.phases.length) {
@@ -12524,6 +13126,211 @@ function updateCinematic(dt) {
   }
   return true;
 }
+
+// ===== 전투 직전 만화풍 도발 대사 (적 1대장 ↔ 아군 1대장) =====
+// 게임 시뮬레이션을 잠깐 멈추고 양 대장의 대사를 번갈아 표시. 탭/스킵 시 즉시 종료.
+let introDialog = null;
+// 적 장수별 라인 (id 매칭, 4줄 — 적/아군/적/아군 순)
+const INTRO_LINES_BY_ID = {
+  cao_cao: [
+    '감히 이 조조에게 칼을 겨누다니!\n네놈은 시체가 되어 황하의 흙이 될 것이다.',
+    '조조, 천하의 간웅이라더니 그 입만 살았구나.\n오늘 네 야망을 여기서 끊겠다!',
+    '흥, 잡병 몇으로 무엇을 해낼 셈이냐.\n천하는 결국 이 조조의 손에 떨어진다!',
+    '백성을 짓밟는 폭군은 천하를 가질 자격이 없다.\n이 자리에서 끝을 보자, 조조!',
+  ],
+  lu_bu: [
+    '천하무쌍을 막을 자가 어디 있느냐!\n네놈의 목, 내가 직접 거두어 가마.',
+    '여포! 위세는 컸으나 의(義)는 없는 자.\n그 적토마도 오늘은 멈출 것이다!',
+    '하룻강아지 범 무서운 줄 모르는구나.\n방천화극 한 번에 군세가 흩어지리라!',
+    '한 사람의 무용으로는 천하를 못 얻는다.\n오늘 그 콧대를 꺾어 주마!',
+  ],
+  sima_yi: [
+    '지략으로 너를 갈가리 찢어 주마.\n네 모든 수는 이미 내 손바닥 위다.',
+    '음모로 천하를 훔치는 자, 사마의여.\n네 잔재주가 오늘은 통하지 않으리라!',
+    '잔꾀로는 운명을 거스를 수 없다.\n네 자만이 무덤을 파게 될 것이다!',
+    '책략에 의(義)가 없으면 모래성이다.\n이 자리에서 결판을 내자!',
+  ],
+  zhou_yu: [
+    '강동의 위엄을 똑똑히 보여주마!\n네놈은 적벽의 불길에 묻혀 사라지리라.',
+    '주유, 네 화공도 오늘은 막힐 것이다.\n전장의 흐름은 내가 정한다!',
+    '아름다운 책략이 가장 잔혹한 칼이 되리.\n네 군세는 이미 함정 속이다!',
+    '책략이 깊다 하나, 정의 앞엔 헛되니라.\n오늘 강동의 깃발을 거두게 하리라!',
+  ],
+  yuan_shao: [
+    '사세삼공(四世三公)의 위세를 보아라!\n네놈은 이 원소의 적수가 못 된다.',
+    '허울뿐인 명문, 무엇을 두려워하랴.\n그 자존심이 네 가문의 무덤이 되리라!',
+    '하북의 백만 대군이 네 발 아래를 짓밟으리라!\n어디서 감히 항거하느냐?',
+    '오만함 위에 세운 가문은 한 번에 무너진다.\n오늘이 원씨 가문의 마지막 날이다!',
+  ],
+  dong_zhuo: [
+    '이 동탁의 분노가 어떠한지 똑똑히 보아라!\n낙양을 불태운 손으로 네 목도 거두리라.',
+    '폭군 동탁이여, 천하의 백성이 너를 저주한다.\n오늘 그 죄값을 내가 받아내겠다!',
+    '권력이 곧 정의다. 약한 자는 짓밟힐 뿐.\n네놈도 곧 그 진리를 깨닫게 되리라!',
+    '백성의 피로 쌓은 권좌는 오래가지 못한다.\n천하의 적 동탁을 이 자리에서 베어 주마!',
+  ],
+  meng_huo: [
+    '남만의 진정한 힘을 보여주마!\n정글의 맹수들이 네 군세를 짓밟으리라.',
+    '맹획이여, 이번에야말로 정말 끝이다.\n일곱 번 살려준 자비, 더는 없다!',
+    '일곱 번을 잡아도 나는 또 일어선다.\n이 땅의 주인은 우리 남만이다!',
+    '여덟 번째는 없다. 마음으로 굴복하라.\n그렇지 않으면 영원한 패배만 있을 뿐!',
+  ],
+  wen_chou: [
+    '이놈, 단칼에 베어 버리겠다!\n내 도끼 앞에 살아남은 자가 없었느니라.',
+    '문추, 그 도끼는 오늘은 무뎌질 것이다.\n네 칼이 닿기 전에 내가 먼저 베리라!',
+    '죽음을 각오해라. 네 무덤은 이미 파두었다.\n자, 어디 한번 와 보아라!',
+    '용맹만 믿고 덤비는 자, 가장 먼저 쓰러진다.\n그 호언장담, 이 자리에서 끝내주마!',
+  ],
+};
+const INTRO_LINES_DEFAULT = [
+  '감히 이곳까지 쳐들어왔구나!\n네놈의 무덤은 이 땅이 될 것이다.',
+  '${enemy}여, 그 호언장담 끝까지 갈까!\n내 군세 앞에 굴복하라!',
+  '내 군세 앞에 무릎을 꿇어라.\n살려 보내달라 빌면 한 번은 들어주마!',
+  '백성을 위협하는 자, 살려둘 수 없다.\n오늘 이 자리에서 결판을 내자!',
+];
+
+function buildWarIntroLines(enemyDef, playerDef) {
+  const enemy = enemyDef && enemyDef.name ? enemyDef.name : '적장';
+  const player = playerDef && playerDef.name ? playerDef.name : '장수';
+  return [
+    `${player}, 네 깃발은 이 들판에서 꺾인다.\n전열을 밟고 성문까지 짓밟아 주마!`,
+    `${enemy}, 백성의 원한이 오늘 칼끝에 실렸다.\n진을 세워라. 내가 선봉에 서겠다!`,
+    `북을 울려라! 방패를 올리고 기병은 좌익으로 돌아라.\n오늘 밤, 이 전장은 내 이름으로 기록된다!`,
+    `군사들이여, 한 걸음도 물러서지 마라.\n저 깃발을 베고 전쟁을 끝낸다!`,
+  ];
+}
+
+function _getIntroEnemyInst() {
+  if (typeof castles === 'undefined') return null;
+  // 1순위: 적장(_commanderUid)이 배정된 가장 큰 적 성
+  const withCmd = castles.filter(c => c.owner === 2 && c._commanderUid != null);
+  if (withCmd.length) {
+    withCmd.sort((a, b) => (b.size || 1) - (a.size || 1));
+    const inst = getInstance(withCmd[0]._commanderUid);
+    if (inst) return inst;
+  }
+  // 2순위(폴백): 적장 미배정 스테이지 — 가장 큰 적 성을 대표로 두고 보스급 장수를 골라 컷씬용으로만 사용
+  const anyEnemies = castles.filter(c => c.owner === 2);
+  if (!anyEnemies.length) return null;
+  anyEnemies.sort((a, b) => (b.size || 1) - (a.size || 1));
+  const rep = anyEnemies[0];
+  // 챕터별 대표 적장 (게임 상태에는 영향 X — 임시 인스턴스)
+  const ch = (typeof campaignChapterForIndex === 'function')
+    ? campaignChapterForIndex(currentStage) : 1;
+  const repIdByCh = { 1: 'dong_zhuo', 2: 'yuan_shao', 3: 'cao_cao', 4: 'sima_yi', 5: 'lu_bu' };
+  let pickId = repIdByCh[ch] || 'cao_cao';
+  // 성 병종 우선 매칭 (있으면 톤 더 자연스럽게)
+  const unitToId = { spear: 'dong_zhuo', cavalry: 'lu_bu', archer: 'huang_zhong' };
+  if (rep.primary && unitToId[rep.primary] && getGeneralById(unitToId[rep.primary])) {
+    pickId = unitToId[rep.primary];
+  }
+  if (!getGeneralById(pickId)) return null;
+  return { uid: -9999, id: pickId, lv: 1, enemy: true, _ephemeral: true };
+}
+function _getIntroPlayerInst() {
+  if (Array.isArray(activeDeployGeneralUids) && activeDeployGeneralUids.length) {
+    const inst = getInstance(activeDeployGeneralUids[0]);
+    if (inst) return inst;
+  }
+  // fallback: SAVE.generals 첫번째
+  if (Array.isArray(SAVE.generals) && SAVE.generals.length) return SAVE.generals[0];
+  return null;
+}
+function startIntroDialog() {
+  // 튜토리얼은 컷씬 생략 — 튜토리얼 UI와 충돌 방지
+  if (STAGES[currentStage] && STAGES[currentStage].isTutorial) return;
+  const overlay = document.getElementById('introDialog');
+  if (!overlay) return;
+  if (introDialog) return; // 이미 진행 중
+  const eInst = _getIntroEnemyInst();
+  const pInst = _getIntroPlayerInst();
+  if (!eInst || !pInst) return; // 둘 다 없으면 컷씬 생략
+  const eDef = getGeneralById(eInst.id);
+  const pDef = getGeneralById(pInst.id);
+  if (!eDef || !pDef) return;
+  // 라인 결정 (적 id에 매칭, 없으면 기본 + ${enemy} 치환)
+  const raw = INTRO_LINES_BY_ID[eInst.id] || INTRO_LINES_DEFAULT;
+  const lines = raw.map(s => s.replace('${enemy}', eDef.name).replace('${player}', pDef.name));
+  // 좌(적) 우(아군) 얼굴 + 이름 채우기
+  const lImg = document.getElementById('idgLeftImg');
+  const rImg = document.getElementById('idgRightImg');
+  const lNm = document.getElementById('idgLeftName');
+  const rNm = document.getElementById('idgRightName');
+  const lF = getGeneralFaceImage(eDef.id);
+  const rF = getGeneralFaceImage(pDef.id);
+  lImg.src = (lF && lF.src) || `./assets/generals/faces/${eDef.id}.png`;
+  rImg.src = (rF && rF.src) || `./assets/generals/faces/${pDef.id}.png`;
+  lNm.textContent = `적장 · ${eDef.name}`;
+  rNm.textContent = `아군 · ${pDef.name}`;
+  // 상태 초기화
+  lNm.textContent = `적장 · ${eDef.name}`;
+  rNm.textContent = `아군 · ${pDef.name}`;
+  lImg.alt = eDef.name;
+  rImg.alt = pDef.name;
+  const warLines = buildWarIntroLines(eDef, pDef);
+  introDialog = { lines: warLines.length ? warLines : lines, idx: 0, lockUntil: performance.now() + 200 };
+  overlay.style.display = 'flex';
+  _renderIntroLine();
+  // RAF는 일단 못 멈추니 update만 차단 (window._introDialogActive)
+  window._introDialogActive = true;
+  document.body.classList.add('intro-dialog-active');
+  // 한 번만 바인딩
+  if (!overlay._bound) {
+    overlay._bound = true;
+    overlay.addEventListener('click', (e) => {
+      if (e.target && e.target.id === 'idgSkip') {
+        endIntroDialog();
+      } else {
+        advanceIntroDialog();
+      }
+    });
+  }
+}
+function _renderIntroLine() {
+  if (!introDialog) return;
+  const i = introDialog.idx;
+  const bubble = document.getElementById('idgBubble');
+  const lineEl = document.getElementById('idgLine');
+  const leftEl = document.getElementById('idgLeft');
+  const rightEl = document.getElementById('idgRight');
+  const overlay = document.getElementById('introDialog');
+  const fromLeft = (i % 2 === 0); // 짝수 인덱스 = 적(좌)이 말함
+  lineEl.textContent = introDialog.lines[i];
+  bubble.classList.remove('from-left', 'from-right');
+  if (overlay) {
+    overlay.classList.toggle('enemy-speaking', fromLeft);
+    overlay.classList.toggle('player-speaking', !fromLeft);
+  }
+  // animation 재시작 트릭
+  bubble.style.animation = 'none'; void bubble.offsetWidth;
+  bubble.style.animation = '';
+  bubble.classList.add(fromLeft ? 'from-left' : 'from-right');
+  leftEl.classList.toggle('active', fromLeft);
+  rightEl.classList.toggle('active', !fromLeft);
+}
+function advanceIntroDialog() {
+  if (!introDialog) return;
+  if (performance.now() < introDialog.lockUntil) return; // 시작 직후 0.2초 잠금
+  introDialog.idx++;
+  if (introDialog.idx >= introDialog.lines.length) {
+    endIntroDialog();
+    return;
+  }
+  introDialog.lockUntil = performance.now() + 150;
+  _renderIntroLine();
+}
+function endIntroDialog() {
+  introDialog = null;
+  window._introDialogActive = false;
+  document.body.classList.remove('intro-dialog-active');
+  const overlay = document.getElementById('introDialog');
+  if (overlay) overlay.style.display = 'none';
+  // 컷씬을 위해 멈춰있던 카메라 시네마틱 재개 → START 라벨 표시
+  if (cinematic && cinematic._waitingCutscene) {
+    cinematic._waitingCutscene = false;
+    cinematic.phaseT = 0;
+  }
+}
+
 function showTutorial() {
   const ov = document.getElementById('tutorial');
   if (!ov) return;
@@ -13132,6 +13939,7 @@ window.addEventListener('DOMContentLoaded', () => {
   bindTap(document.getElementById('btnEnhance'), showEnhanceScreen);
   bindTap(document.getElementById('btnPowerManage'), () => { _postUpgradeStage = null; goToUpgrade(); });
   bindTap(document.getElementById('btnMainExchange'), showStarExchange);
+  bindTap(document.getElementById('btnMainSettings'), showAudioSettings);
   bindTap(document.getElementById('homeDockGenerals'), showGeneralManage);
   bindTap(document.getElementById('homeDockEnhance'), showEnhanceScreen);
   bindTap(document.getElementById('homeDockPower'), () => { _postUpgradeStage = null; goToUpgrade(); });
@@ -13149,6 +13957,28 @@ window.addEventListener('DOMContentLoaded', () => {
   if (btnTut) bindTap(btnTut, launchTutorialStage);
   const stageTut = document.getElementById('stageTutorialBtn');
   if (stageTut) bindTap(stageTut, launchTutorialStage);
+  const stageToolsBtn = document.getElementById('stageToolsBtn');
+  if (stageToolsBtn) bindTap(stageToolsBtn, (ev) => {
+    ev.stopPropagation();
+    toggleStageToolsMenu();
+  });
+  document.querySelectorAll('#stageToolsMenu [data-stage-tool]').forEach((btn) => {
+    bindTap(btn, (ev) => {
+      ev.stopPropagation();
+      closeStageToolsMenu();
+      const tool = btn.dataset.stageTool;
+      if (tool === 'generals') showGeneralManage();
+      else if (tool === 'enhance') showEnhanceScreen();
+      else if (tool === 'power') { _postUpgradeStage = null; goToUpgrade(); }
+    });
+  });
+  document.addEventListener('click', (ev) => {
+    const menu = document.getElementById('stageToolsMenu');
+    const btn = document.getElementById('stageToolsBtn');
+    if (!menu || !menu.classList.contains('is-open')) return;
+    if ((btn && btn.contains(ev.target)) || menu.contains(ev.target)) return;
+    closeStageToolsMenu();
+  });
     // 튜토리얼 스테이지(인덱스 0) 강제 진입 — 다시 보기 가능
   bindTap(document.getElementById('btnInfinite'), () => {
     if (SAVE.unlocked > 20) alert('무한 모드 (준비중)');
@@ -13164,10 +13994,7 @@ window.addEventListener('DOMContentLoaded', () => {
     msgShown = false;
   });
   bindTap(document.getElementById('btnSettings'), () => {
-    if (confirm('진행 데이터 초기화?')) {
-      localStorage.removeItem('save');
-      location.reload();
-    }
+    showAudioSettings();
   });
   bindTap(document.getElementById('ssBack'), goToMenu);
   const ssUpg = document.getElementById('ssUpgrade');
@@ -13192,16 +14019,10 @@ window.addEventListener('DOMContentLoaded', () => {
   bindTap(document.getElementById('deployBack'), closeGeneralSelect);
   bindTap(document.getElementById('deployCancel'), closeGeneralSelect);
   bindTap(document.getElementById('deployStart'), confirmDeployGenerals);
-  bindTap(document.getElementById('manageBack'), goToMenu);
+  bindTap(document.getElementById('manageBack'), returnFromUtilityScreen);
   bindTap(document.getElementById('btnUpgrade'), goToUpgrade);
   bindTap(document.getElementById('upgBack'), () => {
-    if (_postUpgradeStage != null) {
-      const idx = _postUpgradeStage;
-      _postUpgradeStage = null;
-      goToStageSelectAt(idx);
-    } else {
-      goToMenu();
-    }
+    returnFromUtilityScreen();
   });
   bindTap(document.getElementById('gameBackBtn'), confirmExitBattle);
 });
@@ -14499,7 +15320,10 @@ function showSelectToast(text, color, duration) {
   const t = document.getElementById('selectToast');
   if (!t) return;
   t.textContent = text;
-  if (color) t.style.borderColor = '#2a1810', t.style.boxShadow = `0 5px 0 ${color}, 0 5px 0 #2a1810, 0 12px 24px rgba(0,0,0,0.4)`;
+  const accent = color || '#ffd96a';
+  t.style.setProperty('--toast-accent', accent);
+  t.classList.toggle('toast-error', accent === '#c1121f');
+  t.classList.toggle('toast-success', accent === '#ffd23f' || accent === '#ffd96a' || accent === '#f4c756');
   t.classList.remove('show'); void t.offsetWidth;
   t.classList.add('show');
   clearTimeout(_toastTimer);
@@ -15285,6 +16109,8 @@ function update(dt) {
   if (!document.body.classList.contains('in-game')) return;
   // 모달(퇴각 확인/승패)이 떠 있는 동안엔 시뮬 일시정지 — 렌더는 계속해서 화면이 얼어붙은 듯 보임
   if (msgShown) return;
+  // 도발 컷씬 진행 중: 게임 시뮬레이션 일시정지 (게임에 영향 X)
+  if (window._introDialogActive) return;
   checkTutorialProgress();
   const inCinematic = updateCinematic(dt);
   camX += (window._targetCamX - camX) * 0.15;
@@ -15736,8 +16562,10 @@ function checkWin() {
                 showMsg('천 하 통 일', 3, [{ text: '스테이지로 이동', variant: 'primary', action: () => goToStageSelectAt(STAGES.length - 1) }], undefined, 'unify');
               }
             }},
-            { text: '강화', variant: 'secondary', action: () => { _postUpgradeStage = nextIdx; goToUpgrade(); } },
-            { text: '스테이지로 이동', variant: 'tertiary', action: () => goToStageSelectAt(nextIdx) },
+            { text: '장수관리', variant: 'secondary', action: () => openPostBattleUtility('generals', nextIdx) },
+            { text: '장수강화', variant: 'secondary', action: () => openPostBattleUtility('enhance', nextIdx) },
+            { text: '전투력강화', variant: 'secondary', action: () => openPostBattleUtility('power', nextIdx) },
+            { text: '스테이지', variant: 'stage', action: () => goToStageSelectAt(nextIdx) },
           ], goldGain, 'victory');
         }
       };
@@ -15751,7 +16579,7 @@ function checkWin() {
     });
   } else if (myCount === 0 && armies.every(a => a.owner !== 1)) {
     vibrate([220, 80, 220]);
-    showMsg('패 배', 0, [
+    showMsg('패배', 0, [
       { text: '재도전', variant: 'primary', action: () => { openGeneralSelect(currentStage); }},
       { text: '스테이지로 이동', variant: 'tertiary', action: () => goToStageSelectAt(currentStage) },
     ], undefined, 'defeat');
@@ -15763,10 +16591,10 @@ function showVictoryFlash(onDone) {
   if (!el) {
     el = document.createElement('div');
     el.id = 'victoryFlash';
-    el.style.cssText = 'position:fixed; left:50%; top:42%; transform:translate(-50%,-50%) scale(0.6); font-family:"Noto Serif KR",serif; font-size:96px; font-weight:900; color:#ffd23f; -webkit-text-stroke:5px #2a1810; paint-order:stroke fill; letter-spacing:18px; z-index:8000; pointer-events:none; opacity:0; transition:transform 0.45s cubic-bezier(.2,1.6,.3,1), opacity 0.3s; text-shadow: 0 0 30px rgba(255,210,80,0.7), 0 6px 0 rgba(0,0,0,0.5);';
+    el.style.cssText = 'position:fixed; left:50%; top:42%; transform:translate(-50%,-50%) scale(0.6); font-family:"Noto Serif KR",serif; font-size:96px; font-weight:900; color:#ffd23f; -webkit-text-stroke:5px #2a1810; paint-order:stroke fill; letter-spacing:2px; white-space:nowrap; writing-mode:horizontal-tb; z-index:8000; pointer-events:none; opacity:0; transition:transform 0.45s cubic-bezier(.2,1.6,.3,1), opacity 0.3s; text-shadow: 0 0 30px rgba(255,210,80,0.7), 0 6px 0 rgba(0,0,0,0.5);';
     document.body.appendChild(el);
   }
-  el.textContent = '승 리!';
+  el.textContent = '승리!';
   el.style.opacity = '1';
   el.style.transform = 'translate(-50%,-50%) scale(1)';
   setTimeout(() => {
@@ -15932,6 +16760,8 @@ function showPrisonerScreen(prisoners, onContinue) {
       choice.appendChild(btn);
     });
   };
+  const nextPrisonerLabel = () => state.idx + 1 < state.prisoners.length ? '다음 포로' : '계속 진행';
+  const nextPrisonerAction = () => state.idx + 1 < state.prisoners.length ? nextPrisoner : finish;
   const renderCurrent = () => {
     hideCutin();
     updatePrisonStars();
@@ -15965,15 +16795,25 @@ function showPrisonerScreen(prisoners, onContinue) {
     renderCurrent();
   };
   const executePrisoner = (p) => {
-    // 처단 시도 → 100% 도망 (적장은 살아 도망쳐 복수를 다짐)
+    // 처단 시도 — 10% 성공, 90% 도망 (도망쳐도 다음 스테이지에서 다시 등장 가능 — 풀은 매번 재추첨)
     hideCutin();
-    showCutin(p, false); // 도망 컷인 (실패 그래픽)
-    speaker.textContent = `${p.name}(포로)`;
-    line.textContent = '이놈들!! 반드시 복수하마…';
-    caption.textContent = `${p.name}이 결박을 끊고 도망쳤다.`;
-    renderAbility(p);
-    meta.textContent = '처단 실패 · 적장이 도망쳤습니다';
-    renderButtons([{ text: state.idx + 1 < state.prisoners.length ? '다음 포로' : '계속 진행', className: 'finish', action: state.idx + 1 < state.prisoners.length ? nextPrisoner : finish }], true);
+    const success = Math.random() < 0.10;
+    if (success) {
+      showCutin(p, true); // 성공 컷인 그래픽 (등용 성공과 동일 — 처단 성공도 "결판" 의미)
+      speaker.textContent = '왕';
+      line.textContent = `${p.name}을(를) 처단했다. 다음을 경계하라.`;
+      caption.textContent = `${p.name}을(를) 끝내 베었다.`;
+      renderAbility(p);
+      meta.textContent = '처단 성공 · 적장을 처형했습니다';
+    } else {
+      showCutin(p, false); // 도망 컷인 (실패 그래픽)
+      speaker.textContent = `${p.name}(포로)`;
+      line.textContent = '이놈들!! 반드시 복수하마…';
+      caption.textContent = `${p.name}이 결박을 끊고 도망쳤다.`;
+      renderAbility(p);
+      meta.textContent = '처단 실패 · 적장이 도망쳤습니다';
+    }
+    renderButtons([{ text: nextPrisonerLabel(), className: 'finish', action: nextPrisonerAction() }], true);
   };
   const attemptRecruit = (p) => {
     const cost = p.cost || 1;
@@ -16004,7 +16844,7 @@ function showPrisonerScreen(prisoners, onContinue) {
     meta.textContent = success
       ? `등용 성공 · ★${cost} 소모`
       : `등용 실패 · ★${cost} 소모`;
-    renderButtons([{ text: state.idx + 1 < state.prisoners.length ? '다음 포로' : '계속 진행', className: success ? 'next' : 'finish', action: state.idx + 1 < state.prisoners.length ? nextPrisoner : finish }], true);
+    renderButtons([{ text: nextPrisonerLabel(), className: success ? 'next' : 'finish', action: nextPrisonerAction() }], true);
   };
   renderCurrent();
 }
@@ -16019,7 +16859,7 @@ function showMsg(text, stars, buttons, gold, result) {
   const starsEl = document.getElementById('msgStars');
   if (stars !== undefined) {
     starsEl.innerHTML = stars > 0
-      ? Array.from({ length: 3 }, (_, i) => `<span class="${i < stars ? 'star-on' : 'star-off'}">★</span>`).join('')
+      ? Array.from({ length: 3 }, (_, i) => `<span class="${i < stars ? 'star-on' : 'star-off'}" aria-label="${i < stars ? '획득 별' : '미획득 별'}"></span>`).join('')
       : '';
   } else { starsEl.innerHTML = ''; }
   // 골드 라벨
@@ -16341,15 +17181,35 @@ const BGM = (() => {
   // 합성 스케줄러는 비활성 (파일 기반 BGM으로 대체됨) — 함수만 남겨 호환성 유지
   function scheduler() {}
   // === 파일 기반 BGM 재생 ===
-  const PREP_FILES = ['assets/audio/calm1.ogg', 'assets/audio/calm2.ogg', 'assets/audio/calm3.ogg'];
-  const BATTLE_FILE = 'assets/audio/battle.ogg';
-  const BGM_VOL = 0.45;
+  const PREP_FILES = [
+    'assets/audio/calm1.ogg',
+    'assets/audio/calm2.ogg',
+    'assets/audio/calm3.ogg',
+    'assets/audio/calm4.wav',
+    'assets/audio/calm5.wav',
+  ];
+  const BATTLE_FILES = [
+    'assets/audio/battle.ogg',
+    'assets/audio/battle1.wav',
+    'assets/audio/battle2.wav',
+    'assets/audio/battle3.wav',
+    'assets/audio/battle4.wav',
+    'assets/audio/battle5.wav',
+  ];
   const FADE_IN_MS = 700;
   const FADE_OUT_MS = 500;
   const PREP_ROTATE_MS = 90 * 1000;
+  const BATTLE_ROTATE_MS = 70 * 1000;
   let bgmAudio = null;
   let bgmRotateTimer = 0;
   let prepFileIdx = 0;
+  let battleFileIdx = 0;
+  function _targetBgmVolume(forMode = mode) {
+    const s = SAVE.audioSettings || {};
+    if (forMode === 'battle') return s.battleMuted ? 0 : Math.max(0, Math.min(1, (s.battleVolume ?? 45) / 100));
+    if (forMode === 'prep') return s.prepMuted ? 0 : Math.max(0, Math.min(1, (s.prepVolume ?? 45) / 100));
+    return 0;
+  }
   // 페이드 타이머는 오디오 엘리먼트별로 보관 — 페이드아웃 중인 옛 트랙과
   // 페이드인 중인 새 트랙이 서로 간섭하지 않도록.
   function _fadeAudio(audio, from, to, ms, onDone) {
@@ -16379,6 +17239,11 @@ const BGM = (() => {
     let i; do { i = Math.floor(Math.random() * PREP_FILES.length); } while (i === prepFileIdx);
     prepFileIdx = i;
   }
+  function _pickNextBattleFile() {
+    if (BATTLE_FILES.length <= 1) { battleFileIdx = 0; return; }
+    let i; do { i = Math.floor(Math.random() * BATTLE_FILES.length); } while (i === battleFileIdx);
+    battleFileIdx = i;
+  }
   function _playBgmFile(url) {
     _stopCurrentBgm();
     const a = new Audio(url);
@@ -16388,7 +17253,7 @@ const BGM = (() => {
     bgmAudio = a;
     const tryPlay = () => a.play().catch(() => {});
     tryPlay();
-    _fadeAudio(a, 0, BGM_VOL, FADE_IN_MS);
+    _fadeAudio(a, 0, _targetBgmVolume(mode), FADE_IN_MS);
   }
   function setMode(next) {
     desired = next || 'none';
@@ -16401,7 +17266,13 @@ const BGM = (() => {
       return;
     }
     if (mode === 'battle') {
-      _playBgmFile(BATTLE_FILE);
+      _pickNextBattleFile();
+      _playBgmFile(BATTLE_FILES[battleFileIdx]);
+      bgmRotateTimer = setInterval(() => {
+        if (mode !== 'battle') return;
+        _pickNextBattleFile();
+        _playBgmFile(BATTLE_FILES[battleFileIdx]);
+      }, BATTLE_ROTATE_MS);
     } else { // prep
       _pickNextPrepFile();
       _playBgmFile(PREP_FILES[prepFileIdx]);
@@ -16545,10 +17416,20 @@ const BGM = (() => {
     if (ctx) { try { await ctx.resume(); } catch (_) {} }
     if (bgmAudio && mode !== 'none') { try { await bgmAudio.play(); } catch (_) {} }
   }
+  function applySettings() {
+    if (!bgmAudio) return;
+    _fadeAudio(bgmAudio, bgmAudio.volume || 0, _targetBgmVolume(mode), 160);
+  }
+  function sfxClick() {
+    if (!ctx || !unlocked) return;
+    const t = ctx.currentTime;
+    // 짧고 작은 클릭 톤 — 설정 슬라이더 피드백용
+    tone(880, t, 0.06, 'sine', 0.18);
+  }
   return {
     setMode, unlock, get unlocked() { return unlocked; },
-    suspendAudio, resumeAudio,
-    sfxShout, sfxArrow, sfxClash, sfxHorse, sfxCapture,
+    suspendAudio, resumeAudio, applySettings,
+    sfxShout, sfxArrow, sfxClash, sfxHorse, sfxCapture, sfxClick,
     sfxEnhanceCharge, sfxEnhanceFlash, sfxEnhanceSuccess, sfxEnhanceFail,
   };
 })();
@@ -19939,6 +20820,7 @@ function closeTutorialOffer(accept) {
   document.getElementById('tutorialOfferModal').style.display = 'none';
   SAVE.tutorialPrompted = true;
   saveProgress();
+  updateStageTutorialEntry();
   if (accept) {
     selectedStage = 0;
     startStage();
@@ -19948,7 +20830,7 @@ function closeTutorialOffer(accept) {
 
 <div id="starExchangeModal" class="sx-modal" style="display:none">
   <div class="sx-card">
-    <div class="sx-seal">교 환</div>
+    <div class="sx-seal" aria-label="별 교환">星</div>
     <div class="sx-title">별 교환소</div>
     <div id="starExBody" class="sx-body"></div>
     <div class="sx-buttons">
@@ -19958,6 +20840,38 @@ function closeTutorialOffer(accept) {
       <button class="sx-btn sx-btn-all" data-exchange="all" onclick="doStarExchange('all')">전부</button>
     </div>
     <button class="sx-close" onclick="document.getElementById('starExchangeModal').style.display='none'">닫기</button>
+  </div>
+</div>
+
+<div id="audioSettingsModal" class="audio-modal" style="display:none">
+  <div class="audio-card">
+    <div class="audio-seal">設</div>
+    <div class="audio-title">설정</div>
+    <div class="audio-row">
+      <div class="audio-copy">
+        <b>평상시 BGM</b>
+        <span id="prepBgmValue">45%</span>
+      </div>
+      <label class="audio-toggle">
+        <input id="prepBgmMute" type="checkbox">
+        <span>음소거</span>
+      </label>
+      <input id="prepBgmVolume" class="audio-range" type="range" min="0" max="100" step="1" value="45">
+    </div>
+    <div class="audio-row">
+      <div class="audio-copy">
+        <b>전쟁 BGM</b>
+        <span id="battleBgmValue">45%</span>
+      </div>
+      <label class="audio-toggle">
+        <input id="battleBgmMute" type="checkbox">
+        <span>음소거</span>
+      </label>
+      <input id="battleBgmVolume" class="audio-range" type="range" min="0" max="100" step="1" value="45">
+    </div>
+    <div class="audio-actions">
+      <button type="button" class="audio-close audio-btn" onclick="closeAudioSettings()">닫기</button>
+    </div>
   </div>
 </div>
 <style>
@@ -19973,6 +20887,301 @@ function closeTutorialOffer(accept) {
       radial-gradient(circle at 50% 78%, rgba(80,214,255,0.12), transparent 38%),
       rgba(2, 5, 12, 0.78) !important;
     backdrop-filter: blur(6px) saturate(1.05) !important;
+  }
+
+  #audioSettingsModal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 10000 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: max(18px, env(safe-area-inset-top)) 12px max(18px, env(safe-area-inset-bottom)) !important;
+    background:
+      radial-gradient(circle at 50% 28%, rgba(255,218,104,0.16), transparent 34%),
+      rgba(2, 5, 12, 0.78) !important;
+    backdrop-filter: blur(6px) saturate(1.05) !important;
+  }
+  #audioSettingsModal .audio-card {
+    position: relative !important;
+    width: min(410px, calc(100vw - 24px)) !important;
+    padding: 66px 24px 24px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 13px !important;
+    background: url('./assets/ui/sx_panel.png') center / 100% 100% no-repeat !important;
+    color: #142137 !important;
+    font-family: 'Noto Sans KR', system-ui, sans-serif !important;
+    animation: sxPop 180ms cubic-bezier(.2,.9,.2,1) both !important;
+  }
+  #audioSettingsModal .audio-seal {
+    position: absolute !important;
+    top: -22px !important;
+    left: 50% !important;
+    width: 90px !important;
+    height: 66px !important;
+    transform: translateX(-50%) rotate(-2deg) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding-bottom: 4px !important;
+    background: url('./assets/ui/sx_header_badge.png') center / 100% 100% no-repeat !important;
+    color: #fff7d6 !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 28px !important;
+    font-weight: 900 !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.62) !important;
+  }
+  #audioSettingsModal .audio-title {
+    height: 50px !important;
+    margin: 0 12px 2px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: url('./assets/ui/sx_title_plate.png') center / 100% 100% no-repeat !important;
+    color: #fff4b8 !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 22px !important;
+    font-weight: 900 !important;
+    letter-spacing: 6px !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.64) !important;
+  }
+  #audioSettingsModal .audio-row {
+    min-height: 104px !important;
+    padding: 15px 16px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 12px 10px !important;
+    align-items: center !important;
+    background: url('./assets/ui/sx_info_panel.png') center / 100% 100% no-repeat !important;
+  }
+  #audioSettingsModal .audio-copy {
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: baseline !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+  }
+  #audioSettingsModal .audio-copy b {
+    color: #18243a !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 17px !important;
+    font-weight: 900 !important;
+  }
+  #audioSettingsModal .audio-copy span {
+    color: #a10d0d !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    white-space: nowrap !important;
+  }
+  #audioSettingsModal .audio-toggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    color: rgba(22,35,55,0.78) !important;
+    font-size: 12px !important;
+    font-weight: 900 !important;
+    white-space: nowrap !important;
+  }
+  #audioSettingsModal .audio-toggle input {
+    width: 18px !important;
+    height: 18px !important;
+    accent-color: #a10d0d !important;
+  }
+  #audioSettingsModal .audio-range {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    accent-color: #c89024 !important;
+  }
+  #audioSettingsModal .audio-close {
+    width: 100% !important;
+    height: 54px !important;
+    margin: 0 !important;
+    padding: 0 0 4px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: url('./assets/ui/sx_btn_dark.png') center / 100% 100% no-repeat !important;
+    box-shadow: none !important;
+    color: #fff1a9 !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 15px !important;
+    font-weight: 900 !important;
+    letter-spacing: 7px !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.62) !important;
+    cursor: pointer !important;
+  }
+  #audioSettingsModal .audio-close:active {
+    transform: translateY(2px) scale(0.99) !important;
+    filter: brightness(0.96) !important;
+  }
+
+  /* Settings modal baseline: use this screen as the popup-button standard. */
+  #audioSettingsModal {
+    background:
+      radial-gradient(circle at 50% 22%, rgba(255,218,104,0.14), transparent 32%),
+      linear-gradient(180deg, rgba(0,0,0,0.46), rgba(0,0,0,0.82)),
+      rgba(3, 6, 13, 0.82) !important;
+  }
+  #audioSettingsModal .audio-card {
+    width: min(404px, calc(100vw - 24px)) !important;
+    min-height: 0 !important;
+    padding: 66px 22px 22px !important;
+    gap: 12px !important;
+    border: 2px solid rgba(232, 185, 64, 0.78) !important;
+    border-radius: 18px !important;
+    background:
+      radial-gradient(circle at 50% -8%, rgba(255,218,104,0.18), transparent 34%),
+      linear-gradient(180deg, rgba(35, 47, 64, 0.96), rgba(9, 16, 28, 0.98) 34%, rgba(5, 9, 17, 0.98)) !important;
+    box-shadow:
+      0 26px 70px rgba(0,0,0,0.62),
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      inset 0 0 0 1px rgba(255,255,255,0.05) !important;
+    color: #f4ead3 !important;
+  }
+  #audioSettingsModal .audio-title {
+    height: 48px !important;
+    margin: 0 6px 4px !important;
+    padding: 0 12px 3px !important;
+    border: 1px solid rgba(245, 205, 92, 0.72) !important;
+    border-radius: 14px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02)),
+      linear-gradient(180deg, #273447, #121b2b 58%, #0a111d) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.18),
+      0 8px 18px rgba(0,0,0,0.26) !important;
+    color: #fff1b8 !important;
+    font-size: 21px !important;
+    letter-spacing: 1px !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.7), 0 0 14px rgba(255,216,107,0.28) !important;
+  }
+  #audioSettingsModal .audio-seal {
+    width: 82px !important;
+    height: 58px !important;
+    top: -18px !important;
+    border: 2px solid rgba(255, 225, 139, 0.88) !important;
+    border-radius: 12px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.18), transparent 34%),
+      linear-gradient(180deg, #d63628, #9e120d 62%, #650807) !important;
+    box-shadow:
+      0 8px 18px rgba(0,0,0,0.46),
+      inset 0 1px 0 rgba(255,255,255,0.22),
+      inset 0 -8px 14px rgba(0,0,0,0.22) !important;
+    color: #fff8d4 !important;
+    font-size: 27px !important;
+  }
+  #audioSettingsModal .audio-row {
+    min-height: 98px !important;
+    padding: 14px 15px 13px !important;
+    border: 1px solid rgba(244, 199, 86, 0.22) !important;
+    border-radius: 10px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+      rgba(12, 21, 36, 0.88) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      inset 0 -1px 0 rgba(0,0,0,0.3) !important;
+  }
+  #audioSettingsModal .audio-copy b {
+    color: #fff0bd !important;
+    font-size: 16px !important;
+    line-height: 1 !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.66) !important;
+  }
+  #audioSettingsModal .audio-copy span {
+    min-width: 52px !important;
+    color: #ffd05f !important;
+    font-size: 14px !important;
+    text-align: right !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.72) !important;
+  }
+  #audioSettingsModal .audio-toggle {
+    height: 30px !important;
+    padding: 0 8px !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 7px !important;
+    background: rgba(255,255,255,0.06) !important;
+    color: rgba(255,244,214,0.86) !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+  }
+  #audioSettingsModal .audio-toggle input {
+    width: 16px !important;
+    height: 16px !important;
+    margin: 0 !important;
+    accent-color: #d49a20 !important;
+  }
+  #audioSettingsModal .audio-range {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    height: 22px !important;
+    touch-action: pan-x !important;
+    accent-color: #d49a20 !important;
+    background: transparent !important;
+  }
+  #audioSettingsModal .audio-range::-webkit-slider-runnable-track {
+    height: 6px !important;
+    border-radius: 999px !important;
+    background: linear-gradient(90deg, #d49a20, #8d6a1c 52%, rgba(255,255,255,0.25)) !important;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.55) !important;
+  }
+  #audioSettingsModal .audio-range::-webkit-slider-thumb {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    width: 20px !important;
+    height: 20px !important;
+    margin-top: -7px !important;
+    border: 2px solid #3a2106 !important;
+    border-radius: 50% !important;
+    background: linear-gradient(180deg, #ffe17c, #c88716) !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.48), inset 0 1px 0 rgba(255,255,255,0.74) !important;
+  }
+  #audioSettingsModal .audio-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    padding-top: 2px !important;
+  }
+  #audioSettingsModal .audio-btn {
+    min-height: 50px !important;
+    height: 50px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 0 3px !important;
+    font-size: 16px !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+  #audioSettingsModal .audio-close {
+    border: 1px solid rgba(245, 205, 92, 0.48) !important;
+    border-radius: 12px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02)),
+      linear-gradient(180deg, #283546, #141d2b 58%, #080d16) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.16),
+      0 8px 16px rgba(0,0,0,0.26) !important;
+    color: #fff0bd !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.62) !important;
+  }
+  @media (max-width: 390px), (max-height: 760px) {
+    #audioSettingsModal .audio-card {
+      width: min(374px, calc(100vw - 18px)) !important;
+      padding: 62px 18px 18px !important;
+      gap: 10px !important;
+    }
+    #audioSettingsModal .audio-row {
+      min-height: 92px !important;
+      padding: 12px 13px !important;
+    }
+    #audioSettingsModal .audio-btn {
+      height: 48px !important;
+      min-height: 48px !important;
+      font-size: 15px !important;
+    }
   }
   #starExchangeModal::before {
     content: "" !important;
@@ -20002,22 +21211,22 @@ function closeTutorialOffer(accept) {
     position: absolute !important;
     top: -22px !important;
     left: 50% !important;
-    width: 110px !important;
+    width: 90px !important;
     height: 66px !important;
     transform: translateX(-50%) rotate(-2deg) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 0 0 4px 4px !important;
+    padding: 0 0 4px !important;
     border: 0 !important;
     border-radius: 0 !important;
     background: url('./assets/ui/sx_header_badge.png') center / 100% 100% no-repeat !important;
     color: #fff7d6 !important;
     font-family: 'Noto Serif KR', serif !important;
-    font-size: 20px !important;
+    font-size: 30px !important;
     font-weight: 900 !important;
     line-height: 1 !important;
-    letter-spacing: 4px !important;
+    letter-spacing: 0 !important;
     text-shadow: 0 2px 0 rgba(0,0,0,0.62), 0 0 11px rgba(255,224,118,0.42) !important;
     box-shadow: none !important;
   }
@@ -20206,9 +21415,9 @@ function closeTutorialOffer(accept) {
       gap: 10px !important;
     }
     #starExchangeModal .sx-seal {
-      width: 100px !important;
+      width: 86px !important;
       height: 60px !important;
-      font-size: 18px !important;
+      font-size: 28px !important;
     }
     #starExchangeModal .sx-title {
       height: 46px !important;
@@ -20232,6 +21441,42 @@ function closeTutorialOffer(accept) {
     }
     #starExchangeModal .sx-close {
       height: 50px !important;
+    }
+  }
+
+  /* Main title logo: app-name treatment, rendered as a stable image asset. */
+  #menu.menu-fresh .home-title {
+    left: 50% !important;
+    right: auto !important;
+    top: clamp(46px, 6.3dvh, 68px) !important;
+    width: min(94vw, 420px) !important;
+    height: auto !important;
+    aspect-ratio: 980 / 330 !important;
+    transform: translateX(-50%) !important;
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    background: url('./assets/ui/main_title_logo.png') center / contain no-repeat !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    letter-spacing: 0 !important;
+    text-indent: -9999px !important;
+    text-shadow: none !important;
+    -webkit-text-stroke: 0 transparent !important;
+    paint-order: normal !important;
+    filter: drop-shadow(0 0 12px rgba(255, 207, 72, 0.18)) !important;
+  }
+  #menu.menu-fresh .home-title::before,
+  #menu.menu-fresh .home-title::after {
+    content: none !important;
+    display: none !important;
+  }
+  @media (max-width: 390px), (max-height: 760px) {
+    #menu.menu-fresh .home-title {
+      top: clamp(52px, 7.4dvh, 72px) !important;
+      width: min(93vw, 382px) !important;
     }
   }
 
@@ -20280,6 +21525,80 @@ function closeTutorialOffer(accept) {
     transform: translateY(2px) scale(0.99) !important;
     filter: brightness(0.95) !important;
   }
+  #stageSelect .stage-tools-btn {
+    position: relative !important;
+    width: 32px !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    margin-left: 8px !important;
+    padding: 0 !important;
+    border: 1px solid rgba(217, 185, 92, 0.34) !important;
+    border-radius: 50% !important;
+    background:
+      linear-gradient(180deg, rgba(38, 47, 62, 0.96), rgba(22, 31, 47, 0.96)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 1px 2px rgba(0,0,0,0.25) !important;
+    color: transparent !important;
+    font-size: 0 !important;
+  }
+  #stageSelect .stage-tools-btn::before {
+    content: "" !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 9px !important;
+    width: 16px !important;
+    height: 2px !important;
+    border-radius: 99px !important;
+    background: #fff0bd !important;
+    box-shadow:
+      0 6px 0 #fff0bd,
+      0 12px 0 #fff0bd,
+      0 1px 0 rgba(0,0,0,0.62) !important;
+    transform: translateX(-50%) !important;
+  }
+  #stageSelect .stage-tools-btn.is-open {
+    filter: brightness(1.08) !important;
+    border-color: rgba(245, 205, 92, 0.62) !important;
+  }
+  #stageSelect .stage-tools-menu {
+    position: absolute !important;
+    top: 44px !important;
+    right: 10px !important;
+    width: 154px !important;
+    padding: 7px !important;
+    display: none !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    border: 1px solid rgba(217, 185, 92, 0.36) !important;
+    border-radius: 11px !important;
+    background:
+      linear-gradient(180deg, rgba(32, 45, 64, 0.98), rgba(8, 14, 25, 0.98)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 12px 24px rgba(0,0,0,0.42) !important;
+    z-index: 80 !important;
+  }
+  #stageSelect .stage-tools-menu.is-open {
+    display: flex !important;
+  }
+  #stageSelect .stage-tools-menu button {
+    height: 34px !important;
+    border: 1px solid rgba(245, 205, 92, 0.30) !important;
+    border-radius: 8px !important;
+    background:
+      linear-gradient(180deg, rgba(38, 47, 62, 0.94), rgba(16, 24, 38, 0.94)) !important;
+    color: #fff0bd !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.68) !important;
+  }
+  #stageSelect .stage-tools-menu button:active {
+    transform: translateY(1px) !important;
+    filter: brightness(0.94) !important;
+  }
   #stageSelect .stage-map-wrap {
     height: calc(100% - 150px) !important;
     padding-top: 6px !important;
@@ -20301,60 +21620,2530 @@ function closeTutorialOffer(accept) {
     }
   }
 
-  /* Battle retreat button: separate from common back button so it never covers the minimap */
+  /* Battle retreat command: compact, raised, and distinct from generic back buttons. */
   body.in-game #gameBackBtn {
     position: fixed !important;
     left: auto !important;
     top: auto !important;
-    right: max(12px, env(safe-area-inset-right)) !important;
-    bottom: max(14px, env(safe-area-inset-bottom)) !important;
-    width: 88px !important;
-    height: 48px !important;
-    min-width: 88px !important;
+    right: max(14px, env(safe-area-inset-right)) !important;
+    bottom: max(42px, calc(env(safe-area-inset-bottom) + 34px)) !important;
+    width: 82px !important;
+    height: 44px !important;
+    min-width: 82px !important;
     margin: 0 !important;
-    padding: 0 0 5px !important;
+    padding: 0 0 4px !important;
     display: block !important;
     overflow: visible !important;
     border: 0 !important;
     border-radius: 0 !important;
     background: url('./assets/ui/battle_retreat_btn.png') center / 100% 100% no-repeat !important;
-    box-shadow: none !important;
+    box-shadow: 0 7px 10px rgba(32,12,8,0.28) !important;
     color: #fff6d8 !important;
     font-family: 'Noto Serif KR', serif !important;
-    font-size: 15px !important;
+    font-size: 14px !important;
     font-weight: 900 !important;
     line-height: 1 !important;
-    letter-spacing: 2px !important;
-    text-shadow: 0 2px 0 rgba(0,0,0,0.68), 0 0 8px rgba(255,218,104,0.25) !important;
+    letter-spacing: 1px !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.72), 0 0 8px rgba(255,218,104,0.32) !important;
     -webkit-text-stroke: 0 !important;
     backdrop-filter: none !important;
     z-index: 9000 !important;
   }
   body.in-game #gameBackBtn::before {
-    content: "↩" !important;
+    content: "旗" !important;
     display: inline-block !important;
-    margin-right: 4px !important;
+    margin-right: 3px !important;
     color: #ffe68c !important;
-    font-family: system-ui, sans-serif !important;
-    font-size: 14px !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 13px !important;
     font-weight: 900 !important;
     line-height: 1 !important;
-    transform: translateY(-1px) !important;
+    transform: translateY(-1px) rotate(-5deg) !important;
   }
   body.in-game #gameBackBtn:active {
     transform: translateY(2px) scale(0.99) !important;
     filter: brightness(0.95) !important;
-    box-shadow: none !important;
+    box-shadow: 0 4px 7px rgba(32,12,8,0.24) !important;
   }
   @media (max-width: 390px), (max-height: 760px) {
     body.in-game #gameBackBtn {
-      width: 82px !important;
-      height: 45px !important;
-      min-width: 82px !important;
-      right: max(10px, env(safe-area-inset-right)) !important;
-      bottom: max(10px, env(safe-area-inset-bottom)) !important;
+      width: 78px !important;
+      height: 42px !important;
+      min-width: 78px !important;
+      right: max(12px, env(safe-area-inset-right)) !important;
+      bottom: max(34px, calc(env(safe-area-inset-bottom) + 28px)) !important;
+      font-size: 13px !important;
+    }
+  }
+
+  body.in-game #hud #gameBackBtn {
+    position: absolute !important;
+    left: auto !important;
+    top: 9px !important;
+    right: 9px !important;
+    bottom: auto !important;
+    width: 27px !important;
+    min-width: 27px !important;
+    height: 27px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(255,222,120,0.58) !important;
+    border-radius: 7px !important;
+    background: linear-gradient(180deg, rgba(75,58,25,0.78), rgba(26,24,16,0.82)) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 4px 10px rgba(0,0,0,0.24) !important;
+    color: #ffe89a !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 16px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.72), 0 0 7px rgba(255,218,104,0.25) !important;
+    pointer-events: auto !important;
+    z-index: 2 !important;
+  }
+  body.in-game #hud #gameBackBtn::before {
+    content: none !important;
+    display: none !important;
+  }
+  body.in-game #hud #gameBackBtn:active {
+    transform: translateY(1px) scale(0.96) !important;
+    filter: brightness(0.95) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 2px 5px rgba(0,0,0,0.22) !important;
+  }
+  @media (max-width: 390px), (max-height: 760px) {
+    body.in-game #hud #gameBackBtn {
+      width: 25px !important;
+      min-width: 25px !important;
+      height: 25px !important;
+      top: 8px !important;
+      right: 8px !important;
+      font-size: 15px !important;
+    }
+  }
+
+  /* Final alignment pass for image-backed stage header */
+  #stageSelect .top-stats-bar {
+    padding: max(5px, calc(env(safe-area-inset-top) + 4px)) 8px 5px !important;
+    gap: 6px !important;
+  }
+  #stageSelect .top-stats-bar .ts-item {
+    height: 28px !important;
+    background: url('./assets/ui/ui_stat_chip.png') center / 100% 100% no-repeat !important;
+  }
+  .top-stats-bar .ts-item {
+    gap: 5px !important;
+    font-size: 0 !important;
+  }
+  #stageSelect .top-stats-bar .ts-item,
+  #enhanceScreen .top-stats-bar .ts-item,
+  #upgradeScreen .top-stats-bar .ts-item,
+  #generalSelectScreen .top-stats-bar .ts-item,
+  #generalManageScreen .top-stats-bar .ts-item {
+    font-size: 0 !important;
+  }
+  .top-stats-bar .ts-item::before {
+    content: "" !important;
+    width: 22px !important;
+    height: 22px !important;
+    flex: 0 0 22px !important;
+    display: block !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-size: contain !important;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.55)) !important;
+  }
+  .top-stats-bar .ts-item:nth-child(1)::before {
+    background-image: url('./assets/ui/stat_icon_gold.png') !important;
+  }
+  .top-stats-bar .ts-item:nth-child(2)::before {
+    background-image: url('./assets/ui/stat_icon_star.png') !important;
+  }
+  .top-stats-bar .ts-item:nth-child(3)::before {
+    background-image: url('./assets/ui/stat_icon_city.png') !important;
+  }
+  .top-stats-bar .ts-item:nth-child(4)::before {
+    background-image: url('./assets/ui/stat_icon_power.png') !important;
+  }
+  .top-stats-bar .ts-item span {
+    font-size: clamp(13px, 3.4vw, 16px) !important;
+    color: #fff4d6 !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.75) !important;
+  }
+  #stageSelect .topbar {
+    min-height: 42px !important;
+    grid-template-columns: 42px minmax(0, 1fr) 0 !important;
+    gap: 6px !important;
+    padding: 4px 9px !important;
+  }
+  #stageSelect .topbar .back {
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    background: url('./assets/ui/ui_back_button.png') center / 100% 100% no-repeat !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+  #stageSelect .topbar .title {
+    height: 38px !important;
+    min-height: 38px !important;
+    background: url('./assets/ui/ui_header_title.png') center / 100% 100% no-repeat !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+  #stageSelect .progress {
+    padding: 2px 10px 3px !important;
+  }
+  #stageSelect .stage-quick-actions {
+    height: 48px !important;
+    min-height: 48px !important;
+    padding: 4px 12px 6px !important;
+    background: rgba(6,12,24,0.22) !important;
+  }
+  #stageSelect .stage-tutorial-btn {
+    width: 168px !important;
+    min-width: 168px !important;
+    height: 42px !important;
+    padding: 0 16px 5px 56px !important;
+    font-size: 15px !important;
+    background: url('./assets/ui/stage_tutorial_btn.png') center / 100% 100% no-repeat !important;
+  }
+  #stageSelect .stage-map-wrap {
+    height: calc(100% - 138px) !important;
+    padding-top: 4px !important;
+  }
+  @media (max-width: 390px), (max-height: 760px) {
+    #stageSelect .stage-quick-actions {
+      height: 44px !important;
+      min-height: 44px !important;
+      padding: 3px 10px 5px !important;
+    }
+    #stageSelect .stage-tutorial-btn {
+      width: 154px !important;
+      min-width: 154px !important;
+      height: 39px !important;
+      padding: 0 14px 5px 52px !important;
       font-size: 14px !important;
     }
+    #stageSelect .stage-map-wrap {
+      height: calc(100% - 134px) !important;
+      padding-top: 4px !important;
+    }
+  }
+
+  #stageSelect .stage-quick-actions.is-compact {
+    height: 0 !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    background: transparent !important;
+    pointer-events: none !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact .stage-tutorial-btn {
+    position: absolute !important;
+    top: -38px !important;
+    right: 15px !important;
+    width: 28px !important;
+    min-width: 28px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(255, 224, 130, 0.35) !important;
+    border-radius: 50% !important;
+    background:
+      linear-gradient(180deg, rgba(52, 63, 82, 0.94), rgba(20, 27, 40, 0.96)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      0 1px 0 rgba(5, 8, 14, 0.95),
+      0 2px 6px rgba(0, 0, 0, 0.28) !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    letter-spacing: 0 !important;
+    text-shadow: none !important;
+    pointer-events: auto !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact .stage-tutorial-btn::before {
+    content: "?" !important;
+    color: rgba(255, 225, 145, 0.9) !important;
+    font-family: system-ui, sans-serif !important;
+    font-size: 17px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    transform: translateY(-1px) !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact .stage-tutorial-btn:active {
+    transform: translateY(1px) scale(0.96) !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact + .stage-map-wrap {
+    height: calc(100% - 92px) !important;
+    padding-top: 3px !important;
+  }
+  @media (max-width: 390px), (max-height: 760px) {
+    #stageSelect .stage-quick-actions.is-compact .stage-tutorial-btn {
+      top: -36px !important;
+      right: 12px !important;
+      width: 27px !important;
+      min-width: 27px !important;
+      height: 27px !important;
+      min-height: 27px !important;
+    }
+    #stageSelect .stage-quick-actions.is-compact + .stage-map-wrap {
+      height: calc(100% - 88px) !important;
+      padding-top: 3px !important;
+    }
+  }
+
+  /* Cleaner stage header: one calm band, not stacked dark blocks. */
+  #stageSelect .top-stats-bar {
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: max(5px, calc(env(safe-area-inset-top) + 4px)) 7px 4px !important;
+    gap: 7px !important;
+    background: linear-gradient(180deg, rgba(13, 19, 31, 0.96), rgba(8, 13, 23, 0.94)) !important;
+    border-bottom: 1px solid rgba(255, 222, 128, 0.12) !important;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset !important;
+  }
+  #stageSelect .top-stats-bar .ts-item {
+    height: 26px !important;
+    padding: 0 9px !important;
+    border: 1px solid rgba(185, 204, 235, 0.13) !important;
+    border-radius: 7px !important;
+    background: linear-gradient(180deg, rgba(36, 45, 62, 0.95), rgba(20, 27, 41, 0.95)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 1px 2px rgba(0,0,0,0.24) !important;
+  }
+  #stageSelect .top-stats-bar .ts-item::before {
+    width: 18px !important;
+    height: 18px !important;
+    flex-basis: 18px !important;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.48)) !important;
+  }
+  #stageSelect .top-stats-bar .ts-item span {
+    font-size: clamp(13px, 3.2vw, 15px) !important;
+  }
+  #stageSelect .topbar {
+    position: relative !important;
+    min-height: 46px !important;
+    grid-template-columns: 36px minmax(0, 1fr) 42px !important;
+    gap: 6px !important;
+    padding: 5px 8px 4px !important;
+    background: linear-gradient(180deg, rgba(10, 17, 31, 0.95), rgba(8, 13, 23, 0.9)) !important;
+    border: 0 !important;
+    box-shadow: 0 7px 10px rgba(32,12,8,0.28) !important;
+  }
+  #stageSelect .topbar .back {
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    align-self: center !important;
+    opacity: 0.92 !important;
+  }
+  #stageSelect .topbar .title {
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 12px !important;
+    border: 1px solid rgba(217, 185, 92, 0.26) !important;
+    border-radius: 8px !important;
+    background:
+      linear-gradient(180deg, rgba(38, 47, 62, 0.92), rgba(22, 31, 47, 0.92)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 1px 2px rgba(0,0,0,0.25) !important;
+    color: #fff0bd !important;
+    font-size: clamp(14px, 3.7vw, 17px) !important;
+  }
+  #stageSelect .progress {
+    height: 5px !important;
+    padding: 0 8px !important;
+    background: rgba(8, 13, 23, 0.9) !important;
+  }
+  #stageSelect .progress .bar {
+    height: 4px !important;
+    border-radius: 999px !important;
+    background: rgba(49, 65, 88, 0.65) !important;
+    box-shadow: 0 4px 7px rgba(32,12,8,0.24) !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact {
+    position: absolute !important;
+    top: calc(env(safe-area-inset-top) + 43px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 0 !important;
+    transform: none !important;
+    z-index: 18 !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact .stage-tutorial-btn {
+    top: 7px !important;
+    right: 13px !important;
+    width: 26px !important;
+    min-width: 26px !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    border-color: rgba(255, 226, 146, 0.24) !important;
+    opacity: 0.82 !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact .stage-tutorial-btn::before {
+    font-size: 14px !important;
+    color: rgba(255, 229, 157, 0.82) !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact + .stage-map-wrap {
+    height: calc(100% - 89px) !important;
+    padding-top: 2px !important;
+  }
+  @media (max-width: 390px), (max-height: 760px) {
+    #stageSelect .top-stats-bar {
+      height: 36px !important;
+      min-height: 36px !important;
+      gap: 5px !important;
+      padding-left: 6px !important;
+      padding-right: 6px !important;
+    }
+    #stageSelect .topbar {
+      min-height: 43px !important;
+      grid-template-columns: 34px minmax(0, 1fr) 39px !important;
+      padding: 4px 7px !important;
+    }
+    #stageSelect .topbar .back {
+      width: 32px !important;
+      min-width: 32px !important;
+      height: 32px !important;
+    }
+    #stageSelect .topbar .title {
+      height: 32px !important;
+      min-height: 32px !important;
+    }
+    #stageSelect .stage-quick-actions.is-compact {
+      top: calc(env(safe-area-inset-top) + 40px) !important;
+    }
+    #stageSelect .stage-quick-actions.is-compact .stage-tutorial-btn {
+      top: 6px !important;
+      right: 12px !important;
+      width: 25px !important;
+      min-width: 25px !important;
+      height: 25px !important;
+      min-height: 25px !important;
+    }
+    #stageSelect .stage-quick-actions.is-compact + .stage-map-wrap {
+      height: calc(100% - 85px) !important;
+    }
+  }
+
+  /* Clean popup/screen controls baseline: no text-crossing image plates. */
+  #generalSelectScreen .deploy-heading,
+  #generalManageScreen .deploy-heading,
+  #enhanceScreen .enh-title,
+  #upgradeScreen .upg-title,
+  #starExchangeModal .sx-title {
+    min-height: 42px !important;
+    height: 42px !important;
+    padding: 0 14px 3px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(245,205,92,0.64) !important;
+    border-radius: 13px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02)),
+      linear-gradient(180deg, #273447, #121b2b 58%, #0a111d) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.16),
+      0 8px 18px rgba(0,0,0,0.24) !important;
+    color: #fff1b8 !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: clamp(17px, 4.4vw, 21px) !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 1px !important;
+    text-align: center !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.68), 0 0 14px rgba(255,216,107,0.24) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  #enhanceScreen .enh-title::before {
+    content: none !important;
+    display: none !important;
+  }
+  .enh-header,
+  .upg-header,
+  #generalSelectScreen .deploy-top,
+  #generalManageScreen .deploy-top {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+  .enh-header::before,
+  .enh-header::after,
+  .upg-header::before,
+  .upg-header::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  #enhanceScreen .enh-header .back-btn,
+  #upgradeScreen .upg-header .back-btn,
+  .deploy-back,
+  #infoBack {
+    min-width: 44px !important;
+    height: 40px !important;
+    padding: 0 10px 3px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(245,205,92,0.46) !important;
+    border-radius: 11px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02)),
+      linear-gradient(180deg, #2b3847, #141e2b 58%, #090f18) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.16),
+      0 6px 14px rgba(0,0,0,0.22) !important;
+    color: #fff0bd !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.68) !important;
+  }
+  #enhanceScreen .enh-header .back-btn {
+    min-width: 44px !important;
+    width: 44px !important;
+    padding: 0 0 3px !important;
+    border-color: rgba(217, 185, 92, 0.34) !important;
+    background:
+      linear-gradient(180deg, rgba(38, 47, 62, 0.96), rgba(22, 31, 47, 0.96)) !important;
+    color: #fff0bd !important;
+    font-family: system-ui, sans-serif !important;
+    font-size: 25px !important;
+    font-weight: 700 !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 1px 2px rgba(0,0,0,0.25) !important;
+  }
+  #upgradeScreen .upg-header .back-btn {
+    min-width: 44px !important;
+    width: 44px !important;
+    padding: 0 0 3px !important;
+    border-color: rgba(217, 185, 92, 0.34) !important;
+    background:
+      linear-gradient(180deg, rgba(38, 47, 62, 0.96), rgba(22, 31, 47, 0.96)) !important;
+    color: #fff0bd !important;
+    font-family: system-ui, sans-serif !important;
+    font-size: 25px !important;
+    font-weight: 700 !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 1px 2px rgba(0,0,0,0.25) !important;
+  }
+  #generalSelectScreen .deploy-back,
+  #generalManageScreen .deploy-back,
+  #enhanceScreen .enh-header .back-btn,
+  #upgradeScreen .upg-header .back-btn,
+  #infoBack {
+    width: 36px !important;
+    min-width: 36px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+    position: relative !important;
+    align-self: center !important;
+    justify-self: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(217, 185, 92, 0.34) !important;
+    border-radius: 9px !important;
+    background:
+      linear-gradient(180deg, rgba(38, 47, 62, 0.96), rgba(22, 31, 47, 0.96)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 1px 2px rgba(0,0,0,0.25) !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    text-shadow: none !important;
+  }
+  #generalSelectScreen .deploy-back::before,
+  #generalManageScreen .deploy-back::before,
+  #enhanceScreen .enh-header .back-btn::before,
+  #upgradeScreen .upg-header .back-btn::before,
+  #infoBack::before {
+    content: "" !important;
+    width: 13px !important;
+    height: 13px !important;
+    display: block !important;
+    border-left: 3px solid #fff0bd !important;
+    border-bottom: 3px solid #fff0bd !important;
+    transform: translateX(2px) rotate(45deg) !important;
+    filter: drop-shadow(0 1px 0 rgba(0,0,0,0.62)) !important;
+  }
+  #generalSelectScreen .deploy-count,
+  #generalManageScreen .deploy-count,
+  #enhanceScreen .enh-pill,
+  #upgradeScreen .upg-gold {
+    min-height: 38px !important;
+    height: 38px !important;
+    padding: 0 10px !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 12px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02)),
+      rgba(14,22,34,0.82) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12) !important;
+    color: #fff1b8 !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.7) !important;
+    letter-spacing: 0 !important;
+  }
+  #enhanceScreen .enh-pill span,
+  #enhanceScreen .enh-pill b {
+    color: inherit !important;
+  }
+
+  #enhanceScreen .enh-board,
+  #enhanceScreen .enh-mode-tabs,
+  #enhanceScreen .enh-roster,
+  #upgradeScreen .upg-list,
+  #starExchangeModal .sx-card {
+    border: 1px solid rgba(245,205,92,0.28) !important;
+    border-radius: 18px !important;
+    background:
+      radial-gradient(circle at 50% -12%, rgba(255,218,104,0.10), transparent 38%),
+      linear-gradient(180deg, rgba(20,32,48,0.94), rgba(7,12,21,0.96)) !important;
+    box-shadow:
+      0 18px 44px rgba(0,0,0,0.38),
+      inset 0 1px 0 rgba(255,255,255,0.09) !important;
+  }
+
+  .info-buttons button,
+  .deploy-actions button,
+  #msgButtons button,
+  .tut-next,
+  #enhanceScreen .enh-go,
+  #upgradeScreen .upg-buy,
+  .er-action-btn,
+  #starExchangeModal .sx-btn,
+  #starExchangeModal .sx-close,
+  .formation-tab,
+  #enhanceScreen .enh-mode-tab {
+    min-height: 46px !important;
+    padding: 0 14px 3px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(245,205,92,0.42) !important;
+    border-radius: 12px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02)),
+      linear-gradient(180deg, #2a3646, #141d2b 58%, #080d16) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.15),
+      0 7px 16px rgba(0,0,0,0.22) !important;
+    color: #fff0bd !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 15px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-align: center !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.62) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+  }
+  .info-buttons .primary,
+  .deploy-actions .deploy-primary,
+  #msgButtons button.btn-primary,
+  #enhanceScreen .enh-go:not(:disabled),
+  #upgradeScreen .upg-buy:not(.disabled):not(.maxed),
+  .er-action-btn:not(.secondary),
+  #starExchangeModal .sx-btn:not(:disabled),
+  .formation-tab.active,
+  #enhanceScreen .enh-mode-tab.active {
+    border-color: rgba(255,223,122,0.72) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.44), rgba(255,255,255,0.05) 36%),
+      linear-gradient(180deg, #ffd96a, #d39622 58%, #825116) !important;
+    color: #241305 !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.56) !important;
+  }
+  .deploy-actions .deploy-secondary,
+  .er-action-btn.secondary,
+  #infoUpg,
+  #starExchangeModal .sx-close {
+    border-color: rgba(120,176,255,0.38) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.02)),
+      linear-gradient(180deg, #30425c, #172235 58%, #0a111e) !important;
+    color: #edf5ff !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.62) !important;
+  }
+  #enhanceScreen .enh-go:disabled,
+  #upgradeScreen .upg-buy.disabled,
+  #starExchangeModal .sx-btn:disabled,
+  #starExchangeModal .sx-btn.disabled {
+    border-color: rgba(255,255,255,0.10) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02)),
+      linear-gradient(180deg, #56606b, #29313a 58%, #151b22) !important;
+    color: rgba(240,242,245,0.55) !important;
+    text-shadow: none !important;
+    filter: saturate(0.72) !important;
+  }
+
+  #starExchangeModal .sx-seal {
+    border: 2px solid rgba(255,225,139,0.88) !important;
+    border-radius: 12px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.18), transparent 34%),
+      linear-gradient(180deg, #d63628, #9e120d 62%, #650807) !important;
+    box-shadow:
+      0 8px 18px rgba(0,0,0,0.46),
+      inset 0 1px 0 rgba(255,255,255,0.22),
+      inset 0 -8px 14px rgba(0,0,0,0.22) !important;
+  }
+  #starExchangeModal .sx-body {
+    border: 1px solid rgba(244,199,86,0.22) !important;
+    border-radius: 10px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+      rgba(12,21,36,0.88) !important;
+    color: #fff0bd !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12) !important;
+  }
+  #starExchangeModal .sx-stat,
+  #starExchangeModal .sx-rate {
+    background: rgba(255,255,255,0.06) !important;
+    color: #fff0bd !important;
+  }
+  #starExchangeModal .sx-stat span,
+  #starExchangeModal .sx-rate span,
+  #starExchangeModal .sx-note {
+    color: rgba(255,244,214,0.76) !important;
+  }
+  #starExchangeModal .sx-stat b,
+  #starExchangeModal .sx-rate b {
+    color: #ffd05f !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.72) !important;
+  }
+
+  @media (max-width: 390px), (max-height: 760px) {
+    #generalSelectScreen .deploy-heading,
+    #generalManageScreen .deploy-heading,
+    #enhanceScreen .enh-title,
+    #upgradeScreen .upg-title,
+    #starExchangeModal .sx-title {
+      height: 40px !important;
+      min-height: 40px !important;
+      font-size: 17px !important;
+    }
+    .info-buttons button,
+    .deploy-actions button,
+    #msgButtons button,
+    .tut-next,
+    #enhanceScreen .enh-go,
+    #upgradeScreen .upg-buy,
+    .er-action-btn,
+    #starExchangeModal .sx-btn,
+    #starExchangeModal .sx-close,
+    .formation-tab,
+    #enhanceScreen .enh-mode-tab {
+      min-height: 42px !important;
+      font-size: 14px !important;
+    }
+  }
+
+  /* Settings-style full alignment pass */
+  #generalSelectScreen,
+  #generalManageScreen,
+  #enhanceScreen,
+  #upgradeScreen {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,218,104,0.08), transparent 30%),
+      linear-gradient(180deg, #101a2b 0%, #08101c 52%, #05080f 100%) !important;
+    color: #fff0bd !important;
+  }
+  #generalSelectScreen::before,
+  #generalManageScreen::before,
+  #enhanceScreen::before,
+  #upgradeScreen::before {
+    background:
+      linear-gradient(90deg, rgba(0,0,0,0.36), transparent 24%, transparent 76%, rgba(0,0,0,0.36)),
+      radial-gradient(circle at 50% 10%, rgba(255,213,99,0.10), transparent 34%) !important;
+    opacity: 1 !important;
+  }
+  #generalSelectScreen .top-stats-bar,
+  #generalManageScreen .top-stats-bar,
+  #enhanceScreen .top-stats-bar,
+  #upgradeScreen .top-stats-bar {
+    background:
+      linear-gradient(180deg, rgba(225,237,255,0.06), rgba(255,255,255,0.01)),
+      rgba(8, 14, 25, 0.96) !important;
+    border-bottom: 1px solid rgba(214,169,54,0.32) !important;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.22) !important;
+  }
+  #generalSelectScreen .top-stats-bar .ts-item,
+  #generalManageScreen .top-stats-bar .ts-item,
+  #enhanceScreen .top-stats-bar .ts-item,
+  #upgradeScreen .top-stats-bar .ts-item {
+    border: 1px solid rgba(245,205,92,0.30) !important;
+    border-radius: 8px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02)),
+      rgba(15,24,38,0.92) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.10) !important;
+  }
+
+  .deploy-shell,
+  #generalManageScreen .formation-block,
+  #generalManageScreen .manage-summary-card,
+  #enhanceScreen .enh-board,
+  #enhanceScreen .enh-mode-tabs,
+  #enhanceScreen .enh-roster,
+  #upgradeScreen .upg-list {
+    border: 2px solid rgba(214,169,54,0.74) !important;
+    border-radius: 18px !important;
+    background:
+      radial-gradient(circle at 50% -12%, rgba(255,218,104,0.12), transparent 34%),
+      linear-gradient(180deg, rgba(29,43,63,0.96), rgba(9,16,28,0.98) 42%, rgba(5,9,17,0.98)) !important;
+    box-shadow:
+      0 22px 54px rgba(0,0,0,0.42),
+      inset 0 1px 0 rgba(255,255,255,0.10) !important;
+  }
+  #enhanceScreen .enh-board,
+  #upgradeScreen .upg-list {
+    padding: 14px !important;
+  }
+  #enhanceScreen .enh-roster,
+  .deploy-roster,
+  #generalManageScreen .manage-roster {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)),
+      rgba(7,13,23,0.82) !important;
+  }
+
+  #generalSelectScreen .deploy-heading,
+  #generalManageScreen .deploy-heading,
+  #enhanceScreen .enh-title,
+  #upgradeScreen .upg-title {
+    border-color: rgba(245,205,92,0.78) !important;
+    border-radius: 14px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02)),
+      linear-gradient(180deg, #273447, #121b2b 58%, #0a111d) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.18),
+      0 8px 18px rgba(0,0,0,0.26) !important;
+    color: #fff1b8 !important;
+    font-size: 21px !important;
+    letter-spacing: 1px !important;
+  }
+  #enhanceScreen .enh-header,
+  #upgradeScreen .upg-header,
+  #generalSelectScreen .deploy-top,
+  #generalManageScreen .deploy-top {
+    width: min(404px, calc(100vw - 24px)) !important;
+    margin: 10px auto 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    grid-template-columns: 56px minmax(0,1fr) 78px !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  #generalManageScreen .deploy-top {
+    grid-template-columns: 56px minmax(0,1fr) 68px !important;
+  }
+
+  #enhanceScreen .enh-header .back-btn,
+  #upgradeScreen .upg-header .back-btn,
+  .deploy-back {
+    height: 42px !important;
+    min-height: 42px !important;
+    align-self: center !important;
+    justify-self: center !important;
+    border-color: rgba(245,205,92,0.48) !important;
+    border-radius: 12px !important;
+  }
+  #upgradeScreen .upg-header .back-btn {
+    transform: translateY(-2px) !important;
+  }
+  #upgradeScreen .upg-header .back-btn:active {
+    transform: translateY(0) !important;
+  }
+  #generalSelectScreen .deploy-count,
+  #generalManageScreen .deploy-count,
+  #enhanceScreen .enh-pill,
+  #upgradeScreen .upg-gold {
+    height: 42px !important;
+    min-height: 42px !important;
+    align-self: center !important;
+    border-color: rgba(245,205,92,0.30) !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+  }
+
+  #enhanceScreen .enh-slot,
+  #enhanceScreen .enh-preview,
+  #enhanceScreen .enh-fodder-label,
+  #enhanceScreen .enh-fodder-slot,
+  #upgradeScreen .upg-card,
+  .deploy-stage-bar,
+  #generalManageScreen .manage-summary-card {
+    border: 1px solid rgba(244,199,86,0.22) !important;
+    border-radius: 12px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+      rgba(12,21,36,0.88) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12) !important;
+    color: #fff0bd !important;
+  }
+  #enhanceScreen .enh-preview {
+    min-height: 198px !important;
+    padding: 18px 10px 14px !important;
+    display: grid !important;
+    grid-template-rows: auto 1fr !important;
+    align-content: stretch !important;
+    gap: 13px !important;
+  }
+  #upgradeScreen .upg-card.can-buy,
+  #upgradeScreen .upg-card.is-maxed {
+    background-image: none !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.025)),
+      rgba(12,21,36,0.90) !important;
+    box-shadow:
+      0 0 0 1px rgba(255,218,104,0.30),
+      inset 0 1px 0 rgba(255,255,255,0.14) !important;
+    filter: none !important;
+  }
+  #upgradeScreen .upg-card.is-maxed {
+    background:
+      linear-gradient(180deg, rgba(255,218,104,0.16), rgba(255,255,255,0.025)),
+      rgba(18,25,34,0.92) !important;
+  }
+  #enhanceScreen .enh-slot-label,
+  #enhanceScreen .enh-fodder-label,
+  #enhanceScreen .enh-pv-line span,
+  .deploy-note,
+  .manage-note,
+  #upgradeScreen .upg-desc,
+  #upgradeScreen .upg-next {
+    color: rgba(255,244,214,0.72) !important;
+    text-shadow: none !important;
+  }
+  #enhanceScreen .enh-slot-name,
+  #enhanceScreen .enh-slot-lv,
+  #enhanceScreen .enh-pv-line b,
+  #enhanceScreen .enh-fodder-label b,
+  .deploy-stage-name,
+  .deploy-lead-name,
+  .manage-title,
+  #upgradeScreen .upg-name,
+  #upgradeScreen .upg-eff,
+  #upgradeScreen .upg-eff b {
+    color: #fff1b8 !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.68) !important;
+  }
+
+  #enhanceScreen .enh-arrow,
+  #enhanceScreen .enh-add,
+  #enhanceScreen .enh-slot-empty-mark {
+    border: 1px solid rgba(245,205,92,0.54) !important;
+    border-radius: 12px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.44), rgba(255,255,255,0.04) 36%),
+      linear-gradient(180deg, #ffd96a, #d39622 58%, #825116) !important;
+    color: #241305 !important;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.42) !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.52) !important;
+  }
+
+  #upgradeScreen .upg-icon {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background-color: transparent !important;
+    background-position: center !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    box-shadow: none !important;
+    color: transparent !important;
+    overflow: visible !important;
+    text-shadow: none !important;
+  }
+
+  #enhanceScreen .enh-go,
+  #upgradeScreen .upg-buy,
+  .deploy-actions button,
+  .formation-tab,
+  #enhanceScreen .enh-mode-tab {
+    border-radius: 12px !important;
+    letter-spacing: 0 !important;
+  }
+  #enhanceScreen .enh-go:not(:disabled),
+  #upgradeScreen .upg-buy:not(.disabled):not(.maxed),
+  .deploy-actions .deploy-primary,
+  .formation-tab.active,
+  #enhanceScreen .enh-mode-tab.active {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.44), rgba(255,255,255,0.04) 36%),
+      linear-gradient(180deg, #ffd96a, #d39622 58%, #825116) !important;
+    color: #241305 !important;
+  }
+
+  #enhanceScreen .enh-roster-card,
+  .deploy-card {
+    border: 1px solid rgba(244,199,86,0.24) !important;
+    border-radius: 12px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+      rgba(16,25,39,0.92) !important;
+    box-shadow: 0 10px 18px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.10) !important;
+  }
+  #enhanceScreen .enh-roster-card.selected,
+  .deploy-card.selected {
+    border-color: rgba(255,218,104,0.88) !important;
+    box-shadow:
+      0 0 0 2px rgba(255,218,104,0.32),
+      0 12px 22px rgba(0,0,0,0.28),
+      inset 0 1px 0 rgba(255,255,255,0.12) !important;
+  }
+  #enhanceScreen .enh-roster-card .name,
+  .deploy-name {
+    background: linear-gradient(180deg, rgba(6,10,18,0.18), rgba(6,10,18,0.82)) !important;
+    color: #fff1b8 !important;
+  }
+
+  #msg,
+  #starExchangeModal .sx-card,
+  #tutorialOfferModal > div {
+    border: 2px solid rgba(214,169,54,0.74) !important;
+    border-radius: 18px !important;
+    background:
+      radial-gradient(circle at 50% -12%, rgba(255,218,104,0.12), transparent 34%),
+      linear-gradient(180deg, rgba(29,43,63,0.98), rgba(9,16,28,0.99) 42%, rgba(5,9,17,0.99)) !important;
+    box-shadow:
+      0 26px 70px rgba(0,0,0,0.62),
+      inset 0 1px 0 rgba(255,255,255,0.10) !important;
+  }
+  #msgText {
+    color: #fff1b8 !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.68) !important;
+  }
+  #msg[data-result="confirm"] #msgText {
+    max-width: 330px !important;
+    min-height: 0 !important;
+    padding: 8px 6px 18px !important;
+    display: block !important;
+    font-size: clamp(20px, 4.5vw, 24px) !important;
+    font-weight: 800 !important;
+    line-height: 1.55 !important;
+    letter-spacing: 0 !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+  #msg[data-result="confirm"] #msgButtons {
+    margin-top: 14px !important;
+  }
+  #msg[data-result="confirm"] #msgButtons button {
+    min-height: 46px !important;
+    padding: 10px 16px 12px !important;
+    font-size: 15px !important;
+    letter-spacing: 0 !important;
+  }
+
+  /* War council intro: opposing commanders, battlefield tension. */
+  #introDialog {
+    align-items: stretch !important;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(255, 187, 72, 0.16), transparent 18%),
+      linear-gradient(90deg, rgba(84, 12, 10, 0.58), transparent 38%, transparent 62%, rgba(10, 48, 82, 0.58)),
+      linear-gradient(180deg, rgba(3, 5, 10, 0.82), rgba(8, 10, 14, 0.96)) !important;
+    backdrop-filter: blur(4px) saturate(1.15) !important;
+  }
+  #introDialog::before {
+    inset: 0 !important;
+    background:
+      linear-gradient(118deg, transparent 0 44%, rgba(255, 219, 99, 0.18) 45%, rgba(255, 85, 38, 0.34) 49%, rgba(87, 198, 255, 0.28) 51%, rgba(255, 219, 99, 0.14) 55%, transparent 56%),
+      repeating-linear-gradient(105deg, rgba(255,255,255,0.055) 0 1px, transparent 1px 19px),
+      radial-gradient(circle at 50% 60%, rgba(255, 95, 30, 0.24), transparent 34%) !important;
+    opacity: 0.9 !important;
+    animation: idgWarDrift 2.8s linear infinite !important;
+  }
+  #introDialog::after {
+    content: "開 戰" !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 49% !important;
+    width: 88px !important;
+    height: 88px !important;
+    transform: translate(-50%, -50%) rotate(-10deg) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 2px solid rgba(255, 216, 99, 0.58) !important;
+    border-radius: 50% !important;
+    background:
+      radial-gradient(circle, rgba(44, 8, 6, 0.86), rgba(5, 7, 12, 0.88)) !important;
+    box-shadow:
+      0 0 24px rgba(255, 76, 35, 0.32),
+      inset 0 0 18px rgba(255, 216, 99, 0.13) !important;
+    color: rgba(255, 226, 146, 0.24) !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 21px !important;
+    font-weight: 900 !important;
+    letter-spacing: 2px !important;
+    pointer-events: none !important;
+  }
+  @keyframes idgWarDrift {
+    from { background-position: 0 0, 0 0, center; }
+    to { background-position: 0 0, -42px 0, center; }
+  }
+  #introDialog .idg-stage {
+    max-width: 520px !important;
+    min-height: 100dvh !important;
+    padding: max(64px, calc(env(safe-area-inset-top) + 58px)) 18px calc(22px + env(safe-area-inset-bottom)) !important;
+    display: block !important;
+  }
+  #introDialog .idg-stage::before {
+    content: "" !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 18% !important;
+    bottom: 20% !important;
+    width: 2px !important;
+    transform: translateX(-50%) rotate(10deg) !important;
+    background: linear-gradient(180deg, transparent, rgba(255, 219, 99, 0.58), transparent) !important;
+    box-shadow: 0 0 18px rgba(255, 80, 35, 0.55) !important;
+    pointer-events: none !important;
+  }
+  #introDialog .idg-portrait {
+    position: absolute !important;
+    bottom: calc(36px + env(safe-area-inset-bottom)) !important;
+    width: 100% !important;
+    max-width: 35% !important;
+    aspect-ratio: 0.78 !important;
+    border-radius: 14px !important;
+    border-width: 2px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01)),
+      radial-gradient(circle at 50% 28%, rgba(255, 198, 83, 0.18), transparent 42%),
+      #130b08 !important;
+    filter: brightness(0.58) saturate(0.8) !important;
+    transform: translateY(8px) scale(0.94) !important;
+    box-shadow:
+      0 0 0 1px rgba(255, 215, 98, 0.20),
+      0 12px 24px rgba(0,0,0,0.62) !important;
+  }
+  #introDialog .idg-portrait.idg-left {
+    left: 18px !important;
+    border-color: rgba(255, 74, 48, 0.64) !important;
+    transform-origin: right bottom !important;
+  }
+  #introDialog .idg-portrait.idg-right {
+    right: 18px !important;
+    border-color: rgba(76, 190, 255, 0.72) !important;
+    transform-origin: left bottom !important;
+  }
+  #introDialog .idg-portrait.active {
+    filter: brightness(1.08) saturate(1.12) !important;
+    transform: translateY(-3px) scale(1.04) !important;
+    z-index: 4 !important;
+  }
+  #introDialog .idg-portrait.idg-left.active {
+    box-shadow:
+      0 0 0 2px rgba(255, 82, 55, 0.88),
+      0 0 28px rgba(255, 62, 34, 0.48),
+      0 18px 34px rgba(0,0,0,0.72) !important;
+  }
+  #introDialog .idg-portrait.idg-right.active {
+    box-shadow:
+      0 0 0 2px rgba(71, 197, 255, 0.9),
+      0 0 28px rgba(71, 197, 255, 0.50),
+      0 18px 34px rgba(0,0,0,0.72) !important;
+  }
+  #introDialog .idg-portrait img {
+    width: 124% !important;
+    height: 112% !important;
+    top: -6% !important;
+    object-fit: cover !important;
+    filter: drop-shadow(0 9px 10px rgba(0,0,0,0.65)) !important;
+  }
+  #introDialog .idg-left img {
+    left: -12% !important;
+    transform: scaleX(1) !important;
+    transform-origin: center !important;
+  }
+  #introDialog .idg-right img {
+    left: -8% !important;
+    transform: scaleX(-1) !important;
+    transform-origin: center !important;
+  }
+  #introDialog .idg-name {
+    left: 8px !important;
+    right: 8px !important;
+    bottom: 8px !important;
+    transform: none !important;
+    padding: 5px 8px 6px !important;
+    display: block !important;
+    border-radius: 8px !important;
+    font-size: 12px !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  #introDialog .idg-bubble {
+    position: absolute !important;
+    left: 18px !important;
+    right: 18px !important;
+    top: max(82px, calc(env(safe-area-inset-top) + 72px)) !important;
+    bottom: auto !important;
+    width: auto !important;
+    min-height: 112px !important;
+    margin: 0 !important;
+    padding: 18px 18px 20px !important;
+    border: 2px solid rgba(255, 215, 96, 0.86) !important;
+    border-radius: 10px !important;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01)),
+      linear-gradient(180deg, rgba(45, 24, 14, 0.98), rgba(17, 12, 12, 0.98)) !important;
+    box-shadow:
+      0 0 0 2px rgba(4, 6, 12, 0.86),
+      0 12px 26px rgba(0,0,0,0.58),
+      inset 0 1px 0 rgba(255,255,255,0.13) !important;
+    color: #fff0c5 !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.78) !important;
+    font-size: clamp(17px, 4.3vw, 21px) !important;
+    line-height: 1.48 !important;
+    transform: none !important;
+  }
+  #introDialog.enemy-speaking .idg-bubble {
+    border-color: rgba(255, 89, 56, 0.86) !important;
+  }
+  #introDialog.player-speaking .idg-bubble {
+    border-color: rgba(72, 198, 255, 0.9) !important;
+  }
+  #introDialog .idg-bubble::before,
+  #introDialog .idg-bubble::after {
+    content: none !important;
+    display: none !important;
+  }
+  #introDialog .idg-skip {
+    background: rgba(8, 10, 16, 0.78) !important;
+    border-color: rgba(255, 215, 96, 0.46) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.55) !important;
+  }
+  body.intro-dialog-active #gameBackBtn {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  /* Prisoner scene: royal judgment table, heavier court drama. */
+  #prisonerScreen {
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.18) 46%, rgba(0,0,0,0.92) 100%),
+      url('./assets/recruit/palace_captive_bg.png') center top / cover no-repeat,
+      #050302 !important;
+  }
+  #prisonerScreen::before {
+    background:
+      radial-gradient(circle at 50% 20%, rgba(255, 213, 94, 0.22), transparent 26%),
+      linear-gradient(90deg, rgba(0,0,0,0.66), transparent 18%, transparent 82%, rgba(0,0,0,0.66)),
+      linear-gradient(180deg, transparent 0%, transparent 52%, rgba(0,0,0,0.72) 82%, rgba(0,0,0,0.96) 100%) !important;
+  }
+  #prisonerScreen .prison-topbar {
+    left: 18px !important;
+    right: 18px !important;
+    top: calc(18px + env(safe-area-inset-top)) !important;
+  }
+  #prisonerScreen .prison-title {
+    width: 168px !important;
+    height: 42px !important;
+    border: 1px solid rgba(255, 222, 124, 0.72) !important;
+    border-radius: 8px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.20), rgba(255,255,255,0.04) 34%),
+      linear-gradient(180deg, #bc1e17, #6f0806 58%, #270301) !important;
+    box-shadow:
+      0 0 0 2px rgba(30, 7, 2, 0.88),
+      0 8px 18px rgba(0,0,0,0.36),
+      inset 0 1px 0 rgba(255,255,255,0.25) !important;
+    letter-spacing: 5px !important;
+  }
+  #prisonerScreen .prison-stars {
+    width: 92px !important;
+    min-width: 92px !important;
+    height: 34px !important;
+    border: 1px solid rgba(255, 222, 124, 0.54) !important;
+    border-radius: 8px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.11), rgba(255,255,255,0.02)),
+      rgba(11, 13, 18, 0.84) !important;
+    box-shadow:
+      0 0 0 2px rgba(30, 7, 2, 0.74),
+      inset 0 1px 0 rgba(255,255,255,0.15) !important;
+  }
+  #prisonerScreen .prison-event {
+    left: 14px !important;
+    right: 14px !important;
+    bottom: calc(14px + env(safe-area-inset-bottom)) !important;
+    gap: 9px !important;
+  }
+  #prisonerScreen .prison-caption {
+    min-height: 31px !important;
+    padding: 7px 16px 8px !important;
+    border-color: rgba(255, 214, 92, 0.44) !important;
+    background: rgba(6, 5, 5, 0.76) !important;
+    color: #ffe09b !important;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.7),
+      0 8px 20px rgba(0,0,0,0.38) !important;
+  }
+  #prisonerScreen .prison-dialogue {
+    grid-template-columns: 102px minmax(0, 1fr) !important;
+    gap: 10px !important;
+    padding: 10px !important;
+    border: 1px solid rgba(206, 151, 45, 0.38) !important;
+    border-radius: 16px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+      linear-gradient(180deg, rgba(34, 24, 15, 0.92), rgba(9, 8, 9, 0.94)) !important;
+    box-shadow:
+      0 16px 34px rgba(0,0,0,0.52),
+      inset 0 1px 0 rgba(255,255,255,0.11) !important;
+  }
+  #prisonerScreen .prison-face-frame {
+    width: 96px !important;
+    height: 96px !important;
+    border: 1px solid rgba(255, 216, 97, 0.50) !important;
+    border-radius: 15px !important;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(255, 211, 93, 0.18), transparent 44%),
+      linear-gradient(180deg, #27150f, #090607) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      0 8px 20px rgba(0,0,0,0.44) !important;
+  }
+  #prisonerScreen .prison-face-frame::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 12px !important;
+    right: 12px !important;
+    bottom: 9px !important;
+    height: 3px !important;
+    border-radius: 999px !important;
+    background: rgba(255, 216, 97, 0.55) !important;
+    box-shadow: 0 -18px 0 rgba(88, 30, 13, 0.42) !important;
+    pointer-events: none !important;
+  }
+  #prisonerScreen .prison-face-frame img {
+    transform: translateY(7px) scale(0.98) !important;
+    filter:
+      drop-shadow(0 6px 7px rgba(0,0,0,0.62))
+      saturate(0.94)
+      contrast(1.05) !important;
+  }
+  #prisonerScreen .prison-speech {
+    min-height: 126px !important;
+    padding: 14px 15px 12px !important;
+    border: 1px solid rgba(255, 220, 129, 0.36) !important;
+    border-radius: 13px !important;
+    background:
+      linear-gradient(180deg, rgba(255, 235, 181, 0.96), rgba(218, 159, 70, 0.96)) !important;
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,0.36),
+      inset 0 -2px 0 rgba(95,48,16,0.16) !important;
+  }
+  #prisonerScreen .prison-speaker {
+    margin-bottom: 8px !important;
+    padding-bottom: 6px !important;
+    border-bottom: 1px solid rgba(122, 64, 15, 0.22) !important;
+    color: #9f120c !important;
+  }
+  #prisonerScreen .prison-line {
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+  }
+  #prisonerScreen .prison-choice {
+    gap: 10px !important;
+  }
+  #prisonerScreen .prison-choice button {
+    min-height: 52px !important;
+    border: 1px solid rgba(255, 222, 124, 0.52) !important;
+    border-radius: 10px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02)),
+      linear-gradient(180deg, #384354, #141c28 62%, #070b12) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.14),
+      0 6px 16px rgba(0,0,0,0.34) !important;
+  }
+  #prisonerScreen .prison-choice button::before,
+  #prisonerScreen .prison-choice button::after {
+    content: none !important;
+    display: none !important;
+  }
+  #prisonerScreen .prison-choice .yes {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0.04) 36%),
+      linear-gradient(180deg, #cf1f19, #8b0a08 62%, #3a0302) !important;
+  }
+  #prisonerScreen .prison-choice .next,
+  #prisonerScreen .prison-choice .finish {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.40), rgba(255,255,255,0.06) 36%),
+      linear-gradient(180deg, #ffd86a, #d29924 62%, #845114) !important;
+  }
+  @media (max-width: 390px), (max-height: 780px) {
+    #prisonerScreen .prison-topbar {
+      left: 12px !important;
+      right: 12px !important;
+      top: calc(14px + env(safe-area-inset-top)) !important;
+    }
+    #prisonerScreen .prison-event {
+      left: 10px !important;
+      right: 10px !important;
+    }
+    #prisonerScreen .prison-dialogue {
+      grid-template-columns: 84px minmax(0, 1fr) !important;
+      padding: 8px !important;
+      gap: 8px !important;
+    }
+    #prisonerScreen .prison-face-frame {
+      width: 82px !important;
+      height: 82px !important;
+    }
+    #prisonerScreen .prison-speech {
+      min-height: 116px !important;
+      padding: 12px 13px 10px !important;
+    }
+  }
+
+  /* Prisoner screen final pass: match the main dark-gold UI and align the judgment panel. */
+  #prisonerScreen .prison-topbar {
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    height: calc(48px + env(safe-area-inset-top)) !important;
+    padding: max(6px, calc(env(safe-area-inset-top) + 6px)) 10px 6px !important;
+    display: grid !important;
+    grid-template-columns: 76px minmax(0, 1fr) 88px !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: linear-gradient(180deg, rgba(14, 20, 31, 0.96), rgba(8, 12, 21, 0.94)) !important;
+    border-bottom: 1px solid rgba(255, 218, 112, 0.16) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 18px rgba(0,0,0,0.26) !important;
+  }
+  #prisonerScreen .prison-title {
+    grid-column: 2 !important;
+    width: auto !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 12px 2px !important;
+    border: 1px solid rgba(217, 185, 92, 0.32) !important;
+    border-radius: 8px !important;
+    background:
+      linear-gradient(180deg, rgba(38, 47, 62, 0.94), rgba(22, 31, 47, 0.94)) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.09), 0 1px 2px rgba(0,0,0,0.25) !important;
+    color: #fff0bd !important;
+    font-size: clamp(15px, 3.8vw, 17px) !important;
+    letter-spacing: 3px !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.72) !important;
+  }
+  #prisonerScreen .prison-stars {
+    grid-column: 3 !important;
+    justify-self: stretch !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 0 8px 1px !important;
+    border: 1px solid rgba(217, 185, 92, 0.28) !important;
+    border-radius: 8px !important;
+    background:
+      linear-gradient(180deg, rgba(36,45,62,0.95), rgba(19,26,39,0.95)) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 1px 2px rgba(0,0,0,0.25) !important;
+    color: #ffe28a !important;
+    font-size: 13px !important;
+  }
+  #prisonerScreen .prison-event {
+    left: 10px !important;
+    right: 10px !important;
+    bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+    gap: 8px !important;
+    padding: 10px !important;
+    border: 1px solid rgba(214,169,54,0.35) !important;
+    border-radius: 15px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015)),
+      linear-gradient(180deg, rgba(18, 27, 42, 0.94), rgba(5, 8, 15, 0.96)) !important;
+    box-shadow: 0 18px 42px rgba(0,0,0,0.58), inset 0 1px 0 rgba(255,255,255,0.09) !important;
+  }
+  #prisonerScreen .prison-caption {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 28px !important;
+    padding: 6px 12px 7px !important;
+    border-radius: 8px !important;
+    background: rgba(8, 12, 21, 0.72) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  }
+  #prisonerScreen .prison-dialogue {
+    grid-template-columns: 88px minmax(0, 1fr) !important;
+    align-items: stretch !important;
+    gap: 9px !important;
+    min-height: 128px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  #prisonerScreen .prison-face-frame {
+    width: 88px !important;
+    height: 100% !important;
+    min-height: 118px !important;
+    align-self: stretch !important;
+    border-radius: 11px !important;
+  }
+  #prisonerScreen .prison-face-frame img {
+    width: 134% !important;
+    height: 134% !important;
+    transform: translateY(8px) scale(0.98) !important;
+  }
+  #prisonerScreen .prison-speech {
+    min-height: 118px !important;
+    height: 100% !important;
+    padding: 12px 14px 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    border-radius: 11px !important;
+  }
+  #prisonerScreen .prison-speaker {
+    flex: 0 0 auto !important;
+    margin: 0 0 7px !important;
+    padding-bottom: 6px !important;
+    line-height: 1.1 !important;
+  }
+  #prisonerScreen .prison-line {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    min-height: 42px !important;
+    font-size: clamp(14px, 3.7vw, 15px) !important;
+    line-height: 1.42 !important;
+  }
+  #prisonerScreen .prison-ability {
+    flex: 0 0 auto !important;
+    margin-top: 7px !important;
+  }
+  #prisonerScreen .prison-meta {
+    flex: 0 0 auto !important;
+    margin-top: 6px !important;
+  }
+  #prisonerScreen .prison-choice {
+    gap: 9px !important;
+  }
+  #prisonerScreen .prison-choice button {
+    min-height: 48px !important;
+    border-color: rgba(120, 137, 158, 0.38) !important;
+    border-radius: 9px !important;
+    overflow: hidden !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.045) 38%, rgba(255,255,255,0) 100%),
+      linear-gradient(180deg, #364153 0%, #202b3a 52%, #121924 100%) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.13) !important;
+  }
+  #prisonerScreen .prison-choice .yes {
+    border-color: rgba(186, 63, 52, 0.46) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.06) 38%, rgba(255,255,255,0) 100%),
+      linear-gradient(180deg, #c93c35 0%, #a8241e 52%, #74110d 100%) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,210,190,0.22) !important;
+  }
+  #prisonerScreen .prison-choice .no {
+    border-color: rgba(120, 137, 158, 0.38) !important;
+  }
+  #prisonerScreen .prison-choice .next,
+  #prisonerScreen .prison-choice .finish {
+    border-color: rgba(111, 76, 18, 0.42) !important;
+    color: #211302 !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.46) 0%, rgba(255,255,255,0.14) 38%, rgba(255,255,255,0) 100%),
+      linear-gradient(180deg, #ffe08a 0%, #e8b746 52%, #c98a24 100%) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.62),
+      inset 0 -1px 0 rgba(96,57,10,0.12) !important;
+    text-shadow: 0 1px 0 rgba(255,246,203,0.72) !important;
+  }
+  #prisonerScreen .prison-cutin {
+    bottom: calc(292px + env(safe-area-inset-bottom)) !important;
+    z-index: 40 !important;
+  }
+  #prisonerScreen .prison-cutin-banner {
+    bottom: 0 !important;
+    z-index: 41 !important;
+    max-width: calc(100vw - 42px) !important;
+  }
+  @media (max-width: 390px), (max-height: 780px) {
+    #prisonerScreen .prison-topbar {
+      height: calc(45px + env(safe-area-inset-top)) !important;
+      grid-template-columns: 58px minmax(0, 1fr) 76px !important;
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+    }
+    #prisonerScreen .prison-title {
+      height: 32px !important;
+      min-height: 32px !important;
+      font-size: 15px !important;
+      letter-spacing: 2px !important;
+    }
+    #prisonerScreen .prison-stars {
+      height: 30px !important;
+      min-height: 30px !important;
+      font-size: 12px !important;
+    }
+    #prisonerScreen .prison-event {
+      left: 8px !important;
+      right: 8px !important;
+      bottom: calc(8px + env(safe-area-inset-bottom)) !important;
+      padding: 8px !important;
+      gap: 7px !important;
+    }
+    #prisonerScreen .prison-dialogue {
+      grid-template-columns: 76px minmax(0, 1fr) !important;
+      min-height: 116px !important;
+    }
+    #prisonerScreen .prison-face-frame {
+      width: 76px !important;
+      min-height: 106px !important;
+    }
+    #prisonerScreen .prison-speech {
+      min-height: 106px !important;
+      padding: 10px 12px 9px !important;
+    }
+    #prisonerScreen .prison-choice button {
+      min-height: 44px !important;
+      font-size: 14px !important;
+    }
+  }
+
+  /* Global stat chips: keep resource numbers readable on dark headers. */
+  .top-stats-bar .ts-item span,
+  #stageSelect .top-stats-bar .ts-item span,
+  #enhanceScreen .top-stats-bar .ts-item span,
+  #upgradeScreen .top-stats-bar .ts-item span,
+  #generalSelectScreen .top-stats-bar .ts-item span,
+  #generalManageScreen .top-stats-bar .ts-item span {
+    opacity: 1 !important;
+    color: #fff1bf !important;
+    font-weight: 900 !important;
+    text-shadow:
+      0 1px 0 rgba(0,0,0,0.92),
+      0 0 7px rgba(255,211,103,0.24) !important;
+    filter: none !important;
+  }
+  .top-stats-bar .ts-item:nth-child(1) span {
+    color: #ffe28a !important;
+  }
+  .top-stats-bar .ts-item:nth-child(2) span {
+    color: #fff0bc !important;
+  }
+  .top-stats-bar .ts-item:nth-child(3) span,
+  .top-stats-bar .ts-item:nth-child(4) span {
+    color: #eaf3ff !important;
+  }
+
+  /* Enhance empty states: transparent yellow dashed outlines, no filled gold blocks. */
+  #enhanceScreen .enh-slot[data-empty="1"] {
+    border: 1.5px dashed rgba(255, 220, 105, 0.64) !important;
+    border-radius: 12px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01)),
+      rgba(10, 18, 31, 0.28) !important;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.28) !important;
+  }
+  #enhanceScreen .enh-slot[data-empty="1"] .enh-slot-empty-mark {
+    display: none !important;
+  }
+  #enhanceScreen .enh-slot[data-empty="1"] .enh-slot-label,
+  #enhanceScreen .enh-slot[data-empty="1"] .enh-slot-empty {
+    color: rgba(255, 239, 185, 0.86) !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.72) !important;
+  }
+  #enhanceScreen .enh-fodder-slot:not(.filled) {
+    border: 1.5px dashed rgba(255, 220, 105, 0.58) !important;
+    border-radius: 11px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)),
+      rgba(10, 18, 31, 0.24) !important;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.24) !important;
+  }
+  #enhanceScreen .enh-fodder-slot:not(.filled)::before,
+  #enhanceScreen .enh-fodder-slot:not(.filled)::after {
+    content: none !important;
+    display: none !important;
+  }
+  #enhanceScreen .enh-fodder-slot:not(.filled) .enh-add {
+    display: none !important;
+  }
+  #enhanceScreen .enh-arrow {
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    border: 1.5px dashed rgba(255, 220, 105, 0.44) !important;
+    border-radius: 10px !important;
+    background: rgba(10, 18, 31, 0.22) !important;
+    box-shadow: none !important;
+    color: transparent !important;
+    font-size: 0 !important;
+  }
+  #enhanceScreen .enh-arrow::before {
+    content: "›" !important;
+    display: block !important;
+    color: rgba(255, 232, 154, 0.76) !important;
+    font-family: system-ui, sans-serif !important;
+    font-size: 28px !important;
+    line-height: 30px !important;
+    transform: translateY(-5px) !important;
+  }
+
+  #enhanceScreen .enh-board .enh-slot[data-empty="1"],
+  #enhanceScreen .enh-board .enh-fodder-slot:not(.filled) {
+    border: 1.5px dashed rgba(255, 220, 105, 0.66) !important;
+    background: rgba(8, 15, 26, 0.18) !important;
+    box-shadow: none !important;
+  }
+  #enhanceScreen .enh-board .enh-slot[data-empty="1"] *,
+  #enhanceScreen .enh-board .enh-fodder-slot:not(.filled) * {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  #enhanceScreen .enh-board .enh-slot-empty-mark,
+  #enhanceScreen .enh-board .enh-add {
+    display: none !important;
+  }
+  #enhanceScreen .enh-board .enh-slot[data-empty="0"] {
+    position: relative !important;
+    justify-content: end !important;
+    padding: 8px !important;
+    overflow: hidden !important;
+  }
+  #enhanceScreen .enh-board .enh-target-frame {
+    position: absolute !important;
+    inset: 6px 6px 38px !important;
+    width: auto !important;
+    height: auto !important;
+    border-radius: 14px !important;
+    background:
+      radial-gradient(circle at 50% 12%, rgba(255,232,148,0.22), transparent 44%),
+      linear-gradient(180deg, rgba(20, 29, 43, 0.72), rgba(5, 9, 16, 0.84)) !important;
+    z-index: 1 !important;
+  }
+  #enhanceScreen .enh-board .enh-target-frame img {
+    width: 118% !important;
+    height: 118% !important;
+    object-fit: contain !important;
+    object-position: center bottom !important;
+    transform: translate(-7%, 4%) !important;
+  }
+  #enhanceScreen .enh-board .enh-slot[data-empty="0"] .enh-slot-label {
+    position: absolute !important;
+    top: 10px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 3 !important;
+    color: rgba(255, 239, 185, 0.84) !important;
+  }
+  #enhanceScreen .enh-board .enh-slot[data-empty="0"] .enh-slot-name {
+    position: relative !important;
+    z-index: 4 !important;
+    height: 25px !important;
+    min-height: 25px !important;
+    margin-top: auto !important;
+    background: rgba(3, 6, 11, 0.78) !important;
+  }
+  #enhanceScreen .enh-board .enh-slot[data-empty="0"] .enh-slot-lv {
+    position: absolute !important;
+    left: 9px !important;
+    bottom: 33px !important;
+    z-index: 4 !important;
+    width: auto !important;
+    min-width: 54px !important;
+    height: 20px !important;
+    min-height: 20px !important;
+    margin: 0 !important;
+    padding: 0 8px !important;
+    border-radius: 999px !important;
+    background: rgba(3, 6, 11, 0.70) !important;
+  }
+  #enhanceScreen .enh-board .enh-slot[data-empty="0"] .enh-slot-info {
+    position: absolute !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: 8px !important;
+    z-index: 4 !important;
+    margin: 0 !important;
+  }
+
+  /* Revert selected enhance target to the compact face-card layout; add target clear affordance. */
+  #enhanceScreen .enh-board .enh-slot[data-empty="0"] {
+    position: relative !important;
+    display: grid !important;
+    grid-template-rows: 17px 82px 26px 18px 22px !important;
+    justify-items: center !important;
+    align-content: start !important;
+    justify-content: center !important;
+    align-items: center !important;
+    row-gap: 2px !important;
+    padding: 10px 7px 7px !important;
+    overflow: visible !important;
+    text-align: center !important;
+  }
+  #enhanceScreen .enh-board .enh-target-frame {
+    position: relative !important;
+    inset: auto !important;
+    width: 82px !important;
+    height: 82px !important;
+    margin: 0 !important;
+    justify-self: center !important;
+    align-self: center !important;
+    border-radius: 18px !important;
+    z-index: 1 !important;
+  }
+  #enhanceScreen .enh-board .enh-target-frame img {
+    width: 108% !important;
+    height: 108% !important;
+    object-fit: contain !important;
+    object-position: center top !important;
+    transform: translate(0, -4%) !important;
+  }
+  #enhanceScreen .enh-board .enh-slot[data-empty="0"] .enh-slot-label,
+  #enhanceScreen .enh-board .enh-slot[data-empty="0"] .enh-slot-name,
+  #enhanceScreen .enh-board .enh-slot[data-empty="0"] .enh-slot-lv,
+  #enhanceScreen .enh-board .enh-slot[data-empty="0"] .enh-slot-info {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    justify-self: center !important;
+    align-self: center !important;
+    z-index: 2 !important;
+  }
+  #enhanceScreen .enh-board .enh-slot[data-empty="0"] .enh-slot-name {
+    width: 112px !important;
+    max-width: calc(100% - 8px) !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    margin: 0 !important;
+    text-align: center !important;
+  }
+  #enhanceScreen .enh-board .enh-slot[data-empty="0"] .enh-slot-lv {
+    width: 112px !important;
+    max-width: calc(100% - 8px) !important;
+    min-width: 0 !important;
+    height: 18px !important;
+    min-height: 18px !important;
+    margin: 0 !important;
+    padding: 0 6px !important;
+    background: transparent !important;
+    text-align: center !important;
+  }
+  #enhanceScreen .enh-board .enh-slot[data-empty="0"] .enh-slot-info {
+    width: 112px !important;
+    max-width: calc(100% - 8px) !important;
+    margin: 0 !important;
+    justify-content: center !important;
+  }
+  #enhanceScreen .enh-target-clear {
+    position: absolute !important;
+    top: 1px !important;
+    right: 5px !important;
+    left: auto !important;
+    transform: translate(50%, -50%) !important;
+    z-index: 8 !important;
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+    min-height: 26px !important;
+    padding: 0 !important;
+    display: block !important;
+    overflow: hidden !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: url('./assets/ui/enh_icon_remove.png') center / 100% 100% no-repeat !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.42) !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    text-shadow: none !important;
+  }
+  #enhanceScreen .enh-target-clear::before,
+  #enhanceScreen .enh-target-clear::after {
+    content: none !important;
+    display: none !important;
+  }
+  #enhanceScreen #enhPvLevel.enh-pv-line {
+    width: 100% !important;
+    min-height: 96px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    grid-template-rows: auto 1fr auto !important;
+    align-content: stretch !important;
+    justify-items: center !important;
+    gap: 6px !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-preview-title {
+    display: block !important;
+    width: 100% !important;
+    color: rgba(255, 239, 185, 0.82) !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    letter-spacing: 0 !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.56) !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-level-duel {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: minmax(44px, 0.82fr) 20px minmax(58px, 1.18fr) !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-lv-medal {
+    min-width: 0 !important;
+    height: 46px !important;
+    padding: 4px 3px 3px !important;
+    display: grid !important;
+    align-content: center !important;
+    justify-items: center !important;
+    border-radius: 11px !important;
+    border: 1px solid rgba(255, 229, 140, 0.34) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.20), transparent 42%),
+      linear-gradient(180deg, rgba(62, 74, 93, 0.98), rgba(15, 22, 34, 0.98)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.13),
+      0 6px 12px rgba(0,0,0,0.20) !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-lv-medal.next {
+    position: relative !important;
+    overflow: hidden !important;
+    border-color: rgba(255, 211, 76, 0.62) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.40), transparent 42%),
+      linear-gradient(180deg, #ffeaa3 0%, #f6c349 48%, #9b5f12 100%) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.62),
+      0 0 14px rgba(255, 210, 80, 0.26),
+      0 5px 10px rgba(0,0,0,0.18) !important;
+    animation: enh-next-medal-pulse 1.22s ease-in-out infinite !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-lv-medal.next {
+    height: 54px !important;
+    margin-right: 1px !important;
+    padding-top: 5px !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-lv-medal.next::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: -18% -42% !important;
+    background: linear-gradient(110deg, transparent 28%, rgba(255,255,255,0.62) 48%, transparent 68%) !important;
+    transform: translateX(-72%) rotate(8deg) !important;
+    animation: enh-next-medal-sweep 1.85s ease-in-out infinite !important;
+    pointer-events: none !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-lv-medal small {
+    color: rgba(255, 239, 185, 0.70) !important;
+    font-size: 9px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    text-shadow: none !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-lv-medal.next small {
+    color: rgba(58, 31, 4, 0.72) !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-lv-medal b {
+    color: #fff4ca !important;
+    font-size: 17px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    white-space: nowrap !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.52) !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-lv-medal.next b {
+    color: #3a1a04 !important;
+    font-size: 22px !important;
+    text-shadow: 0 1px 0 rgba(255,245,190,0.58) !important;
+    animation: enh-next-lv-pop 1.22s ease-in-out infinite !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-level-duel i {
+    color: #79d6ff !important;
+    font-size: 16px !important;
+    font-style: normal !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    text-shadow: 0 0 10px rgba(121,214,255,0.34) !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-level-track {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: 2px !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-level-track span {
+    height: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 6px !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    background: rgba(5, 9, 16, 0.62) !important;
+    color: rgba(231,240,255,0.44) !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    text-shadow: none !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-level-track span.done,
+  #enhanceScreen #enhPvLevel .enh-level-track span.current {
+    border-color: rgba(121,214,255,0.40) !important;
+    background: linear-gradient(180deg, rgba(74,127,158,0.82), rgba(26,50,75,0.88)) !important;
+    color: #dff6ff !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-level-track span.next,
+  #enhanceScreen #enhPvLevel .enh-level-track span.max {
+    border-color: rgba(255,218,92,0.72) !important;
+    background: linear-gradient(180deg, #ffe58d, #c88922) !important;
+    color: #341905 !important;
+    animation: enh-next-dot-blink 1.22s ease-in-out infinite !important;
+  }
+  #enhanceScreen #enhPvLevel .enh-level-empty {
+    width: 100% !important;
+    height: 42px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 12px !important;
+    border: 1px dashed rgba(255,220,105,0.45) !important;
+    color: rgba(255,239,185,0.76) !important;
+    background: rgba(5, 9, 16, 0.36) !important;
+    font-size: 12px !important;
+    font-weight: 900 !important;
+  }
+  #enhanceScreen #enhPvSuccess.enh-pv-line + .enh-pv-line,
+  #enhanceScreen #enhPvSuccess.enh-pv-line {
+    min-height: 62px !important;
+  }
+  #enhanceScreen #enhPvSuccess.enh-pv-line {
+    width: calc(100% - 18px) !important;
+    justify-self: center !important;
+    align-self: end !important;
+    margin-top: 8px !important;
+    padding: 9px 8px 10px !important;
+    border-radius: 14px !important;
+  }
+  #enhanceScreen #enhPvSuccess.enh-pv-line b {
+    font-size: 30px !important;
+    display: inline-block !important;
+    color: #fff0a8 !important;
+    text-shadow:
+      0 2px 0 rgba(0,0,0,0.60),
+      0 0 14px rgba(255,210,76,0.40) !important;
+  }
+  #enhanceScreen #enhPvSuccess.enh-pv-line:not(.is-live-rate) {
+    min-height: 54px !important;
+    padding: 8px 8px 9px !important;
+  }
+  #enhanceScreen #enhPvSuccess.enh-pv-line:not(.is-live-rate) b {
+    font-size: 22px !important;
+    letter-spacing: 0 !important;
+  }
+  #enhanceScreen #enhPvSuccess.enh-pv-line.is-live-rate b {
+    animation: enh-success-rate-pulse 1.05s ease-in-out infinite !important;
+  }
+  @keyframes enh-next-medal-pulse {
+    0%, 100% {
+      transform: translateY(0) scale(1);
+      filter: brightness(1) saturate(1);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.62),
+        0 0 12px rgba(255,210,80,0.22),
+        0 5px 10px rgba(0,0,0,0.18);
+    }
+    50% {
+      transform: translateY(-1px) scale(1.035);
+      filter: brightness(1.12) saturate(1.10);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.72),
+        0 0 22px rgba(255,210,80,0.54),
+        0 7px 13px rgba(0,0,0,0.24);
+    }
+  }
+  @keyframes enh-next-medal-sweep {
+    0%, 36% { transform: translateX(-76%) rotate(8deg); opacity: 0; }
+    50% { opacity: 0.72; }
+    72%, 100% { transform: translateX(76%) rotate(8deg); opacity: 0; }
+  }
+  @keyframes enh-next-lv-pop {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.07); }
+  }
+  @keyframes enh-next-dot-blink {
+    0%, 100% { filter: brightness(1); box-shadow: none; }
+    50% { filter: brightness(1.18); box-shadow: 0 0 8px rgba(255,218,92,0.48); }
+  }
+  @keyframes enh-success-rate-pulse {
+    0%, 100% {
+      transform: translateY(0) scale(1);
+      filter: brightness(1);
+    }
+    48% {
+      transform: translateY(-1px) scale(1.08);
+      filter: brightness(1.18);
+    }
+  }
+  .formation-slot .slot-x {
+    top: -7px !important;
+    right: -7px !important;
+    z-index: 8 !important;
+    width: 22px !important;
+    height: 22px !important;
+    display: block !important;
+    overflow: hidden !important;
+    border-radius: 50% !important;
+    background: url('./assets/ui/enh_icon_remove.png') center / 100% 100% no-repeat !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.42) !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    text-shadow: none !important;
+    pointer-events: none !important;
+  }
+  .formation-slot.filled {
+    overflow: visible !important;
+  }
+  .formation-slot.filled img,
+  .formation-slot.filled .slot-name {
+    border-radius: inherit !important;
+  }
+
+  /* Enhancement ritual: grayscale title while the card is monochrome. */
+  .enh-ritual.preparing .er-title,
+  .enh-ritual.armed .er-title,
+  .enh-ritual.fail .er-title {
+    color: #e8ebef !important;
+    -webkit-text-fill-color: #e8ebef !important;
+    text-shadow:
+      0 2px 0 rgba(0,0,0,0.82),
+      0 0 14px rgba(220,230,240,0.28) !important;
+    filter: grayscale(1) saturate(0.1) brightness(1.04) !important;
+  }
+  .enh-ritual.preparing .er-title::after,
+  .enh-ritual.armed .er-title::after,
+  .enh-ritual.fail .er-title::after {
+    background: linear-gradient(90deg, transparent, rgba(230,235,242,0.58), transparent) !important;
+    box-shadow: 0 0 12px rgba(230,235,242,0.18) !important;
+  }
+  .enh-ritual.success .er-title {
+    filter: none !important;
+  }
+
+  /* Stage header final vertical alignment. */
+  #stageSelect .topbar {
+    align-items: center !important;
+    min-height: 44px !important;
+    height: 44px !important;
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+  }
+  #stageSelect .topbar .back {
+    align-self: center !important;
+    justify-self: center !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+  #stageSelect .topbar .title {
+    align-self: center !important;
+    margin: 0 !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact {
+    top: calc(env(safe-area-inset-top) + 39px) !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact .stage-tutorial-btn {
+    top: 6px !important;
+  }
+
+  /* Stage screen chrome rebuild: calm app bar, tutorial out of the header. */
+  #stageSelect .top-stats-bar {
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: max(6px, calc(env(safe-area-inset-top) + 5px)) 8px 5px !important;
+    gap: 8px !important;
+    background: linear-gradient(180deg, rgba(11, 17, 29, 0.98), rgba(7, 12, 22, 0.96)) !important;
+    border-bottom: 1px solid rgba(255, 218, 112, 0.10) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05) !important;
+  }
+  #stageSelect .top-stats-bar .ts-item {
+    height: 27px !important;
+    min-width: 0 !important;
+    border: 1px solid rgba(174, 196, 226, 0.16) !important;
+    border-radius: 7px !important;
+    background:
+      linear-gradient(180deg, rgba(38, 48, 65, 0.96), rgba(18, 26, 39, 0.96)) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  }
+  #stageSelect .topbar {
+    height: 46px !important;
+    min-height: 46px !important;
+    grid-template-columns: 36px minmax(0, 1fr) 82px !important;
+    gap: 8px !important;
+    padding: 5px 10px !important;
+    background: linear-gradient(180deg, rgba(8, 13, 23, 0.96), rgba(6, 10, 18, 0.94)) !important;
+    border-bottom: 1px solid rgba(255, 218, 112, 0.14) !important;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.22) !important;
+  }
+  #stageSelect .topbar .back {
+    width: 36px !important;
+    min-width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    border: 1px solid rgba(217, 185, 92, 0.34) !important;
+    border-radius: 9px !important;
+    background:
+      linear-gradient(180deg, rgba(38, 47, 62, 0.96), rgba(22, 31, 47, 0.96)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 1px 2px rgba(0,0,0,0.25) !important;
+  }
+  #stageSelect .topbar .back::before {
+    content: "" !important;
+    width: 13px !important;
+    height: 13px !important;
+    display: block !important;
+    border-left: 3px solid #fff0bd !important;
+    border-bottom: 3px solid #fff0bd !important;
+    transform: translateX(2px) rotate(45deg) !important;
+    filter: drop-shadow(0 1px 0 rgba(0,0,0,0.62)) !important;
+  }
+  #stageSelect .topbar .title {
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(217, 185, 92, 0.28) !important;
+    border-radius: 9px !important;
+    background:
+      linear-gradient(180deg, rgba(34, 44, 61, 0.94), rgba(17, 25, 38, 0.94)) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08) !important;
+    color: #fff0bd !important;
+    font-size: clamp(15px, 3.7vw, 17px) !important;
+    line-height: 1 !important;
+    transform: none !important;
+  }
+  #stageSelect .topbar .ss-upgrade-btn,
+  #stageSelect .topbar .star {
+    display: none !important;
+  }
+  #stageSelect .progress {
+    height: 4px !important;
+    padding: 0 !important;
+    background: rgba(5, 8, 14, 0.94) !important;
+  }
+  #stageSelect .progress .bar {
+    height: 4px !important;
+    border-radius: 0 !important;
+    background: rgba(48, 61, 82, 0.68) !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact {
+    top: 40px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: auto !important;
+    width: 100% !important;
+    height: 0 !important;
+    transform: none !important;
+    z-index: 31 !important;
+    pointer-events: none !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact .stage-tutorial-btn {
+    top: 7px !important;
+    right: 51px !important;
+    bottom: auto !important;
+    width: 32px !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    border-radius: 50% !important;
+    opacity: 0.88 !important;
+    background:
+      linear-gradient(180deg, rgba(43, 55, 74, 0.96), rgba(16, 24, 38, 0.96)) !important;
+    pointer-events: auto !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact .stage-tutorial-btn::before {
+    font-size: 16px !important;
+    color: rgba(255, 231, 166, 0.82) !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact .stage-tutorial-btn:hover,
+  #stageSelect .stage-quick-actions.is-compact .stage-tutorial-btn:active {
+    opacity: 0.95 !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact .stage-tools-btn {
+    position: absolute !important;
+    top: 7px !important;
+    right: 11px !important;
+    width: 32px !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    border-radius: 50% !important;
+    margin-left: 0 !important;
+    opacity: 0.88 !important;
+    pointer-events: auto !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact .stage-tools-menu {
+    top: 43px !important;
+    right: 11px !important;
+  }
+  #stageSelect .stage-quick-actions.is-compact + .stage-map-wrap {
+    height: calc(100% - 90px) !important;
+    padding-top: 0 !important;
+  }
+  #introDialog .idg-hint {
+    position: absolute !important;
+    left: 50% !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    transform: translateX(-50%) !important;
+  }
+  @media (max-width: 390px), (max-height: 760px) {
+    #introDialog .idg-stage {
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+    }
+    #introDialog .idg-portrait.idg-left {
+      left: 12px !important;
+    }
+    #introDialog .idg-portrait.idg-right {
+      right: 12px !important;
+    }
+    #introDialog .idg-bubble {
+      left: 12px !important;
+      right: 12px !important;
+      top: max(76px, calc(env(safe-area-inset-top) + 64px)) !important;
+      min-height: 100px !important;
+      padding: 15px 14px 17px !important;
+      font-size: 16px !important;
+    }
+  }
+
+  /* Final deploy/manage header alignment: single row, one visual system. */
+  #generalSelectScreen .deploy-top,
+  #generalManageScreen .deploy-top {
+    width: min(404px, calc(100vw - 24px)) !important;
+    min-height: 62px !important;
+    margin: 10px auto 0 !important;
+    padding: 8px 10px !important;
+    display: grid !important;
+    grid-template-columns: 44px minmax(0, 1fr) 64px !important;
+    align-items: center !important;
+    gap: 8px !important;
+    border: 1px solid rgba(245, 205, 92, 0.22) !important;
+    border-radius: 12px !important;
+    background:
+      linear-gradient(180deg, rgba(32, 45, 64, 0.96), rgba(12, 21, 36, 0.96)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 8px 18px rgba(0,0,0,0.22) !important;
+  }
+  #generalManageScreen .deploy-top {
+    grid-template-columns: 44px minmax(0, 1fr) 58px !important;
+  }
+  #generalSelectScreen .deploy-back,
+  #generalManageScreen .deploy-back {
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    position: relative !important;
+    top: 0 !important;
+    align-self: center !important;
+    justify-self: center !important;
+    transform: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(217, 185, 92, 0.34) !important;
+    border-radius: 10px !important;
+    background:
+      linear-gradient(180deg, rgba(38, 47, 62, 0.96), rgba(22, 31, 47, 0.96)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 1px 2px rgba(0,0,0,0.25) !important;
+    color: transparent !important;
+    font-family: system-ui, sans-serif !important;
+    font-size: 0 !important;
+    font-weight: 700 !important;
+    line-height: 0 !important;
+    text-shadow: none !important;
+  }
+  #generalSelectScreen .deploy-back::before,
+  #generalManageScreen .deploy-back::before {
+    content: "" !important;
+    width: 13px !important;
+    height: 13px !important;
+    display: block !important;
+    border-left: 3px solid #fff0bd !important;
+    border-bottom: 3px solid #fff0bd !important;
+    transform: translateX(2px) rotate(45deg) !important;
+    filter: drop-shadow(0 1px 0 rgba(0,0,0,0.62)) !important;
+  }
+  #generalSelectScreen .deploy-back::after,
+  #generalManageScreen .deploy-back::after {
+    content: none !important;
+    display: none !important;
+  }
+  #generalSelectScreen .deploy-heading,
+  #generalManageScreen .deploy-heading {
+    height: 42px !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 0 12px 2px !important;
+    align-self: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(245, 205, 92, 0.56) !important;
+    border-radius: 11px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.11), rgba(255,255,255,0.02)),
+      linear-gradient(180deg, #263348, #121c2d 62%, #09101d) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.13) !important;
+    font-size: clamp(17px, 4.2vw, 20px) !important;
+    line-height: 1 !important;
+  }
+  #generalSelectScreen .deploy-count,
+  #generalManageScreen .deploy-count {
+    height: 42px !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 0 8px !important;
+    align-self: center !important;
+    justify-self: stretch !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(245, 205, 92, 0.30) !important;
+    border-radius: 10px !important;
+    background: rgba(13, 22, 37, 0.82) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.10) !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+  }
+
+  #msg[data-result="victory"] #msgButtons {
+    width: min(100%, 348px) !important;
+    margin-top: 15px !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+  #msg[data-result="victory"] #msgButtons button {
+    min-height: 46px !important;
+    height: 46px !important;
+    padding: 0 8px 3px !important;
+    font-size: 14px !important;
+    letter-spacing: 0 !important;
+  }
+  #msg[data-result="victory"] #msgButtons button:first-child {
+    grid-column: 1 / -1 !important;
+  }
+  #msg[data-result="victory"] #msgButtons button.btn-stage {
+    border-color: rgba(120,176,255,0.38) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.02)),
+      linear-gradient(180deg, #30425c, #172235 58%, #0a111e) !important;
+    color: #edf5ff !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.62) !important;
+  }
+
+  @media (max-width: 390px), (max-height: 760px) {
+    #enhanceScreen .enh-header,
+    #upgradeScreen .upg-header,
+    #generalSelectScreen .deploy-top,
+    #generalManageScreen .deploy-top {
+      width: min(374px, calc(100vw - 18px)) !important;
+      grid-template-columns: 42px minmax(0,1fr) 60px !important;
+      gap: 7px !important;
+    }
+    #generalSelectScreen .deploy-heading,
+    #generalManageScreen .deploy-heading,
+    #enhanceScreen .enh-title,
+    #upgradeScreen .upg-title {
+      font-size: 18px !important;
+      height: 40px !important;
+      min-height: 40px !important;
+    }
+    #generalSelectScreen .deploy-back,
+    #generalManageScreen .deploy-back,
+    #generalSelectScreen .deploy-count,
+    #generalManageScreen .deploy-count {
+      width: 40px !important;
+      min-width: 40px !important;
+      height: 40px !important;
+      min-height: 40px !important;
+    }
+  }
+
+  /* Final prisoner button cleanup: remove stripe-like bevel artifacts. */
+  #prisonerScreen .prison-choice button,
+  #prisonerScreen .prison-choice .yes,
+  #prisonerScreen .prison-choice .no,
+  #prisonerScreen .prison-choice .next,
+  #prisonerScreen .prison-choice .finish {
+    box-shadow: none !important;
+    outline: 0 !important;
+    background-image: none !important;
+  }
+  #prisonerScreen .prison-choice .yes {
+    background-color: #ad241e !important;
+    border-color: rgba(209, 92, 78, 0.52) !important;
+  }
+  #prisonerScreen .prison-choice .no {
+    background-color: #202b3a !important;
+    border-color: rgba(120, 137, 158, 0.42) !important;
+  }
+  #prisonerScreen .prison-choice .next,
+  #prisonerScreen .prison-choice .finish {
+    background-color: #e4b64e !important;
+    border-color: rgba(111, 76, 18, 0.36) !important;
+  }
+  #prisonerScreen .prison-speaker {
+    border-bottom: 0 !important;
+    padding-bottom: 0 !important;
   }
 </style>
 <script>
@@ -20396,6 +24185,75 @@ function doStarExchange(n) {
   showStarExchange();
 }
 
+function clampAudioVolume(v) {
+  return Math.max(0, Math.min(100, Math.round(Number(v) || 0)));
+}
+function syncAudioSettingsUi() {
+  const s = SAVE.audioSettings || {};
+  const prepVol = clampAudioVolume(s.prepVolume);
+  const battleVol = clampAudioVolume(s.battleVolume);
+  const prepRange = document.getElementById('prepBgmVolume');
+  const battleRange = document.getElementById('battleBgmVolume');
+  const prepMute = document.getElementById('prepBgmMute');
+  const battleMute = document.getElementById('battleBgmMute');
+  if (prepRange) prepRange.value = prepVol;
+  if (battleRange) battleRange.value = battleVol;
+  if (prepMute) prepMute.checked = !!s.prepMuted;
+  if (battleMute) battleMute.checked = !!s.battleMuted;
+  const prepText = document.getElementById('prepBgmValue');
+  const battleText = document.getElementById('battleBgmValue');
+  if (prepText) prepText.textContent = s.prepMuted ? '음소거' : `${prepVol}%`;
+  if (battleText) battleText.textContent = s.battleMuted ? '음소거' : `${battleVol}%`;
+}
+function applyAudioSettingsFromUi(e) {
+  const s = SAVE.audioSettings || (SAVE.audioSettings = {});
+  const prepRange = document.getElementById('prepBgmVolume');
+  const battleRange = document.getElementById('battleBgmVolume');
+  const prepMute = document.getElementById('prepBgmMute');
+  const battleMute = document.getElementById('battleBgmMute');
+  s.prepVolume = clampAudioVolume(prepRange ? prepRange.value : s.prepVolume);
+  s.battleVolume = clampAudioVolume(battleRange ? battleRange.value : s.battleVolume);
+  s.prepMuted = !!(prepMute && prepMute.checked);
+  s.battleMuted = !!(battleMute && battleMute.checked);
+  syncAudioSettingsUi();
+  saveProgress();
+  if (BGM && BGM.applySettings) BGM.applySettings();
+  // 청각 피드백 — 슬라이더가 움직였을 때만 짧은 클릭 톤 (사용자가 변경을 즉시 확인)
+  const fromSlider = e && e.target && (e.target.id === 'prepBgmVolume' || e.target.id === 'battleBgmVolume');
+  if (fromSlider && BGM && BGM.sfxClick) {
+    if (!window._audioPingT || performance.now() - window._audioPingT > 90) {
+      window._audioPingT = performance.now();
+      try { BGM.sfxClick(); } catch(_) {}
+    }
+  }
+}
+function showAudioSettings() {
+  const modal = document.getElementById('audioSettingsModal');
+  if (!modal) return;
+  syncAudioSettingsUi();
+  modal.style.display = 'flex';
+  ['prepBgmVolume','battleBgmVolume','prepBgmMute','battleBgmMute'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el._audioBound) {
+      el._audioBound = true;
+      el.addEventListener('input', applyAudioSettingsFromUi);
+      el.addEventListener('change', applyAudioSettingsFromUi);
+    }
+  });
+  // BGM 강제 시작/잠금해제 — bgmAudio가 null이면 슬라이더 효과를 들을 수 없으므로
+  try {
+    unlockBgm();
+    if (BGM && BGM.unlocked && BGM.setMode) {
+      const m = (typeof currentScreenName === 'string' && currentScreenName === 'game') ? 'battle' : 'prep';
+      BGM.setMode(m);
+    }
+  } catch (_) {}
+}
+function closeAudioSettings() {
+  const modal = document.getElementById('audioSettingsModal');
+  if (modal) modal.style.display = 'none';
+}
+
 // ===== 장수 강화 화면 =====
 const __ENH = { targetUid: null, fodderUids: [], pickMode: 'target' };
 
@@ -20411,7 +24269,7 @@ function showEnhanceScreen() {
 function bindEnhanceHandlers() {
   if (window._enhBound) return;
   window._enhBound = true;
-  bindTap(document.getElementById('enhBack'), () => showScreen('menu'));
+  bindTap(document.getElementById('enhBack'), returnFromUtilityScreen);
   bindTap(document.getElementById('enhTargetSlot'), () => {
     __ENH.pickMode = 'target';
     renderEnhance();
@@ -20452,6 +24310,39 @@ function enhanceCardMetaHTML(g) {
   `;
 }
 
+function enhanceLevelPreviewHTML(lv) {
+  const max = ENHANCE_MAX_LV;
+  if (!lv) {
+    const dots = Array.from({ length: max }, (_, i) => `<span>${i + 1}</span>`).join('');
+    return `
+      <span class="enh-preview-title">강화 예측</span>
+      <div class="enh-level-empty">대상 선택</div>
+      <div class="enh-level-track is-empty">${dots}</div>
+    `;
+  }
+  const isMax = lv >= max;
+  const next = Math.min(max, lv + 1);
+  const dots = Array.from({ length: max }, (_, i) => {
+    const n = i + 1;
+    const cls = [
+      n < lv ? 'done' : '',
+      n === lv ? 'current' : '',
+      !isMax && n === next ? 'next' : '',
+      isMax && n === max ? 'max' : ''
+    ].filter(Boolean).join(' ');
+    return `<span class="${cls}">${n}</span>`;
+  }).join('');
+  return `
+    <span class="enh-preview-title">강화 예측</span>
+    <div class="enh-level-duel">
+      <div class="enh-lv-medal current"><small>현재</small><b>Lv${lv}</b></div>
+      <i>${isMax ? 'MAX' : '→'}</i>
+      <div class="enh-lv-medal next"><small>${isMax ? '완성' : '다음'}</small><b>${isMax ? 'MAX' : `Lv${next}`}</b></div>
+    </div>
+    <div class="enh-level-track">${dots}</div>
+  `;
+}
+
 function renderEnhance() {
   refreshTopStats();
   const targetSlot = document.getElementById('enhTargetSlot');
@@ -20483,6 +24374,7 @@ function renderEnhance() {
     targetSlot.dataset.empty = '0';
     targetSlot.innerHTML = `
       <div class="enh-slot-label">강화 대상</div>
+      <button class="enh-target-clear" type="button" aria-label="강화 대상 해제">×</button>
       <div class="enh-target-frame">
         ${rarityBadgeHTML(g)}
         <img src="${g.face}" alt="">
@@ -20491,6 +24383,14 @@ function renderEnhance() {
       <div class="enh-slot-lv">Lv ${g.lv}${g.lv > 1 ? ` · +${g.lv - 1}` : ''}</div>
       <div class="enh-slot-info">${targetBuffs.map(x => `<span>${x}</span>`).join('')}</div>
     `;
+    const clearTarget = targetSlot.querySelector('.enh-target-clear');
+    bindTap(clearTarget, (e) => {
+      e.stopPropagation();
+      __ENH.targetUid = null;
+      __ENH.fodderUids = [];
+      __ENH.pickMode = 'target';
+      renderEnhance();
+    });
   } else {
     targetSlot.dataset.empty = '1';
     targetSlot.innerHTML = `
@@ -20504,8 +24404,10 @@ function renderEnhance() {
   const target = __ENH.targetUid != null ? getOwnedGeneral(__ENH.targetUid) : null;
   const curLv = target ? target.lv : 0;
   const need = (curLv >= 1 && curLv < ENHANCE_MAX_LV) ? ENHANCE_FODDER[curLv] : 0;
+  const selectedFodders = (__ENH.fodderUids || []).map(uid => getOwnedGeneral(uid)).filter(Boolean);
+  pvSuccess.classList.toggle('is-live-rate', !!target && curLv < ENHANCE_MAX_LV);
   fodderLabel.innerHTML = target
-    ? `재료 카드 <b>${__ENH.fodderUids.length}/${need || 0}</b><span>${need ? '선택한 카드는 소모' : '최대 레벨'}</span>`
+    ? `재료 카드 <b>${__ENH.fodderUids.length}/${need || 0}</b><span>${need ? '수량·Lv로 성공률 상승' : '최대 레벨'}</span>`
     : `재료 카드 <b>0/0</b><span>대상 선택 후 활성화</span>`;
   fodderRow.innerHTML = '';
   if (need <= 0 && target && curLv >= ENHANCE_MAX_LV) {
@@ -20537,21 +24439,20 @@ function renderEnhance() {
   if (target) {
     const lv = curLv;
     if (lv >= ENHANCE_MAX_LV) {
-      pvLevel.innerHTML = `<span>강화 예측</span><b>Lv ${lv}</b><i>MAX</i>`;
+      pvLevel.innerHTML = enhanceLevelPreviewHTML(lv);
       pvSuccess.innerHTML = `<span>상태</span><b>완료</b>`;
     } else {
-      pvLevel.innerHTML = `<span>강화 예측</span><b>Lv ${lv}</b><i>→</i><b>Lv ${lv + 1}</b>`;
-      pvSuccess.innerHTML = `<span>성공률</span><b>${Math.round(ENHANCE_SUCCESS[lv] * 100)}%</b>`;
+      pvLevel.innerHTML = enhanceLevelPreviewHTML(lv);
+      pvSuccess.innerHTML = `<span>성공률</span><b>${enhanceSuccessPct(lv, selectedFodders)}%</b>`;
     }
   } else {
-    pvLevel.innerHTML = `<span>강화 예측</span><b>Lv ?</b>`;
+    pvLevel.innerHTML = enhanceLevelPreviewHTML(0);
     pvSuccess.innerHTML = `<span>상태</span><b>대기</b>`;
   }
 
   // 강화 버튼 활성화 조건
   const ready = !!target
     && curLv < ENHANCE_MAX_LV
-    && __ENH.fodderUids.length === need
     && (SAVE.starsAvailable || 0) >= ENHANCE_COST_STARS
     && (SAVE.gold || 0) >= ENHANCE_COST_GOLD;
   goBtn.disabled = !ready;
@@ -20561,8 +24462,6 @@ function renderEnhance() {
     goBtn.textContent = '강화 대상 선택';
   } else if (curLv >= ENHANCE_MAX_LV) {
     goBtn.textContent = '최대 레벨';
-  } else if (__ENH.fodderUids.length !== need) {
-    goBtn.textContent = `재료 ${__ENH.fodderUids.length}/${need}`;
   } else if ((SAVE.starsAvailable || 0) < ENHANCE_COST_STARS) {
     goBtn.textContent = '별 부족';
   } else if ((SAVE.gold || 0) < ENHANCE_COST_GOLD) {
@@ -20640,8 +24539,6 @@ function attemptEnhance() {
   if (!target) return;
   const lv = target.lv;
   if (lv >= ENHANCE_MAX_LV) { showSelectToast('이미 최대 레벨', '#ffd23f'); return; }
-  const need = ENHANCE_FODDER[lv];
-  if (__ENH.fodderUids.length !== need) { showSelectToast(`재료 ${need}장 필요`, '#c1121f'); return; }
   if ((SAVE.starsAvailable || 0) < ENHANCE_COST_STARS) { showSelectToast('별이 부족합니다', '#c1121f'); return; }
   if ((SAVE.gold || 0) < ENHANCE_COST_GOLD) { showSelectToast('골드가 부족합니다', '#c1121f'); return; }
 
@@ -20655,7 +24552,7 @@ function attemptEnhance() {
   fodderUids.forEach(uid => removeOwnedGeneral(uid));
 
   // 성공 판정
-  const rate = ENHANCE_SUCCESS[lv];
+  const rate = enhanceSuccessRate(lv, fodderObjs);
   const ok = Math.random() < rate;
   let newLv = lv;
   if (ok) {
@@ -20827,13 +24724,11 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone) {
         if (success) BGM && BGM.sfxEnhanceSuccess && BGM.sfxEnhanceSuccess();
         else BGM && BGM.sfxEnhanceFail && BGM.sfxEnhanceFail();
       } catch(_) {}
-      const owned = getOwnedRoster();
       const canRetry = newLv < ENHANCE_MAX_LV
         && (SAVE.starsAvailable || 0) >= ENHANCE_COST_STARS
-        && (SAVE.gold || 0) >= ENHANCE_COST_GOLD
-        && owned.length >= ENHANCE_FODDER[newLv];
+        && (SAVE.gold || 0) >= ENHANCE_COST_GOLD;
       retryBtn.disabled = !canRetry;
-      retryBtn.textContent = canRetry ? '다시 강화' : (newLv >= ENHANCE_MAX_LV ? '최대 레벨' : '재료/자원 부족');
+      retryBtn.textContent = canRetry ? '다시 강화' : (newLv >= ENHANCE_MAX_LV ? '최대 레벨' : '자원 부족');
       actions.classList.add('show');
     }, 1500);
   }
@@ -21050,14 +24945,11 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone) {
     });
 
     sched(1420, () => {
-      const needNext = ENHANCE_FODDER[newLv] || 0;
-      const availableFodders = getOwnedRoster().filter(g => g.uid !== target.uid).length;
       const canRetry = newLv < ENHANCE_MAX_LV
-        && availableFodders >= needNext
         && (SAVE.starsAvailable || 0) >= ENHANCE_COST_STARS
         && (SAVE.gold || 0) >= ENHANCE_COST_GOLD;
       retryBtn.disabled = !canRetry;
-      retryBtn.textContent = canRetry ? '다시 강화' : (newLv >= ENHANCE_MAX_LV ? '최대 레벨' : '재료 부족');
+      retryBtn.textContent = canRetry ? '다시 강화' : (newLv >= ENHANCE_MAX_LV ? '최대 레벨' : '자원 부족');
       doneBtn.textContent = '완료';
       actions.classList.add('show');
     });

@@ -68,6 +68,412 @@ function Draw-Glow($g, $w, $h, $color) {
   $path.Dispose()
 }
 
+function Pt([float]$x, [float]$y) {
+  New-Object System.Drawing.PointF $x, $y
+}
+
+function StarPath([float]$cx, [float]$cy, [float]$outer, [float]$inner) {
+  $path = New-Object System.Drawing.Drawing2D.GraphicsPath
+  $pts = New-Object 'System.Drawing.PointF[]' 10
+  for ($i = 0; $i -lt 10; $i++) {
+    $ang = (-90 + ($i * 36)) * [Math]::PI / 180
+    $r = $(if (($i % 2) -eq 0) { $outer } else { $inner })
+    $pts[$i] = Pt ($cx + [Math]::Cos($ang) * $r) ($cy + [Math]::Sin($ang) * $r)
+  }
+  $path.AddPolygon($pts)
+  $path
+}
+
+function Draw-SoftShadow($g, [System.Drawing.Drawing2D.GraphicsPath]$path, [int]$dx, [int]$dy, [int]$alpha) {
+  $m = New-Object System.Drawing.Drawing2D.Matrix
+  $m.Translate($dx, $dy)
+  $shadow = $path.Clone()
+  $shadow.Transform($m)
+  $b = New-Object System.Drawing.SolidBrush (C $alpha 0 0 0)
+  $g.FillPath($b, $shadow)
+  $b.Dispose()
+  $shadow.Dispose()
+  $m.Dispose()
+}
+
+function TextPath-Fit($text, [string]$fontName, [float]$em, [float]$targetX, [float]$targetY, [float]$targetW, [float]$targetH) {
+  $family = New-Object System.Drawing.FontFamily $fontName
+  $fmt = New-Object System.Drawing.StringFormat ([System.Drawing.StringFormat]::GenericTypographic)
+  $fmt.Alignment = [System.Drawing.StringAlignment]::Near
+  $fmt.LineAlignment = [System.Drawing.StringAlignment]::Near
+  $path = New-Object System.Drawing.Drawing2D.GraphicsPath
+  $path.AddString($text, $family, [int][System.Drawing.FontStyle]::Bold, $em, (Pt 0 0), $fmt)
+  $bounds = $path.GetBounds()
+  $scale = [Math]::Min($targetW / $bounds.Width, $targetH / $bounds.Height)
+  $m = New-Object System.Drawing.Drawing2D.Matrix
+  $m.Translate(-$bounds.X, -$bounds.Y)
+  $m.Scale($scale, $scale, [System.Drawing.Drawing2D.MatrixOrder]::Append)
+  $m.Translate($targetX + (($targetW - ($bounds.Width * $scale)) / 2), $targetY + (($targetH - ($bounds.Height * $scale)) / 2), [System.Drawing.Drawing2D.MatrixOrder]::Append)
+  $path.Transform($m)
+  $m.Dispose()
+  $fmt.Dispose()
+  $family.Dispose()
+  $path
+}
+
+Save-Png 'main_title_logo.png' 980 330 {
+  param($g, $w, $h)
+  $g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAliasGridFit
+  $titleText = ([char]0xC131).ToString() + ([char]0xB530).ToString() + ([char]0xBA39).ToString() + ([char]0xAE30).ToString()
+
+  $banner = New-Object System.Drawing.Drawing2D.GraphicsPath
+  $banner.StartFigure()
+  $banner.AddBezier((Pt 58 116), (Pt 206 58), (Pt 725 58), (Pt 914 116))
+  $banner.AddLine((Pt 938 165), (Pt 902 218))
+  $banner.AddBezier((Pt 902 218), (Pt 700 255), (Pt 238 250), (Pt 44 204))
+  $banner.AddLine((Pt 70 160), (Pt 58 116))
+  $banner.CloseFigure()
+  Draw-SoftShadow $g $banner 0 20 156
+  Draw-SoftShadow $g $banner 0 7 90
+
+  $bannerRect = New-Object System.Drawing.RectangleF 44, 62, 894, 190
+  $bannerFill = New-Object System.Drawing.Drawing2D.LinearGradientBrush $bannerRect, (C 238 176 22 18), (C 238 44 6 7), 90
+  $bannerBlend = New-Object System.Drawing.Drawing2D.ColorBlend 6
+  $bannerBlend.Positions = @(0.0, 0.18, 0.42, 0.62, 0.82, 1.0)
+  $bannerBlend.Colors = @((C 232 235 64 39), (C 224 143 23 18), (C 232 92 8 8), (C 235 42 5 6), (C 230 116 13 10), (C 222 56 7 7))
+  $bannerFill.InterpolationColors = $bannerBlend
+  $g.FillPath($bannerFill, $banner)
+  $bannerFill.Dispose()
+
+  $bannerEdge = New-Object System.Drawing.Pen (C 232 255 211 78), 5
+  $bannerEdge.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+  $g.DrawPath($bannerEdge, $banner)
+  $bannerEdge.Dispose()
+
+  $bannerInner = New-Object System.Drawing.Drawing2D.GraphicsPath
+  $bannerInner.StartFigure()
+  $bannerInner.AddBezier((Pt 92 128), (Pt 240 86), (Pt 707 84), (Pt 880 127))
+  $bannerInner.AddBezier((Pt 812 218), (Pt 246 218), (Pt 88 178), (Pt 92 128))
+  $bannerInner.CloseFigure()
+  $innerShade = New-Object System.Drawing.Drawing2D.LinearGradientBrush (New-Object System.Drawing.RectangleF 88, 88, 792, 134), (C 80 255 255 210), (C 0 255 255 210), 90
+  $g.FillPath($innerShade, $bannerInner)
+  $innerShade.Dispose()
+
+  $slashPen = New-Object System.Drawing.Pen (C 34 255 205 77), 2
+  foreach ($xLine in @(138, 226, 314, 402, 490, 578, 666, 754)) {
+    $g.DrawLine($slashPen, $xLine, 97, ($xLine + 68), 217)
+  }
+  $slashPen.Dispose()
+
+  $textPath = TextPath-Fit $titleText 'Noto Serif KR Black' 205 70 29 735 202
+  $bounds = $textPath.GetBounds()
+  Draw-SoftShadow $g $textPath 7 15 190
+  Draw-SoftShadow $g $textPath 2 5 124
+
+  for ($step = 14; $step -ge 5; $step -= 3) {
+    $m = New-Object System.Drawing.Drawing2D.Matrix
+    $m.Translate($step, $step)
+    $extrude = $textPath.Clone()
+    $extrude.Transform($m)
+    $exb = New-Object System.Drawing.SolidBrush (C 210 67 20 2)
+    $g.FillPath($exb, $extrude)
+    $exb.Dispose()
+    $extrude.Dispose()
+    $m.Dispose()
+  }
+
+  $textOuter = New-Object System.Drawing.Pen (C 255 52 17 2), 25
+  $textOuter.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+  $g.DrawPath($textOuter, $textPath)
+  $textOuter.Dispose()
+
+  $textRim = New-Object System.Drawing.Pen (C 255 134 49 4), 15
+  $textRim.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+  $g.DrawPath($textRim, $textPath)
+  $textRim.Dispose()
+
+  $textEdge = New-Object System.Drawing.Pen (C 246 255 231 118), 5
+  $textEdge.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+  $g.DrawPath($textEdge, $textPath)
+  $textEdge.Dispose()
+
+  $fillRect = New-Object System.Drawing.RectangleF $bounds.X, ($bounds.Y - 14), $bounds.Width, ($bounds.Height + 26)
+  $textFill = New-Object System.Drawing.Drawing2D.LinearGradientBrush $fillRect, (C 255 255 248 174), (C 255 193 87 7), 90
+  $textBlend = New-Object System.Drawing.Drawing2D.ColorBlend 6
+  $textBlend.Positions = @(0.0, 0.18, 0.42, 0.62, 0.82, 1.0)
+  $textBlend.Colors = @((C 255 255 255 224), (C 255 255 235 112), (C 255 255 181 39), (C 255 232 110 11), (C 255 255 195 52), (C 255 140 46 3))
+  $textFill.InterpolationColors = $textBlend
+  $g.FillPath($textFill, $textPath)
+  $textFill.Dispose()
+
+  $state = $g.Save()
+  $g.SetClip($textPath)
+  $shineRect = New-Object System.Drawing.RectangleF ($bounds.X - 4), ($bounds.Y + 4), ($bounds.Width + 8), ([float]($bounds.Height * 0.36))
+  $shineBrush = New-Object System.Drawing.Drawing2D.LinearGradientBrush $shineRect, (C 125 255 255 238), (C 0 255 255 238), 90
+  $g.FillRectangle($shineBrush, $shineRect)
+  $shineBrush.Dispose()
+  $g.Restore($state)
+
+  $textLight = New-Object System.Drawing.Pen (C 128 255 255 220), 2
+  $textLight.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+  $g.DrawPath($textLight, $textPath)
+  $textLight.Dispose()
+
+  $sparkPen = New-Object System.Drawing.Pen (C 190 255 247 171), 4
+  $g.DrawLine($sparkPen, 148, 77, 168, 70)
+  $g.DrawLine($sparkPen, 158, 63, 158, 84)
+  $g.DrawLine($sparkPen, 677, 69, 704, 60)
+  $g.DrawLine($sparkPen, 691, 50, 691, 78)
+  $sparkPen.Dispose()
+
+  $seal = RoundedPath 808 83 100 112 18
+  Draw-SoftShadow $g $seal 4 7 126
+  $sealRect = New-Object System.Drawing.RectangleF 808, 83, 100, 112
+  $sealFill = New-Object System.Drawing.Drawing2D.LinearGradientBrush $sealRect, (C 255 184 28 22), (C 255 76 5 5), 90
+  $g.FillPath($sealFill, $seal)
+  $sealFill.Dispose()
+  $sealPen = New-Object System.Drawing.Pen (C 242 255 213 82), 4
+  $sealPen.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+  $g.DrawPath($sealPen, $seal)
+  $sealPen.Dispose()
+
+  $sealInner = RoundedPath 821 96 74 86 11
+  $sealInnerPen = New-Object System.Drawing.Pen (C 132 255 236 156), 2
+  $g.DrawPath($sealInnerPen, $sealInner)
+  $sealInnerPen.Dispose()
+  $sealText = [string]([char]0x6230)
+  $sealPath = TextPath-Fit $sealText 'Noto Serif KR Black' 88 828 103 60 68
+  $sealBrush = New-Object System.Drawing.SolidBrush (C 238 255 240 185)
+  $g.FillPath($sealBrush, $sealPath)
+  $sealBrush.Dispose()
+
+  $sealPath.Dispose()
+  $sealInner.Dispose()
+  $seal.Dispose()
+  $textPath.Dispose()
+  $bannerInner.Dispose()
+  $banner.Dispose()
+}
+
+Save-Png 'stat_icon_gold.png' 96 96 {
+  param($g, $w, $h)
+  Draw-Glow $g $w $h (C 92 255 192 46)
+
+  $coin = New-Object System.Drawing.RectangleF 14, 13, 68, 68
+  $shadow = New-Object System.Drawing.SolidBrush (C 86 0 0 0)
+  $g.FillEllipse($shadow, 17, 19, 66, 66)
+  $shadow.Dispose()
+
+  $coinBrush = New-Object System.Drawing.Drawing2D.LinearGradientBrush $coin, (C 255 255 239 130), (C 255 174 83 9), 115
+  $g.FillEllipse($coinBrush, $coin)
+  $coinBrush.Dispose()
+  $rim = New-Object System.Drawing.Pen (C 255 82 35 3), 5
+  $g.DrawEllipse($rim, $coin)
+  $rim.Dispose()
+  $inner = New-Object System.Drawing.Pen (C 164 255 253 191), 3
+  $g.DrawEllipse($inner, 22, 22, 52, 52)
+  $inner.Dispose()
+
+  $holeShadow = New-Object System.Drawing.RectangleF 36, 36, 26, 26
+  Fill-Round $g $holeShadow 4 (C 255 43 22 5) (C 255 11 7 3) (C 218 255 215 82) 2
+  $linePen = New-Object System.Drawing.Pen (C 130 91 38 3), 3
+  $g.DrawLine($linePen, 27, 48, 35, 48)
+  $g.DrawLine($linePen, 63, 48, 71, 48)
+  $g.DrawLine($linePen, 49, 26, 49, 34)
+  $g.DrawLine($linePen, 49, 64, 49, 72)
+  $linePen.Dispose()
+}
+
+Save-Png 'stat_icon_star.png' 96 96 {
+  param($g, $w, $h)
+  Draw-Glow $g $w $h (C 84 255 219 87)
+
+  $seal = New-Object System.Drawing.RectangleF 16, 18, 64, 58
+  Fill-Round $g $seal 18 (C 255 191 27 20) (C 255 91 6 5) (C 238 255 213 82) 3
+  Draw-Shine $g $seal 18
+  $ribbon = New-Object System.Drawing.Drawing2D.GraphicsPath
+  $ribbon.AddPolygon(@((Pt 28 66), (Pt 42 83), (Pt 49 66), (Pt 56 83), (Pt 70 66)))
+  $rb = New-Object System.Drawing.SolidBrush (C 230 87 7 5)
+  $g.FillPath($rb, $ribbon)
+  $rb.Dispose()
+  $ribbon.Dispose()
+
+  $star = StarPath 48 44 25 10.5
+  Draw-SoftShadow $g $star 2 4 122
+  $starBrush = New-Object System.Drawing.Drawing2D.LinearGradientBrush (New-Object System.Drawing.RectangleF 23, 19, 50, 50), (C 255 255 252 167), (C 255 223 130 22), 90
+  $g.FillPath($starBrush, $star)
+  $starBrush.Dispose()
+  $starPen = New-Object System.Drawing.Pen (C 255 88 36 3), 3
+  $g.DrawPath($starPen, $star)
+  $starPen.Dispose()
+  $star.Dispose()
+}
+
+Save-Png 'result_star_on.png' 128 128 {
+  param($g, $w, $h)
+
+  $halo = StarPath 64 62 57 24
+  $haloBrush = New-Object System.Drawing.SolidBrush (C 58 255 205 38)
+  $g.FillPath($haloBrush, $halo)
+  $haloBrush.Dispose()
+  $halo.Dispose()
+
+  $rayPen = New-Object System.Drawing.Pen (C 125 255 215 64), 3
+  $rayPen.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
+  $rayPen.EndCap = [System.Drawing.Drawing2D.LineCap]::Round
+  foreach ($line in @(
+    @(64, 8, 64, 24), @(64, 102, 64, 120),
+    @(8, 64, 25, 64), @(103, 64, 120, 64),
+    @(23, 23, 35, 35), @(93, 93, 105, 105),
+    @(23, 105, 35, 93), @(93, 35, 105, 23)
+  )) {
+    $g.DrawLine($rayPen, $line[0], $line[1], $line[2], $line[3])
+  }
+  $rayPen.Dispose()
+
+  $star = StarPath 64 62 48 20
+  Draw-SoftShadow $g $star 0 8 144
+
+  $rimOuter = New-Object System.Drawing.Pen (C 255 92 32 4), 9
+  $rimOuter.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+  $g.DrawPath($rimOuter, $star)
+  $rimOuter.Dispose()
+
+  $rimGold = New-Object System.Drawing.Pen (C 255 255 214 57), 5
+  $rimGold.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+  $g.DrawPath($rimGold, $star)
+  $rimGold.Dispose()
+
+  $pg = New-Object System.Drawing.Drawing2D.PathGradientBrush $star
+  $pg.CenterPoint = Pt 56 48
+  $pg.CenterColor = C 255 255 255 217
+  $pg.SurroundColors = @((C 255 239 116 7))
+  $g.FillPath($pg, $star)
+  $pg.Dispose()
+
+  $facet = New-Object System.Drawing.Pen (C 105 255 247 164), 2
+  $facet.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
+  $facet.EndCap = [System.Drawing.Drawing2D.LineCap]::Round
+  for ($i = 0; $i -lt 10; $i += 2) {
+    $ang = (-90 + ($i * 36)) * [Math]::PI / 180
+    $g.DrawLine($facet, 64, 62, (64 + [Math]::Cos($ang) * 38), (62 + [Math]::Sin($ang) * 38))
+  }
+  $facet.Dispose()
+
+  $shinePath = New-Object System.Drawing.Drawing2D.GraphicsPath
+  $shinePath.AddEllipse(42, 27, 34, 18)
+  $shineBrush = New-Object System.Drawing.Drawing2D.LinearGradientBrush (New-Object System.Drawing.RectangleF 42, 27, 34, 18), (C 120 255 255 255), (C 0 255 255 255), 90
+  $g.FillPath($shineBrush, $shinePath)
+  $shineBrush.Dispose()
+  $shinePath.Dispose()
+
+  $dotBrush = New-Object System.Drawing.SolidBrush (C 190 255 255 216)
+  $g.FillEllipse($dotBrush, 80, 30, 8, 8)
+  $dotBrush.Dispose()
+  $star.Dispose()
+}
+
+Save-Png 'result_star_off.png' 128 128 {
+  param($g, $w, $h)
+  $star = StarPath 64 62 43 18
+  Draw-SoftShadow $g $star 0 6 124
+
+  $rim = New-Object System.Drawing.Pen (C 180 40 23 16), 8
+  $rim.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+  $g.DrawPath($rim, $star)
+  $rim.Dispose()
+
+  $fill = New-Object System.Drawing.Drawing2D.LinearGradientBrush (New-Object System.Drawing.RectangleF 21, 19, 86, 86), (C 210 116 96 78), (C 210 46 36 30), 90
+  $g.FillPath($fill, $star)
+  $fill.Dispose()
+
+  $line = New-Object System.Drawing.Pen (C 62 255 229 172), 2
+  $line.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+  $g.DrawPath($line, $star)
+  $line.Dispose()
+  $star.Dispose()
+}
+
+Save-Png 'stat_icon_city.png' 96 96 {
+  param($g, $w, $h)
+  Draw-Glow $g $w $h (C 72 255 94 70)
+
+  $shadow = New-Object System.Drawing.SolidBrush (C 92 0 0 0)
+  $g.FillEllipse($shadow, 17, 69, 62, 11)
+  $shadow.Dispose()
+
+  $wall = New-Object System.Drawing.RectangleF 20, 48, 56, 26
+  Fill-Round $g $wall 5 (C 255 185 63 48) (C 255 92 27 18) (C 232 255 205 73) 2
+  $gate = New-Object System.Drawing.Drawing2D.GraphicsPath
+  $gate.AddArc(36, 54, 24, 34, 180, 180)
+  $gate.AddLine(60, 71, 60, 74)
+  $gate.AddLine(36, 74, 36, 71)
+  $gate.CloseFigure()
+  $gb = New-Object System.Drawing.Drawing2D.LinearGradientBrush (New-Object System.Drawing.RectangleF 36, 54, 24, 20), (C 255 18 12 8), (C 255 58 26 10), 90
+  $g.FillPath($gb, $gate)
+  $gb.Dispose()
+  $gate.Dispose()
+
+  $tower = New-Object System.Drawing.RectangleF 30, 31, 36, 21
+  Fill-Round $g $tower 4 (C 255 218 77 52) (C 255 119 34 20) (C 220 255 218 80) 2
+  $roof1 = New-Object System.Drawing.Drawing2D.GraphicsPath
+  $roof1.AddPolygon(@((Pt 20 34), (Pt 48 16), (Pt 76 34), (Pt 70 41), (Pt 26 41)))
+  $roofBrush = New-Object System.Drawing.Drawing2D.LinearGradientBrush (New-Object System.Drawing.RectangleF 20, 16, 56, 25), (C 255 255 221 86), (C 255 93 21 11), 90
+  $g.FillPath($roofBrush, $roof1)
+  $roofBrush.Dispose()
+  $roofPen = New-Object System.Drawing.Pen (C 240 54 16 5), 3
+  $g.DrawPath($roofPen, $roof1)
+  $roofPen.Dispose()
+  $roof1.Dispose()
+
+  $flagPen = New-Object System.Drawing.Pen (C 230 64 24 9), 3
+  $g.DrawLine($flagPen, 48, 13, 48, 22)
+  $flagPen.Dispose()
+  $flag = New-Object System.Drawing.Drawing2D.GraphicsPath
+  $flag.AddPolygon(@((Pt 49 13), (Pt 67 17), (Pt 49 22)))
+  $fb = New-Object System.Drawing.SolidBrush (C 240 196 23 16)
+  $g.FillPath($fb, $flag)
+  $fb.Dispose()
+  $flag.Dispose()
+}
+
+Save-Png 'stat_icon_power.png' 96 96 {
+  param($g, $w, $h)
+  Draw-Glow $g $w $h (C 82 166 206 255)
+
+  $bladeBrush = New-Object System.Drawing.Drawing2D.LinearGradientBrush (New-Object System.Drawing.RectangleF 19, 12, 58, 58), (C 255 248 250 255), (C 255 105 123 153), 90
+  $edgePen = New-Object System.Drawing.Pen (C 230 30 38 54), 3
+  $goldPen = New-Object System.Drawing.Pen (C 238 232 166 60), 5
+  $redBrush = New-Object System.Drawing.SolidBrush (C 230 145 16 19)
+  foreach ($flip in @(0, 1)) {
+    $m = New-Object System.Drawing.Drawing2D.Matrix
+    if ($flip -eq 0) {
+      $m.Translate(48, 48); $m.Rotate(-41); $m.Translate(-48, -48)
+    } else {
+      $m.Translate(48, 48); $m.Rotate(41); $m.Translate(-48, -48)
+    }
+    $g.Transform = $m
+    $blade = New-Object System.Drawing.Drawing2D.GraphicsPath
+    $blade.AddPolygon(@((Pt 44 12), (Pt 52 12), (Pt 56 57), (Pt 48 68), (Pt 40 57)))
+    Draw-SoftShadow $g $blade 2 5 94
+    $g.FillPath($bladeBrush, $blade)
+    $g.DrawPath($edgePen, $blade)
+    $blade.Dispose()
+    $g.DrawLine($goldPen, 32, 63, 64, 63)
+    $g.FillRectangle($redBrush, 43, 64, 10, 20)
+    $g.ResetTransform()
+    $m.Dispose()
+  }
+  $pommel = New-Object System.Drawing.Drawing2D.GraphicsPath
+  $pommel.AddEllipse(39, 67, 18, 18)
+  $pb = New-Object System.Drawing.Drawing2D.LinearGradientBrush (New-Object System.Drawing.RectangleF 39, 67, 18, 18), (C 255 255 235 128), (C 255 163 75 10), 90
+  $g.FillPath($pb, $pommel)
+  $pb.Dispose()
+  $pp = New-Object System.Drawing.Pen (C 230 70 27 4), 2
+  $g.DrawPath($pp, $pommel)
+  $pp.Dispose()
+  $pommel.Dispose()
+  $bladeBrush.Dispose()
+  $edgePen.Dispose()
+  $goldPen.Dispose()
+  $redBrush.Dispose()
+}
+
 Save-Png 'enh_icon_plus.png' 96 96 {
   param($g, $w, $h)
   Draw-Glow $g $w $h (C 90 255 211 83)
