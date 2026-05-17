@@ -10856,22 +10856,21 @@
   <header class="topbar">
     <button class="back" id="ssBack" aria-label="뒤로가기">←</button>
     <div class="title" id="ssChapterName">제1장 — 천하의 시작</div>
+    <div class="stage-quick-actions">
+      <button class="stage-tutorial-icon-btn" id="stageTutorialBtn" type="button" aria-label="튜토리얼 다시 보기" title="튜토리얼 다시 보기"></button>
+      <button class="stage-tools-btn" id="stageToolsBtn" type="button" aria-label="관리 메뉴"></button>
+      <div class="stage-tools-menu" id="stageToolsMenu" aria-hidden="true">
+        <button type="button" data-stage-tool="generals">장수관리</button>
+        <button type="button" data-stage-tool="enhance">장수강화</button>
+        <button type="button" data-stage-tool="power">전투력관리</button>
+      </div>
+    </div>
     <button class="ss-upgrade-btn" id="ssUpgrade" aria-label="전투력 관리" style="display:none">전투력 관리</button>
     <div class="star">⭐ <span id="starCount">0</span> / <span id="starMax">60</span></div>
   </header>
 
   <div class="progress">
     <div class="bar"><div class="fill" id="progressFill" style="width:0%"></div></div>
-  </div>
-
-  <div class="stage-quick-actions">
-    <button class="stage-tutorial-btn" id="stageTutorialBtn" type="button" aria-label="튜토리얼">튜토리얼</button>
-    <button class="stage-tools-btn" id="stageToolsBtn" type="button" aria-label="관리 메뉴"></button>
-    <div class="stage-tools-menu" id="stageToolsMenu" aria-hidden="true">
-      <button type="button" data-stage-tool="generals">장수관리</button>
-      <button type="button" data-stage-tool="enhance">장수강화</button>
-      <button type="button" data-stage-tool="power">전투력관리</button>
-    </div>
   </div>
 
   <!-- 여정 지도 — 세로 스크롤, 구불구불한 길 + 핀 + 지명 -->
@@ -11817,9 +11816,9 @@ function updateStageTutorialEntry() {
   const wrap = document.querySelector('#stageSelect .stage-quick-actions');
   const btn = document.getElementById('stageTutorialBtn');
   if (!wrap || !btn) return;
-  const featured = shouldFeatureStageTutorial();
+  const featured = false;
   wrap.classList.toggle('is-featured', featured);
-  wrap.classList.toggle('is-compact', !featured);
+  wrap.classList.toggle('is-compact', true);
   closeStageToolsMenu();
   btn.setAttribute('aria-label', featured ? '튜토리얼 시작' : '튜토리얼 다시 보기');
   btn.title = featured ? '튜토리얼 시작' : '튜토리얼 다시 보기';
@@ -21508,7 +21507,7 @@ function closeTutorialOffer(accept) {
     padding: 0 16px 5px 56px !important;
     border: 0 !important;
     border-radius: 0 !important;
-    background: url('./assets/ui/stage_tutorial_btn.png') center / 100% 100% no-repeat !important;
+    background: linear-gradient(180deg, rgba(43,55,74,0.96), rgba(16,24,38,0.96)) !important;
     box-shadow: none !important;
     color: #fff4c1 !important;
     font-family: 'Noto Serif KR', 'Noto Sans KR', serif !important;
@@ -21811,7 +21810,7 @@ function closeTutorialOffer(accept) {
     height: 42px !important;
     padding: 0 16px 5px 56px !important;
     font-size: 15px !important;
-    background: url('./assets/ui/stage_tutorial_btn.png') center / 100% 100% no-repeat !important;
+    background: linear-gradient(180deg, rgba(43,55,74,0.96), rgba(16,24,38,0.96)) !important;
   }
   #stageSelect .stage-map-wrap {
     height: calc(100% - 138px) !important;
@@ -23930,6 +23929,123 @@ function closeTutorialOffer(accept) {
   #stageSelect .stage-quick-actions.is-compact + .stage-map-wrap {
     height: calc(100% - 90px) !important;
     padding-top: 0 !important;
+  }
+
+  /* Stage header action layout: title | ? | options. */
+  #stageSelect .topbar {
+    grid-template-columns: 36px minmax(0, 1fr) 78px !important;
+  }
+  #stageSelect .stage-quick-actions,
+  #stageSelect .stage-quick-actions.is-featured,
+  #stageSelect .stage-quick-actions.is-compact {
+    position: absolute !important;
+    top: 40px !important;
+    left: auto !important;
+    right: 10px !important;
+    bottom: auto !important;
+    width: 78px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    background: transparent !important;
+    pointer-events: none !important;
+    z-index: 32 !important;
+  }
+  #stageSelect #stageTutorialBtn,
+  #stageSelect #stageTutorialBtn.stage-tutorial-icon-btn,
+  #stageSelect .stage-quick-actions.is-featured #stageTutorialBtn,
+  #stageSelect .stage-quick-actions.is-compact #stageTutorialBtn {
+    position: absolute !important;
+    top: 7px !important;
+    right: 40px !important;
+    width: 32px !important;
+    min-width: 32px !important;
+    max-width: 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    max-height: 32px !important;
+    padding: 0 !important;
+    border: 1px solid rgba(255, 224, 130, 0.36) !important;
+    border-radius: 50% !important;
+    background: linear-gradient(180deg, rgba(43,55,74,0.96), rgba(16,24,38,0.96)) !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    letter-spacing: 0 !important;
+    text-shadow: none !important;
+    overflow: hidden !important;
+    pointer-events: auto !important;
+  }
+  #stageSelect #stageTutorialBtn::before {
+    content: "?" !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    color: rgba(255, 231, 166, 0.9) !important;
+    font-family: system-ui, sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+  }
+  #stageSelect #stageToolsBtn,
+  #stageSelect .stage-quick-actions.is-featured #stageToolsBtn,
+  #stageSelect .stage-quick-actions.is-compact #stageToolsBtn {
+    position: absolute !important;
+    top: 7px !important;
+    right: 0 !important;
+    width: 32px !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    border-radius: 50% !important;
+    margin: 0 !important;
+    pointer-events: auto !important;
+  }
+  #stageSelect .stage-tools-menu,
+  #stageSelect .stage-quick-actions.is-featured .stage-tools-menu,
+  #stageSelect .stage-quick-actions.is-compact .stage-tools-menu {
+    top: 43px !important;
+    right: 0 !important;
+  }
+
+  /* DOM-level placement: the actions live inside the title bar. */
+  #stageSelect .topbar > .stage-quick-actions,
+  #stageSelect .topbar > .stage-quick-actions.is-featured,
+  #stageSelect .topbar > .stage-quick-actions.is-compact {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 78px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    background: transparent !important;
+    pointer-events: auto !important;
+    z-index: 3 !important;
+  }
+  #stageSelect .topbar > .stage-quick-actions #stageTutorialBtn,
+  #stageSelect .topbar > .stage-quick-actions #stageToolsBtn {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    margin: 0 !important;
+    flex: 0 0 32px !important;
+  }
+  #stageSelect .topbar > .stage-quick-actions .stage-tools-menu {
+    top: 40px !important;
+    right: 0 !important;
   }
   #introDialog .idg-hint {
     position: absolute !important;
