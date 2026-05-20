@@ -34,3 +34,6 @@ assets/generals/busts_new_170/
 assets/generals/busts_fast_170/
 assets/generals/mobile_fullbody/
 assets/generals/battle_faces/
+
+# 로컬 자산 백업 스냅샷 (대용량, 추적 제외)
+asset_backups/

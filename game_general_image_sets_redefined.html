@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>게임 장수 이미지 재정의</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #0a0f18;
+      color: #eef3fb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(218, 185, 92, 0.24);
+      background: rgba(8, 13, 22, 0.96);
+      backdrop-filter: blur(10px);
+    }
+    .bar {
+      max-width: 1540px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+    }
+    h1 {
+      margin: 0;
+      color: #ffe49a;
+      font-size: 20px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+    .note {
+      margin-top: 5px;
+      color: #aab6c7;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .tools {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    input,
+    select {
+      height: 36px;
+      min-width: 160px;
+      border: 1px solid rgba(184, 199, 219, 0.24);
+      border-radius: 7px;
+      background: #121a27;
+      color: #f5f8fd;
+      padding: 0 10px;
+      font: inherit;
+      font-size: 13px;
+      outline: none;
+    }
+    main {
+      max-width: 1540px;
+      margin: 0 auto;
+      padding: 16px 18px 28px;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .sum {
+      min-height: 56px;
+      padding: 10px 12px;
+      border: 1px solid rgba(184, 199, 219, 0.16);
+      border-radius: 8px;
+      background: #101824;
+    }
+    .sum span {
+      display: block;
+      color: #93a0b2;
+      font-size: 11px;
+      line-height: 1;
+    }
+    .sum b {
+      display: block;
+      margin-top: 8px;
+      color: #f7d36b;
+      font-size: 19px;
+      line-height: 1;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 12px;
+    }
+    .card {
+      border: 1px solid rgba(184, 199, 219, 0.18);
+      border-radius: 8px;
+      background: #0f1722;
+      overflow: hidden;
+    }
+    .head {
+      min-height: 50px;
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 9px;
+      align-items: center;
+      border-bottom: 1px solid rgba(184, 199, 219, 0.13);
+      background: #121c2a;
+    }
+    .idx {
+      color: #93a0b2;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .name {
+      min-width: 0;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+    .name small {
+      display: block;
+      margin-top: 4px;
+      color: #8795aa;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .status {
+      min-width: 76px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #7d3540;
+      color: #ffe3e7;
+      font-size: 11px;
+      font-weight: 900;
+      text-align: center;
+    }
+    .assets {
+      display: grid;
+      grid-template-columns: 1fr 1fr 0.82fr;
+      gap: 8px;
+      padding: 10px;
+    }
+    .slot {
+      min-width: 0;
+      border: 1px solid rgba(184, 199, 219, 0.14);
+      border-radius: 8px;
+      background: #091019;
+      overflow: hidden;
+    }
+    .slot-head {
+      min-height: 31px;
+      padding: 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid rgba(184, 199, 219, 0.12);
+      color: #e6edf7;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .slot-head code {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #8290a5;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .frame {
+      position: relative;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        #070c13;
+      background-size: 18px 18px;
+    }
+    .half .frame { height: 260px; }
+    .face .frame { height: 180px; }
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 12px 14px rgba(0,0,0,0.46));
+    }
+    .blank .frame {
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+        #080c12;
+      background-size: 18px 18px;
+    }
+    .blank-text {
+      color: #596679;
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.35;
+    }
+    .paths {
+      display: grid;
+      gap: 4px;
+      padding: 9px 10px 11px;
+      border-top: 1px solid rgba(184, 199, 219, 0.10);
+      color: #8290a5;
+      font-size: 11px;
+      line-height: 1.35;
+      background: rgba(255,255,255,0.02);
+    }
+    .paths div {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .missing {
+      color: #ffb9b0;
+    }
+    .empty {
+      display: none;
+      padding: 42px 16px;
+      border: 1px solid rgba(184, 199, 219, 0.16);
+      border-radius: 8px;
+      color: #93a0b2;
+      text-align: center;
+      background: #101824;
+    }
+    @media (max-width: 860px) {
+      .bar { grid-template-columns: 1fr; }
+      .tools { justify-content: stretch; }
+      input, select { width: 100%; }
+      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid { grid-template-columns: 1fr; }
+      .assets { grid-template-columns: 1fr; }
+      .frame, .half .frame, .face .frame { height: 240px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <div>
+        <h1>게임 장수 이미지 재정의</h1>
+        <div class="note">정의: 전신 = assets/generals/busts · 반신 = assets/generals/faces · 얼굴 = 별도 얼굴 컷이 없으면 공란</div>
+      </div>
+      <div class="tools">
+        <input id="search" type="search" placeholder="장수명 또는 id 검색">
+        <select id="filter">
+          <option value="all">전체</option>
+          <option value="missingFace">얼굴 공란</option>
+          <option value="missingAny">누락 있음</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="summary">
+      <div class="sum"><span>게임 로스터</span><b id="total">0</b></div>
+      <div class="sum"><span>전신 있음</span><b id="fullCount">0</b></div>
+      <div class="sum"><span>반신 있음</span><b id="halfCount">0</b></div>
+      <div class="sum"><span>얼굴 있음</span><b id="faceCount">0</b></div>
+    </section>
+    <section id="grid" class="grid"></section>
+    <div id="empty" class="empty">표시할 장수가 없습니다.</div>
+  </main>
+
+  <script>
+    const rosterCsv = `slug,korean,full,half,face
+liu_bei,유비,assets/generals/busts/liu_bei.png,assets/generals/faces/liu_bei.png,
+guan_yu,관우,assets/generals/busts/guan_yu.png,assets/generals/faces/guan_yu.png,
+zhang_fei,장비,assets/generals/busts/zhang_fei.png,assets/generals/faces/zhang_fei.png,
+zhao_yun,조운,assets/generals/busts/zhao_yun.png,assets/generals/faces/zhao_yun.png,
+lu_bu,여포,assets/generals/busts/lu_bu.png,assets/generals/faces/lu_bu.png,
+xiahou_dun,하후돈,assets/generals/busts/xiahou_dun.png,assets/generals/faces/xiahou_dun.png,
+cao_cao,조조,assets/generals/busts/cao_cao.png,assets/generals/faces/cao_cao.png,
+cao_xing,조흥,assets/generals/busts/cao_xing.png,assets/generals/faces/cao_xing.png,
+taishi_ci,태사자,assets/generals/busts/taishi_ci.png,assets/generals/faces/taishi_ci.png,
+zhuge_liang,제갈량,assets/generals/busts/zhuge_liang.png,assets/generals/faces/zhuge_liang.png,
+huang_zhong,황충,assets/generals/busts/huang_zhong.png,assets/generals/faces/huang_zhong.png,
+huang_gai,황개,assets/generals/busts/huang_gai.png,assets/generals/faces/huang_gai.png,
+yan_liang,안량,assets/generals/busts/yan_liang.png,assets/generals/faces/yan_liang.png,
+dong_zhuo,동탁,assets/generals/busts/dong_zhuo.png,assets/generals/faces/dong_zhuo.png,
+sima_yi,사마의,assets/generals/busts/sima_yi.png,assets/generals/faces/sima_yi.png,
+gan_ning,감녕,assets/generals/busts/gan_ning.png,assets/generals/faces/gan_ning.png,
+yuan_shao,원소,assets/generals/busts/yuan_shao.png,assets/generals/faces/yuan_shao.png,
+sun_quan,손권,assets/generals/busts/sun_quan.png,assets/generals/faces/sun_quan.png,
+zhou_yu,주유,assets/generals/busts/zhou_yu.png,assets/generals/faces/zhou_yu.png,
+ma_chao,마초,assets/generals/busts/ma_chao.png,assets/generals/faces/ma_chao.png,
+sun_ce,손책,assets/generals/busts/sun_ce.png,assets/generals/faces/sun_ce.png,
+lu_xun,육손,assets/generals/busts/lu_xun.png,assets/generals/faces/lu_xun.png,
+pang_tong,방통,assets/generals/busts/pang_tong.png,assets/generals/faces/pang_tong.png,
+guo_jia,곽가,assets/generals/busts/guo_jia.png,assets/generals/faces/guo_jia.png,
+dian_wei,전위,assets/generals/busts/dian_wei.png,assets/generals/faces/dian_wei.png,
+xu_chu,허저,assets/generals/busts/xu_chu.png,assets/generals/faces/xu_chu.png,
+zhang_liao,장료,assets/generals/busts/zhang_liao.png,assets/generals/faces/zhang_liao.png,
+xu_huang,서황,assets/generals/busts/xu_huang.png,assets/generals/faces/xu_huang.png,
+wen_chou,문추,assets/generals/busts/wen_chou.png,assets/generals/faces/wen_chou.png,
+meng_huo,맹획,assets/generals/busts/meng_huo.png,assets/generals/faces/meng_huo.png,
+new_shield_guard,신규 방패장,assets/generals/busts/new_shield_guard.png,,
+new_crossbow_commander,신규 노궁장,assets/generals/busts/new_crossbow_commander.png,,`;
+
+    const roster = rosterCsv.trim().split("\n").slice(1).map((line) => {
+      const [id, name, full, half, face] = line.split(",").map(v => v.trim());
+      return { id, name, full, half, face };
+    });
+
+    const status = new Map(roster.map(g => [g.id, {
+      full: Boolean(g.full),
+      half: Boolean(g.half),
+      face: Boolean(g.face)
+    }]));
+
+    const grid = document.querySelector("#grid");
+    const empty = document.querySelector("#empty");
+    const search = document.querySelector("#search");
+    const filter = document.querySelector("#filter");
+
+    function fileLabel(path) {
+      if (!path) return "";
+      return path.split("/").slice(-2).join("/");
+    }
+
+    function imageSlot(kind, label, src) {
+      if (!src) {
+        return `
+          <div class="slot ${kind} blank">
+            <div class="slot-head"><span>${label}</span><code>공란</code></div>
+            <div class="frame"><div class="blank-text"></div></div>
+          </div>
+        `;
+      }
+      const displaySrc = `${src}${src.includes("?") ? "&" : "?"}v=scalefix`;
+      return `
+        <div class="slot ${kind}">
+          <div class="slot-head"><span>${label}</span><code>${fileLabel(src)}</code></div>
+          <div class="frame"><img src="${displaySrc}" alt="${label}" loading="lazy" data-kind="${kind}"></div>
+        </div>
+      `;
+    }
+
+    function render() {
+      const q = search.value.trim().toLowerCase();
+      const mode = filter.value;
+      const rows = roster.filter(g => {
+        const s = status.get(g.id);
+        const missingAny = !s.full || !s.half || !s.face;
+        const textMatch = !q || g.id.includes(q) || g.name.toLowerCase().includes(q);
+        if (!textMatch) return false;
+        if (mode === "missingFace") return !s.face;
+        if (mode === "missingAny") return missingAny;
+        return true;
+      });
+
+      grid.innerHTML = rows.map((g, visibleIndex) => {
+        const s = status.get(g.id);
+        const realIndex = roster.findIndex(item => item.id === g.id) + 1;
+        return `
+          <article class="card" data-id="${g.id}">
+            <div class="head">
+              <div class="idx">#${String(realIndex).padStart(2, "0")}</div>
+              <div class="name">${g.name}<small>${g.id}</small></div>
+              <div class="status">${s.face ? "얼굴 있음" : "얼굴 공란"}</div>
+            </div>
+            <div class="assets">
+              ${imageSlot("full", "전신", g.full)}
+              ${imageSlot("half", "반신", g.half)}
+              ${imageSlot("face", "얼굴", g.face)}
+            </div>
+            <div class="paths">
+              <div>전신: ${g.full}</div>
+              <div>반신: ${g.half}</div>
+              <div class="${g.face ? "" : "missing"}">얼굴: ${g.face || "공란"}</div>
+            </div>
+          </article>
+        `;
+      }).join("");
+      empty.style.display = rows.length ? "none" : "block";
+      bindImageChecks();
+      updateStats();
+    }
+
+    function bindImageChecks() {
+      grid.querySelectorAll("img").forEach((img) => {
+        img.addEventListener("error", () => {
+          const card = img.closest(".card");
+          const kind = img.dataset.kind;
+          const s = status.get(card.dataset.id);
+          s[kind] = false;
+          updateStats();
+        }, { once: true });
+        img.addEventListener("load", () => {
+          const card = img.closest(".card");
+          const kind = img.dataset.kind;
+          const s = status.get(card.dataset.id);
+          s[kind] = true;
+          updateStats();
+        }, { once: true });
+      });
+    }
+
+    function updateStats() {
+      let full = 0;
+      let half = 0;
+      let face = 0;
+      for (const g of roster) {
+        const s = status.get(g.id);
+        if (s.full) full += 1;
+        if (s.half) half += 1;
+        if (s.face) face += 1;
+      }
+      document.querySelector("#total").textContent = roster.length;
+      document.querySelector("#fullCount").textContent = full;
+      document.querySelector("#halfCount").textContent = half;
+      document.querySelector("#faceCount").textContent = face;
+    }
+
+    search.addEventListener("input", render);
+    filter.addEventListener("change", render);
+    render();
+  </script>
+</body>
+</html>

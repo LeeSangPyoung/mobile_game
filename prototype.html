@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>三國 - 천하쟁패</title>
+<title>손가락삼국지</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23201510'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-size='34' font-family='serif' fill='%23ffd86b'%3E三%3C/text%3E%3C/svg%3E">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&display=swap');
@@ -3822,7 +3822,8 @@
     top: 17% !important;
     width: min(420px, 92vw) !important;
     height: 68vh !important;
-    transform: translateX(-50%) !important;
+    transform: translateX(-50%) scaleX(0.86) !important;
+    transform-origin: 50% 50% !important;
     pointer-events: none !important;
     z-index: 2 !important;
     opacity: 0.72 !important;
@@ -5953,7 +5954,7 @@
       0 0 0 2px rgba(236,243,255,0.46),
       0 12px 28px rgba(0,0,0,0.48),
       inset 0 1px 0 rgba(255,255,255,0.72);
-    z-index: 150; pointer-events: none;
+    z-index: 10001; pointer-events: none;
     opacity: 0; transition: opacity 0.18s;
     white-space: nowrap;
     text-shadow: 0 1px 0 rgba(255,255,255,0.72);
@@ -9592,12 +9593,60 @@
       transform: translateX(-50%) translateY(-3px) scale(1.025);
     }
   }
-  .enh-ritual.armed .er-trigger.show:active {
-    transform: translateX(-50%) translateY(2px) scale(0.99) !important;
-    filter: brightness(0.96) !important;
-  }
+	  .enh-ritual.armed .er-trigger.show:active {
+	    transform: translateX(-50%) translateY(2px) scale(0.99) !important;
+	    filter: brightness(0.96) !important;
+	  }
 
-  /* Enhance ritual readable result pass */
+	  .er-cancel {
+	    position: fixed !important;
+	    right: max(16px, calc(4vw + env(safe-area-inset-right))) !important;
+	    top: max(18px, calc(18px + env(safe-area-inset-top))) !important;
+	    min-width: 88px !important;
+	    height: 44px !important;
+	    padding: 0 18px 2px !important;
+	    display: none !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    border-radius: 12px !important;
+	    border: 1.5px solid rgba(255,229,153,0.62) !important;
+	    background:
+	      linear-gradient(180deg, rgba(64,74,86,0.92), rgba(18,24,33,0.92)) !important;
+	    color: #fff2bd !important;
+	    font-family: 'Noto Serif KR', serif !important;
+	    font-size: 18px !important;
+	    font-weight: 900 !important;
+	    letter-spacing: 1px !important;
+	    text-shadow: 0 2px 0 rgba(0,0,0,0.75) !important;
+	    box-shadow:
+	      inset 0 1px 0 rgba(255,255,255,0.18),
+	      0 10px 24px rgba(0,0,0,0.42) !important;
+	    opacity: 0 !important;
+	    pointer-events: none !important;
+	    z-index: 9028 !important;
+	  }
+	  .enh-ritual.armed .er-cancel.show {
+	    display: flex !important;
+	    opacity: 1 !important;
+	    pointer-events: auto !important;
+	    animation: er-cancel-in 0.28s ease both !important;
+	  }
+	  .enh-ritual.charging .er-cancel,
+	  .enh-ritual.success .er-cancel,
+	  .enh-ritual.fail .er-cancel {
+	    display: none !important;
+	    pointer-events: none !important;
+	  }
+	  .er-cancel:active {
+	    transform: translateY(2px) scale(0.98) !important;
+	    filter: brightness(0.92) !important;
+	  }
+	  @keyframes er-cancel-in {
+	    from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+	    to { opacity: 1; transform: translateY(0) scale(1); }
+	  }
+
+	  /* Enhance ritual readable result pass */
   .er-result,
   .er-result.success,
   .er-result.fail {
@@ -10791,7 +10840,7 @@
     </div>
     <section class="home-hero" aria-hidden="true">
       <div class="home-title-mark">三國</div>
-      <div class="home-title">성따먹기</div>
+      <div class="home-title">손가락삼국지</div>
       <div class="home-subtitle">천하를 향한 첫 진군</div>
       <div class="home-generals">
         <img class="home-general home-general--left" src="./assets/generals/busts/guan_yu.png" alt="">
@@ -11014,11 +11063,22 @@
     <div class="enh-fodder-row" id="enhFodderRow"></div>
     <button class="enh-go" id="enhGoBtn" disabled>강화 시도</button>
   </div>
-  <div class="enh-mode-tabs">
-    <button class="enh-mode-tab active" id="enhModeTarget" data-mode="target">대상 선택</button>
-    <button class="enh-mode-tab" id="enhModeFodder" data-mode="fodder">재료 선택</button>
+  <div class="enh-picker-scrim" id="enhPickerScrim"></div>
+  <div class="enh-picker-panel" id="enhPickerPanel">
+    <div class="enh-picker-head" id="enhPickerHead">
+      <div class="enh-picker-copy">
+        <span id="enhPickerEyebrow">선택</span>
+        <b id="enhPickerTitle">대상 선택</b>
+        <small id="enhPickerStatus">강화할 장수를 고르세요</small>
+      </div>
+      <button class="enh-picker-close" id="enhPickerClose" type="button">완료</button>
+    </div>
+    <div class="enh-roster" id="enhRoster"></div>
+    <div class="enh-picker-actionbar" id="enhPickerActionbar">
+      <div class="enh-picker-summary" id="enhPickerSummary">강화할 장수를 선택하세요</div>
+      <button class="enh-picker-primary" id="enhPickerPrimary" type="button">닫기</button>
+    </div>
   </div>
-  <div class="enh-roster" id="enhRoster"></div>
 </div>
 
 <!-- ===== 강화 의식(ritual) 오버레이 ===== -->
@@ -11034,6 +11094,7 @@
   <div class="er-target" id="erTarget"></div>
   <div class="er-charge" id="erCharge"><div class="er-charge-fill" id="erChargeFill"></div></div>
   <button class="er-trigger" id="erTrigger">강 화!</button>
+  <button class="er-cancel" id="erCancelBtn" type="button">취소</button>
   <div class="er-flash" id="erFlash"></div>
   <div class="er-result" id="erResult">
     <div class="er-result-title" id="erResultTitle"></div>
@@ -11442,8 +11503,8 @@ const DEV_CHEATS_ENABLED = (() => {
 const UPG_MAX = 20;
 function upgCost(lv) { return Math.floor(1000 + lv * 200 + lv * lv * 150); } // 후반 레벨일수록 가파른 골드 요구
 const UPG_DEFS = {
-  castleAtk: { label: '성 공격력',   icon: '🏯', desc: '성에서 적을 공격하는 위력', per: 0.08, currency: 'gold' },
-  castleDef: { label: '성 방어력',   icon: '🛡️', desc: '성벽 최대 내구도',         per: 0.10, currency: 'gold' },
+  castleAtk: { label: '성 공격력',   icon: '🏯', desc: '공성 중인 적 부대에 입히는 반격 피해', per: 0.08, currency: 'gold' },
+  castleDef: { label: '성 방어력',   icon: '🛡️', desc: '공성 시 성벽이 받는 피해 감소',         per: 0.10, currency: 'gold' },
   prodRate:  { label: '병력 생산력', icon: '⚙️', desc: '병력 충원 속도',           per: 0.10, currency: 'gold' },
   unitAtk:   { label: '병력 공격력', icon: '⚔️', desc: '아군 부대 전투 시 공격력', per: 0.06, currency: 'gold' },
   unitDef:   { label: '병력 방어력', icon: '🦾', desc: '아군 부대 받는 피해 감소', per: 0.05, currency: 'gold' },
@@ -11659,6 +11720,7 @@ function showScreen(name) {
     if (typeof armies !== 'undefined') armies.length = 0;
     if (typeof arrows !== 'undefined') arrows.length = 0;
     if (typeof particles !== 'undefined') particles.length = 0;
+    if (typeof minimapAlerts !== 'undefined') minimapAlerts.length = 0;
     if (typeof speeches !== 'undefined') speeches.length = 0;
     if (typeof castles !== 'undefined') castles.length = 0;
     if (typeof bgCanvas !== 'undefined') bgCanvas = null;
@@ -12015,7 +12077,7 @@ function getGeneralById(id) {
 const ENHANCE_MAX_LV = 6;
 const ENHANCE_MULT = [1.0, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0]; // index = lv (1~6)
 const ENHANCE_SUCCESS = [0, 0.90, 0.60, 0.40, 0.15, 0.05]; // index = current lv (rate to reach lv+1)
-const ENHANCE_FODDER = [0, 1, 2, 3, 4, 5];                 // 재료 수 (현재 lv → +1 시도)
+const ENHANCE_FODDER = [0, 1, 2, 3, 4, 5];                 // 재료 최대 선택 수 (현재 lv → +1 시도)
 const ENHANCE_COST_STARS = 1;
 const ENHANCE_COST_GOLD = 200;
 function enhanceSuccessRate(lv, fodders) {
@@ -12034,6 +12096,9 @@ function enhanceSuccessRate(lv, fodders) {
 }
 function enhanceSuccessPct(lv, fodders) {
   return Math.round(enhanceSuccessRate(lv, fodders) * 100);
+}
+function enhanceFodderBonusPct(lv, fodders) {
+  return Math.max(0, enhanceSuccessPct(lv, fodders) - enhanceSuccessPct(lv, []));
 }
 // === 장수 희귀도(등급) ===
 function generalScoreOf(g) {
@@ -12213,6 +12278,7 @@ function renderGeneralSelect() {
       if (g) {
         slot.innerHTML = `
           <span class="slot-rank">${i + 1}</span>
+          ${rarityBadgeHTML(g)}
           <img src="${g.face}" alt="">
           <span class="slot-name">${g.name}${g.lv > 1 ? ` <small style="color:#ffd23f;">+${g.lv-1}</small>` : ''}</span>
           <span class="slot-x">×</span>
@@ -12376,6 +12442,7 @@ function renderGeneralManage() {
       if (g) {
         slot.innerHTML = `
           <span class="slot-rank">${i + 1}</span>
+          ${rarityBadgeHTML(g)}
           <img src="${g.face}" alt="">
           <span class="slot-name">${g.name}${g.lv > 1 ? ` <small style="color:#ffd23f;">+${g.lv-1}</small>` : ''}</span>
           <span class="slot-x">×</span>
@@ -12523,6 +12590,45 @@ function generalBuff(g, key) {
 function commanderArmyMult(a, key) {
   if (!a || a.owner !== 1) return 1;
   return 1 + generalBuff(getArmyCommander(a), key);
+}
+// 장수 크리티컬: 등급 + 레벨에 따른 확률/배율 (양 진영 모두). 장수 없으면 0%.
+function commanderCritStats(g) {
+  if (!g) return { chance: 0, mult: 1 };
+  const r = getGeneralRarity(g);
+  const base = {
+    common: { chance: 0.05, mult: 1.20 },
+    rare:   { chance: 0.08, mult: 1.40 },
+    hero:   { chance: 0.12, mult: 1.60 },
+    legend: { chance: 0.18, mult: 1.80 },
+  }[r.tier] || { chance: 0.05, mult: 1.20 };
+  const lv = (g.lv && g.lv > 0) ? g.lv : 1;
+  const lvChance = Math.min(0.12, (lv - 1) * 0.006); // 레벨당 +0.6%, 최대 +12%
+  const lvMult   = Math.min(0.15, (lv - 1) * 0.008); // 레벨당 +0.008, 최대 +0.15
+  return {
+    chance: Math.min(0.40, base.chance + lvChance),
+    mult: Math.min(2.0, base.mult + lvMult),
+  };
+}
+// 한 프레임 크리티컬 굴림 (쿨다운 기반). 발동 시 배율, 비발동 시 1.
+function rollCritOnEntity(ent, g, dt, opts) {
+  if (!g) return 1;
+  const stats = commanderCritStats(g);
+  if (stats.chance <= 0) return 1;
+  ent._critCD = (ent._critCD == null ? 0.6 : ent._critCD) - dt;
+  if (ent._critCD > 0) return 1;
+  if (Math.random() < stats.chance) {
+    ent._critCD = 1.2;
+    if (opts && opts.onCrit) opts.onCrit(stats.mult);
+    return stats.mult;
+  }
+  ent._critCD = 0.5;
+  return 1;
+}
+function spawnCritText(x, y, owner) {
+  const phr = pickRandom(['치명타!', '일격필살!', '급소 적중!', '필살!', '회심의 일격!', '관통!']);
+  spawnImpactText(x, y - 18, phr, owner === 1 ? '#ffe066' : '#ff9050', { size: 22, life: 0.85, vy: -42 });
+  triggerShake(6 * DPR(), 0.32);
+  try { vibrate([20, 30, 30]); } catch(_) {}
 }
 function commanderCastleMult(c, key) {
   if (!c || c.owner !== 1) return 1;
@@ -12766,7 +12872,7 @@ function startStage() {
   showScreen('game');
   msgShown = false;
   startOpeningCinematic();
-  rollBattleWeather();
+  if (typeof stopWeather === 'function') stopWeather();
   // 튜토리얼 스테이지 → 인터랙티브 가이드 컨트롤러
   if (STAGES[currentStage] && STAGES[currentStage].isTutorial) {
     setTimeout(() => startTutorialController(), 100);
@@ -13771,14 +13877,16 @@ function resetStage() {
     // 챕터별 미세 보정: 1=0% / 2=4% / 3=8% / 4=12% / 5=16% (적 감소)
     const enemyEase = Math.max(0, (ch - 1)) * 0.04;
     const playerBoost = Math.max(0, (ch - 1)) * 0.03;
+    const enemyBase = 0.05;
+    const playerNerf = 0.00;
     castles.forEach(c => {
       if (c.owner === 2) {
         for (const k of ['spear','cavalry','archer']) {
-          c.troops[k] = Math.max(0, Math.floor((c.troops[k] || 0) * (1 - enemyEase)));
+          c.troops[k] = Math.max(0, Math.floor((c.troops[k] || 0) * (1 + enemyBase - enemyEase)));
         }
       } else if (c.owner === 1) {
         for (const k of ['spear','cavalry','archer']) {
-          c.troops[k] = Math.floor((c.troops[k] || 0) * (1 + playerBoost));
+          c.troops[k] = Math.floor((c.troops[k] || 0) * (1 - playerNerf + playerBoost));
         }
       }
     });
@@ -13868,15 +13976,19 @@ function resetStage() {
     if (c.owner === 1) base *= upgVal('castleDef');
     c.wallMax = Math.floor(base);
     c.wallHP = c.wallMax;
+    c._fireSeeds = null;
+    c._captureFlash = null;
   });
   EDGES_DEF = st.edges;
   armies.length = 0;
   arrows.length = 0;
   particles.length = 0;
   battleFx.length = 0;
+  minimapAlerts.length = 0;
   battleHitCooldown.clear();
   _battleFxSeq = 1;
   battlePulse = 0;
+  if (typeof resetBattleAtmosphere === 'function') resetBattleAtmosphere();
   speeches.length = 0;
   shakeTime = 0; shakeMag = 0;
   if (typeof _soldierPosCache !== 'undefined') _soldierPosCache.clear();
@@ -14868,6 +14980,20 @@ const battleFx = [];
 const battleHitCooldown = new Map();
 let _battleFxSeq = 1;
 let battlePulse = 0;
+const battleAtmosphere = {
+  enabled: false,
+  mode: 'clear',
+  next: null,
+  transition: 1,
+  transitionDur: 24,
+  elapsed: 0,
+  nextAt: 999,
+  seed: 1,
+  rain: [],
+  snow: [],
+  w: 0,
+  h: 0,
+};
 
 // 메뉴 상태
 let menuCastle = null;       // 메뉴 열린 성
@@ -15231,6 +15357,118 @@ function spawnWallBreachFx(castle, sourceArmy) {
   playBattleClashSfx(220);
 }
 
+function spawnCastleExplosionPulse(cwx, cwy, r, winnerFaction, opts = {}) {
+  const scale = opts.scale || 1;
+  const ex = cwx + (opts.ox || 0) * r;
+  const ey = cwy - r * 0.18 + (opts.oy || 0) * r;
+  const label = opts.label || '펑!';
+  spawnShockRing(ex, cwy + r * (0.34 + (opts.oy || 0) * 0.22), '#fff0a8', { rx: 150 * scale, ry: 50 * scale, line: 7.4 * scale, life: 0.82 });
+  spawnShockRing(ex, cwy + r * (0.48 + (opts.oy || 0) * 0.18), '#5b3a28', { rx: 180 * scale, ry: 42 * scale, line: 5.8 * scale, life: 1.02 });
+  pushBattleFx({
+    kind: 'breachFlash',
+    x: ex,
+    y: ey - r * 0.04,
+    rx: r * 1.5 * scale,
+    ry: r * 1.12 * scale,
+    color: '#ffb84a',
+    life: 0.34,
+    maxLife: 0.34,
+  });
+  pushBattleFx({
+    kind: 'castleExplosion',
+    x: ex,
+    y: ey,
+    radius: r * 1.58 * scale,
+    color: winnerFaction.light || '#ffd35f',
+    life: 0.92,
+    maxLife: 0.92,
+  });
+  spawnImpactText(ex, ey - r * (0.72 + scale * 0.12), label, '#fff2a8', { size: 25 + 7 * scale, life: 0.82, vy: -38 });
+
+  for (let k = 0; k < Math.round(50 * scale); k++) {
+    const ang = Math.random() * Math.PI * 2;
+    const sp = (70 + Math.random() * 230) * DPR() / zoom * scale;
+    particles.push({
+      kind: 'debris',
+      x: ex + (Math.random() - 0.5) * r * 0.9 * scale,
+      y: ey + (Math.random() - 0.5) * r * 0.5 * scale,
+      vx: Math.cos(ang) * sp,
+      vy: Math.sin(ang) * sp * 0.55 - (68 + Math.random() * 130) * DPR() / zoom,
+      life: 0.9 + Math.random() * 0.7,
+      maxLife: 1.6,
+      size: (3.2 + Math.random() * 8.4) * DPR() / zoom * scale,
+      color: Math.random() < 0.58 ? '#8b6a46' : '#342315',
+      gravity: 210 * DPR() / zoom,
+      rot: Math.random() * Math.PI,
+      spin: (Math.random() - 0.5) * 12,
+    });
+  }
+  for (let k = 0; k < Math.round(52 * scale); k++) {
+    const ang = -Math.PI / 2 + (Math.random() - 0.5) * 2.3;
+    const sp = (36 + Math.random() * 165) * DPR() / zoom * scale;
+    particles.push({
+      kind: Math.random() < 0.62 ? 'ember' : 'spark',
+      x: ex + (Math.random() - 0.5) * r * 1.05 * scale,
+      y: ey + (Math.random() - 0.5) * r * 0.48 * scale,
+      vx: Math.cos(ang) * sp,
+      vy: Math.sin(ang) * sp - (34 + Math.random() * 90) * DPR() / zoom,
+      life: 0.55 + Math.random() * 0.8,
+      maxLife: 1.35,
+      size: (1.6 + Math.random() * 4.2) * DPR() / zoom * scale,
+      color: Math.random() < 0.5 ? '#ffe066' : '#ff7a32',
+      gravity: 62 * DPR() / zoom,
+      spin: (Math.random() - 0.5) * 6,
+    });
+  }
+  for (let k = 0; k < Math.round(32 * scale); k++) {
+    const ang = -Math.PI / 2 + (Math.random() - 0.5) * 1.7;
+    const sp = (22 + Math.random() * 88) * DPR() / zoom * scale;
+    particles.push({
+      kind: 'breachSmoke',
+      x: ex + (Math.random() - 0.5) * r * 1.18 * scale,
+      y: ey + r * 0.1 + (Math.random() - 0.5) * r * 0.48 * scale,
+      vx: Math.cos(ang) * sp,
+      vy: Math.sin(ang) * sp - (20 + Math.random() * 58) * DPR() / zoom,
+      life: 1.6 + Math.random() * 1.55,
+      maxLife: 3.15,
+      size: (20 + Math.random() * 40) * DPR() / zoom * scale,
+      color: Math.random() < 0.5 ? '#27221d' : '#4a3d31',
+      flat: 0.56 + Math.random() * 0.28,
+      rot: Math.random() * Math.PI,
+    });
+  }
+  spawnBurst(ex, ey, winnerFaction.light, { gold: true, big: true, count: Math.round(44 * scale), life: 1.4 });
+  battlePulse = Math.max(battlePulse, 0.32 * scale);
+  triggerShake((4.6 + 5.4 * scale) * DPR(), 0.34 + 0.2 * scale);
+  playBattleClashSfx(190);
+}
+
+function spawnCastleCaptureExplosion(castle, winnerOwner, opts = {}) {
+  if (!castle) return;
+  const cwx = castle.x * worldPxW();
+  const cwy = castle.y * worldPxH();
+  const r = CASTLE_R() * castle.size / zoom;
+  const winnerFaction = FACTION[winnerOwner] || FACTION[1];
+  const lostOwner = opts.prevOwner;
+
+  spawnCastleExplosionPulse(cwx, cwy, r, winnerFaction, { scale: 1.18, label: '펑!' });
+  setTimeout(() => {
+    if (!document.body.classList.contains('in-game')) return;
+    spawnCastleExplosionPulse(cwx, cwy, r, winnerFaction, { scale: 0.82, ox: -0.34, oy: 0.02, label: '퍼펑!' });
+  }, 120);
+  setTimeout(() => {
+    if (!document.body.classList.contains('in-game')) return;
+    spawnCastleExplosionPulse(cwx, cwy, r, winnerFaction, { scale: 0.92, ox: 0.34, oy: -0.03, label: '퍼퍼펑!' });
+  }, 245);
+
+  battlePulse = Math.max(battlePulse, 0.38);
+  triggerShake(12 * DPR(), 0.68);
+  if (winnerOwner === 1) vibrate([42, 48, 52, 72, 112]);
+  else if (lostOwner === 1) vibrate([88, 64, 88, 70, 140]);
+  else vibrate([34, 42, 80]);
+  playBattleClashSfx(260);
+}
+
 function drawBattleFx() {
   if (!battleFx.length) return;
   ctx.save();
@@ -15290,6 +15528,50 @@ function drawBattleFx() {
       ctx.fillStyle = g;
       ctx.beginPath();
       ctx.ellipse(sx, sy, fx.rx * zoom, fx.ry * zoom, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    } else if (fx.kind === 'castleExplosion') {
+      const rr = (fx.radius || 60 * DPR() / zoom) * zoom;
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      const hotR = rr * (0.5 + p * 0.92);
+      const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, Math.max(1, hotR));
+      g.addColorStop(0, `rgba(255,252,210,${0.95 * alpha})`);
+      g.addColorStop(0.22, `rgba(255,203,70,${0.86 * alpha})`);
+      g.addColorStop(0.58, `rgba(244,82,22,${0.48 * alpha})`);
+      g.addColorStop(1, 'rgba(130,20,0,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(sx, sy, hotR, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalAlpha = alpha * Math.max(0, 0.78 - p * 0.22);
+      ctx.fillStyle = '#ffb32f';
+      ctx.beginPath();
+      for (let i = 0; i < 24; i++) {
+        const a = -Math.PI / 2 + (i / 24) * Math.PI * 2;
+        const spike = i % 2 === 0 ? 0.96 : 0.38;
+        const rad = hotR * spike * (0.9 + p * 0.2);
+        const px = sx + Math.cos(a) * rad;
+        const py = sy + Math.sin(a) * rad * 0.78;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.globalAlpha = alpha * 0.8;
+      ctx.strokeStyle = '#fff2a8';
+      ctx.lineWidth = Math.max(2 * DPR(), rr * 0.035 * (1 - p * 0.2));
+      ctx.beginPath();
+      ctx.ellipse(sx, sy + rr * 0.28, rr * (0.4 + p * 0.75), rr * (0.16 + p * 0.22), 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.globalAlpha = alpha * 0.34;
+      ctx.fillStyle = '#16100c';
+      ctx.beginPath();
+      ctx.ellipse(sx, sy + rr * 0.1, rr * (0.45 + p * 0.4), rr * (0.24 + p * 0.18), 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     } else if (fx.kind === 'text') {
@@ -15360,6 +15642,9 @@ let pinchActive = false, pinchStartDist = 0, pinchStartZoom = 1, pinchCenter = n
 let minimapDrag = false;
 
 const MM = { x: 0, y: 0, w: 0, h: 0 };
+const minimapAlerts = [];
+const minimapAttackLast = new WeakMap();
+
 function updateMinimap() {
   const margin = 12 * DPR();
   const safeTop = (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sat')) || 0) * DPR();
@@ -15381,6 +15666,117 @@ function minimapJump(p) {
   camX = u * worldPxW(); camY = v * worldPxH();
   clampCamera();
   window._targetCamX = camX; window._targetCamY = camY;
+}
+
+function minimapTargetPoint(target) {
+  if (!target) return null;
+  if (target.isArmy || typeof target.unit === 'string') {
+    const wx = worldPxW(), wy = worldPxH();
+    if (!wx || !wy) return null;
+    return { x: target.x / wx, y: target.y / wy };
+  }
+  if (typeof target.x === 'number' && typeof target.y === 'number') {
+    return { x: target.x, y: target.y };
+  }
+  return null;
+}
+
+function pushMinimapAlert(kind, target, opts = {}) {
+  const p = minimapTargetPoint(target);
+  if (!p) return;
+  minimapAlerts.push({
+    kind,
+    target,
+    x: p.x,
+    y: p.y,
+    owner: opts.owner == null ? target.owner : opts.owner,
+    prevOwner: opts.prevOwner,
+    t: performance.now(),
+    life: opts.life || (kind === 'capture' ? 2600 : 1450),
+  });
+  if (minimapAlerts.length > 36) minimapAlerts.splice(0, minimapAlerts.length - 36);
+}
+
+function pingMinimapAttack(target) {
+  if (!target || target.owner !== 1) return;
+  const now = performance.now();
+  const last = minimapAttackLast.get(target) || 0;
+  if (now - last < 430) return;
+  minimapAttackLast.set(target, now);
+  pushMinimapAlert('attack', target, { owner: target.owner, life: target.isArmy ? 1250 : 1650 });
+}
+
+function pingMinimapCapture(castle, prevOwner, newOwner) {
+  if (!castle) return;
+  if (newOwner !== 1 && prevOwner !== 1) return;
+  pushMinimapAlert('capture', castle, { owner: newOwner, prevOwner, life: newOwner === 1 ? 2850 : 2400 });
+}
+
+function drawMinimapAlerts() {
+  if (MM.w <= 0 || !minimapAlerts.length) return;
+  const now = performance.now();
+  const dpr = DPR();
+  ctx.save();
+  roundRect(MM.x, MM.y, MM.w, MM.h, 14 * dpr);
+  ctx.clip();
+  ctx.lineCap = 'round';
+  for (let i = minimapAlerts.length - 1; i >= 0; i--) {
+    const alert = minimapAlerts[i];
+    const age = (now - alert.t) / alert.life;
+    if (age >= 1) {
+      minimapAlerts.splice(i, 1);
+      continue;
+    }
+    const livePoint = minimapTargetPoint(alert.target);
+    const xNorm = livePoint ? livePoint.x : alert.x;
+    const yNorm = livePoint ? livePoint.y : alert.y;
+    const px = MM.x + xNorm * MM.w;
+    const py = MM.y + yNorm * MM.h;
+    if (alert.kind === 'attack') {
+      const wave = (age * 3.4) % 1;
+      const fade = Math.max(0, 1 - age);
+      const r = (7 + wave * 14) * dpr;
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      ctx.setLineDash([3.8 * dpr, 2.8 * dpr]);
+      ctx.lineDashOffset = -now * 0.012;
+      ctx.strokeStyle = `rgba(255,54,42,${0.78 * fade * (1 - wave * 0.25)})`;
+      ctx.lineWidth = 2.2 * dpr;
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = `rgba(255,38,28,${0.3 * fade})`;
+      ctx.beginPath();
+      ctx.arc(px, py, (3.2 + Math.sin(now * 0.016) * 0.7) * dpr, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    } else if (alert.kind === 'capture') {
+      const good = alert.owner === 1;
+      const color = good ? '80,210,255' : '255,64,48';
+      const warm = good ? '255,218,92' : '255,162,74';
+      const pulse = Math.sin(age * Math.PI);
+      const r = (8 + age * 24) * dpr;
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      ctx.strokeStyle = `rgba(${color},${0.86 * (1 - age)})`;
+      ctx.lineWidth = (3.2 + pulse * 1.4) * dpr;
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = `rgba(${warm},${0.58 * (1 - age)})`;
+      ctx.lineWidth = 1.6 * dpr;
+      ctx.beginPath();
+      ctx.arc(px, py, r * 0.58, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = `rgba(${color},${0.22 * (1 - age)})`;
+      ctx.beginPath();
+      ctx.arc(px, py, (5 + pulse * 3) * dpr, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+  ctx.restore();
 }
 
 function getPinchInfo(e) {
@@ -15911,8 +16307,11 @@ function resolveEngagements(dt) {
       if (a._engageT < ENGAGE_WARMUP || b._engageT < ENGAGE_WARMUP) continue;
       const dpsA = a.troops * (a.atkBonus || 1) * aCnt * DMG_RATE * aAtk / bDef;
       const dpsB = b.troops * (b.atkBonus || 1) * bCnt * DMG_RATE * bAtk / aDef;
-      damage.set(b, (damage.get(b) || 0) + dpsA * dt);
-      damage.set(a, (damage.get(a) || 0) + dpsB * dt);
+      // 크리티컬: 장수 있는 쪽만, 쿨다운 기반 굴림
+      const aCritMult = rollCritOnEntity(a, getArmyCommander(a), dt, { onCrit: () => spawnCritText(midX, midY, a.owner) });
+      const bCritMult = rollCritOnEntity(b, getArmyCommander(b), dt, { onCrit: () => spawnCritText(midX, midY, b.owner) });
+      damage.set(b, (damage.get(b) || 0) + dpsA * aCritMult * dt);
+      damage.set(a, (damage.get(a) || 0) + dpsB * bCritMult * dt);
     }
   }
   // 누적 데미지로 1명씩 사상
@@ -15924,7 +16323,10 @@ function resolveEngagements(dt) {
       a._dmg -= 1;
     }
     const lost = beforeTroops - a.troops;
-    if (lost > 0) spawnCasualtyFx(a, lost);
+    if (lost > 0) {
+      spawnCasualtyFx(a, lost);
+      pingMinimapAttack(a);
+    }
     a._engaged = engaged.has(a);
     // 위기 경고 — 30% 이하 한 번만
     if (!a._warned && a._start && a.troops > 0 && a.troops / a._start < 0.35) {
@@ -15991,10 +16393,37 @@ function resolveSieges(dt) {
 
   for (const [castle, atks] of siegers) {
     for (const a of atks) {
-      // 강화: 아군 부대가 적 성을 공격할 때 castleAtk 적용
-      const cAtk = a.owner === 1 ? upgVal('castleAtk') * commanderArmyMult(a, 'castleAtk') : 1;
-      const cDef = castle.owner === 1 ? commanderCastleMult(castle, 'castleDef') : 1;
-      const aPow = a.troops * (a.atkBonus || 1) * cAtk / cDef;
+      // 강화: 공성 시 성벽이 받는 피해는 castleDef로 감소
+      const cDef = castle.owner === 1 ? upgVal('castleDef') * commanderCastleMult(castle, 'castleDef') : commanderCastleMult(castle, 'castleDef');
+      const aPow = a.troops * (a.atkBonus || 1) / cDef;
+
+      // 성 → 공성 부대 반격: 성내 병력 기준, 부대 교전 데미지의 약 30%
+      {
+        const cAtk = castle.owner === 1
+          ? upgVal('castleAtk') * commanderCastleMult(castle, 'castleAtk')
+          : commanderCastleMult(castle, 'castleAtk');
+        const garrison = totalTroops(castle);            // 빈 성은 반격 없음
+        const wallFactor = castle.wallHP > 0 ? 1 : 0;    // 성벽 무너지면 반격 X (병력은 출진)
+        // 수성 장수 크리티컬: 공성 부대를 타겟으로 갑작스런 강타
+        const cwx = castle.x * worldPxW(), cwy = castle.y * worldPxH();
+        const critMult = rollCritOnEntity(castle, getCastleCommander(castle), dt, { onCrit: () => spawnCritText(a.x, a.y, castle.owner) });
+        const counter = garrison * DMG_RATE * 0.08 * cAtk * wallFactor * critMult * dt;
+        a._cdmg = (a._cdmg || 0) + counter;
+        let lostA = 0;
+        while ((a._cdmg || 0) >= 1 && a.troops > 0) {
+          a.troops--; a._cdmg -= 1; lostA++;
+        }
+        if (lostA > 0) pingMinimapAttack(a);
+        if (lostA > 0 && Math.random() < 0.5) {
+          spawnImpactText(
+            a.x + (Math.random() - 0.5) * 16,
+            a.y - 14 + (Math.random() - 0.5) * 8,
+            `-${lostA}`,
+            a.owner === 1 ? '#ff7066' : '#fff2a8',
+            { size: 13, life: 0.5, vy: -22 }
+          );
+        }
+      }
       a._siegeFxCD = (a._siegeFxCD || 0) - dt;
       if (a._siegeFxCD <= 0) {
         a._siegeFxCD = 0.18 + Math.random() * 0.12;
@@ -16004,7 +16433,8 @@ function resolveSieges(dt) {
       if (castle.wallHP > 0) {
         // 성벽 깎음
         const before = castle.wallHP;
-        castle.wallHP = Math.max(0, castle.wallHP - aPow * 0.15 * dt);
+        castle.wallHP = Math.max(0, castle.wallHP - aPow * 0.22 * dt);
+        if (before > castle.wallHP) pingMinimapAttack(castle);
         // 공성 중 작은 화염 점 (드물게)
         if (Math.random() < 0.18) {
           const cwx0 = castle.x * worldPxW(), cwy0 = castle.y * worldPxH();
@@ -16024,13 +16454,30 @@ function resolveSieges(dt) {
             spin: 0
           });
         }
-        // 성벽이 막 0이 된 순간: 먼지/파편 중심 붕괴 연출
+        // 성벽이 막 0이 된 순간: 먼지/파편 중심 붕괴 연출 + 성내 병력 출진
         if (before > 0 && castle.wallHP === 0) {
           const phr = a.owner === 1
             ? pickRandom(['성벽 돌파!', '돌파했다!', '문을 뚫었다!'])
             : pickRandom(['성벽이 무너졌다!', '방어선 붕괴!']);
           showSpeech(castle, phr, { life: 1.6, side: a.owner === 1 ? 'ally' : 'enemy', kind: 'castle' });
           spawnWallBreachFx(castle, a);
+          // 성안 병력은 사라지지 않고 출진해서 공성군과 야전
+          const aliveAtks = atks.filter(x => x.troops > 0);
+          if (aliveAtks.length > 0) {
+            const sortieDefenderPhr = castle.owner === 1
+              ? pickRandom(['전군 출격!', '나가서 싸운다!', '성문을 열어라!'])
+              : pickRandom(['결사항전!', '맞서라!']);
+            showSpeech(castle, sortieDefenderPhr, { life: 1.4, side: castle.owner === 1 ? 'ally' : 'enemy', kind: 'castle' });
+            const units = ['spear', 'cavalry', 'archer'];
+            let i = 0;
+            units.forEach((u) => {
+              if ((castle.troops[u] || 0) > 0) {
+                const target = aliveAtks[i % aliveAtks.length];
+                i++;
+                sendArmy(castle, target, u, castle, castle.owner === 1);
+              }
+            });
+          }
         }
       } else {
         // 성벽 박살 → 안에 병력 직공
@@ -16043,6 +16490,7 @@ function resolveSieges(dt) {
         }
         const lostTroops = Math.max(0, beforeTroops - totalTroops(castle));
         if (lostTroops > 0) {
+          pingMinimapAttack(castle);
           const cxp = castle.x * worldPxW(), cyp = castle.y * worldPxH();
           const rr = CASTLE_R() * castle.size / zoom;
           spawnImpactText(
@@ -16066,11 +16514,12 @@ function resolveSieges(dt) {
       if (winner) {
         const prevOwner = castle.owner;
         castle.owner = winner.owner;
+        // 점령 시 이전 소유자의 장수 정보(특히 적장 음수 uid)를 항상 비움
+        releaseCastleCommander(castle);
         if (winner.owner === 1) {
           assignNextCommanderToCastle(castle);
           flushPendingCommanderReturns(castle);
         }
-        else if (prevOwner === 1) releaseCastleCommander(castle);
         setTimeout(checkWin, 0);
         castle.primary = winner.unit;
         castle.troops = { spear: 0, cavalry: 0, archer: 0 };
@@ -16085,17 +16534,9 @@ function resolveSieges(dt) {
         // 점령 후 성벽 일부 복구
         castle.wallHP = Math.floor(castle.wallMax * 0.4);
         castle._captureFlash = performance.now();
-        // 진영색 빛 입자 상승
-        {
-          const cxp = castle.x * worldPxW(), cyp = castle.y * worldPxH();
-          spawnBurst(cxp, cyp, FACTION[winner.owner].light, { gold: true, big: true, count: 48, life: 1.5 });
-        }
-        // 진동 + 말풍선
-        triggerShake(5 * DPR(), 0.4);
-        // 햅틱 — 아군 점령은 짧은 1회, 아군 성 함락(적이 점령)은 더 강한 패턴
-        if (winner.owner === 1) vibrate([40, 60, 40, 60, 80]); // 점령 승리 빠바박-쾅
-        else if (prevOwner === 1) vibrate([80, 60, 80, 60, 120]); // 빼앗김
-        else vibrate([20, 30, 20]);
+        pingMinimapCapture(castle, prevOwner, winner.owner);
+        spawnCastleCaptureExplosion(castle, winner.owner, { prevOwner });
+        // 말풍선
         const phr = winner.owner === 1
           ? pickRandom([`${castle.name} 점령!`, '성을 함락시켰다!', '깃발을 꽂아라!'])
           : pickRandom([`${castle.name} 함락…`, '아군 성이 떨어졌다!', '적이 입성했다']);
@@ -16266,15 +16707,16 @@ function update(dt) {
     if (a.target.owner === 0 && d < 12 * DPR() / zoom) {
       const prevOwner = a.target.owner;
       a.target.owner = a.owner;
+      releaseCastleCommander(a.target);
       if (a.owner === 1) {
         assignNextCommanderToCastle(a.target);
         flushPendingCommanderReturns(a.target);
       }
-      else if (prevOwner === 1) releaseCastleCommander(a.target);
       a.target.primary = a.unit;
       a.target.troops = { spear: 0, cavalry: 0, archer: 0 };
       a.target.troops[a.unit] = a.troops;
       a.target.wallHP = a.target.wallMax;
+      pingMinimapCapture(a.target, prevOwner, a.owner);
       armies.splice(i, 1);
       continue;
     }
@@ -16309,10 +16751,15 @@ function update(dt) {
           ar.hitArmy.troops--; ar.hitArmy._dmg -= 1;
         }
         lost = beforeTroops - ar.hitArmy.troops;
-        if (lost > 0) spawnCasualtyFx(ar.hitArmy, lost);
+        if (lost > 0) {
+          spawnCasualtyFx(ar.hitArmy, lost);
+          pingMinimapAttack(ar.hitArmy);
+        }
       } else if (ar.hitCastle && ar.hitCastle.owner !== ar.owner && ar.hitCastle.owner !== 0) {
         if (ar.hitCastle.wallHP > 0) {
+          const beforeWall = ar.hitCastle.wallHP;
           ar.hitCastle.wallHP = Math.max(0, ar.hitCastle.wallHP - (ar.dmg || 0) * 0.4);
+          if (beforeWall > ar.hitCastle.wallHP) pingMinimapAttack(ar.hitCastle);
         } else {
           const beforeTroops = totalTroops(ar.hitCastle);
           ar.hitCastle._tdmg = (ar.hitCastle._tdmg || 0) + (ar.dmg || 0);
@@ -16322,6 +16769,7 @@ function update(dt) {
             ar.hitCastle._tdmg -= 1;
           }
           lost = Math.max(0, beforeTroops - totalTroops(ar.hitCastle));
+          if (lost > 0) pingMinimapAttack(ar.hitCastle);
         }
       }
       spawnArrowImpact(ar.tx, ar.ty, ar.owner, lost);
@@ -16418,15 +16866,18 @@ function arrive(a) {
         }
       }
       c.owner = a.owner;
+      releaseCastleCommander(c);
       if (a.owner === 1) {
         assignNextCommanderToCastle(c);
         flushPendingCommanderReturns(c);
       }
-      else if (prevOwner === 1) releaseCastleCommander(c);
       c.primary = a.unit;
       c.troops = { spear: 0, cavalry: 0, archer: 0 };
       c.troops[a.unit] = remain;
-      spawnBurst(c.x * worldPxW(), c.y * worldPxH(), FACTION[a.owner].light, { gold: true, big: true, count: 48, life: 1.5 });
+      c.wallHP = Math.floor(c.wallMax * 0.4);
+      c._captureFlash = performance.now();
+      pingMinimapCapture(c, prevOwner, a.owner);
+      spawnCastleCaptureExplosion(c, a.owner, { prevOwner });
     } else {
       // 비례 손실
       const remainTotal = Math.max(1, Math.ceil((def - atk) / (c.trait === 'def' ? 1.55 : 1)));
@@ -18795,15 +19246,27 @@ function _seededPositions(sd, n, baseRadius, minDist) {
   return positions;
 }
 function drawSoldierGroup(x, y, count, unit, factionColor, radius, seed, marchAngle, attacking) {
-  // 부대는 대표 병력만 보여준다. 전투감 보강을 위해 화면상 밀도는 24명까지 유지.
-  const visible = Math.min(count, 24);
+  // 부대 시각 표현: troops 수에 비례해 그리드 포메이션. 최대 30명까지 표시.
+  const visible = Math.max(1, Math.min(count, 30));
   const t = performance.now() * 0.001;
   // 줌이 작아도 너무 작아지지 않게
   const z = Math.max(0.7, zoom);
-  // 오합지졸: 둥근 영역 안에 무작위 분포하되 최소 간격은 지킨다.
-  const baseRadius = 18 * DPR() * z * Math.sqrt(visible / 5);
-  const minDist = 12 * DPR() * z;
-  const positions = _seededPositions(seed, visible, baseRadius, minDist);
+  const minDist = 11 * DPR() * z;
+  // 그리드 포메이션: 장수(leader)는 선두 중앙, 나머지는 그 뒤로 줄지어 행진
+  const cols = Math.max(1, Math.min(7, Math.ceil(Math.sqrt(visible))));
+  const positions = new Array(visible);
+  positions[0] = [0, 0];
+  for (let i = 1; i < visible; i++) {
+    const idx = i - 1;
+    const row = Math.floor(idx / cols) + 1;          // 1행부터 후방으로
+    const colIdx = idx % cols;
+    // 이 행의 실제 병사 수에 맞춰 가운데 정렬
+    const remaining = visible - 1 - Math.floor(idx / cols) * cols;
+    const thisRowCount = Math.min(cols, remaining);
+    const startSide = -((thisRowCount - 1) / 2) * minDist;
+    positions[i] = [-row * minDist, startSide + colIdx * minDist];
+  }
+  const baseRadius = Math.max(18 * DPR() * z, minDist * Math.max(cols, Math.ceil(visible / cols)) * 0.6);
   const useMarch = marchAngle !== undefined;
   const ca = useMarch ? Math.cos(marchAngle) : 1;
   const sa = useMarch ? Math.sin(marchAngle) : 0;
@@ -19381,11 +19844,6 @@ function drawCastle(c) {
     ctx.fillStyle = `rgba(30,16,8,${damage * 0.45})`;
     ctx.fill();
   }
-  // 화염
-  if (c.wallMax && c.wallHP < c.wallMax * 0.5) {
-    drawCastleFire(c, x, y, r);
-  }
-
   // 등불 2개 (지붕 양쪽 처마)
   for (const side of [-1, 1]) {
     const lx = x + side * roofBotHalf * 0.92;
@@ -19401,6 +19859,7 @@ function drawCastle(c) {
 
   if (spriteMode) ctx.restore();
   drawCastleSpriteLayer(c, x, y, r);
+  drawCastleFire(c, x, y, r);
   drawCastleGarrison(c, x, y, r, f.flag);
   drawCastleCommanderBadge(c, x, y, r);
 
@@ -20081,63 +20540,135 @@ function drawTower(cx_, baseY, w, h, f, big) {
   }
 }
 
-// 성에 직접 그리는 화염 (파티클 아님, 매 프레임 깜박임)
+function castleWallRatio(c) {
+  if (!c || !c.wallMax) return 1;
+  return Math.max(0, Math.min(1, c.wallHP / c.wallMax));
+}
+
+function castleFireIntensity(c) {
+  const ratio = castleWallRatio(c);
+  if (ratio > 0.5) return 0;
+  return Math.max(0.12, Math.min(1, (0.5 - ratio) / 0.5));
+}
+
+// 성에 직접 그리는 화염. HP 50% 이하부터 작게 시작해 성벽이 무너질수록 커진다.
 function drawCastleFire(c, x, y, r) {
+  const intensity = castleFireIntensity(c);
+  if (intensity <= 0) return;
+
+  const anchors = [
+    { x: -0.46, y: -1.12, s: 0.72 },
+    { x: 0.42, y: -1.08, s: 0.68 },
+    { x: 0.02, y: -1.35, s: 0.76 },
+    { x: -0.66, y: -0.35, s: 0.56 },
+    { x: 0.62, y: -0.28, s: 0.56 },
+    { x: -0.22, y: 0.16, s: 0.5 },
+    { x: 0.28, y: 0.12, s: 0.5 },
+  ];
+  if (!Array.isArray(c._fireSeeds) || c._fireSeeds.length < anchors.length) {
+    c._fireSeeds = anchors.map(() => Math.random() * 100);
+  }
+
   const t = performance.now() * 0.001;
-  const ratio = c.wallHP / c.wallMax; // 0~0.5
-  const intensity = 1 - ratio / 0.5; // 0~1 (낮을수록 강한 불)
-  const flameCount = 3 + Math.floor(intensity * 5);
-  if (c._fireSeeds === undefined) {
-    c._fireSeeds = [];
-    for (let i = 0; i < 8; i++) c._fireSeeds.push(Math.random() * 100);
-  }
-  for (let i = 0; i < flameCount; i++) {
+  const plumeCount = Math.max(2, Math.min(anchors.length, Math.ceil(2 + intensity * (anchors.length - 1))));
+  const glowR = r * (0.9 + intensity * 1.08);
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  const glow = ctx.createRadialGradient(x, y - r * 0.55, 0, x, y - r * 0.55, glowR);
+  glow.addColorStop(0, `rgba(255,190,54,${0.22 + intensity * 0.38})`);
+  glow.addColorStop(0.38, `rgba(232,74,18,${0.17 + intensity * 0.28})`);
+  glow.addColorStop(1, 'rgba(150,28,0,0)');
+  ctx.fillStyle = glow;
+  ctx.beginPath();
+  ctx.arc(x, y - r * 0.55, glowR, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  for (let i = 0; i < plumeCount; i++) {
+    const a = anchors[i];
     const seed = c._fireSeeds[i];
-    // 성 주위 둘러서 위치
-    const angle = (i / flameCount) * Math.PI * 2 + Math.PI;
-    const fx = x + Math.cos(angle) * r * 0.65;
-    const fy = y + Math.sin(angle) * r * 0.45 - r * 0.15;
-    // 깜박임
-    const flicker = 0.7 + Math.sin(t * 9 + seed) * 0.2 + Math.sin(t * 14 + seed * 1.7) * 0.1;
-    const h = r * 0.45 * flicker * (0.5 + intensity * 0.6);
-    drawFlame(fx, fy, h);
+    const wave = Math.sin(t * 2.2 + seed) * r * 0.035;
+    const lift = Math.sin(t * 1.35 + seed * 1.7) * r * 0.025;
+    const fx = x + a.x * r + wave;
+    const fy = y + a.y * r + lift;
+    const flicker = 0.84 + Math.sin(t * 9.5 + seed) * 0.16 + Math.sin(t * 16 + seed * 1.9) * 0.08;
+    const h = r * (0.28 + intensity * 0.64) * a.s * flicker;
+    const alpha = Math.min(0.97, 0.56 + intensity * 0.42);
+    if (intensity > 0.22 || i < 2) {
+      drawSmokePuff(fx + Math.sin(seed) * r * 0.08, fy - h * 1.55, h * (1.28 + intensity * 1.08), 0.22 + intensity * 0.34, seed + t);
+    }
+    drawFlame(fx, fy, h, { alpha, lean: Math.sin(t * 3.2 + seed) * 0.35 });
   }
-  // 큰 중앙 불 (성벽 0)
-  if (c.wallHP <= 0) {
-    const flicker = 0.85 + Math.sin(t * 7) * 0.15;
-    drawFlame(x, y - r * 0.1, r * 0.7 * flicker);
+
+  if (intensity > 0.36 || c.wallHP <= 0) {
+    const flicker = 0.9 + Math.sin(t * 8.5) * 0.12;
+    drawSmokePuff(x, y - r * 1.35, r * (0.84 + intensity * 0.72), 0.34 + intensity * 0.24, t);
+    drawFlame(x, y - r * 0.28, r * (0.5 + intensity * 0.58) * flicker, { alpha: 0.92, lean: Math.sin(t * 2.7) * 0.25 });
   }
 }
 
-function drawFlame(x, y, h) {
-  // 외곽 짙은 빨강
-  ctx.fillStyle = 'rgba(180,30,8,0.85)';
+function drawSmokePuff(x, y, size, alpha, phase) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.translate(x, y);
+  ctx.rotate(Math.sin(phase || 0) * 0.18);
+  const g = ctx.createRadialGradient(0, 0, 0, 0, 0, size);
+  g.addColorStop(0, 'rgba(36,30,25,0.64)');
+  g.addColorStop(0.58, 'rgba(64,54,44,0.26)');
+  g.addColorStop(1, 'rgba(32,26,22,0)');
+  ctx.fillStyle = g;
   ctx.beginPath();
-  ctx.moveTo(x, y);
-  ctx.bezierCurveTo(x - h*0.7, y - h*0.5, x - h*0.5, y - h*1.4, x, y - h*1.9);
-  ctx.bezierCurveTo(x + h*0.5, y - h*1.4, x + h*0.7, y - h*0.5, x, y);
+  ctx.ellipse(0, 0, size * 0.68, size * 0.42, 0, 0, Math.PI * 2);
   ctx.fill();
-  // 주황
-  ctx.fillStyle = 'rgba(255,130,30,0.92)';
+  ctx.restore();
+}
+
+function drawFlame(x, y, h, opts = {}) {
+  const alpha = opts.alpha == null ? 1 : opts.alpha;
+  const lean = opts.lean || 0;
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  ctx.globalAlpha = alpha;
+  ctx.translate(x, y);
+  ctx.rotate(lean * 0.08);
+
+  const glow = ctx.createRadialGradient(0, -h * 0.65, 0, 0, -h * 0.65, h * 1.1);
+  glow.addColorStop(0, 'rgba(255,222,92,0.34)');
+  glow.addColorStop(0.5, 'rgba(255,84,22,0.18)');
+  glow.addColorStop(1, 'rgba(150,24,0,0)');
+  ctx.fillStyle = glow;
   ctx.beginPath();
-  ctx.moveTo(x, y);
-  ctx.bezierCurveTo(x - h*0.5, y - h*0.4, x - h*0.35, y - h*1.1, x, y - h*1.55);
-  ctx.bezierCurveTo(x + h*0.35, y - h*1.1, x + h*0.5, y - h*0.4, x, y);
+  ctx.arc(0, -h * 0.62, h * 1.05, 0, Math.PI * 2);
   ctx.fill();
-  // 노랑
-  ctx.fillStyle = 'rgba(255,220,80,0.95)';
+
+  ctx.fillStyle = 'rgba(174,28,8,0.88)';
   ctx.beginPath();
-  ctx.moveTo(x, y - h*0.05);
-  ctx.bezierCurveTo(x - h*0.3, y - h*0.3, x - h*0.2, y - h*0.85, x, y - h*1.2);
-  ctx.bezierCurveTo(x + h*0.2, y - h*0.85, x + h*0.3, y - h*0.3, x, y - h*0.05);
+  ctx.moveTo(0, 0);
+  ctx.bezierCurveTo(-h * 0.48, -h * 0.42, -h * 0.34, -h * 1.22, lean * h * 0.15, -h * 1.78);
+  ctx.bezierCurveTo(h * 0.34, -h * 1.22, h * 0.52, -h * 0.42, 0, 0);
   ctx.fill();
-  // 가장 뜨거운 흰빛
-  ctx.fillStyle = 'rgba(255,250,200,0.7)';
+
+  ctx.fillStyle = 'rgba(255,118,26,0.94)';
   ctx.beginPath();
-  ctx.moveTo(x, y - h*0.2);
-  ctx.bezierCurveTo(x - h*0.13, y - h*0.35, x - h*0.1, y - h*0.7, x, y - h*0.85);
-  ctx.bezierCurveTo(x + h*0.1, y - h*0.7, x + h*0.13, y - h*0.35, x, y - h*0.2);
+  ctx.moveTo(0, -h * 0.02);
+  ctx.bezierCurveTo(-h * 0.34, -h * 0.34, -h * 0.22, -h * 1.0, lean * h * 0.08, -h * 1.42);
+  ctx.bezierCurveTo(h * 0.23, -h * 0.96, h * 0.36, -h * 0.34, 0, -h * 0.02);
   ctx.fill();
+
+  ctx.fillStyle = 'rgba(255,226,96,0.96)';
+  ctx.beginPath();
+  ctx.moveTo(0, -h * 0.08);
+  ctx.bezierCurveTo(-h * 0.19, -h * 0.32, -h * 0.12, -h * 0.82, lean * h * 0.06, -h * 1.08);
+  ctx.bezierCurveTo(h * 0.14, -h * 0.78, h * 0.2, -h * 0.32, 0, -h * 0.08);
+  ctx.fill();
+
+  ctx.fillStyle = 'rgba(255,252,205,0.72)';
+  ctx.beginPath();
+  ctx.moveTo(0, -h * 0.22);
+  ctx.bezierCurveTo(-h * 0.08, -h * 0.42, -h * 0.05, -h * 0.68, lean * h * 0.03, -h * 0.82);
+  ctx.bezierCurveTo(h * 0.06, -h * 0.64, h * 0.08, -h * 0.42, 0, -h * 0.22);
+  ctx.fill();
+  ctx.restore();
 }
 
 function drawOctagon(x, y, r) {
@@ -20190,6 +20721,318 @@ function drawMenu(c) {
     ctx.fillText(cnt, ip.x, ip.y + 14*DPR());
     ctx.textBaseline = 'alphabetic';
   }
+}
+
+function battleAtmosphereRand(n) {
+  const x = Math.sin((n + 1) * 12.9898 + 78.233) * 43758.5453;
+  return x - Math.floor(x);
+}
+
+function chooseInitialBattleAtmosphere() {
+  const st = STAGES[currentStage];
+  if (st && st.isTutorial) return 'clear';
+  const localStage = ((currentStage % 20) + 1);
+  const ch = (typeof campaignChapterForIndex === 'function') ? campaignChapterForIndex(currentStage) : 1;
+  const r = battleAtmosphereRand(currentStage * 17 + ch * 31 + Date.now() * 0.0001);
+  if (localStage === 20) return r < 0.45 ? 'dusk' : (r < 0.7 ? 'night' : 'rain');
+  if (localStage % 7 === 0) return r < 0.5 ? 'rain' : 'dusk';
+  if (ch >= 3 && localStage % 5 === 0) return r < 0.45 ? 'snow' : 'dusk';
+  if (r < 0.34) return 'clear';
+  if (r < 0.55) return 'dusk';
+  if (r < 0.75) return 'rain';
+  if (r < 0.9) return 'snow';
+  return 'night';
+}
+
+function pickNextBattleAtmosphere(cur) {
+  const table = {
+    clear: { clear: 0.22, dusk: 0.34, rain: 0.23, snow: 0.14, night: 0.07 },
+    dusk:  { clear: 0.32, dusk: 0.16, rain: 0.16, snow: 0.08, night: 0.28 },
+    rain:  { clear: 0.42, dusk: 0.26, rain: 0.16, snow: 0.08, night: 0.08 },
+    snow:  { clear: 0.44, dusk: 0.22, rain: 0.08, snow: 0.18, night: 0.08 },
+    night: { clear: 0.48, dusk: 0.28, rain: 0.12, snow: 0.06, night: 0.06 },
+  }[cur] || { clear: 1 };
+  let r = Math.random(), acc = 0;
+  for (const k in table) {
+    acc += table[k];
+    if (r <= acc) return k;
+  }
+  return 'clear';
+}
+
+function scheduleBattleAtmosphereShift(first) {
+  const base = first ? 34 : 58;
+  const span = first ? 26 : 54;
+  battleAtmosphere.nextAt = battleAtmosphere.elapsed + base + Math.random() * span;
+}
+
+function resetBattleAtmosphere() {
+  const a = battleAtmosphere;
+  a.enabled = true;
+  a.mode = chooseInitialBattleAtmosphere();
+  a.next = null;
+  a.transition = 1;
+  a.transitionDur = 22;
+  a.elapsed = 0;
+  a.seed = Math.floor(Math.random() * 100000) + currentStage * 97 + 1;
+  a.rain = [];
+  a.snow = [];
+  a.w = 0;
+  a.h = 0;
+  scheduleBattleAtmosphereShift(true);
+}
+
+function ensureBattleAtmosphereParticles() {
+  const a = battleAtmosphere;
+  const cw = canvas.width, ch = canvas.height;
+  if (a.w === cw && a.h === ch && a.rain.length && a.snow.length) return;
+  a.w = cw;
+  a.h = ch;
+  const dpr = DPR();
+  const area = Math.max(1, cw * ch);
+  const rainN = Math.max(110, Math.min(280, Math.round(area / 7200)));
+  const snowN = Math.max(70, Math.min(170, Math.round(area / 12000)));
+  a.rain = [];
+  a.snow = [];
+  for (let i = 0; i < rainN; i++) {
+    a.rain.push({
+      x: Math.random() * cw,
+      y: Math.random() * ch,
+      len: (14 + Math.random() * 22) * dpr,
+      vx: (-180 - Math.random() * 120) * dpr,
+      vy: (760 + Math.random() * 520) * dpr,
+      a: 0.22 + Math.random() * 0.3,
+      splash: Math.random(),
+    });
+  }
+  for (let i = 0; i < snowN; i++) {
+    a.snow.push({
+      x: Math.random() * cw,
+      y: Math.random() * ch,
+      r: (1.1 + Math.random() * 2.4) * dpr,
+      vx: (-18 + Math.random() * 36) * dpr,
+      vy: (38 + Math.random() * 76) * dpr,
+      sway: (10 + Math.random() * 24) * dpr,
+      ph: Math.random() * Math.PI * 2,
+      spin: 0.6 + Math.random() * 1.2,
+      a: 0.42 + Math.random() * 0.42,
+    });
+  }
+}
+
+function updateBattleAtmosphere(dt) {
+  const a = battleAtmosphere;
+  if (!a.enabled) return;
+  ensureBattleAtmosphereParticles();
+  a.elapsed += dt;
+  if (a.next) {
+    a.transition = Math.min(1, a.transition + dt / a.transitionDur);
+    if (a.transition >= 1) {
+      a.mode = a.next;
+      a.next = null;
+      a.transition = 1;
+      scheduleBattleAtmosphereShift(false);
+    }
+  } else if (a.elapsed >= a.nextAt) {
+    a.next = pickNextBattleAtmosphere(a.mode);
+    a.transition = 0;
+    a.transitionDur = 22 + Math.random() * 16;
+  }
+
+  const cw = canvas.width, ch = canvas.height;
+  for (const d of a.rain) {
+    d.x += d.vx * dt;
+    d.y += d.vy * dt;
+    d.splash += dt * 5.5;
+    if (d.y > ch + d.len) { d.y = -d.len; d.x = Math.random() * cw + cw * 0.12; }
+    if (d.x < -d.len) d.x = cw + d.len;
+  }
+  for (const f of a.snow) {
+    f.ph += dt * f.spin;
+    f.x += f.vx * dt;
+    f.y += f.vy * dt;
+    if (f.y > ch + 12 * DPR()) { f.y = -12 * DPR(); f.x = Math.random() * cw; }
+    if (f.x < -20 * DPR()) f.x = cw + 20 * DPR();
+    if (f.x > cw + 20 * DPR()) f.x = -20 * DPR();
+  }
+}
+
+function battleAtmosphereWeights() {
+  const a = battleAtmosphere;
+  const w = { clear: 0, dusk: 0, rain: 0, snow: 0, night: 0 };
+  if (a.next) {
+    const t = a.transition * a.transition * (3 - 2 * a.transition);
+    w[a.mode] = 1 - t;
+    w[a.next] = (w[a.next] || 0) + t;
+  } else {
+    w[a.mode] = 1;
+  }
+  return w;
+}
+
+function drawDuskAtmosphere(cw, ch, alpha) {
+  if (alpha <= 0) return;
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  let g = ctx.createRadialGradient(cw * 0.18, ch * 0.18, 0, cw * 0.18, ch * 0.18, Math.max(cw, ch) * 0.82);
+  g.addColorStop(0, `rgba(255,214,118,${0.22 * alpha})`);
+  g.addColorStop(0.34, `rgba(255,162,74,${0.11 * alpha})`);
+  g.addColorStop(1, 'rgba(255,150,70,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, cw, ch);
+  ctx.globalCompositeOperation = 'source-over';
+  g = ctx.createLinearGradient(0, 0, cw, ch);
+  g.addColorStop(0, `rgba(255,232,150,${0.04 * alpha})`);
+  g.addColorStop(0.52, `rgba(30,35,55,${0.06 * alpha})`);
+  g.addColorStop(1, `rgba(18,22,42,${0.15 * alpha})`);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, cw, ch);
+  ctx.globalCompositeOperation = 'screen';
+  ctx.strokeStyle = `rgba(255,220,130,${0.07 * alpha})`;
+  ctx.lineWidth = 2.2 * DPR();
+  for (let i = 0; i < 6; i++) {
+    const y = ch * (0.08 + i * 0.105);
+    ctx.beginPath();
+    ctx.moveTo(-cw * 0.08, y);
+    ctx.lineTo(cw * 0.82, y + ch * (0.18 + i * 0.018));
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawNightAtmosphere(cw, ch, alpha) {
+  if (alpha <= 0) return;
+  ctx.save();
+  ctx.globalCompositeOperation = 'source-over';
+  let g = ctx.createLinearGradient(0, 0, cw, ch);
+  g.addColorStop(0, `rgba(20,42,75,${0.1 * alpha})`);
+  g.addColorStop(0.45, `rgba(8,18,42,${0.14 * alpha})`);
+  g.addColorStop(1, `rgba(4,8,24,${0.24 * alpha})`);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, cw, ch);
+  ctx.globalCompositeOperation = 'screen';
+  g = ctx.createRadialGradient(cw * 0.24, ch * 0.12, 0, cw * 0.24, ch * 0.12, Math.max(cw, ch) * 0.5);
+  g.addColorStop(0, `rgba(185,220,255,${0.14 * alpha})`);
+  g.addColorStop(0.45, `rgba(80,140,210,${0.05 * alpha})`);
+  g.addColorStop(1, 'rgba(80,140,210,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, cw, ch);
+  ctx.restore();
+}
+
+function drawRainAtmosphere(cw, ch, alpha) {
+  if (alpha <= 0) return;
+  ctx.save();
+  ctx.globalCompositeOperation = 'source-over';
+  const g = ctx.createLinearGradient(0, 0, cw, ch);
+  g.addColorStop(0, `rgba(30,54,78,${0.08 * alpha})`);
+  g.addColorStop(1, `rgba(8,18,34,${0.18 * alpha})`);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, cw, ch);
+  ctx.restore();
+}
+
+function drawSnowAtmosphere(cw, ch, alpha) {
+  if (alpha <= 0) return;
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  const g = ctx.createLinearGradient(0, 0, cw, ch);
+  g.addColorStop(0, `rgba(220,238,255,${0.11 * alpha})`);
+  g.addColorStop(0.7, `rgba(160,195,230,${0.05 * alpha})`);
+  g.addColorStop(1, 'rgba(160,195,230,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, cw, ch);
+  ctx.restore();
+}
+
+function drawBattlePrecipitation(weights, cw, ch) {
+  const rainA = Math.min(1, weights.rain || 0);
+  const snowA = Math.min(1, weights.snow || 0);
+  if (rainA > 0.02) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    ctx.lineCap = 'round';
+    ctx.lineWidth = Math.max(1, 1.25 * DPR());
+    for (const d of battleAtmosphere.rain) {
+      ctx.strokeStyle = `rgba(178,210,255,${d.a * rainA})`;
+      ctx.beginPath();
+      ctx.moveTo(d.x, d.y);
+      ctx.lineTo(d.x + d.vx * 0.034, d.y + d.len);
+      ctx.stroke();
+      if (d.splash % 1 < 0.11 && d.y > ch * 0.35) {
+        ctx.globalAlpha = 0.16 * rainA;
+        ctx.strokeStyle = '#d8ecff';
+        ctx.beginPath();
+        ctx.ellipse(d.x, d.y, 5 * DPR(), 1.4 * DPR(), 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+    }
+    ctx.restore();
+  }
+  if (snowA > 0.02) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    for (const f of battleAtmosphere.snow) {
+      const x = f.x + Math.sin(f.ph) * f.sway;
+      const r = f.r * (0.82 + 0.18 * Math.sin(f.ph * 1.7));
+      ctx.fillStyle = `rgba(255,255,255,${f.a * snowA})`;
+      ctx.beginPath();
+      ctx.arc(x, f.y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+function drawBattlePulseOverlay(cw, ch, dt) {
+  if (battlePulse <= 0) return;
+  const pulse = Math.min(1, battlePulse);
+  const g = ctx.createRadialGradient(cw * 0.5, ch * 0.54, 0, cw * 0.5, ch * 0.54, Math.max(cw, ch) * 0.68);
+  g.addColorStop(0, `rgba(255,228,126,${0.08 * pulse})`);
+  g.addColorStop(0.52, `rgba(255,126,48,${0.06 * pulse})`);
+  g.addColorStop(1, `rgba(120,18,8,${0.13 * pulse})`);
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, cw, ch);
+  ctx.restore();
+  battlePulse = Math.max(0, battlePulse - (dt || 0.016) * 1.8);
+}
+
+function drawBattleAtmosphere(dt) {
+  if (!battleAtmosphere.enabled) return;
+  updateBattleAtmosphere(dt || 0.016);
+  const cw = canvas.width, ch = canvas.height;
+  const weights = battleAtmosphereWeights();
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+
+  drawDuskAtmosphere(cw, ch, weights.dusk || 0);
+  drawNightAtmosphere(cw, ch, weights.night || 0);
+  drawRainAtmosphere(cw, ch, weights.rain || 0);
+  drawSnowAtmosphere(cw, ch, weights.snow || 0);
+
+  const dark = 0.13
+    + (weights.night || 0) * 0.16
+    + (weights.rain || 0) * 0.07
+    + (weights.snow || 0) * 0.03
+    + (weights.dusk || 0) * 0.04;
+  const vg = ctx.createRadialGradient(cw * 0.5, ch * 0.5, Math.min(cw, ch) * 0.34, cw * 0.5, ch * 0.5, Math.max(cw, ch) * 0.72);
+  vg.addColorStop(0, 'rgba(0,0,0,0)');
+  vg.addColorStop(1, `rgba(0,0,0,${Math.min(0.32, dark)})`);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = vg;
+  ctx.fillRect(0, 0, cw, ch);
+
+  drawBattlePrecipitation(weights, cw, ch);
+  drawBattlePulseOverlay(cw, ch, dt || 0.016);
+
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.restore();
 }
 
 function render(dt) {
@@ -20549,7 +21392,8 @@ function render(dt) {
   }
   drawSpeeches();
 
-  // 구름 제거 (너무 정신 없음)
+  // 전장 분위기: 노을/비/눈/밤은 전장 위에, 미니맵과 경고 UI는 그 위에 다시 그린다.
+  drawBattleAtmosphere(dt);
 
   ctx.restore();
 
@@ -20602,37 +21446,6 @@ function render(dt) {
     if (_elapsed < 90) _t.style.color = '#7fff7a';
     else if (_elapsed < 180) _t.style.color = '#ffd23f';
     else _t.style.color = '#fff';
-  }
-  // === 분위기 오버레이 (sky + vignette) ===
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  if (typeof window._dayTime !== 'number') window._dayTime = 0;
-  window._dayTime = (window._dayTime + (dt || 0.016) * 0.01) % 1;
-  const _dt2 = window._dayTime;
-  const _cw = canvas.width, _ch = canvas.height;
-  if (_dt2 < 0.3) {
-    const _g1 = ctx.createRadialGradient(_cw*0.5, _ch*0.2, 0, _cw*0.5, _ch*0.5, Math.max(_cw,_ch));
-    _g1.addColorStop(0, 'rgba(255,170,120,0.15)'); _g1.addColorStop(1, 'rgba(255,150,180,0.05)');
-    ctx.globalCompositeOperation = 'overlay'; ctx.fillStyle = _g1; ctx.fillRect(0,0,_cw,_ch);
-  } else if (_dt2 >= 0.7) {
-    const _g2 = ctx.createRadialGradient(_cw*0.5, _ch*0.7, 0, _cw*0.5, _ch*0.5, Math.max(_cw,_ch));
-    _g2.addColorStop(0, 'rgba(255,90,60,0.20)'); _g2.addColorStop(1, 'rgba(120,60,140,0.20)');
-    ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = _g2; ctx.fillRect(0,0,_cw,_ch);
-  }
-  ctx.globalCompositeOperation = 'source-over';
-  const _vg = ctx.createRadialGradient(_cw*0.5, _ch*0.5, Math.min(_cw,_ch)*0.35, _cw*0.5, _ch*0.5, Math.max(_cw,_ch)*0.7);
-  _vg.addColorStop(0, 'rgba(0,0,0,0)'); _vg.addColorStop(1, 'rgba(0,0,0,0.15)');
-  ctx.fillStyle = _vg; ctx.fillRect(0,0,_cw,_ch);
-  if (battlePulse > 0) {
-    const pulse = Math.min(1, battlePulse);
-    const _bp = ctx.createRadialGradient(_cw * 0.5, _ch * 0.54, 0, _cw * 0.5, _ch * 0.54, Math.max(_cw, _ch) * 0.68);
-    _bp.addColorStop(0, `rgba(255,220,90,${0.04 * pulse})`);
-    _bp.addColorStop(0.55, `rgba(180,34,22,${0.05 * pulse})`);
-    _bp.addColorStop(1, `rgba(70,0,0,${0.18 * pulse})`);
-    ctx.globalCompositeOperation = 'screen';
-    ctx.fillStyle = _bp;
-    ctx.fillRect(0, 0, _cw, _ch);
-    ctx.globalCompositeOperation = 'source-over';
-    battlePulse = Math.max(0, battlePulse - (dt || 0.016) * 1.8);
   }
   // 다음 프레임을 깨끗하게: transform/composite/alpha 강제 리셋
   ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -20750,6 +21563,7 @@ function drawMinimap() {
     ctx.beginPath(); ctx.arc(px, py, (3.5 + 1.5 * c.size) * DPR(), 0, Math.PI*2);
     ctx.fill(); ctx.stroke();
   }
+  drawMinimapAlerts();
   // 카메라 viewport 사각형
   const wW = worldPxW(), wH = worldPxH();
   const vx = MM.x + (camX - W/(2*zoom)) / wW * MM.w;
@@ -21471,31 +22285,57 @@ function closeTutorialOffer(accept) {
     }
   }
 
-  /* Main title logo: app-name treatment, rendered as a stable image asset. */
+  /* Main title logo: app-name treatment. */
   #menu.menu-fresh .home-title {
     left: 50% !important;
     right: auto !important;
     top: clamp(46px, 6.3dvh, 68px) !important;
     width: min(94vw, 420px) !important;
-    height: auto !important;
-    aspect-ratio: 980 / 330 !important;
+    height: 126px !important;
     transform: translateX(-50%) !important;
-    display: block !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     padding: 0 !important;
     margin: 0 !important;
     overflow: visible !important;
-    background: url('./assets/ui/main_title_logo.png') center / contain no-repeat !important;
-    color: transparent !important;
-    font-size: 0 !important;
-    line-height: 0 !important;
+    background: none !important;
+    color: #ffd45f !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: clamp(32px, 9.3vw, 43px) !important;
+    font-weight: 900 !important;
+    line-height: 0.92 !important;
     letter-spacing: 0 !important;
-    text-indent: -9999px !important;
-    text-shadow: none !important;
-    -webkit-text-stroke: 0 transparent !important;
-    paint-order: normal !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    text-indent: 0 !important;
+    z-index: 3 !important;
+    isolation: isolate !important;
+    text-shadow:
+      0 3px 0 #5b2605,
+      0 6px 0 rgba(20,8,2,0.86),
+      0 15px 24px rgba(0,0,0,0.58),
+      0 0 22px rgba(255,199,72,0.34) !important;
+    -webkit-text-stroke: 2px #241406 !important;
+    paint-order: stroke fill !important;
     filter: drop-shadow(0 0 12px rgba(255, 207, 72, 0.18)) !important;
   }
-  #menu.menu-fresh .home-title::before,
+  #menu.menu-fresh .home-title::before {
+    content: "" !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 58% !important;
+    width: min(82vw, 350px) !important;
+    height: 54px !important;
+    transform: translate(-50%, -50%) skewX(-7deg) !important;
+    border-radius: 16px 8px !important;
+    background:
+      linear-gradient(90deg, rgba(70,0,0,0), #7a0710 12%, #b01618 50%, #7a0710 88%, rgba(70,0,0,0)) !important;
+    border-top: 3px solid rgba(255,216,92,0.82) !important;
+    border-bottom: 3px solid rgba(66,18,5,0.9) !important;
+    box-shadow: 0 10px 16px rgba(0,0,0,0.48) !important;
+    z-index: -1 !important;
+  }
   #menu.menu-fresh .home-title::after {
     content: none !important;
     display: none !important;
@@ -21504,6 +22344,45 @@ function closeTutorialOffer(accept) {
     #menu.menu-fresh .home-title {
       top: clamp(52px, 7.4dvh, 72px) !important;
       width: min(93vw, 382px) !important;
+      height: 112px !important;
+      font-size: clamp(28px, 7.8vw, 33px) !important;
+    }
+  }
+
+  /* Main bottom fill pass: keep the lower art readable on phones instead of fading to black. */
+  #menu.menu-fresh {
+    background: #0b0710 !important;
+  }
+  #menu.menu-fresh > .main-bg {
+    min-height: 100svh !important;
+    height: 100vh !important;
+    height: 100svh !important;
+    height: 100dvh !important;
+    background:
+      radial-gradient(ellipse 78% 24% at 50% 92%, rgba(255, 166, 42, 0.22), transparent 72%),
+      linear-gradient(180deg,
+        rgba(5,8,14,0.00) 0%,
+        rgba(5,8,14,0.02) 50%,
+        rgba(5,8,14,0.16) 78%,
+        rgba(5,8,14,0.42) 100%),
+      url('./assets/main_hero_moonlit_navy_bgonly_02.png') center top / cover no-repeat !important;
+  }
+  #menu.menu-fresh .start-btn {
+    bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 4.8dvh)) !important;
+  }
+  @media (max-width: 390px), (max-height: 760px) {
+    #menu.menu-fresh .start-btn {
+      bottom: max(18px, calc(env(safe-area-inset-bottom, 0px) + 3.4dvh)) !important;
+      width: min(82%, 350px) !important;
+      height: 68px !important;
+    }
+    #menu.menu-fresh .side-rail {
+      top: 49% !important;
+      gap: 6px !important;
+    }
+    #menu.menu-fresh .side-rail-btn {
+      width: 52px !important;
+      height: 52px !important;
     }
   }
 
@@ -22713,7 +23592,7 @@ function closeTutorialOffer(accept) {
     top: 49% !important;
     width: 88px !important;
     height: 88px !important;
-    transform: translate(-50%, -50%) rotate(-10deg) !important;
+    transform: translate(-50%, -50%) rotate(-10deg);
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -22724,16 +23603,48 @@ function closeTutorialOffer(accept) {
     box-shadow:
       0 0 24px rgba(255, 76, 35, 0.32),
       inset 0 0 18px rgba(255, 216, 99, 0.13) !important;
-    color: rgba(255, 226, 146, 0.24) !important;
+    color: rgba(255, 235, 162, 0.58) !important;
     font-family: 'Noto Serif KR', serif !important;
     font-size: 21px !important;
     font-weight: 900 !important;
     letter-spacing: 2px !important;
+    text-shadow:
+      0 2px 0 rgba(0,0,0,0.82),
+      0 0 14px rgba(255, 207, 86, 0.42) !important;
     pointer-events: none !important;
+    z-index: 2 !important;
+    animation: idgSealPulse 1.36s ease-in-out infinite !important;
+    will-change: transform, filter, box-shadow !important;
+  }
+  #introDialog.enemy-speaking::after {
+    border-color: rgba(255, 89, 56, 0.82) !important;
+    box-shadow:
+      0 0 36px rgba(255, 62, 34, 0.56),
+      0 0 72px rgba(255, 62, 34, 0.22),
+      inset 0 0 20px rgba(255, 216, 99, 0.18) !important;
+    color: rgba(255, 200, 142, 0.78) !important;
+  }
+  #introDialog.player-speaking::after {
+    border-color: rgba(72, 198, 255, 0.9) !important;
+    box-shadow:
+      0 0 36px rgba(72, 198, 255, 0.56),
+      0 0 72px rgba(72, 198, 255, 0.22),
+      inset 0 0 20px rgba(255, 235, 154, 0.18) !important;
+    color: rgba(215, 243, 255, 0.82) !important;
   }
   @keyframes idgWarDrift {
     from { background-position: 0 0, 0 0, center; }
     to { background-position: 0 0, -42px 0, center; }
+  }
+  @keyframes idgSealPulse {
+    0%, 100% {
+      transform: translate(-50%, -50%) rotate(-10deg) scale(0.96);
+      filter: brightness(0.9) saturate(1.05);
+    }
+    48% {
+      transform: translate(-50%, -50%) rotate(-10deg) scale(1.08);
+      filter: brightness(1.35) saturate(1.22);
+    }
   }
   #introDialog .idg-stage {
     max-width: 520px !important;
@@ -22752,6 +23663,50 @@ function closeTutorialOffer(accept) {
     background: linear-gradient(180deg, transparent, rgba(255, 219, 99, 0.58), transparent) !important;
     box-shadow: 0 0 18px rgba(255, 80, 35, 0.55) !important;
     pointer-events: none !important;
+  }
+  #introDialog .idg-stage::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 49% !important;
+    width: 132px !important;
+    height: 132px !important;
+    transform: translate(-50%, -50%) rotate(-10deg) scale(0.76);
+    border: 2px dashed rgba(255, 216, 99, 0.52) !important;
+    border-radius: 50% !important;
+    box-shadow:
+      0 0 22px rgba(255, 80, 35, 0.28),
+      inset 0 0 18px rgba(255, 216, 99, 0.14) !important;
+    opacity: 0.72;
+    pointer-events: none !important;
+    z-index: 1 !important;
+    animation: idgSealRing 1.6s ease-out infinite !important;
+  }
+  #introDialog.enemy-speaking .idg-stage::after {
+    border-color: rgba(255, 89, 56, 0.62) !important;
+    box-shadow:
+      0 0 28px rgba(255, 62, 34, 0.42),
+      inset 0 0 18px rgba(255, 216, 99, 0.15) !important;
+  }
+  #introDialog.player-speaking .idg-stage::after {
+    border-color: rgba(72, 198, 255, 0.68) !important;
+    box-shadow:
+      0 0 28px rgba(72, 198, 255, 0.42),
+      inset 0 0 18px rgba(255, 235, 154, 0.15) !important;
+  }
+  @keyframes idgSealRing {
+    0% {
+      transform: translate(-50%, -50%) rotate(-10deg) scale(0.62);
+      opacity: 0.78;
+    }
+    62% {
+      transform: translate(-50%, -50%) rotate(-10deg) scale(1.03);
+      opacity: 0.32;
+    }
+    100% {
+      transform: translate(-50%, -50%) rotate(-10deg) scale(1.28);
+      opacity: 0;
+    }
   }
   #introDialog .idg-portrait {
     position: absolute !important;
@@ -23549,13 +24504,13 @@ function closeTutorialOffer(accept) {
     letter-spacing: 0 !important;
     text-shadow: 0 2px 0 rgba(0,0,0,0.56) !important;
   }
-  #enhanceScreen #enhPvLevel .enh-level-duel {
-    width: 100% !important;
-    display: grid !important;
-    grid-template-columns: minmax(44px, 0.82fr) 20px minmax(58px, 1.18fr) !important;
-    align-items: center !important;
-    gap: 6px !important;
-  }
+	  #enhanceScreen #enhPvLevel .enh-level-duel {
+	    width: 100% !important;
+	    display: grid !important;
+	    grid-template-columns: minmax(48px, 0.82fr) 22px minmax(64px, 1.18fr) !important;
+	    align-items: center !important;
+	    gap: 6px !important;
+	  }
   #enhanceScreen #enhPvLevel .enh-lv-medal {
     min-width: 0 !important;
     height: 46px !important;
@@ -23585,11 +24540,11 @@ function closeTutorialOffer(accept) {
       0 5px 10px rgba(0,0,0,0.18) !important;
     animation: enh-next-medal-pulse 1.22s ease-in-out infinite !important;
   }
-  #enhanceScreen #enhPvLevel .enh-lv-medal.next {
-    height: 54px !important;
-    margin-right: 1px !important;
-    padding-top: 5px !important;
-  }
+	  #enhanceScreen #enhPvLevel .enh-lv-medal.next {
+	    height: 60px !important;
+	    margin-right: 1px !important;
+	    padding-top: 5px !important;
+	  }
   #enhanceScreen #enhPvLevel .enh-lv-medal.next::after {
     content: "" !important;
     position: absolute !important;
@@ -23609,24 +24564,24 @@ function closeTutorialOffer(accept) {
   #enhanceScreen #enhPvLevel .enh-lv-medal.next small {
     color: rgba(58, 31, 4, 0.72) !important;
   }
-  #enhanceScreen #enhPvLevel .enh-lv-medal b {
-    color: #fff4ca !important;
-    font-size: 17px !important;
+	  #enhanceScreen #enhPvLevel .enh-lv-medal b {
+	    color: #fff4ca !important;
+	    font-size: 19px !important;
     font-weight: 900 !important;
     line-height: 1 !important;
     letter-spacing: 0 !important;
     white-space: nowrap !important;
     text-shadow: 0 2px 0 rgba(0,0,0,0.52) !important;
   }
-  #enhanceScreen #enhPvLevel .enh-lv-medal.next b {
-    color: #3a1a04 !important;
-    font-size: 22px !important;
+	  #enhanceScreen #enhPvLevel .enh-lv-medal.next b {
+	    color: #3a1a04 !important;
+	    font-size: 27px !important;
     text-shadow: 0 1px 0 rgba(255,245,190,0.58) !important;
     animation: enh-next-lv-pop 1.22s ease-in-out infinite !important;
   }
-  #enhanceScreen #enhPvLevel .enh-level-duel i {
-    color: #79d6ff !important;
-    font-size: 16px !important;
+	  #enhanceScreen #enhPvLevel .enh-level-duel i {
+	    color: #79d6ff !important;
+	    font-size: 22px !important;
     font-style: normal !important;
     font-weight: 900 !important;
     line-height: 1 !important;
@@ -23707,10 +24662,138 @@ function closeTutorialOffer(accept) {
     font-size: 22px !important;
     letter-spacing: 0 !important;
   }
-  #enhanceScreen #enhPvSuccess.enh-pv-line.is-live-rate b {
-    animation: enh-success-rate-pulse 1.05s ease-in-out infinite !important;
-  }
-  @keyframes enh-next-medal-pulse {
+	  #enhanceScreen #enhPvSuccess.enh-pv-line.is-live-rate b {
+	    animation: enh-success-rate-pulse 1.05s ease-in-out infinite !important;
+	  }
+		  #enhanceScreen #enhPvSuccess.enh-pv-line {
+		    min-height: 72px !important;
+		    padding: 7px !important;
+		    display: block !important;
+		    align-self: stretch !important;
+		    overflow: hidden !important;
+		  }
+		  #enhanceScreen #enhPvSuccess .enh-stat-preview {
+		    width: 100% !important;
+		    min-width: 0 !important;
+		    height: 100% !important;
+		    display: grid !important;
+		    grid-template-rows: auto minmax(0, 1fr) !important;
+		    gap: 5px !important;
+		    overflow: hidden !important;
+		  }
+		  #enhanceScreen #enhPvSuccess .enh-stat-preview-head {
+		    width: 100% !important;
+		    min-width: 0 !important;
+		    display: grid !important;
+		    grid-template-columns: minmax(0, 1fr) 48px !important;
+		    align-items: center !important;
+		    gap: 2px !important;
+		    padding: 0 2px !important;
+		    min-height: 12px !important;
+		    overflow: hidden !important;
+		  }
+		  #enhanceScreen #enhPvSuccess .enh-stat-preview-head span {
+		    width: auto !important;
+		    min-width: 0 !important;
+		    color: rgba(121,214,255,0.88) !important;
+		    font-size: 9.5px !important;
+		    font-weight: 900 !important;
+		    line-height: 1 !important;
+		    text-align: left !important;
+		    white-space: nowrap !important;
+		    overflow: hidden !important;
+		    text-overflow: ellipsis !important;
+		    text-shadow: none !important;
+		  }
+		  #enhanceScreen #enhPvSuccess .enh-stat-preview-head b {
+		    width: 48px !important;
+		    min-width: 0 !important;
+		    justify-self: end !important;
+		    color: #ffe58c !important;
+		    font-size: 9.5px !important;
+		    font-weight: 900 !important;
+		    line-height: 1 !important;
+		    white-space: nowrap !important;
+		    overflow: hidden !important;
+		    text-overflow: clip !important;
+		    text-align: right !important;
+		    text-shadow: 0 1px 0 rgba(0,0,0,0.50) !important;
+		    animation: none !important;
+		  }
+		  #enhanceScreen #enhPvSuccess .enh-stat-rows {
+		    min-width: 0 !important;
+		    display: grid !important;
+		    grid-template-columns: 1fr !important;
+		    gap: 4px !important;
+		    overflow: hidden !important;
+		  }
+		  #enhanceScreen #enhPvSuccess .enh-stat-row {
+		    box-sizing: border-box !important;
+		    min-width: 0 !important;
+		    min-height: 23px !important;
+		    padding: 0 4px !important;
+		    display: grid !important;
+		    grid-template-columns: 28px 28px 10px 30px !important;
+		    align-items: center !important;
+		    gap: 2px !important;
+		    border-radius: 8px !important;
+		    background: rgba(5, 9, 16, 0.42) !important;
+		    border: 1px solid rgba(255,255,255,0.08) !important;
+		    overflow: hidden !important;
+		  }
+		  #enhanceScreen #enhPvSuccess .enh-stat-row span {
+		    width: auto !important;
+		    min-width: 0 !important;
+		    color: rgba(231,240,255,0.72) !important;
+		    font-size: 9px !important;
+		    font-weight: 900 !important;
+		    text-align: left !important;
+		    white-space: nowrap !important;
+		    overflow: hidden !important;
+		  }
+		  #enhanceScreen #enhPvSuccess .enh-stat-row b,
+		  #enhanceScreen #enhPvSuccess .enh-stat-row strong {
+		    width: 100% !important;
+		    min-width: 0 !important;
+		    display: block !important;
+		    font-size: 10px !important;
+		    font-weight: 900 !important;
+		    line-height: 1 !important;
+		    text-align: center !important;
+		    white-space: nowrap !important;
+		    overflow: hidden !important;
+		    animation: none !important;
+		  }
+	  #enhanceScreen #enhPvSuccess .enh-stat-row b {
+	    color: rgba(231,240,255,0.70) !important;
+	    text-shadow: none !important;
+	  }
+	  #enhanceScreen #enhPvSuccess .enh-stat-row i {
+	    color: #79d6ff !important;
+	    font-size: 11px !important;
+	    font-style: normal !important;
+	    font-weight: 900 !important;
+	    text-align: center !important;
+	    text-shadow: 0 0 8px rgba(121,214,255,0.26) !important;
+	  }
+	  #enhanceScreen #enhPvSuccess .enh-stat-row strong {
+	    color: #fff0a8 !important;
+	    text-shadow:
+	      0 1px 0 rgba(0,0,0,0.62),
+	      0 0 10px rgba(255,210,76,0.35) !important;
+	  }
+	  #enhanceScreen #enhPvSuccess .enh-stat-note {
+	    min-height: 36px !important;
+	    display: flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    color: rgba(255,239,185,0.76) !important;
+	    font-size: 10px !important;
+	    font-weight: 900 !important;
+	    line-height: 1.2 !important;
+	    text-align: center !important;
+	  }
+	  @keyframes enh-next-medal-pulse {
     0%, 100% {
       transform: translateY(0) scale(1);
       filter: brightness(1) saturate(1);
@@ -23751,9 +24834,9 @@ function closeTutorialOffer(accept) {
       filter: brightness(1.18);
     }
   }
-  .formation-slot .slot-x {
-    top: -7px !important;
-    right: -7px !important;
+	  .formation-slot .slot-x {
+	    top: -7px !important;
+	    right: -7px !important;
     z-index: 8 !important;
     width: 22px !important;
     height: 22px !important;
@@ -23771,12 +24854,36 @@ function closeTutorialOffer(accept) {
   .formation-slot.filled {
     overflow: visible !important;
   }
-  .formation-slot.filled img,
-  .formation-slot.filled .slot-name {
-    border-radius: inherit !important;
-  }
+	  .formation-slot.filled img,
+	  .formation-slot.filled .slot-name {
+	    border-radius: inherit !important;
+	  }
+	  .formation-slot .slot-rank {
+	    z-index: 9 !important;
+	    min-width: 15px !important;
+	    height: 15px !important;
+	    display: flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    border-radius: 999px !important;
+	    background: rgba(8,16,34,0.72) !important;
+	    border: 1px solid rgba(255,255,255,0.26) !important;
+	    line-height: 1 !important;
+	  }
+	  .formation-slot .rarity-badge {
+	    top: 4px !important;
+	    left: 22px !important;
+	    z-index: 7 !important;
+	    padding: 1px 6px 2px !important;
+	    min-width: 28px !important;
+	    text-align: center !important;
+	    font-size: 10px !important;
+	    line-height: 1 !important;
+	    border-radius: 999px !important;
+	    box-shadow: 0 2px 8px rgba(0,0,0,0.38) !important;
+	  }
 
-  /* Enhancement ritual: grayscale title while the card is monochrome. */
+	  /* Enhancement ritual: grayscale title while the card is monochrome. */
   .enh-ritual.preparing .er-title,
   .enh-ritual.armed .er-title,
   .enh-ritual.fail .er-title {
@@ -24079,6 +25186,25 @@ function closeTutorialOffer(accept) {
     top: 40px !important;
     right: 0 !important;
   }
+
+  /* Stage map should own the remaining phone viewport. The action buttons now live in the header,
+     so old compact-action height offsets left a visible black gutter at the bottom. */
+  #stageSelect.stage-app.app .stage-map-wrap {
+    height: calc(100% - 90px) !important;
+    padding: 0 !important;
+    background: #060a12 !important;
+  }
+  #stageSelect.stage-app.app .stage-map {
+    width: 100% !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  @media (max-width: 390px), (max-height: 760px) {
+    #stageSelect.stage-app.app .stage-map-wrap {
+      height: calc(100% - 90px) !important;
+      padding: 0 !important;
+    }
+  }
   #introDialog .idg-hint {
     position: absolute !important;
     left: 50% !important;
@@ -24266,32 +25392,1842 @@ function closeTutorialOffer(accept) {
     }
   }
 
-  /* Final prisoner button cleanup: remove stripe-like bevel artifacts. */
+  /* Mobile enhance picker: keep the ritual board compact, make selection roomy. */
+  #enhanceScreen .enh-picker-scrim {
+    display: none;
+  }
+  #enhanceScreen .enh-picker-panel {
+    position: relative;
+    z-index: 1;
+    width: min(410px, calc(100vw - 18px));
+    margin: 0 auto;
+  }
+  #enhanceScreen .enh-picker-head {
+    display: none;
+  }
+  #enhanceScreen .enh-picker-panel .enh-mode-tabs,
+  #enhanceScreen .enh-picker-panel .enh-roster {
+    width: 100% !important;
+  }
+  #enhanceScreen:not(.enh-picker-open) .enh-picker-panel .enh-roster {
+    display: none !important;
+  }
+
+  @media (max-width: 820px) {
+    #enhanceScreen:not(.enh-picker-open) .enh-board {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      width: min(410px, calc(100vw - 18px)) !important;
+      margin: 10px auto 0 !important;
+      padding: 14px !important;
+      display: grid !important;
+      grid-template-rows: auto auto minmax(96px, 1fr) auto !important;
+      align-content: stretch !important;
+    }
+    #enhanceScreen:not(.enh-picker-open) .enh-target-row {
+      align-items: stretch !important;
+    }
+    #enhanceScreen:not(.enh-picker-open) .enh-slot,
+    #enhanceScreen:not(.enh-picker-open) .enh-preview {
+      height: auto !important;
+      min-height: clamp(183px, 27dvh, 220px) !important;
+    }
+    #enhanceScreen:not(.enh-picker-open) .enh-preview {
+      align-content: center !important;
+    }
+    #enhanceScreen:not(.enh-picker-open) .enh-fodder-row {
+      align-content: center !important;
+      align-items: center !important;
+    }
+    #enhanceScreen:not(.enh-picker-open) .enh-picker-panel {
+      flex: 0 0 auto !important;
+      margin-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+    }
+    #enhanceScreen:not(.enh-picker-open) .enh-picker-panel .enh-roster {
+      display: none !important;
+    }
+    #enhanceScreen:not(.enh-picker-open) .enh-picker-panel {
+      width: min(410px, calc(100vw - 18px)) !important;
+      margin: 0 auto !important;
+    }
+    #enhanceScreen:not(.enh-picker-open) .enh-picker-panel .enh-mode-tabs {
+      width: 100% !important;
+      margin: 9px auto 0 !important;
+    }
+  }
+
+  @media (max-width: 720px) {
+    #enhanceScreen.enh-picker-open .enh-picker-scrim {
+      display: block !important;
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 80 !important;
+      background: rgba(0, 0, 0, 0.58) !important;
+      backdrop-filter: blur(2px) !important;
+      -webkit-backdrop-filter: blur(2px) !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-picker-panel {
+      position: fixed !important;
+      left: max(8px, env(safe-area-inset-left)) !important;
+      right: max(8px, env(safe-area-inset-right)) !important;
+      bottom: max(8px, env(safe-area-inset-bottom)) !important;
+      z-index: 90 !important;
+      width: auto !important;
+      height: clamp(430px, 76dvh, 640px) !important;
+      max-height: calc(100dvh - max(86px, env(safe-area-inset-top))) !important;
+      margin: 0 !important;
+      padding: 10px !important;
+      display: grid !important;
+      grid-template-rows: auto auto minmax(0, 1fr) !important;
+      gap: 8px !important;
+      border-radius: 20px 20px 16px 16px !important;
+      background:
+        radial-gradient(circle at 50% -12%, rgba(255, 218, 104, 0.18), transparent 38%),
+        linear-gradient(180deg, rgba(28, 41, 61, 0.98), rgba(7, 13, 24, 0.99)) !important;
+      border: 1px solid rgba(245, 205, 92, 0.38) !important;
+      box-shadow:
+        0 -18px 44px rgba(0, 0, 0, 0.46),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+      overflow: hidden !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-picker-head {
+      min-height: 58px !important;
+      padding: 7px 8px 7px 11px !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 72px !important;
+      align-items: center !important;
+      gap: 8px !important;
+      border-radius: 14px !important;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03)),
+        rgba(7, 13, 24, 0.72) !important;
+      border: 1px solid rgba(255,255,255,0.10) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.09) !important;
+    }
+    #enhanceScreen .enh-picker-copy {
+      min-width: 0 !important;
+      display: grid !important;
+      gap: 2px !important;
+    }
+    #enhanceScreen .enh-picker-copy span {
+      color: rgba(121, 214, 255, 0.84) !important;
+      font-size: 10px !important;
+      font-weight: 900 !important;
+      line-height: 1 !important;
+      letter-spacing: 0 !important;
+      text-shadow: none !important;
+    }
+    #enhanceScreen .enh-picker-copy b {
+      min-width: 0 !important;
+      color: #fff2b8 !important;
+      font-size: 18px !important;
+      font-weight: 900 !important;
+      line-height: 1.05 !important;
+      letter-spacing: 0 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.42) !important;
+    }
+    #enhanceScreen .enh-picker-copy small {
+      min-width: 0 !important;
+      color: rgba(235, 244, 255, 0.72) !important;
+      font-size: 11px !important;
+      font-weight: 800 !important;
+      line-height: 1.15 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+    #enhanceScreen .enh-picker-close {
+      width: 72px !important;
+      min-width: 72px !important;
+      height: 44px !important;
+      min-height: 44px !important;
+      margin: 0 !important;
+      padding: 0 8px 2px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border: 0 !important;
+      border-radius: 12px !important;
+      background: url('./assets/ui/enh_button_dark.png') center / 100% 100% no-repeat !important;
+      color: #fff0bd !important;
+      box-shadow: none !important;
+      font-family: 'Noto Serif KR', serif !important;
+      font-size: 14px !important;
+      font-weight: 900 !important;
+      line-height: 1 !important;
+      letter-spacing: 0 !important;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.52) !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-mode-tabs {
+      width: 100% !important;
+      min-height: 48px !important;
+      margin: 0 !important;
+      padding: 4px !important;
+      flex: 0 0 auto !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-mode-tab {
+      min-height: 40px !important;
+      margin: 0 !important;
+      font-size: 14px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster {
+      width: 100% !important;
+      min-height: 0 !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 9px !important;
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      grid-auto-rows: auto !important;
+      gap: 10px !important;
+      align-content: start !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: contain !important;
+      -webkit-overflow-scrolling: touch !important;
+      touch-action: pan-y !important;
+      border-radius: 16px !important;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.015)),
+        rgba(4, 9, 17, 0.74) !important;
+      border: 1px solid rgba(255,255,255,0.10) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08) !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster-card {
+      height: 190px !important;
+      min-height: 190px !important;
+      grid-template-rows: 116px 32px 42px !important;
+      border-radius: 16px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster-card .face-wrap {
+      height: 110px !important;
+      min-height: 110px !important;
+      margin: 7px 7px 0 !important;
+      border-radius: 13px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster-card .name {
+      height: 32px !important;
+      min-height: 32px !important;
+      margin: 0 7px !important;
+      padding: 0 7px !important;
+      font-size: 14px !important;
+      line-height: 1 !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-card-info {
+      height: 42px !important;
+      min-height: 42px !important;
+      margin: 0 7px 7px !important;
+      padding: 5px 0 0 !important;
+      display: grid !important;
+      grid-template-rows: 24px !important;
+      gap: 0 !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-card-meta {
+      height: 24px !important;
+      grid-template-columns: 0.78fr 0.72fr 1.08fr !important;
+      gap: 4px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-card-meta span {
+      height: 24px !important;
+      font-size: 10px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-card-buffs {
+      display: none !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster-card.selected::before {
+      content: "선택" !important;
+      position: absolute !important;
+      top: 9px !important;
+      right: 9px !important;
+      bottom: auto !important;
+      z-index: 6 !important;
+      height: 24px !important;
+      padding: 0 8px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 999px !important;
+      background: linear-gradient(180deg, #fff0a2, #f7c95a 56%, #d99122) !important;
+      border: 1px solid rgba(62,35,5,0.42) !important;
+      color: #241305 !important;
+      font-size: 10px !important;
+      font-weight: 900 !important;
+      line-height: 1 !important;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.52) !important;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.24) !important;
+    }
+    #enhanceScreen.enh-picker-open.enh-pick-fodder .enh-roster-card.selected::before {
+      content: "재료" !important;
+    }
+    #enhanceScreen.enh-picker-open.enh-pick-fodder .enh-roster-card.selected.disabled::before {
+      content: "대상" !important;
+      background: linear-gradient(180deg, rgba(121,214,255,0.92), rgba(37,87,136,0.94)) !important;
+      color: #f4fbff !important;
+      text-shadow: 0 1px 0 rgba(0,0,0,0.42) !important;
+    }
+  }
+
+  @media (max-width: 360px), (max-height: 700px) {
+    #enhanceScreen.enh-picker-open .enh-picker-panel {
+      height: clamp(360px, 78dvh, 560px) !important;
+      padding: 8px !important;
+      gap: 7px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-picker-head {
+      min-height: 54px !important;
+      grid-template-columns: minmax(0, 1fr) 64px !important;
+    }
+    #enhanceScreen .enh-picker-close {
+      width: 64px !important;
+      min-width: 64px !important;
+      height: 40px !important;
+      min-height: 40px !important;
+      font-size: 13px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster {
+      gap: 8px !important;
+      padding: 8px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster-card {
+      height: 172px !important;
+      min-height: 172px !important;
+      grid-template-rows: 100px 30px 38px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster-card .face-wrap {
+      height: 94px !important;
+      min-height: 94px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster-card .name {
+      height: 30px !important;
+      min-height: 30px !important;
+      font-size: 13px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-card-info {
+      height: 38px !important;
+      min-height: 38px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-card-meta span {
+      height: 22px !important;
+      font-size: 9px !important;
+    }
+  }
+
+  /* Enhance picker workspace: selection gets the screen, the board becomes context. */
+  #enhanceScreen.enh-picker-open .enh-picker-scrim {
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 80 !important;
+    background: rgba(1, 5, 12, 0.66) !important;
+    backdrop-filter: blur(3px) saturate(1.08) !important;
+    -webkit-backdrop-filter: blur(3px) saturate(1.08) !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-picker-panel {
+    position: fixed !important;
+    left: 50% !important;
+    right: auto !important;
+    top: max(54px, calc(env(safe-area-inset-top) + 48px)) !important;
+    bottom: max(10px, env(safe-area-inset-bottom)) !important;
+    z-index: 90 !important;
+    width: min(720px, calc(100vw - 20px)) !important;
+    max-width: min(720px, calc(100vw - 20px)) !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 12px !important;
+    transform: translateX(-50%) !important;
+    display: grid !important;
+    grid-template-rows: auto auto minmax(0, 1fr) !important;
+    gap: 10px !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(245, 205, 92, 0.44) !important;
+    background:
+      radial-gradient(circle at 50% -12%, rgba(255, 218, 104, 0.18), transparent 38%),
+      linear-gradient(180deg, rgba(31, 44, 63, 0.98), rgba(6, 12, 22, 0.99)) !important;
+    box-shadow:
+      0 26px 70px rgba(0, 0, 0, 0.54),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    overflow: hidden !important;
+  }
+  #enhanceScreen.enh-picker-open.enh-pick-fodder .enh-picker-panel {
+    grid-template-rows: auto auto auto minmax(0, 1fr) !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-picker-head {
+    min-height: 66px !important;
+    padding: 9px 10px 9px 12px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 86px !important;
+    align-items: center !important;
+    gap: 10px !important;
+    border-radius: 15px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03)),
+      rgba(7, 13, 24, 0.78) !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.09) !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-picker-copy {
+    min-width: 0 !important;
+    display: grid !important;
+    gap: 3px !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-picker-copy span {
+    color: rgba(121, 214, 255, 0.88) !important;
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-shadow: none !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-picker-copy b {
+    min-width: 0 !important;
+    color: #fff2b8 !important;
+    font-size: 22px !important;
+    font-weight: 900 !important;
+    line-height: 1.04 !important;
+    letter-spacing: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.48) !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-picker-copy small {
+    min-width: 0 !important;
+    color: rgba(235, 244, 255, 0.76) !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    line-height: 1.15 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-picker-close {
+    width: 86px !important;
+    min-width: 86px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    margin: 0 !important;
+    padding: 0 9px 2px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 0 !important;
+    border-radius: 12px !important;
+    background: url('./assets/ui/enh_button_dark.png') center / 100% 100% no-repeat !important;
+    color: #fff0bd !important;
+    box-shadow: none !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 15px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.52) !important;
+  }
+  #enhanceScreen .enh-picker-tools {
+    display: none !important;
+  }
+  #enhanceScreen.enh-picker-open.enh-pick-fodder .enh-picker-tools {
+    min-height: 44px !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+  #enhanceScreen .enh-picker-tool {
+    min-width: 0 !important;
+    min-height: 44px !important;
+    margin: 0 !important;
+    padding: 0 10px 2px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(255, 223, 122, 0.48) !important;
+    border-radius: 12px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.38), rgba(255,255,255,0.05) 36%),
+      linear-gradient(180deg, #ffd96a, #d39622 58%, #825116) !important;
+    color: #241305 !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.56) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18) !important;
+  }
+  #enhanceScreen .enh-picker-tool.secondary {
+    border-color: rgba(120,176,255,0.34) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.02)),
+      linear-gradient(180deg, #30425c, #172235 58%, #0a111e) !important;
+    color: #edf5ff !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.62) !important;
+  }
+  #enhanceScreen .enh-picker-tool:disabled {
+    opacity: 0.45 !important;
+    filter: saturate(0.68) !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-mode-tabs {
+    width: 100% !important;
+    min-height: 54px !important;
+    margin: 0 !important;
+    padding: 4px !important;
+    flex: 0 0 auto !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-mode-tab {
+    min-height: 46px !important;
+    margin: 0 !important;
+    font-size: 16px !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-roster {
+    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 11px !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-auto-rows: auto !important;
+    gap: 12px !important;
+    align-content: start !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+    border-radius: 16px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.015)),
+      rgba(4, 9, 17, 0.78) !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-roster-card {
+    height: 198px !important;
+    min-height: 198px !important;
+    grid-template-rows: 112px 32px 48px !important;
+    border-radius: 16px !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-roster-card .face-wrap {
+    height: 106px !important;
+    min-height: 106px !important;
+    margin: 7px 7px 0 !important;
+    border-radius: 13px !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-roster-card .name {
+    height: 32px !important;
+    min-height: 32px !important;
+    margin: 0 7px !important;
+    padding: 0 7px !important;
+    font-size: 14px !important;
+    line-height: 1 !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-card-info {
+    height: 48px !important;
+    min-height: 48px !important;
+    margin: 0 7px 7px !important;
+    padding: 5px 0 0 !important;
+    display: grid !important;
+    grid-template-rows: 24px !important;
+    gap: 0 !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-card-meta {
+    height: 24px !important;
+    grid-template-columns: 0.78fr 0.72fr 1.08fr !important;
+    gap: 4px !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-card-meta span {
+    height: 24px !important;
+    font-size: 10px !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-card-buffs {
+    display: none !important;
+  }
+  #enhanceScreen.enh-picker-open .enh-roster-card.selected::before {
+    content: "선택" !important;
+    position: absolute !important;
+    top: 9px !important;
+    right: 9px !important;
+    bottom: auto !important;
+    z-index: 6 !important;
+    height: 24px !important;
+    padding: 0 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 999px !important;
+    background: linear-gradient(180deg, #fff0a2, #f7c95a 56%, #d99122) !important;
+    border: 1px solid rgba(62,35,5,0.42) !important;
+    color: #241305 !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.52) !important;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.24) !important;
+  }
+  #enhanceScreen.enh-picker-open.enh-pick-fodder .enh-roster-card.selected::before {
+    content: "재료" !important;
+  }
+  #enhanceScreen.enh-picker-open.enh-pick-fodder .enh-roster-card.selected.disabled::before {
+    content: "대상" !important;
+    background: linear-gradient(180deg, rgba(121,214,255,0.92), rgba(37,87,136,0.94)) !important;
+    color: #f4fbff !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.42) !important;
+  }
+  @media (max-width: 520px) {
+    #enhanceScreen.enh-picker-open .enh-picker-panel {
+      top: max(48px, calc(env(safe-area-inset-top) + 42px)) !important;
+      bottom: max(8px, env(safe-area-inset-bottom)) !important;
+      width: min(430px, calc(100vw - 16px)) !important;
+      max-width: min(430px, calc(100vw - 16px)) !important;
+      padding: 10px !important;
+      gap: 8px !important;
+      border-radius: 18px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-picker-head {
+      min-height: 58px !important;
+      grid-template-columns: minmax(0, 1fr) 72px !important;
+      padding: 7px 8px 7px 11px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-picker-copy b {
+      font-size: 18px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-picker-copy small {
+      font-size: 11px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-picker-close {
+      width: 72px !important;
+      min-width: 72px !important;
+      height: 44px !important;
+      min-height: 44px !important;
+      font-size: 14px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-mode-tabs {
+      min-height: 48px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-mode-tab {
+      min-height: 40px !important;
+      font-size: 14px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 10px !important;
+      padding: 9px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster-card {
+      height: 190px !important;
+      min-height: 190px !important;
+      grid-template-rows: 116px 32px 42px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster-card .face-wrap {
+      height: 110px !important;
+      min-height: 110px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-card-info {
+      height: 42px !important;
+      min-height: 42px !important;
+    }
+  }
+	  @media (max-width: 360px), (max-height: 700px) {
+	    #enhanceScreen.enh-picker-open .enh-picker-panel {
+	      top: max(42px, calc(env(safe-area-inset-top) + 38px)) !important;
+      bottom: max(6px, env(safe-area-inset-bottom)) !important;
+      padding: 8px !important;
+      gap: 7px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-picker-head {
+      min-height: 54px !important;
+      grid-template-columns: minmax(0, 1fr) 64px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-picker-close {
+      width: 64px !important;
+      min-width: 64px !important;
+      height: 40px !important;
+      min-height: 40px !important;
+      font-size: 13px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster {
+      gap: 8px !important;
+      padding: 8px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster-card {
+      height: 172px !important;
+      min-height: 172px !important;
+      grid-template-rows: 100px 30px 38px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster-card .face-wrap {
+      height: 94px !important;
+      min-height: 94px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-roster-card .name {
+      height: 30px !important;
+      min-height: 30px !important;
+      font-size: 13px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-card-info {
+      height: 38px !important;
+      min-height: 38px !important;
+    }
+    #enhanceScreen.enh-picker-open .enh-card-meta span {
+      height: 22px !important;
+      font-size: 9px !important;
+	    }
+	  }
+
+	  /* Enhance bottom sheet revision: keep the board in context, slide inventory up from below. */
+	  #enhanceScreen .enh-picker-scrim {
+	    display: block !important;
+	    position: fixed !important;
+	    inset: 0 !important;
+	    z-index: 80 !important;
+	    pointer-events: none !important;
+	    opacity: 0 !important;
+	    background: rgba(0, 0, 0, 0.32) !important;
+	    backdrop-filter: blur(1px) !important;
+	    -webkit-backdrop-filter: blur(1px) !important;
+	    transition: opacity 220ms ease !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-picker-scrim {
+	    pointer-events: auto !important;
+	    opacity: 1 !important;
+	  }
+	  #enhanceScreen .enh-picker-panel {
+	    position: fixed !important;
+	    left: 50% !important;
+	    right: auto !important;
+	    top: auto !important;
+	    bottom: 0 !important;
+	    z-index: 90 !important;
+	    width: min(720px, 100vw) !important;
+	    max-width: min(720px, 100vw) !important;
+	    height: clamp(420px, 61dvh, 710px) !important;
+	    max-height: calc(100dvh - 156px) !important;
+	    margin: 0 !important;
+	    padding: 12px 12px max(12px, env(safe-area-inset-bottom)) !important;
+	    display: grid !important;
+	    grid-template-rows: auto minmax(0, 1fr) auto !important;
+	    gap: 9px !important;
+	    visibility: hidden !important;
+	    pointer-events: none !important;
+	    transform: translate(-50%, calc(100% + 20px)) !important;
+	    border-radius: 22px 22px 0 0 !important;
+	    border: 1px solid rgba(245, 205, 92, 0.42) !important;
+	    border-bottom: 0 !important;
+	    background:
+	      radial-gradient(circle at 50% -12%, rgba(255, 218, 104, 0.18), transparent 38%),
+	      linear-gradient(180deg, rgba(31, 44, 63, 0.99), rgba(6, 12, 22, 0.99)) !important;
+	    box-shadow:
+	      0 -24px 54px rgba(0, 0, 0, 0.52),
+	      inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+	    overflow: hidden !important;
+	    transition: transform 280ms cubic-bezier(.2, .9, .18, 1), visibility 0s linear 280ms !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-picker-panel {
+	    left: 50% !important;
+	    right: auto !important;
+	    top: auto !important;
+	    bottom: 0 !important;
+	    width: min(720px, 100vw) !important;
+	    max-width: min(720px, 100vw) !important;
+	    height: clamp(420px, 61dvh, 710px) !important;
+	    max-height: calc(100dvh - 156px) !important;
+	    grid-template-rows: auto minmax(0, 1fr) auto !important;
+	    visibility: visible !important;
+	    pointer-events: auto !important;
+	    transform: translate(-50%, 0) !important;
+	    transition: transform 280ms cubic-bezier(.2, .9, .18, 1), visibility 0s linear 0s !important;
+	  }
+	  #enhanceScreen.enh-picker-open.enh-pick-fodder .enh-picker-panel {
+	    top: auto !important;
+	    bottom: 0 !important;
+	    height: clamp(450px, 65dvh, 750px) !important;
+	    max-height: calc(100dvh - 156px) !important;
+	    grid-template-rows: auto minmax(0, 1fr) auto !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-picker-head {
+	    position: relative !important;
+	    min-height: 62px !important;
+	    padding: 8px 9px 8px 12px !important;
+	    display: grid !important;
+	    grid-template-columns: minmax(0, 1fr) 72px !important;
+	    align-items: center !important;
+	    gap: 8px !important;
+	    border-radius: 16px !important;
+	    background:
+	      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03)),
+	      rgba(7, 13, 24, 0.78) !important;
+	    border: 1px solid rgba(255,255,255,0.10) !important;
+	    box-shadow: inset 0 1px 0 rgba(255,255,255,0.09) !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-picker-head::before {
+	    content: "" !important;
+	    position: absolute !important;
+	    left: 50% !important;
+	    top: 7px !important;
+	    width: 42px !important;
+	    height: 4px !important;
+	    transform: translateX(-50%) !important;
+	    border-radius: 999px !important;
+	    background: rgba(255, 255, 255, 0.24) !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-picker-copy {
+	    min-width: 0 !important;
+	    display: grid !important;
+	    gap: 3px !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-picker-copy span {
+	    color: rgba(121, 214, 255, 0.88) !important;
+	    font-size: 11px !important;
+	    font-weight: 900 !important;
+	    line-height: 1 !important;
+	    letter-spacing: 0 !important;
+	    text-shadow: none !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-picker-copy b {
+	    min-width: 0 !important;
+	    color: #fff2b8 !important;
+	    font-size: 20px !important;
+	    font-weight: 900 !important;
+	    line-height: 1.04 !important;
+	    letter-spacing: 0 !important;
+	    white-space: nowrap !important;
+	    overflow: hidden !important;
+	    text-overflow: ellipsis !important;
+	    text-shadow: 0 2px 8px rgba(0,0,0,0.48) !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-picker-copy small {
+	    min-width: 0 !important;
+	    color: rgba(235, 244, 255, 0.76) !important;
+	    font-size: 11px !important;
+	    font-weight: 800 !important;
+	    line-height: 1.15 !important;
+	    white-space: nowrap !important;
+	    overflow: hidden !important;
+	    text-overflow: ellipsis !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-picker-close {
+	    width: 72px !important;
+	    min-width: 72px !important;
+	    height: 42px !important;
+	    min-height: 42px !important;
+	    margin: 0 !important;
+	    padding: 0 8px 2px !important;
+	    display: flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    border: 0 !important;
+	    border-radius: 12px !important;
+	    background: url('./assets/ui/enh_button_dark.png') center / 100% 100% no-repeat !important;
+	    color: #fff0bd !important;
+	    box-shadow: none !important;
+	    font-family: 'Noto Serif KR', serif !important;
+	    font-size: 14px !important;
+	    font-weight: 900 !important;
+	    line-height: 1 !important;
+	    letter-spacing: 0 !important;
+	    text-shadow: 0 2px 8px rgba(0,0,0,0.52) !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-mode-tabs {
+	    width: 100% !important;
+	    min-height: 46px !important;
+	    margin: 0 !important;
+	    padding: 4px !important;
+	    flex: 0 0 auto !important;
+	  }
+	  #enhanceScreen.enh-picker-open.enh-pick-target:not(.enh-has-target) .enh-mode-tabs {
+	    display: none !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-mode-tab {
+	    min-height: 38px !important;
+	    margin: 0 !important;
+	    border-radius: 13px !important;
+	    font-size: 14px !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-mode-tab:disabled {
+	    opacity: 0.42 !important;
+	    filter: saturate(0.7) !important;
+	  }
+	  #enhanceScreen .enh-picker-tools {
+	    display: none !important;
+	  }
+	  #enhanceScreen.enh-picker-open.enh-pick-fodder .enh-picker-tools {
+	    min-height: 42px !important;
+	    display: grid !important;
+	    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+	    gap: 8px !important;
+	  }
+	  #enhanceScreen .enh-picker-tool {
+	    min-width: 0 !important;
+	    min-height: 42px !important;
+	    margin: 0 !important;
+	    padding: 0 10px 2px !important;
+	    display: inline-flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    border: 1px solid rgba(255, 223, 122, 0.48) !important;
+	    border-radius: 12px !important;
+	    background:
+	      linear-gradient(180deg, rgba(255,255,255,0.38), rgba(255,255,255,0.05) 36%),
+	      linear-gradient(180deg, #ffd96a, #d39622 58%, #825116) !important;
+	    color: #241305 !important;
+	    font-family: 'Noto Serif KR', serif !important;
+	    font-size: 13px !important;
+	    font-weight: 900 !important;
+	    line-height: 1 !important;
+	    letter-spacing: 0 !important;
+	    text-shadow: 0 1px 0 rgba(255,255,255,0.56) !important;
+	  }
+	  #enhanceScreen .enh-picker-tool.secondary {
+	    border-color: rgba(120,176,255,0.34) !important;
+	    background:
+	      linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.02)),
+	      linear-gradient(180deg, #30425c, #172235 58%, #0a111e) !important;
+	    color: #edf5ff !important;
+	    text-shadow: 0 2px 0 rgba(0,0,0,0.62) !important;
+	  }
+	  #enhanceScreen .enh-picker-tool:disabled {
+	    opacity: 0.45 !important;
+	    filter: saturate(0.68) !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-roster {
+	    width: 100% !important;
+	    min-height: 0 !important;
+	    height: auto !important;
+	    margin: 0 !important;
+	    padding: 10px !important;
+	    display: grid !important;
+	    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+	    grid-auto-rows: auto !important;
+	    gap: 11px !important;
+	    align-content: start !important;
+	    overflow-y: auto !important;
+	    overflow-x: hidden !important;
+	    overscroll-behavior: contain !important;
+	    -webkit-overflow-scrolling: touch !important;
+	    touch-action: pan-y !important;
+	    border-radius: 16px !important;
+	    background:
+	      linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.015)),
+	      rgba(4, 9, 17, 0.78) !important;
+	    border: 1px solid rgba(255,255,255,0.10) !important;
+	    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08) !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-roster-card {
+	    height: 190px !important;
+	    min-height: 190px !important;
+	    grid-template-rows: 108px 32px 44px !important;
+	    border-radius: 16px !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-roster-card .face-wrap {
+	    height: 102px !important;
+	    min-height: 102px !important;
+	    margin: 7px 7px 0 !important;
+	    border-radius: 13px !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-roster-card .name {
+	    height: 32px !important;
+	    min-height: 32px !important;
+	    margin: 0 7px !important;
+	    padding: 0 7px !important;
+	    font-size: 14px !important;
+	    line-height: 1 !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-card-info {
+	    height: 44px !important;
+	    min-height: 44px !important;
+	    margin: 0 7px 7px !important;
+	    padding: 5px 0 0 !important;
+	    display: grid !important;
+	    grid-template-rows: 24px !important;
+	    gap: 0 !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-card-meta {
+	    height: 24px !important;
+	    grid-template-columns: 0.78fr 0.72fr 1.08fr !important;
+	    gap: 4px !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-card-meta span {
+	    height: 24px !important;
+	    font-size: 10px !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-card-buffs {
+	    display: none !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-roster-card.selected::before {
+	    content: "대상" !important;
+	    position: absolute !important;
+	    top: 9px !important;
+	    right: 9px !important;
+	    bottom: auto !important;
+	    z-index: 6 !important;
+	    height: 24px !important;
+	    padding: 0 8px !important;
+	    display: inline-flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    border-radius: 999px !important;
+	    background: linear-gradient(180deg, #fff0a2, #f7c95a 56%, #d99122) !important;
+	    border: 1px solid rgba(62,35,5,0.42) !important;
+	    color: #241305 !important;
+	    font-size: 10px !important;
+	    font-weight: 900 !important;
+	    line-height: 1 !important;
+	    text-shadow: 0 1px 0 rgba(255,255,255,0.52) !important;
+	    box-shadow: 0 5px 10px rgba(0,0,0,0.24) !important;
+	  }
+	  #enhanceScreen.enh-picker-open.enh-pick-fodder .enh-roster-card.selected::before {
+	    content: "재료" !important;
+	  }
+	  #enhanceScreen.enh-picker-open.enh-pick-fodder .enh-roster-card.selected:not(.disabled)::before {
+	    content: none !important;
+	    display: none !important;
+	  }
+	  #enhanceScreen.enh-picker-open.enh-pick-fodder .enh-roster-card.selected.disabled::before {
+	    content: "대상" !important;
+	    background: linear-gradient(180deg, rgba(121,214,255,0.92), rgba(37,87,136,0.94)) !important;
+	    color: #f4fbff !important;
+	    text-shadow: 0 1px 0 rgba(0,0,0,0.42) !important;
+	  }
+	  #enhanceScreen.enh-picker-open .enh-roster-remove {
+	    position: absolute !important;
+	    top: 8px !important;
+	    right: 8px !important;
+	    z-index: 8 !important;
+	    width: 28px !important;
+	    height: 28px !important;
+	    display: block !important;
+	    border-radius: 50% !important;
+	    background: url('./assets/ui/enh_icon_remove.png') center / 100% 100% no-repeat !important;
+	    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.48)) !important;
+	    pointer-events: none !important;
+	  }
+	  #enhanceScreen .enh-picker-actionbar {
+	    min-height: 54px !important;
+	    display: grid !important;
+	    grid-template-columns: minmax(0, 1fr) 148px !important;
+	    gap: 9px !important;
+	    align-items: center !important;
+	    padding: 6px !important;
+	    border-radius: 16px !important;
+	    background: rgba(5, 11, 20, 0.58) !important;
+	    border: 1px solid rgba(255,255,255,0.10) !important;
+	    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08) !important;
+	  }
+	  #enhanceScreen .enh-picker-summary {
+	    min-width: 0 !important;
+	    padding: 0 8px !important;
+	    color: rgba(235, 244, 255, 0.78) !important;
+	    font-size: 12px !important;
+	    font-weight: 900 !important;
+	    line-height: 1.15 !important;
+	    white-space: nowrap !important;
+	    overflow: hidden !important;
+	    text-overflow: ellipsis !important;
+	    text-shadow: none !important;
+	  }
+	  #enhanceScreen .enh-picker-primary {
+	    min-width: 0 !important;
+	    width: 148px !important;
+	    height: 44px !important;
+	    margin: 0 !important;
+	    padding: 0 10px 2px !important;
+	    display: inline-flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    border: 0 !important;
+	    border-radius: 13px !important;
+	    background: url('./assets/ui/enh_button_primary.png') center / 100% 100% no-repeat !important;
+	    color: #241305 !important;
+	    font-family: 'Noto Serif KR', serif !important;
+	    font-size: 14px !important;
+	    font-weight: 900 !important;
+	    line-height: 1 !important;
+	    letter-spacing: 0 !important;
+	    white-space: nowrap !important;
+	    text-shadow: 0 1px 0 rgba(255,255,255,0.56) !important;
+	  }
+	  #enhanceScreen .enh-fodder-slot.is-add-slot {
+	    width: min(180px, 100%) !important;
+	    min-width: 120px !important;
+	    display: grid !important;
+	    grid-template-columns: 38px minmax(0, 1fr) !important;
+	    align-items: center !important;
+	    justify-content: start !important;
+	    gap: 8px !important;
+	    padding: 0 10px !important;
+	  }
+	  #enhanceScreen .enh-fodder-slot.is-add-slot.disabled {
+	    opacity: 0.7 !important;
+	  }
+	  #enhanceScreen .enh-fodder-slot.is-add-slot .enh-add {
+	    width: 32px !important;
+	    height: 32px !important;
+	    font-size: 21px !important;
+	  }
+	  #enhanceScreen .enh-fodder-empty-text {
+	    min-width: 0 !important;
+	    color: rgba(231,240,255,0.78) !important;
+	    font-size: 11px !important;
+	    font-weight: 900 !important;
+	    line-height: 1.12 !important;
+	    text-align: left !important;
+	    white-space: nowrap !important;
+	    text-shadow: none !important;
+	  }
+	  #enhanceScreen .enh-fodder-empty-text small {
+	    color: #ffe58c !important;
+	    font-size: 9px !important;
+	    font-weight: 900 !important;
+	  }
+	  @media (max-width: 520px) {
+	    #enhanceScreen .enh-picker-panel {
+	      width: 100vw !important;
+	      max-width: 100vw !important;
+	      height: clamp(410px, 62dvh, 620px) !important;
+	      max-height: calc(100dvh - 132px) !important;
+	      padding: 10px 10px max(10px, env(safe-area-inset-bottom)) !important;
+	      gap: 8px !important;
+	      border-radius: 20px 20px 0 0 !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-picker-panel {
+	      top: auto !important;
+	      bottom: 0 !important;
+	      width: 100vw !important;
+	      max-width: 100vw !important;
+	      height: clamp(410px, 62dvh, 620px) !important;
+	      max-height: calc(100dvh - 132px) !important;
+	    }
+	    #enhanceScreen.enh-picker-open.enh-pick-fodder .enh-picker-panel {
+	      top: auto !important;
+	      bottom: 0 !important;
+	      height: clamp(430px, 66dvh, 640px) !important;
+	      max-height: calc(100dvh - 132px) !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster {
+	      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+	      gap: 9px !important;
+	      padding: 9px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster-card {
+	      height: 184px !important;
+	      min-height: 184px !important;
+	      grid-template-rows: 110px 31px 39px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster-card .face-wrap {
+	      height: 104px !important;
+	      min-height: 104px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-card-info {
+	      height: 39px !important;
+	      min-height: 39px !important;
+	    }
+	    #enhanceScreen .enh-picker-actionbar {
+	      grid-template-columns: minmax(0, 1fr) 132px !important;
+	    }
+	    #enhanceScreen .enh-picker-primary {
+	      width: 132px !important;
+	      font-size: 13px !important;
+	    }
+	  }
+	  @media (max-width: 360px), (max-height: 700px) {
+	    #enhanceScreen .enh-picker-panel {
+	      height: clamp(360px, 64dvh, 520px) !important;
+	      max-height: calc(100dvh - 104px) !important;
+	      padding: 8px 8px max(8px, env(safe-area-inset-bottom)) !important;
+	      gap: 7px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-picker-panel {
+	      top: auto !important;
+	      bottom: 0 !important;
+	      height: clamp(360px, 64dvh, 520px) !important;
+	      max-height: calc(100dvh - 104px) !important;
+	    }
+	    #enhanceScreen.enh-picker-open.enh-pick-fodder .enh-picker-panel {
+	      top: auto !important;
+	      bottom: 0 !important;
+	      height: clamp(390px, 68dvh, 540px) !important;
+	      max-height: calc(100dvh - 104px) !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-picker-head {
+	      min-height: 56px !important;
+	      grid-template-columns: minmax(0, 1fr) 64px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-picker-copy b {
+	      font-size: 17px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-picker-copy small {
+	      font-size: 10px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-picker-close {
+	      width: 64px !important;
+	      min-width: 64px !important;
+	      height: 38px !important;
+	      min-height: 38px !important;
+	      font-size: 12px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster {
+	      gap: 8px !important;
+	      padding: 8px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster-card {
+	      height: 166px !important;
+	      min-height: 166px !important;
+	      grid-template-rows: 96px 29px 37px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster-card .face-wrap {
+	      height: 90px !important;
+	      min-height: 90px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster-card .name {
+	      height: 29px !important;
+	      min-height: 29px !important;
+	      font-size: 13px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-card-info {
+	      height: 37px !important;
+	      min-height: 37px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-card-meta span {
+	      height: 22px !important;
+	      font-size: 9px !important;
+	    }
+	    #enhanceScreen .enh-picker-actionbar {
+	      min-height: 50px !important;
+	      grid-template-columns: minmax(0, 1fr) 116px !important;
+	      gap: 7px !important;
+	    }
+	    #enhanceScreen .enh-picker-summary {
+	      font-size: 10px !important;
+	      padding: 0 5px !important;
+	    }
+	    #enhanceScreen .enh-picker-primary {
+	      width: 116px !important;
+	      height: 40px !important;
+	      font-size: 12px !important;
+	    }
+	  }
+
+	  /* Enhance board fodder cards: show materials as real cards with the rate underneath. */
+	  #enhanceScreen:not(.enh-picker-open) .enh-board {
+	    flex: 0 0 auto !important;
+	    grid-template-rows: auto auto auto auto !important;
+	    align-content: start !important;
+	  }
+	  #enhanceScreen .enh-fodder-row {
+	    width: 100% !important;
+	    min-height: 0 !important;
+	    margin-top: 8px !important;
+	    padding: 0 !important;
+	    display: flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    overflow: visible !important;
+	  }
+	  #enhanceScreen .enh-fodder-showcase {
+	    width: 100% !important;
+	    min-height: 0 !important;
+	    display: grid !important;
+	    grid-template-rows: auto auto !important;
+	    align-items: center !important;
+	    justify-items: center !important;
+	    gap: 8px !important;
+	  }
+	  #enhanceScreen .enh-fodder-stack {
+	    --fodder-card-w: 160px;
+	    --fodder-card-h: 200px;
+	    --fodder-gap: 10px;
+	    width: 100% !important;
+	    min-height: var(--fodder-card-h) !important;
+	    padding: 2px 0 !important;
+	    display: flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    gap: var(--fodder-gap) !important;
+	    overflow: visible !important;
+	  }
+	  #enhanceScreen .enh-fodder-stack[data-count="3"] {
+	    --fodder-card-w: 118px;
+	    --fodder-card-h: 178px;
+	    --fodder-gap: 8px;
+	  }
+	  #enhanceScreen .enh-fodder-stack[data-count="4"] {
+	    --fodder-card-w: 112px;
+	    --fodder-card-h: 164px;
+	    --fodder-gap: 10px;
+	  }
+	  #enhanceScreen .enh-fodder-stack[data-count="5"] {
+	    --fodder-card-w: 96px;
+	    --fodder-card-h: 144px;
+	    --fodder-gap: 10px;
+	  }
+	  #enhanceScreen .enh-fodder-card {
+	    appearance: none !important;
+	    -webkit-appearance: none !important;
+	    position: relative !important;
+	    flex: 0 0 var(--fodder-card-w) !important;
+	    width: var(--fodder-card-w) !important;
+	    height: var(--fodder-card-h) !important;
+	    min-width: 0 !important;
+	    min-height: 0 !important;
+	    margin: 0 !important;
+	    padding: 10px 7px 7px !important;
+	    display: grid !important;
+	    grid-template-rows: 17px 82px 26px 22px !important;
+	    align-content: center !important;
+	    justify-items: center !important;
+	    gap: 3px !important;
+	    border: 1px solid rgba(255, 218, 104, 0.58) !important;
+	    border-radius: 18px !important;
+	    background:
+	      radial-gradient(circle at 50% -8%, rgba(255, 232, 148, 0.15), transparent 46%),
+	      linear-gradient(180deg, rgba(47, 60, 78, 0.98), rgba(10, 15, 25, 0.98)) !important;
+	    box-shadow:
+	      0 0 0 1px rgba(255, 218, 104, 0.10),
+	      0 9px 16px rgba(0, 0, 0, 0.26),
+	      inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+	    color: #fff4ca !important;
+	    cursor: pointer !important;
+	    overflow: visible !important;
+	    transform-origin: center center !important;
+	  }
+	  #enhanceScreen .enh-fodder-card + .enh-fodder-card {
+	    margin-left: 0 !important;
+	  }
+	  #enhanceScreen .enh-fodder-stack[data-count="4"] .enh-fodder-card + .enh-fodder-card {
+	    margin-left: calc(var(--fodder-card-w) * -0.32) !important;
+	  }
+	  #enhanceScreen .enh-fodder-stack[data-count="5"] .enh-fodder-card + .enh-fodder-card {
+	    margin-left: calc(var(--fodder-card-w) * -0.38) !important;
+	  }
+	  #enhanceScreen .enh-fodder-card:active {
+	    transform: translateY(2px) scale(0.985) !important;
+	    filter: brightness(0.96) !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-label {
+	    width: 100% !important;
+	    height: 17px !important;
+	    display: flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    color: rgba(255, 239, 185, 0.70) !important;
+	    font-size: 10px !important;
+	    font-weight: 900 !important;
+	    line-height: 1 !important;
+	    white-space: nowrap !important;
+	    overflow: hidden !important;
+	    text-overflow: ellipsis !important;
+	    text-shadow: 0 1px 0 rgba(0,0,0,0.64) !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-art {
+	    position: relative !important;
+	    width: 82px !important;
+	    height: 82px !important;
+	    min-height: 0 !important;
+	    overflow: hidden !important;
+	    border-radius: 14px !important;
+	    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+	    background:
+	      radial-gradient(circle at 50% 10%, rgba(255,255,255,0.48), transparent 36%),
+	      linear-gradient(180deg, rgba(86,151,205,0.32), rgba(5,10,18,0.78)) !important;
+	    box-shadow:
+	      0 0 0 2px rgba(255, 218, 104, 0.20),
+	      inset 0 1px 0 rgba(255,255,255,0.12) !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-art img {
+	    width: 108% !important;
+	    height: 108% !important;
+	    object-fit: contain !important;
+	    object-position: center top !important;
+	    transform: translate(-2%, -4%) !important;
+	    filter: drop-shadow(0 6px 7px rgba(0,0,0,0.42)) !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-art .rarity-badge {
+	    position: absolute !important;
+	    top: 5px !important;
+	    left: 5px !important;
+	    z-index: 4 !important;
+	    height: 18px !important;
+	    padding: 0 7px !important;
+	    display: inline-flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    border-radius: 999px !important;
+	    font-size: 9px !important;
+	    line-height: 1 !important;
+	    white-space: nowrap !important;
+	  }
+	  #enhanceScreen .enh-fodder-card .x {
+	    position: absolute !important;
+	    top: -8px !important;
+	    right: -8px !important;
+	    z-index: 8 !important;
+	    width: 28px !important;
+	    height: 28px !important;
+	    display: block !important;
+	    overflow: hidden !important;
+	    color: transparent !important;
+	    background: url('./assets/ui/enh_icon_remove.png') center / 100% 100% no-repeat !important;
+	    font-size: 0 !important;
+	    line-height: 0 !important;
+	    text-shadow: none !important;
+	    filter: drop-shadow(0 3px 5px rgba(0,0,0,0.42)) !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-name {
+	    min-width: 0 !important;
+	    width: 100% !important;
+	    height: 26px !important;
+	    padding: 0 6px !important;
+	    display: flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    border-radius: 10px !important;
+	    background: rgba(3, 6, 11, 0.82) !important;
+	    color: #ffffff !important;
+	    font-family: 'Noto Serif KR', serif !important;
+	    font-size: 14px !important;
+	    font-weight: 900 !important;
+	    line-height: 1 !important;
+	    white-space: nowrap !important;
+	    overflow: hidden !important;
+	    text-overflow: ellipsis !important;
+	    text-shadow: 0 2px 8px rgba(0,0,0,0.58) !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-meta {
+	    min-width: 0 !important;
+	    width: 100% !important;
+	    height: 22px !important;
+	    display: grid !important;
+	    grid-template-columns: 0.72fr 1fr !important;
+	    gap: 4px !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-meta span {
+	    min-width: 0 !important;
+	    height: 22px !important;
+	    padding: 0 4px !important;
+	    display: flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    border-radius: 8px !important;
+	    background: rgba(247,201,90,0.13) !important;
+	    border: 1px solid rgba(247,201,90,0.15) !important;
+	    color: #ffe99b !important;
+	    font-size: 9px !important;
+	    font-weight: 900 !important;
+	    line-height: 1 !important;
+	    white-space: nowrap !important;
+	    overflow: hidden !important;
+	    text-overflow: ellipsis !important;
+	    text-shadow: none !important;
+	  }
+	  #enhanceScreen .enh-fodder-stack[data-count="4"] .enh-fodder-card,
+	  #enhanceScreen .enh-fodder-stack[data-count="5"] .enh-fodder-card {
+	    grid-template-rows: 16px 70px 25px 0 !important;
+	    padding: 7px 6px 6px !important;
+	  }
+	  #enhanceScreen .enh-fodder-stack[data-count="4"] .enh-fodder-card-meta,
+	  #enhanceScreen .enh-fodder-stack[data-count="5"] .enh-fodder-card-meta {
+	    display: none !important;
+	  }
+	  #enhanceScreen .enh-fodder-stack[data-count="4"] .enh-fodder-card-name,
+	  #enhanceScreen .enh-fodder-stack[data-count="5"] .enh-fodder-card-name {
+	    height: 25px !important;
+	    font-size: 12px !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-empty {
+	    border-style: dashed !important;
+	    border-color: rgba(255, 220, 105, 0.62) !important;
+	    background:
+	      radial-gradient(circle at 50% -8%, rgba(121,214,255,0.10), transparent 48%),
+	      rgba(8, 15, 26, 0.34) !important;
+	    display: grid !important;
+	    grid-template-rows: 68px auto auto !important;
+	    align-content: center !important;
+	    justify-items: center !important;
+	    gap: 7px !important;
+	    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.24) !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-plus {
+	    width: 64px !important;
+	    height: 64px !important;
+	    display: flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    border: 0 !important;
+	    border-radius: 50% !important;
+	    background: url('./assets/ui/enh_icon_plus.png') center / 100% 100% no-repeat !important;
+	    color: transparent !important;
+	    font-size: 0 !important;
+	    line-height: 0 !important;
+	    text-shadow: none !important;
+	    box-shadow:
+	      0 10px 18px rgba(0,0,0,0.30),
+	      0 0 18px rgba(255, 213, 80, 0.18) !important;
+	    filter: drop-shadow(0 2px 0 rgba(0,0,0,0.20)) !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-empty:active .enh-fodder-card-plus {
+	    transform: translateY(1px) scale(0.97) !important;
+	    filter: brightness(0.96) drop-shadow(0 1px 0 rgba(0,0,0,0.18)) !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-empty strong {
+	    color: rgba(255, 239, 185, 0.94) !important;
+	    font-size: 17px !important;
+	    font-weight: 900 !important;
+	    line-height: 1 !important;
+	    text-shadow: 0 2px 0 rgba(0,0,0,0.58) !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-empty small {
+	    color: #ffe58c !important;
+	    font-size: 11px !important;
+	    font-weight: 900 !important;
+	    line-height: 1 !important;
+	    text-shadow: none !important;
+	  }
+	  #enhanceScreen .enh-fodder-rate {
+	    width: min(260px, 94%) !important;
+	    min-height: 62px !important;
+	    padding: 8px 12px 9px !important;
+	    display: grid !important;
+	    grid-template-columns: minmax(0, 1fr) auto !important;
+	    grid-template-rows: auto auto !important;
+	    column-gap: 10px !important;
+	    align-items: center !important;
+	    border-radius: 16px !important;
+	    border: 1px solid rgba(255, 218, 104, 0.42) !important;
+	    background:
+	      radial-gradient(circle at 50% 0%, rgba(255, 218, 104, 0.20), transparent 56%),
+	      linear-gradient(180deg, rgba(43, 53, 69, 0.96), rgba(10, 15, 25, 0.98)) !important;
+	    box-shadow:
+	      0 10px 20px rgba(0,0,0,0.26),
+	      inset 0 1px 0 rgba(255,255,255,0.12) !important;
+	  }
+	  #enhanceScreen .enh-fodder-rate span {
+	    color: rgba(231,240,255,0.72) !important;
+	    font-size: 11px !important;
+	    font-weight: 900 !important;
+	    line-height: 1 !important;
+	    text-align: left !important;
+	    text-shadow: none !important;
+	  }
+	  #enhanceScreen .enh-fodder-rate b {
+	    grid-row: 1 / 3 !important;
+	    grid-column: 2 !important;
+	    color: #fff0a8 !important;
+	    font-size: 33px !important;
+	    font-weight: 900 !important;
+	    line-height: 1 !important;
+	    text-shadow:
+	      0 2px 0 rgba(0,0,0,0.60),
+	      0 0 16px rgba(255,210,76,0.42) !important;
+	  }
+	  #enhanceScreen .enh-fodder-rate small {
+	    min-width: 0 !important;
+	    color: #ffe58c !important;
+	    font-size: 10px !important;
+	    font-weight: 900 !important;
+	    line-height: 1.1 !important;
+	    white-space: nowrap !important;
+	    overflow: hidden !important;
+	    text-overflow: ellipsis !important;
+	    text-shadow: none !important;
+	  }
+	  #enhanceScreen .enh-fodder-rate.has-bonus {
+	    border-color: rgba(255, 218, 104, 0.78) !important;
+	    box-shadow:
+	      0 0 22px rgba(255, 210, 76, 0.16),
+	      0 12px 22px rgba(0,0,0,0.28),
+	      inset 0 1px 0 rgba(255,255,255,0.16) !important;
+	  }
+	  #enhanceScreen .enh-fodder-rate.has-bonus b {
+	    animation: enh-success-rate-pulse 1.05s ease-in-out infinite !important;
+	  }
+	  #enhanceScreen .enh-fodder-rate.is-empty b,
+	  #enhanceScreen .enh-fodder-rate.is-max b {
+	    font-size: 24px !important;
+	  }
+		  @media (max-width: 380px), (max-height: 760px) {
+		    #enhanceScreen:not(.enh-picker-open) .enh-board {
+		      grid-template-rows: auto auto auto auto !important;
+		    }
+		    #enhanceScreen .enh-fodder-row {
+		      min-height: 0 !important;
+		    }
+		    #enhanceScreen .enh-fodder-showcase {
+		      min-height: 0 !important;
+		      grid-template-rows: auto auto !important;
+		      gap: 7px !important;
+		    }
+		    #enhanceScreen .enh-fodder-stack {
+		      --fodder-card-w: 144px;
+		      --fodder-card-h: 183px;
+		      --fodder-gap: 10px;
+		    }
+		    #enhanceScreen .enh-fodder-stack[data-count="3"] {
+		      --fodder-card-w: 106px;
+		      --fodder-card-h: 160px;
+		      --fodder-gap: 8px;
+		    }
+		    #enhanceScreen .enh-fodder-stack[data-count="4"] {
+		      --fodder-card-w: 94px;
+		      --fodder-card-h: 148px;
+		      --fodder-gap: 8px;
+		    }
+		    #enhanceScreen .enh-fodder-stack[data-count="5"] {
+		      --fodder-card-w: 82px;
+		      --fodder-card-h: 132px;
+		      --fodder-gap: 8px;
+		    }
+		    #enhanceScreen .enh-fodder-card {
+		      grid-template-rows: 16px 72px 25px 21px !important;
+		      border-radius: 16px !important;
+		    }
+		    #enhanceScreen .enh-fodder-card-art {
+		      width: 72px !important;
+		      height: 72px !important;
+		    }
+	    #enhanceScreen .enh-fodder-card-name {
+	      height: 26px !important;
+	      font-size: 13px !important;
+	    }
+	    #enhanceScreen .enh-fodder-card-meta {
+	      height: 22px !important;
+	    }
+	    #enhanceScreen .enh-fodder-card-meta span {
+	      height: 22px !important;
+	      font-size: 8px !important;
+	    }
+	    #enhanceScreen .enh-fodder-rate {
+	      min-height: 56px !important;
+	      width: min(240px, 94%) !important;
+	    }
+	    #enhanceScreen .enh-fodder-rate b {
+	      font-size: 28px !important;
+	    }
+	  }
+
+	  /* Empty material slot: keep the plus artwork from covering the label on real mobile screens. */
+	  #enhanceScreen .enh-fodder-card-empty {
+	    grid-template-rows: 58px 28px 16px !important;
+	    align-content: center !important;
+	    gap: 6px !important;
+	    padding-top: 13px !important;
+	    padding-bottom: 12px !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-empty .enh-fodder-card-plus {
+	    grid-row: 1 !important;
+	    align-self: end !important;
+	    width: 52px !important;
+	    height: 52px !important;
+	    margin: 0 0 2px !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-empty strong {
+	    grid-row: 2 !important;
+	    align-self: center !important;
+	    min-height: 24px !important;
+	    display: flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    position: relative !important;
+	    z-index: 2 !important;
+	    font-size: 16px !important;
+	    line-height: 1 !important;
+	    white-space: nowrap !important;
+	  }
+	  #enhanceScreen .enh-fodder-card-empty small {
+	    grid-row: 3 !important;
+	    align-self: start !important;
+	    position: relative !important;
+	    z-index: 2 !important;
+	  }
+	  @media (max-width: 380px), (max-height: 760px) {
+	    #enhanceScreen .enh-fodder-card-empty {
+	      grid-template-rows: 52px 26px 15px !important;
+	      gap: 5px !important;
+	      padding-top: 12px !important;
+	      padding-bottom: 10px !important;
+	    }
+	    #enhanceScreen .enh-fodder-card-empty .enh-fodder-card-plus {
+	      width: 46px !important;
+	      height: 46px !important;
+	    }
+	    #enhanceScreen .enh-fodder-card-empty strong {
+	      min-height: 23px !important;
+	      font-size: 15px !important;
+	    }
+	    #enhanceScreen .enh-fodder-card-empty small {
+	      font-size: 10px !important;
+	    }
+	  }
+
+	  /* Enhance picker compact 3-column material roster. */
+	  @media (max-width: 520px) {
+	    #enhanceScreen.enh-picker-open .enh-roster {
+	      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+	      gap: 8px !important;
+	      padding: 8px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster-card {
+	      height: 146px !important;
+	      min-height: 146px !important;
+	      grid-template-rows: 82px 27px 31px !important;
+	      border-radius: 13px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster-card .face-wrap {
+	      height: 76px !important;
+	      min-height: 76px !important;
+	      margin: 6px 6px 0 !important;
+	      border-radius: 11px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster-card .name {
+	      height: 27px !important;
+	      min-height: 27px !important;
+	      margin: 0 6px !important;
+	      padding: 0 5px !important;
+	      font-size: 12px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-card-info {
+	      height: 31px !important;
+	      min-height: 31px !important;
+	      margin: 0 6px 6px !important;
+	      padding: 4px 0 0 !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-card-meta {
+	      height: 21px !important;
+	      grid-template-columns: 0.74fr 0.72fr 1fr !important;
+	      gap: 3px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-card-meta span {
+	      height: 21px !important;
+	      padding: 0 2px !important;
+	      font-size: 8px !important;
+	      border-radius: 6px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster-card .rarity-badge {
+	      height: 18px !important;
+	      min-width: 18px !important;
+	      padding: 0 5px !important;
+	      font-size: 9px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster-card .lv-badge {
+	      height: 20px !important;
+	      min-width: 34px !important;
+	      padding: 0 6px !important;
+	      font-size: 10px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster-remove {
+	      top: 6px !important;
+	      right: 6px !important;
+	      width: 24px !important;
+	      height: 24px !important;
+	    }
+	  }
+	  @media (max-width: 360px), (max-height: 700px) {
+	    #enhanceScreen.enh-picker-open .enh-roster {
+	      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+	      gap: 7px !important;
+	      padding: 7px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster-card {
+	      height: 134px !important;
+	      min-height: 134px !important;
+	      grid-template-rows: 74px 25px 29px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster-card .face-wrap {
+	      height: 68px !important;
+	      min-height: 68px !important;
+	      margin: 5px 5px 0 !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-roster-card .name {
+	      height: 25px !important;
+	      min-height: 25px !important;
+	      margin: 0 5px !important;
+	      font-size: 11px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-card-info {
+	      height: 29px !important;
+	      min-height: 29px !important;
+	      margin: 0 5px 5px !important;
+	    }
+	    #enhanceScreen.enh-picker-open .enh-card-meta span {
+	      height: 20px !important;
+	      font-size: 7px !important;
+	    }
+	  }
+
+	  /* Final prisoner button cleanup: remove stripe-like bevel artifacts. */
+	  #prisonerScreen .prison-event {
+	    border-bottom-color: transparent !important;
+  }
+  #prisonerScreen .prison-choice,
+  #prisonerScreen .prison-choice::before,
+  #prisonerScreen .prison-choice::after {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  #prisonerScreen .prison-choice::before,
+  #prisonerScreen .prison-choice::after,
+  #prisonerScreen .prison-choice button::before,
+  #prisonerScreen .prison-choice button::after {
+    content: none !important;
+    display: none !important;
+  }
   #prisonerScreen .prison-choice button,
   #prisonerScreen .prison-choice .yes,
   #prisonerScreen .prison-choice .no,
   #prisonerScreen .prison-choice .next,
   #prisonerScreen .prison-choice .finish {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    border: 0 !important;
     box-shadow: none !important;
     outline: 0 !important;
     background-image: none !important;
+    background-clip: border-box !important;
   }
   #prisonerScreen .prison-choice .yes {
-    background-color: #ad241e !important;
-    border-color: rgba(209, 92, 78, 0.52) !important;
+    background: #ad241e !important;
   }
   #prisonerScreen .prison-choice .no {
-    background-color: #202b3a !important;
-    border-color: rgba(120, 137, 158, 0.42) !important;
+    background: #202b3a !important;
   }
   #prisonerScreen .prison-choice .next,
   #prisonerScreen .prison-choice .finish {
-    background-color: #e4b64e !important;
-    border-color: rgba(111, 76, 18, 0.36) !important;
+    background: #e4b64e !important;
+  }
+  #prisonerScreen .prison-face-frame::after {
+    content: none !important;
+    display: none !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
   }
   #prisonerScreen .prison-speaker {
     border-bottom: 0 !important;
     padding-bottom: 0 !important;
+  }
+  /* Strip any residual horizontal line/bevel on the gold continue button. */
+  #prisonerScreen .prison-choice .next,
+  #prisonerScreen .prison-choice .finish,
+  #prisonerScreen .prison-choice button.next,
+  #prisonerScreen .prison-choice button.finish {
+    border: 0 !important;
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+    background-image: none !important;
+    background: #e4b64e !important;
+  }
+  #prisonerScreen .prison-choice .next::before,
+  #prisonerScreen .prison-choice .next::after,
+  #prisonerScreen .prison-choice .finish::before,
+  #prisonerScreen .prison-choice .finish::after {
+    content: none !important;
+    display: none !important;
+    border: 0 !important;
+    background: transparent !important;
   }
 </style>
 <script>
@@ -24403,12 +27339,13 @@ function closeAudioSettings() {
 }
 
 // ===== 장수 강화 화면 =====
-const __ENH = { targetUid: null, fodderUids: [], pickMode: 'target' };
+const __ENH = { targetUid: null, fodderUids: [], pickMode: 'target', pickerOpen: false, resetRosterScroll: false };
 
 function showEnhanceScreen() {
   __ENH.targetUid = null;
   __ENH.fodderUids = [];
   __ENH.pickMode = 'target';
+  __ENH.pickerOpen = false;
   showScreen('enhanceScreen');
   bindEnhanceHandlers();
   renderEnhance();
@@ -24419,15 +27356,19 @@ function bindEnhanceHandlers() {
   window._enhBound = true;
   bindTap(document.getElementById('enhBack'), returnFromUtilityScreen);
   bindTap(document.getElementById('enhTargetSlot'), () => {
-    __ENH.pickMode = 'target';
-    renderEnhance();
+    openEnhancePicker('target');
   });
-  bindTap(document.getElementById('enhModeTarget'), () => {
-    __ENH.pickMode = 'target'; renderEnhance();
+  bindTap(document.getElementById('enhPickerClose'), (e) => {
+    e.stopPropagation();
+    closeEnhancePicker();
   });
-  bindTap(document.getElementById('enhModeFodder'), () => {
-    if (__ENH.targetUid == null) { showSelectToast('먼저 강화 대상을 선택하세요', '#c1121f'); return; }
-    __ENH.pickMode = 'fodder'; renderEnhance();
+  bindTap(document.getElementById('enhPickerPrimary'), (e) => {
+    e.stopPropagation();
+    handleEnhancePickerPrimary();
+  });
+  bindTap(document.getElementById('enhPickerScrim'), (e) => {
+    e.stopPropagation();
+    closeEnhancePicker();
   });
   bindTap(document.getElementById('enhGoBtn'), attemptEnhance);
 }
@@ -24454,6 +27395,55 @@ function enhanceCardMetaHTML(g) {
         <span>전투 ${power.toLocaleString()}</span>
       </div>
       <div class="enh-card-buffs">${buffs.map(x => `<span>${x}</span>`).join('')}</div>
+    </div>
+  `;
+}
+
+function enhanceFodderBoardCardHTML(g) {
+	  const rarity = getGeneralRarity(g);
+	  const power = Math.round(100 + generalScoreOf(g) * 1000 + (g.lv || 1) * 35);
+	  return `
+			    <div class="enh-fodder-card-label">재료 · Lv ${g.lv || 1}</div>
+			    <div class="enh-fodder-card-art">
+			      ${rarityBadgeHTML(g)}
+			      <img src="${g.face}" alt="">
+			    </div>
+	    <span class="x">×</span>
+	    <div class="enh-fodder-card-name">${g.name}</div>
+    <div class="enh-fodder-card-meta">
+      <span>${rarity.label}</span>
+      <span>전투 ${power.toLocaleString()}</span>
+    </div>
+  `;
+}
+
+function enhanceFodderRateHTML(target, selectedFodders) {
+  if (!target) {
+    return `
+      <div class="enh-fodder-rate is-empty">
+        <span>성공률</span>
+        <b>-</b>
+        <small>대상을 선택하면 표시됩니다</small>
+      </div>
+    `;
+  }
+  if ((target.lv || 1) >= ENHANCE_MAX_LV) {
+    return `
+      <div class="enh-fodder-rate is-max">
+        <span>상태</span>
+        <b>MAX</b>
+        <small>최대 레벨입니다</small>
+      </div>
+    `;
+  }
+  const lv = target.lv || 1;
+  const rate = enhanceSuccessPct(lv, selectedFodders);
+  const bonus = enhanceFodderBonusPct(lv, selectedFodders);
+  return `
+    <div class="enh-fodder-rate ${selectedFodders.length ? 'has-bonus' : 'is-base'}">
+      <span>${selectedFodders.length ? '재료 적용 성공률' : '기본 성공률'}</span>
+      <b>${rate}%</b>
+      <small>${selectedFodders.length ? `재료 보너스 +${bonus}%` : '재료 없이도 강화 가능'}</small>
     </div>
   `;
 }
@@ -24491,6 +27481,161 @@ function enhanceLevelPreviewHTML(lv) {
   `;
 }
 
+function enhanceStatPreviewHTML(g) {
+  if (!g) return '';
+  const lv = g.lv || 1;
+  if (lv >= ENHANCE_MAX_LV) {
+    return `
+      <div class="enh-stat-preview is-max">
+        <div class="enh-stat-preview-head"><span>능력치</span><b>최대 강화</b></div>
+        <div class="enh-stat-note">현재 레벨에서 모든 보정이 완성되었습니다</div>
+      </div>
+    `;
+  }
+  const nextLv = Math.min(ENHANCE_MAX_LV, lv + 1);
+  const labels = [
+    ['unitAtk', '병공'],
+    ['unitDef', '병방'],
+    ['castleAtk', '성공'],
+    ['castleDef', '성방'],
+    ['prodRate', '생산'],
+  ];
+  const curMult = ENHANCE_MULT[lv] || 1;
+  const nextMult = ENHANCE_MULT[nextLv] || curMult;
+  const rows = labels
+    .filter(([key]) => g.buffs && g.buffs[key])
+    .map(([key, label]) => {
+      const cur = Math.round(g.buffs[key] * curMult * 100);
+      const next = Math.round(g.buffs[key] * nextMult * 100);
+      return `
+        <div class="enh-stat-row">
+          <span>${label}</span>
+          <b>+${cur}%</b>
+          <i>→</i>
+          <strong>+${next}%</strong>
+        </div>
+      `;
+    }).join('');
+  return `
+    <div class="enh-stat-preview">
+      <div class="enh-stat-preview-head"><span>Lv${nextLv} 능력치</span><b>보정 상승</b></div>
+      <div class="enh-stat-rows">${rows || '<div class="enh-stat-note">지휘 보정이 강화됩니다</div>'}</div>
+    </div>
+  `;
+}
+
+function openEnhancePicker(mode) {
+  if (mode === 'fodder' && __ENH.targetUid == null) {
+    showSelectToast('먼저 강화 대상을 선택하세요', '#c1121f');
+    mode = 'target';
+  }
+  const nextMode = mode === 'fodder' ? 'fodder' : 'target';
+  if (__ENH.pickMode !== nextMode) __ENH.resetRosterScroll = true;
+  __ENH.pickMode = nextMode;
+  __ENH.pickerOpen = true;
+  renderEnhance();
+}
+
+function closeEnhancePicker() {
+  __ENH.pickerOpen = false;
+  renderEnhance();
+}
+
+function handleEnhancePickerPrimary() {
+  if (__ENH.pickMode === 'target' && __ENH.targetUid != null) {
+    openEnhancePicker('fodder');
+    return;
+  }
+  closeEnhancePicker();
+}
+
+function enhanceRarityRank(g) {
+  const tier = getGeneralRarity(g).tier;
+  return ({ common: 0, rare: 1, hero: 2, legend: 3 })[tier] ?? 9;
+}
+
+function autoPickEnhanceFodder() {
+  if (__ENH.targetUid == null) {
+    showSelectToast('대상을 먼저 선택하세요', '#c1121f');
+    openEnhancePicker('target');
+    return;
+  }
+  const target = getOwnedGeneral(__ENH.targetUid);
+  if (!target) return;
+  const need = ENHANCE_FODDER[target.lv || 1] || 0;
+  if (need <= 0) {
+    showSelectToast('재료가 필요 없습니다', '#ffd23f');
+    return;
+  }
+  const candidates = getOwnedRoster()
+    .filter(g => g.uid !== __ENH.targetUid)
+    .sort((a, b) =>
+      enhanceRarityRank(a) - enhanceRarityRank(b)
+      || (a.lv || 1) - (b.lv || 1)
+      || generalScoreOf(a) - generalScoreOf(b)
+      || String(a.name).localeCompare(String(b.name), 'ko')
+    );
+  if (!candidates.length) {
+    showSelectToast('재료 카드가 없습니다', '#c1121f');
+    return;
+  }
+  __ENH.fodderUids = candidates.slice(0, need).map(g => g.uid);
+  __ENH.pickMode = 'fodder';
+  __ENH.pickerOpen = true;
+  renderEnhance();
+}
+
+function clearEnhanceFodder() {
+  if (!__ENH.fodderUids.length) return;
+  __ENH.fodderUids = [];
+  __ENH.pickMode = 'fodder';
+  __ENH.pickerOpen = true;
+  renderEnhance();
+}
+
+function updateEnhancePickerShell(target, need, selectedFodders) {
+  const screen = document.getElementById('enhanceScreen');
+  const title = document.getElementById('enhPickerTitle');
+  const eyebrow = document.getElementById('enhPickerEyebrow');
+  const status = document.getElementById('enhPickerStatus');
+  const closeBtn = document.getElementById('enhPickerClose');
+  const primaryBtn = document.getElementById('enhPickerPrimary');
+  const summary = document.getElementById('enhPickerSummary');
+  if (!screen) return;
+
+  const selectedCount = (__ENH.fodderUids || []).length;
+  const ownedCount = getOwnedRoster().length;
+  const bonusPct = target ? enhanceFodderBonusPct(target.lv || 1, selectedFodders) : 0;
+  screen.classList.toggle('enh-picker-open', !!__ENH.pickerOpen);
+  screen.classList.toggle('enh-pick-target', __ENH.pickMode === 'target');
+  screen.classList.toggle('enh-pick-fodder', __ENH.pickMode === 'fodder');
+  screen.classList.toggle('enh-has-target', !!target);
+
+  if (__ENH.pickMode === 'fodder') {
+    if (eyebrow) eyebrow.textContent = target ? `${target.name} 강화` : '재료';
+    if (title) title.textContent = '성공률 재료 추가';
+    if (status) {
+      status.textContent = need
+        ? `${selectedCount}/${need}명 선택 · 재료는 선택 사항, 넣으면 성공률 상승`
+        : '최대 레벨이라 재료가 필요 없습니다';
+    }
+    if (closeBtn) closeBtn.textContent = '닫기';
+    if (primaryBtn) primaryBtn.textContent = selectedCount ? '재료 적용' : '재료 없이 진행';
+    if (summary) {
+      summary.textContent = selectedCount
+        ? `재료 ${selectedCount}명 · 성공률 +${bonusPct}%`
+        : '재료 없음 · 없어도 강화 가능';
+    }
+  } else {
+    if (eyebrow) eyebrow.textContent = '강화 대상';
+    if (title) title.textContent = '대상 선택';
+    if (status) status.textContent = `${ownedCount}명 보유 · 장수를 고르면 강화 화면으로 돌아갑니다`;
+    if (closeBtn) closeBtn.textContent = '닫기';
+    if (primaryBtn) primaryBtn.textContent = target ? '재료 추가로 이동' : '닫기';
+    if (summary) summary.textContent = target ? `${target.name} 선택됨` : '강화할 장수를 선택하세요';
+  }
+}
+
 function renderEnhance() {
   refreshTopStats();
   const targetSlot = document.getElementById('enhTargetSlot');
@@ -24500,11 +27645,7 @@ function renderEnhance() {
   const pvSuccess = document.getElementById('enhPvSuccess');
   const goBtn = document.getElementById('enhGoBtn');
   const costPill = document.getElementById('enhCostPill');
-  const modeT = document.getElementById('enhModeTarget');
-  const modeF = document.getElementById('enhModeFodder');
 
-  modeT.classList.toggle('active', __ENH.pickMode === 'target');
-  modeF.classList.toggle('active', __ENH.pickMode === 'fodder');
   if (costPill) {
     costPill.innerHTML = `<span>강화 비용</span><b>★${ENHANCE_COST_STARS} + ${ENHANCE_COST_GOLD.toLocaleString()}G</b>`;
   }
@@ -24553,34 +27694,52 @@ function renderEnhance() {
   const curLv = target ? target.lv : 0;
   const need = (curLv >= 1 && curLv < ENHANCE_MAX_LV) ? ENHANCE_FODDER[curLv] : 0;
   const selectedFodders = (__ENH.fodderUids || []).map(uid => getOwnedGeneral(uid)).filter(Boolean);
+  if (!target && __ENH.pickMode === 'fodder') __ENH.pickMode = 'target';
+  updateEnhancePickerShell(target, need, selectedFodders);
   pvSuccess.classList.toggle('is-live-rate', !!target && curLv < ENHANCE_MAX_LV);
   fodderLabel.innerHTML = target
-    ? `재료 카드 <b>${__ENH.fodderUids.length}/${need || 0}</b><span>${need ? '수량·Lv로 성공률 상승' : '최대 레벨'}</span>`
-    : `재료 카드 <b>0/0</b><span>대상 선택 후 활성화</span>`;
+    ? `재료 추가 <b>${__ENH.fodderUids.length}/${need || 0}</b><span>${need ? '선택 사항 · 성공률 상승' : '최대 레벨'}</span>`
+    : `재료 추가 <b>선택 사항</b><span>대상 선택 후 추가</span>`;
   fodderRow.innerHTML = '';
   if (need <= 0 && target && curLv >= ENHANCE_MAX_LV) {
     fodderRow.innerHTML = '<div class="enh-max-note">최대 레벨 달성!</div>';
   } else {
-    for (let i = 0; i < (need || 1); i++) {
-      const slot = document.createElement('div');
-      slot.className = 'enh-fodder-slot';
-      const fuid = __ENH.fodderUids[i];
-      if (fuid != null) {
-        const fg = getOwnedGeneral(fuid);
-        slot.classList.add('filled');
-        slot.innerHTML = `<img src="${fg.face}" alt=""><span class="x">×</span><span class="enh-fodder-name">${fg.name}</span>`;
-        bindTap(slot, () => {
-          __ENH.fodderUids.splice(i, 1);
-          renderEnhance();
-        });
-      } else {
-        slot.innerHTML = '<span class="enh-add">+</span>';
-        bindTap(slot, () => {
-          __ENH.pickMode = 'fodder'; renderEnhance();
-        });
-      }
-      fodderRow.appendChild(slot);
+    const showcase = document.createElement('div');
+    showcase.className = 'enh-fodder-showcase';
+    const stack = document.createElement('div');
+    stack.className = 'enh-fodder-stack';
+    stack.dataset.count = String(Math.max(1, selectedFodders.length));
+    if (!target) stack.classList.add('is-disabled');
+    if (!selectedFodders.length) stack.classList.add('is-empty');
+
+    selectedFodders.forEach((fg, i) => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'enh-fodder-card';
+      card.style.zIndex = String(10 + i);
+      card.innerHTML = enhanceFodderBoardCardHTML(fg);
+      bindTap(card, () => {
+        __ENH.fodderUids.splice(i, 1);
+        renderEnhance();
+      });
+      stack.appendChild(card);
+    });
+    if (!selectedFodders.length) {
+      const addCard = document.createElement('button');
+      addCard.type = 'button';
+      addCard.className = 'enh-fodder-card enh-fodder-card-empty';
+      addCard.innerHTML = target
+        ? '<div class="enh-fodder-card-plus">+</div><strong>재료 추가</strong><small>선택 사항</small>'
+        : '<div class="enh-fodder-card-plus">+</div><strong>대상 선택 후</strong><small>재료 추가</small>';
+      bindTap(addCard, () => {
+        if (__ENH.targetUid == null) openEnhancePicker('target');
+        else openEnhancePicker('fodder');
+      });
+      stack.appendChild(addCard);
     }
+    showcase.appendChild(stack);
+    showcase.insertAdjacentHTML('beforeend', enhanceFodderRateHTML(target, selectedFodders));
+    fodderRow.appendChild(showcase);
   }
 
   // 미리보기
@@ -24588,14 +27747,14 @@ function renderEnhance() {
     const lv = curLv;
     if (lv >= ENHANCE_MAX_LV) {
       pvLevel.innerHTML = enhanceLevelPreviewHTML(lv);
-      pvSuccess.innerHTML = `<span>상태</span><b>완료</b>`;
+      pvSuccess.innerHTML = enhanceStatPreviewHTML(target);
     } else {
       pvLevel.innerHTML = enhanceLevelPreviewHTML(lv);
-      pvSuccess.innerHTML = `<span>성공률</span><b>${enhanceSuccessPct(lv, selectedFodders)}%</b>`;
+      pvSuccess.innerHTML = enhanceStatPreviewHTML(target);
     }
   } else {
     pvLevel.innerHTML = enhanceLevelPreviewHTML(0);
-    pvSuccess.innerHTML = `<span>상태</span><b>대기</b>`;
+    pvSuccess.innerHTML = '';
   }
 
   // 강화 버튼 활성화 조건
@@ -24605,7 +27764,7 @@ function renderEnhance() {
     && (SAVE.gold || 0) >= ENHANCE_COST_GOLD;
   goBtn.disabled = !ready;
   if (ready) {
-    goBtn.textContent = '강화 시작';
+    goBtn.textContent = selectedFodders.length ? '강화 시작' : '재료 없이 강화';
   } else if (!target) {
     goBtn.textContent = '강화 대상 선택';
   } else if (curLv >= ENHANCE_MAX_LV) {
@@ -24623,6 +27782,9 @@ function renderEnhance() {
 function renderEnhanceRoster() {
   const rosterEl = document.getElementById('enhRoster');
   const owned = getOwnedRoster();
+  const prevScroll = rosterEl ? rosterEl.scrollTop : 0;
+  const resetScroll = !!__ENH.resetRosterScroll;
+  __ENH.resetRosterScroll = false;
   rosterEl.innerHTML = '';
   if (!owned.length) {
     rosterEl.innerHTML = '<div style="grid-column:1/-1;color:#c0b3e0;text-align:center;padding:20px;font-size:13px;">보유한 장수가 없습니다.<br>스테이지 클리어 후 포로 등용으로 장수를 모으세요.</div>';
@@ -24630,7 +27792,10 @@ function renderEnhanceRoster() {
   }
   const targetUid = __ENH.targetUid;
   const fodderSet = new Set(__ENH.fodderUids);
-  owned.forEach(g => {
+  const visibleOwned = __ENH.pickMode === 'fodder'
+    ? owned.filter(g => g.uid !== targetUid)
+    : owned;
+  visibleOwned.forEach(g => {
     const card = document.createElement('div');
     card.className = 'enh-roster-card tier-' + getGeneralRarity(g).tier;
     const isTarget = g.uid === targetUid;
@@ -24648,19 +27813,23 @@ function renderEnhanceRoster() {
         ${g.lv > 1 ? `<div class="lv-badge">Lv${g.lv}</div>` : ''}
         <img src="${g.face}" alt="">
       </div>
+      ${__ENH.pickMode === 'fodder' && isFodder && !isTarget ? '<span class="enh-roster-remove" aria-hidden="true"></span>' : ''}
       <div class="name">${g.name}</div>
       ${enhanceCardMetaHTML(g)}
     `;
     bindTap(card, () => onEnhanceCardTap(g.uid));
     rosterEl.appendChild(card);
   });
+  rosterEl.scrollTop = resetScroll ? 0 : prevScroll;
 }
 
 function onEnhanceCardTap(uid) {
   if (__ENH.pickMode === 'target') {
     __ENH.targetUid = uid;
     __ENH.fodderUids = [];
-    __ENH.pickMode = 'fodder';
+    __ENH.pickMode = 'target';
+    __ENH.resetRosterScroll = false;
+    __ENH.pickerOpen = false;
   } else {
     if (__ENH.targetUid == null) { showSelectToast('대상을 먼저 선택하세요', '#c1121f'); return; }
     if (uid === __ENH.targetUid) return;
@@ -24690,41 +27859,62 @@ function attemptEnhance() {
   if ((SAVE.starsAvailable || 0) < ENHANCE_COST_STARS) { showSelectToast('별이 부족합니다', '#c1121f'); return; }
   if ((SAVE.gold || 0) < ENHANCE_COST_GOLD) { showSelectToast('골드가 부족합니다', '#c1121f'); return; }
 
-  // 비용 차감
-  SAVE.starsAvailable -= ENHANCE_COST_STARS;
-  SAVE.gold -= ENHANCE_COST_GOLD;
-  // 재료 정보 백업 (애니메이션용)
   const fodderUids = __ENH.fodderUids.slice();
   const fodderObjs = fodderUids.map(uid => getOwnedGeneral(uid)).filter(Boolean);
-  // 재료 영구 소비 (uid 단위 제거)
-  fodderUids.forEach(uid => removeOwnedGeneral(uid));
 
-  // 성공 판정
-  const rate = enhanceSuccessRate(lv, fodderObjs);
-  const ok = Math.random() < rate;
-  let newLv = lv;
-  if (ok) {
-    newLv = lv + 1;
-    setGeneralLevel(tuid, newLv);
-  } else {
-    if (lv > 1) {
-      newLv = 1 + Math.floor(Math.random() * (lv - 1));
-      setGeneralLevel(tuid, newLv);
-    }
-  }
-  saveProgress();
-
-  __ENH.fodderUids = [];
-  __ENH.pickMode = 'fodder';
-
-  // 의식 연출
-  playEnhanceRitual(target, fodderObjs, ok, lv, newLv, () => {
+  playEnhanceRitual(target, fodderObjs, false, lv, lv, () => {
     renderEnhance();
+  }, {
+    onCancel: () => {
+      showSelectToast('강화를 취소했습니다', '#ffd23f');
+    },
+    onCommit: () => {
+      const liveTarget = getOwnedGeneral(tuid);
+      if (!liveTarget) {
+        showSelectToast('강화 대상이 없습니다', '#c1121f');
+        return null;
+      }
+      const liveLv = liveTarget.lv || 1;
+      if (liveLv >= ENHANCE_MAX_LV) {
+        showSelectToast('이미 최대 레벨', '#ffd23f');
+        return null;
+      }
+      if ((SAVE.starsAvailable || 0) < ENHANCE_COST_STARS) {
+        showSelectToast('별이 부족합니다', '#c1121f');
+        return null;
+      }
+      if ((SAVE.gold || 0) < ENHANCE_COST_GOLD) {
+        showSelectToast('골드가 부족합니다', '#c1121f');
+        return null;
+      }
+
+      SAVE.starsAvailable -= ENHANCE_COST_STARS;
+      SAVE.gold -= ENHANCE_COST_GOLD;
+
+      const liveFodderObjs = fodderUids.map(uid => getOwnedGeneral(uid)).filter(Boolean);
+      fodderUids.forEach(uid => removeOwnedGeneral(uid));
+
+      const rate = enhanceSuccessRate(liveLv, liveFodderObjs);
+      const ok = Math.random() < rate;
+      let resultLv = liveLv;
+      if (ok) {
+        resultLv = liveLv + 1;
+        setGeneralLevel(tuid, resultLv);
+      } else if (liveLv > 1) {
+        resultLv = 1 + Math.floor(Math.random() * (liveLv - 1));
+        setGeneralLevel(tuid, resultLv);
+      }
+      saveProgress();
+
+      __ENH.fodderUids = [];
+      __ENH.pickMode = 'fodder';
+      return { success: ok, oldLv: liveLv, newLv: resultLv };
+    }
   });
 }
 
 // === 강화 의식 시네마틱 ===
-function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone) {
+function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, opts = {}) {
   const root = document.getElementById('enhRitual');
   if (!root) { onDone && onDone(); return; }
 
@@ -24740,6 +27930,7 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone) {
   const actions = document.getElementById('erActions');
   const retryBtn = document.getElementById('erRetryBtn');
   const doneBtn = document.getElementById('erDoneBtn');
+  const cancelBtn = document.getElementById('erCancelBtn');
 
   // 상태 초기화
   root.className = 'enh-ritual show';
@@ -24981,7 +28172,7 @@ function spawnEnhanceRitualFx(root, success) {
 }
 
 // Cinematic override for the enhance ritual.
-function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone) {
+function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, opts = {}) {
   const root = document.getElementById('enhRitual');
   if (!root) { onDone && onDone(); return; }
 
@@ -25001,6 +28192,7 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone) {
   const actions = document.getElementById('erActions');
   const retryBtn = document.getElementById('erRetryBtn');
   const doneBtn = document.getElementById('erDoneBtn');
+  const cancelBtn = document.getElementById('erCancelBtn');
 
   let timers = [];
   let closed = false;
@@ -25021,6 +28213,11 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone) {
   chargeFill.style.width = '0%';
   trigger.className = 'er-trigger';
   trigger.textContent = '강화하기';
+  if (cancelBtn) {
+    cancelBtn.className = 'er-cancel';
+    cancelBtn.textContent = '취소';
+    cancelBtn.disabled = false;
+  }
   flash.className = 'er-flash';
   result.className = 'er-result';
   resultTitle.textContent = '';
@@ -25084,7 +28281,9 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone) {
     sched(760, () => {
       result.className = `er-result ${success ? 'success' : 'fail'} show`;
       resultTitle.textContent = success ? '강화 성공' : '강화 실패';
-      resultLv.textContent = success ? `Lv ${oldLv} → Lv ${newLv} 달성` : `Lv ${oldLv} 유지`;
+      resultLv.textContent = success
+        ? `Lv ${oldLv} → Lv ${newLv} 달성`
+        : (newLv < oldLv ? `Lv ${oldLv} → Lv ${newLv} 하락` : `Lv ${oldLv} 유지`);
       targetEl.classList.add(success ? 'success-pop' : 'fail-shake');
       try {
         if (success) BGM && BGM.sfxEnhanceSuccess && BGM.sfxEnhanceSuccess();
@@ -25108,7 +28307,18 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone) {
     closed = true;
     clearTimers();
     root.className = 'enh-ritual';
+    if (cancelBtn) cancelBtn.className = 'er-cancel';
     clearEnhanceRitualFx(root);
+    onDone && onDone();
+  }
+  function cancelBeforeCommit() {
+    if (closed || started) return;
+    closed = true;
+    clearTimers();
+    root.className = 'enh-ritual';
+    if (cancelBtn) cancelBtn.className = 'er-cancel';
+    clearEnhanceRitualFx(root);
+    if (opts && typeof opts.onCancel === 'function') opts.onCancel();
     onDone && onDone();
   }
 
@@ -25121,15 +28331,29 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone) {
     close();
   };
   root.onclick = null;
+  if (cancelBtn) {
+    cancelBtn.onclick = (e) => {
+      e.stopPropagation();
+      cancelBeforeCommit();
+    };
+  }
   let started = false;
   function runChargeAndReveal() {
     if (started || closed) return;
+    if (opts && typeof opts.onCommit === 'function') {
+      const commitResult = opts.onCommit();
+      if (!commitResult) return;
+      success = !!commitResult.success;
+      oldLv = commitResult.oldLv;
+      newLv = commitResult.newLv;
+    }
     started = true;
     root.classList.remove('armed', 'preparing');
     root.classList.add('charging');
     if (title) title.textContent = '강 화';
     trigger.classList.remove('show');
     trigger.classList.add('fade');
+    if (cancelBtn) cancelBtn.classList.remove('show');
 
     sched(180, () => {
       charge.classList.add('show');
@@ -25177,6 +28401,7 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone) {
     root.classList.add('armed');
     if (title) title.textContent = '강화 준비';
     trigger.classList.add('show');
+    if (cancelBtn) cancelBtn.classList.add('show');
   });
 }
 

@@ -1,6 +1,6 @@
 {
   "appId": "com.leesp.samgukgi",
-  "appName": "삼국",
+  "appName": "손가락삼국지",
   "webDir": "www",
   "bundledWebRuntime": false,
   "android": {
