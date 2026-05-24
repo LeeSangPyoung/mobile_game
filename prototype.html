@@ -11263,6 +11263,10 @@
     <div class="general-detail-portrait">
       <div class="general-detail-backdrop" aria-hidden="true"></div>
       <div class="general-detail-aura" aria-hidden="true"></div>
+      <div class="general-detail-rating" aria-label="카드 능력치">
+        <b id="generalDetailRating">100</b>
+        <span id="generalDetailRole">장수</span>
+      </div>
       <img id="generalDetailArt" class="general-detail-art" alt="">
       <div class="general-detail-floor" aria-hidden="true"></div>
       <div class="general-detail-grade" id="generalDetailStars"></div>
@@ -11436,6 +11440,14 @@
 <!-- 전투 직전 만화풍 도발 컷씬 (적장 ↔ 아군 1대장) -->
 <div id="introDialog" style="display:none">
   <div class="idg-skip" id="idgSkip">건너뛰기 ▶</div>
+  <div class="idg-weather" aria-hidden="true">
+    <i class="idg-rain idg-rain-back"></i>
+    <i class="idg-rain idg-rain-front"></i>
+    <img class="idg-lightning idg-lightning-a" src="./assets/battle/intro_lightning_branch.png" alt="">
+    <img class="idg-lightning idg-lightning-b" src="./assets/battle/intro_lightning_branch.png" alt="">
+    <i class="idg-thunder-flash idg-thunder-flash-a"></i>
+    <i class="idg-thunder-flash idg-thunder-flash-b"></i>
+  </div>
   <div class="idg-stage">
     <div class="idg-portrait idg-left" id="idgLeft">
       <img id="idgLeftImg" alt="">
@@ -12060,6 +12072,52 @@ function formatGeneralBuffsChips(buffs = {}, uidOrLv) {
   if (!items.length) return '<span class="buff-chip muted"><b>지휘</b><i>+2%</i></span>';
   return `<div class="buff-chips">${items.join('')}</div>`;
 }
+function generalProfileRating(g) {
+  const stars = clampStars((g && g.stars) || 1);
+  const lv = Math.max(1, Math.min(ENHANCE_MAX_LV, (g && g.lv) || 1));
+  const starMult = STAR_MULT[stars] || 1;
+  const lvMult = ENHANCE_MULT[lv] || 1;
+  const score = 86 + generalScoreOf(g) * 105 * starMult * lvMult + stars * 2 + (lv - 1) * 2;
+  return Math.max(88, Math.min(139, Math.round(score)));
+}
+function generalProfileRole(g) {
+  const b = (g && g.buffs) || {};
+  const unitAtk = b.unitAtk || 0;
+  const unitDef = b.unitDef || 0;
+  const castleAtk = b.castleAtk || 0;
+  const castleDef = b.castleDef || 0;
+  const prodRate = b.prodRate || 0;
+  const entries = [
+    ['unitAtk', unitAtk],
+    ['unitDef', unitDef],
+    ['castleAtk', castleAtk],
+    ['castleDef', castleDef],
+    ['prodRate', prodRate],
+  ].sort((a, b2) => b2[1] - a[1]);
+  const top = entries[0] && entries[0][0];
+  if (prodRate >= 0.07 || (top === 'prodRate' && prodRate >= 0.04)) return '군사';
+  if (castleAtk >= 0.07 || top === 'castleAtk') return '공성';
+  if (castleDef >= 0.07 || top === 'castleDef') return '수성';
+  if (unitAtk >= 0.08 && unitDef >= 0.04) return '선봉';
+  if (unitAtk >= unitDef) return '맹장';
+  return '방진';
+}
+function formatGeneralProfileStats(g = {}, lv = 1) {
+  const labels = [
+    ['unitAtk', '병공'],
+    ['unitDef', '병방'],
+    ['castleAtk', '공성'],
+    ['castleDef', '수성'],
+    ['prodRate', '생산'],
+  ];
+  const mult = ENHANCE_MULT[Math.max(1, Math.min(ENHANCE_MAX_LV, lv || 1))] || 1;
+  const rows = labels.map(([key, label]) => {
+    const value = Math.round(((g.buffs && g.buffs[key]) || 0) * mult * 100);
+    const cls = value ? 'profile-stat' : 'profile-stat is-empty';
+    return `<span class="${cls}"><b>${label}</b><i>${value}</i></span>`;
+  }).join('');
+  return `<div class="profile-stat-grid">${rows}</div>`;
+}
 function upgStarCost(lv) { return Math.floor(lv / 5) + 1; } // 1,1,1,1,1, 2,2,2,2,2, 3..., 4...
 function upgUnitCost(key, lv) {
   return UPG_DEFS[key].currency === 'star' ? upgStarCost(lv) : upgCost(lv);
@@ -12518,8 +12576,9 @@ function getGeneralRarity(g) {
 function rarityBadgeHTML(g) {
   const r = getGeneralRarity(g);
   const stars = '★'.repeat(r.stars);
-  const glow = r.stars >= 4 ? `;text-shadow:0 0 8px ${r.color},0 1px 0 rgba(0,0,0,0.5)` : '';
-  return `<div class="rarity-badge tier-${r.tier}" title="${r.label} ★${r.stars}" style="color:${r.color}${glow}">${stars}</div>`;
+  const starColor = '#ffd34d';
+  const glow = r.stars >= 4 ? ';text-shadow:0 0 8px rgba(255,211,77,0.82),0 1px 0 rgba(0,0,0,0.5)' : '';
+  return `<div class="rarity-badge tier-${r.tier}" title="${r.label} ★${r.stars}" style="color:${starColor}${glow}">${stars}</div>`;
 }
 
 // === 인스턴스 기반 헬퍼 (uid 키) ===
@@ -12941,6 +13000,8 @@ function showGeneralDetail(g) {
   const rarityEl = document.getElementById('generalDetailRarity');
   const levelEl = document.getElementById('generalDetailLevel');
   const starsEl = document.getElementById('generalDetailStars');
+  const ratingEl = document.getElementById('generalDetailRating');
+  const roleEl = document.getElementById('generalDetailRole');
   const powerEl = document.getElementById('generalDetailPower');
   const buffsEl = document.getElementById('generalDetailBuffs');
 
@@ -12957,12 +13018,17 @@ function showGeneralDetail(g) {
     rarityEl.style.color = rarity.color;
   }
   if (levelEl) levelEl.textContent = lv > 1 ? `+${lv - 1}` : 'Lv.1';
+  if (ratingEl) ratingEl.textContent = generalProfileRating(g);
+  if (roleEl) roleEl.textContent = generalProfileRole(g);
   if (starsEl) {
     starsEl.textContent = '★'.repeat(stars);
-    starsEl.style.color = rarity.color;
+    starsEl.style.color = '#ffd34d';
+    starsEl.style.textShadow = stars >= 4
+      ? '0 0 8px rgba(255,211,77,0.82), 0 1px 0 rgba(0,0,0,0.6)'
+      : '0 1px 0 rgba(0,0,0,0.6)';
   }
   if (powerEl) powerEl.textContent = `전투력 ${generalDetailPower(g).toLocaleString()}`;
-  if (buffsEl) buffsEl.innerHTML = formatGeneralBuffsChips(g.buffs, lv);
+  if (buffsEl) buffsEl.innerHTML = formatGeneralProfileStats(g, lv);
 
   generalDetailLastFocus = document.activeElement;
   clearTimeout(generalDetailCloseTimer);
@@ -16057,11 +16123,42 @@ function battleFxReady(key, ms) {
   return true;
 }
 
-function playBattleClashSfx(ms = 140) {
+function pickBattleSfxKind(a, b, first = false) {
+  const units = [a && a.unit, b && b.unit].filter(Boolean);
+  if (!units.length) return 'clash';
+  const hasCavalry = units.includes('cavalry');
+  const hasArcher = units.includes('archer');
+  const hasSpear = units.includes('spear');
+  const roll = Math.random();
+  if (hasCavalry) return 'spear';
+  if (hasArcher && roll < 0.65) return 'archer';
+  if (hasSpear && roll < 0.85) return 'spear';
+  return 'clash';
+}
+
+function playBattleClashSfx(a, b, opts = {}) {
   const now = performance.now();
-  if (window._lastBattleClashSfx && now - window._lastBattleClashSfx < ms) return;
+  if (typeof a === 'number') {
+    const ms = a;
+    if (window._lastBattleClashSfx && now - window._lastBattleClashSfx < ms) return;
+    window._lastBattleClashSfx = now;
+    try { BGM.sfxClash(); } catch (_) {}
+    return;
+  }
+  const first = !!opts.first;
+  const kind = pickBattleSfxKind(a, b, first);
+  const anyGap = first ? 150 : 105;
+  const kindGap = kind === 'archer' ? 150 : 135;
+  if (window._lastBattleClashSfx && now - window._lastBattleClashSfx < anyGap) return;
+  window._lastBattleSfxByKind = window._lastBattleSfxByKind || {};
+  if (window._lastBattleSfxByKind[kind] && now - window._lastBattleSfxByKind[kind] < kindGap) return;
   window._lastBattleClashSfx = now;
-  try { BGM.sfxClash(); } catch (_) {}
+  window._lastBattleSfxByKind[kind] = now;
+  try {
+    if (kind === 'spear' && BGM.sfxSpear) BGM.sfxSpear();
+    else if (kind === 'archer' && BGM.sfxArrow) BGM.sfxArrow();
+    else BGM.sfxClash();
+  } catch (_) {}
 }
 
 function pushBattleFx(fx) {
@@ -16138,7 +16235,7 @@ function spawnMeleeClash(x, y, a, b, opts = {}) {
   }
   if (first) spawnImpactText(x, y - 8 * DPR() / zoom, '격돌!', '#ffe066', { size: 20, life: 0.82, vy: -28 });
   battlePulse = Math.max(battlePulse, first ? 0.32 : 0.14);
-  playBattleClashSfx(first ? 180 : 120);
+  playBattleClashSfx(a, b, { first });
 }
 
 function spawnCasualtyFx(a, lost) {
@@ -16542,16 +16639,47 @@ function drawBattleFx() {
 
 // === 말풍선 시스템 ===
 const speeches = [];
+const MAX_ARMY_SPEECHES_PER_GROUP = 2;
 // kind: 'army' | 'castle'
+function speechArmyGroupKey(target, kind) {
+  if (kind !== 'army' || !target) return null;
+  return target.groupId != null ? `group:${target.groupId}` : target;
+}
+function pruneArmySpeechGroup(target, kind, maxCount = MAX_ARMY_SPEECHES_PER_GROUP) {
+  if (kind !== 'army' || maxCount < 1) return;
+  const key = speechArmyGroupKey(target, kind);
+  while (true) {
+    let count = 0;
+    let oldestIndex = -1;
+    let oldestAge = -1;
+    for (let i = 0; i < speeches.length; i++) {
+      const s = speeches[i];
+      if (s.kind !== 'army' || speechArmyGroupKey(s.target, s.kind) !== key) continue;
+      count++;
+      if (s.age >= oldestAge) {
+        oldestAge = s.age;
+        oldestIndex = i;
+      }
+    }
+    if (count < maxCount || oldestIndex < 0) break;
+    speeches.splice(oldestIndex, 1);
+  }
+}
 function showSpeech(target, text, opts = {}) {
   if (!target) return;
+  const kind = opts.kind || (target.isArmy || (typeof target.troops === 'number' && target.unit) ? 'army' : 'castle');
+  const armyGroupKey = speechArmyGroupKey(target, kind);
   // 동일 대상에 같은 문구 도배 방지
   for (const s of speeches) {
-    if (s.target === target && s.text === text && s.age < 1.0) return;
+    const sameTarget = kind === 'army'
+      ? (s.kind === 'army' && speechArmyGroupKey(s.target, s.kind) === armyGroupKey)
+      : s.target === target;
+    if (sameTarget && s.text === text && s.age < 1.0) return;
   }
+  pruneArmySpeechGroup(target, kind);
   speeches.push({
     target,
-    kind: opts.kind || (target.isArmy || (typeof target.troops === 'number' && target.unit) ? 'army' : 'castle'),
+    kind,
     text,
     life: opts.life || 1.8,
     age: 0,
@@ -17064,7 +17192,7 @@ function sendCombinedArmy(from, to, homeCastle) {
   let firstArmy = null;
   for (const k of UNIT_KEYS) {
     if ((from.troops[k] || 0) > 0) {
-      sendArmy(from, to, k, homeCastle, false);
+      sendArmy(from, to, k, homeCastle, false, { groupId });
       const a = armies[armies.length - 1];
       if (a) {
         a.groupId = groupId;
@@ -17118,7 +17246,7 @@ function sendCombinedArmy(from, to, homeCastle) {
   }
 }
 
-function sendArmy(from, to, unit, homeCastle, withCommander) {
+function sendArmy(from, to, unit, homeCastle, withCommander, opts = {}) {
   const send = from.troops[unit];
   if (send < 1) return;
   from.troops[unit] = 0;
@@ -17140,6 +17268,7 @@ function sendArmy(from, to, unit, homeCastle, withCommander) {
     seed: Math.random()*1000,
     shooting: false, shootTimer: 0,
     isArmy: true,
+    groupId: opts.groupId != null ? opts.groupId : null,
   };
   if (commander) {
     a.commanderUid = commander.uid != null ? commander.uid : commander.id;
@@ -18991,7 +19120,9 @@ const BGM = (() => {
   function sfxArrow() {
     if (!ctx || !unlocked) return;
     const t = ctx.currentTime;
-    // 슉~ 화살: 짧은 고주파 노이즈 (피치 다운) — 버퍼는 1회만 생성하고 재사용
+    // 활시위 튕김 + 슉~ 화살: 짧은 고주파 노이즈 (피치 다운)
+    tone(520 + Math.random() * 160, t, 0.045, 'triangle', 0.14);
+    tone(150 + Math.random() * 45, t + 0.004, 0.04, 'sawtooth', 0.07);
     if (!_arrowBuf) {
       const len = Math.max(1, Math.floor(ctx.sampleRate * 0.18));
       _arrowBuf = ctx.createBuffer(1, len, ctx.sampleRate);
@@ -19004,12 +19135,12 @@ const BGM = (() => {
     const g = ctx.createGain();
     filter.type = 'bandpass';
     filter.Q.value = 6;
-    filter.frequency.setValueAtTime(4500, t);
-    filter.frequency.exponentialRampToValueAtTime(900, t + 0.18);
-    envGain(g, t, 0.3, 0.18, 0.04);
+    filter.frequency.setValueAtTime(4300 + Math.random() * 1200, t + 0.01);
+    filter.frequency.exponentialRampToValueAtTime(850 + Math.random() * 350, t + 0.18);
+    envGain(g, t + 0.01, 0.28, 0.17, 0.04);
     src.buffer = buffer;
     src.connect(filter); filter.connect(g); g.connect(master);
-    src.start(t);
+    src.start(t + 0.01);
   }
   function sfxClash() {
     if (!ctx || !unlocked) return;
@@ -19020,6 +19151,15 @@ const BGM = (() => {
     noiseHit(t, 0.06, 0.3, 3000, 8000);
     // 짧은 둔탁음 (방패/갑옷)
     tone(180, t, 0.08, 'sine', 0.22);
+  }
+  function sfxSpear() {
+    if (!ctx || !unlocked) return;
+    const t = ctx.currentTime;
+    // 창 찌르기: 날카로운 파공음 + 나무 자루가 부딪히는 짧은 탁음
+    noiseHit(t, 0.055, 0.24, 1800, 5200);
+    tone(760 + Math.random() * 240, t + 0.006, 0.075, 'triangle', 0.17);
+    tone(250 + Math.random() * 80, t + 0.018, 0.055, 'square', 0.11);
+    noiseHit(t + 0.022, 0.04, 0.13, 520, 1500);
   }
   function sfxHorse() {
     if (!ctx || !unlocked) return;
@@ -19115,7 +19255,7 @@ const BGM = (() => {
   return {
     setMode, unlock, get unlocked() { return unlocked; },
     suspendAudio, resumeAudio, applySettings,
-    sfxShout, sfxArrow, sfxClash, sfxHorse, sfxCapture, sfxClick,
+    sfxShout, sfxArrow, sfxClash, sfxSpear, sfxHorse, sfxCapture, sfxClick,
     sfxEnhanceCharge, sfxEnhanceFlash, sfxEnhanceSuccess, sfxEnhanceFail,
   };
 })();
@@ -28932,6 +29072,9 @@ function closeTutorialOffer(accept) {
     --idg-bg-image: url('./assets/battle/intro_duel_bg.png');
     --idg-left-glow: rgba(255, 45, 22, 0.34);
     --idg-right-glow: rgba(35, 160, 255, 0.30);
+    --idg-rain-opacity: 0.48;
+    --idg-lightning-opacity: 0.84;
+    --idg-flash-opacity: 0.16;
     background:
       linear-gradient(180deg, rgba(3, 5, 9, 0.22) 0%, rgba(3, 5, 9, 0.10) 38%, rgba(3, 5, 9, 0.66) 100%),
       radial-gradient(ellipse at 22% 74%, var(--idg-left-glow), transparent 34%),
@@ -28944,51 +29087,81 @@ function closeTutorialOffer(accept) {
     --idg-bg-image: url('./assets/battle/intro_duel_bg.png');
     --idg-left-glow: rgba(255, 45, 22, 0.34);
     --idg-right-glow: rgba(35, 160, 255, 0.30);
+    --idg-rain-opacity: 0.50;
+    --idg-lightning-opacity: 0.90;
+    --idg-flash-opacity: 0.18;
   }
   #introDialog.intro-duel-day {
     --idg-bg-image: url('./assets/battle/intro_duel_bg_day.png');
     --idg-left-glow: rgba(255, 93, 25, 0.24);
     --idg-right-glow: rgba(54, 143, 255, 0.20);
+    --idg-rain-opacity: 0.26;
+    --idg-lightning-opacity: 0.55;
+    --idg-flash-opacity: 0.10;
   }
   #introDialog.intro-duel-snow {
     --idg-bg-image: url('./assets/battle/intro_duel_bg_snow.png');
     --idg-left-glow: rgba(255, 74, 54, 0.27);
     --idg-right-glow: rgba(132, 215, 255, 0.26);
+    --idg-rain-opacity: 0.18;
+    --idg-lightning-opacity: 0.42;
+    --idg-flash-opacity: 0.08;
   }
   #introDialog.intro-duel-storm {
     --idg-bg-image: url('./assets/battle/intro_duel_bg_storm.png');
     --idg-left-glow: rgba(255, 67, 24, 0.36);
     --idg-right-glow: rgba(70, 176, 255, 0.32);
+    --idg-rain-opacity: 0.74;
+    --idg-lightning-opacity: 1.00;
+    --idg-flash-opacity: 0.24;
   }
   #introDialog.intro-duel-bridge {
     --idg-bg-image: url('./assets/battle/intro_duel_bg_bridge.png');
     --idg-left-glow: rgba(255, 178, 84, 0.18);
     --idg-right-glow: rgba(96, 198, 255, 0.20);
+    --idg-rain-opacity: 0.56;
+    --idg-lightning-opacity: 0.82;
+    --idg-flash-opacity: 0.16;
   }
   #introDialog.intro-duel-cityfire {
     --idg-bg-image: url('./assets/battle/intro_duel_bg_cityfire.png');
     --idg-left-glow: rgba(255, 82, 25, 0.32);
     --idg-right-glow: rgba(255, 180, 76, 0.16);
+    --idg-rain-opacity: 0.42;
+    --idg-lightning-opacity: 0.70;
+    --idg-flash-opacity: 0.14;
   }
   #introDialog.intro-duel-bamboo {
     --idg-bg-image: url('./assets/battle/intro_duel_bg_bamboo.png');
     --idg-left-glow: rgba(82, 180, 92, 0.20);
     --idg-right-glow: rgba(255, 202, 96, 0.16);
+    --idg-rain-opacity: 0.32;
+    --idg-lightning-opacity: 0.58;
+    --idg-flash-opacity: 0.10;
   }
   #introDialog.intro-duel-fleet {
     --idg-bg-image: url('./assets/battle/intro_duel_bg_fleet.png');
     --idg-left-glow: rgba(255, 93, 30, 0.30);
     --idg-right-glow: rgba(65, 145, 215, 0.20);
+    --idg-rain-opacity: 0.58;
+    --idg-lightning-opacity: 0.88;
+    --idg-flash-opacity: 0.17;
   }
   #introDialog.intro-duel-desert {
     --idg-bg-image: url('./assets/battle/intro_duel_bg_desert.png');
     --idg-left-glow: rgba(255, 178, 70, 0.24);
     --idg-right-glow: rgba(122, 84, 190, 0.16);
+    --idg-rain-opacity: 0.16;
+    --idg-lightning-opacity: 0.38;
+    --idg-flash-opacity: 0.06;
   }
   #introDialog.intro-duel-tomb {
     --idg-bg-image: url('./assets/battle/intro_duel_bg_tomb.png');
     --idg-left-glow: rgba(116, 172, 255, 0.18);
     --idg-right-glow: rgba(255, 180, 84, 0.14);
+    --idg-rain-opacity: 0.28;
+    --idg-lightning-opacity: 0.56;
+    --idg-flash-opacity: 0.10;
   }
   #introDialog::before {
     background:
@@ -29015,6 +29188,98 @@ function closeTutorialOffer(accept) {
       0 0 30px rgba(255, 76, 35, 0.44),
       0 0 92px rgba(255, 191, 64, 0.22),
       inset 0 0 22px rgba(255, 216, 99, 0.17) !important;
+  }
+  #introDialog .idg-weather {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 2 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    mix-blend-mode: screen !important;
+  }
+  #introDialog .idg-rain,
+  #introDialog .idg-thunder-flash {
+    position: absolute !important;
+    display: block !important;
+    pointer-events: none !important;
+  }
+  #introDialog .idg-rain {
+    inset: -24% -18% !important;
+    opacity: var(--idg-rain-opacity) !important;
+    transform: rotate(10deg) translate3d(0, 0, 0) !important;
+    transform-origin: 50% 50% !important;
+    will-change: background-position, opacity !important;
+  }
+  #introDialog .idg-rain-back {
+    background:
+      repeating-linear-gradient(104deg, transparent 0 22px, rgba(196, 224, 255, 0.17) 22px 24px, transparent 24px 62px) !important;
+    background-size: 180px 260px !important;
+    filter: blur(0.55px) !important;
+    animation: idgRainBack 0.92s linear infinite !important;
+  }
+  #introDialog .idg-rain-front {
+    background:
+      repeating-linear-gradient(104deg, transparent 0 18px, rgba(229, 244, 255, 0.34) 18px 20px, transparent 20px 54px) !important;
+    background-size: 230px 340px !important;
+    opacity: calc(var(--idg-rain-opacity) * 0.72) !important;
+    filter: blur(0.16px) !important;
+    animation: idgRainFront 0.48s linear infinite !important;
+  }
+  #introDialog .idg-lightning {
+    position: absolute !important;
+    top: -8% !important;
+    width: clamp(190px, 22vw, 380px) !important;
+    height: auto !important;
+    opacity: 0 !important;
+    mix-blend-mode: screen !important;
+    pointer-events: none !important;
+    filter:
+      drop-shadow(0 0 16px rgba(164, 220, 255, 0.72))
+      drop-shadow(0 0 42px rgba(64, 148, 255, 0.30)) !important;
+    will-change: opacity, transform !important;
+  }
+  #introDialog .idg-lightning-a {
+    left: clamp(18px, 8vw, 150px) !important;
+    animation: idgLightningStrike 6.8s steps(1, end) infinite !important;
+  }
+  #introDialog .idg-lightning-b {
+    right: clamp(10px, 7vw, 128px) !important;
+    transform: scaleX(-1) rotate(4deg) !important;
+    animation: idgLightningStrike 7.9s steps(1, end) infinite 3.4s !important;
+  }
+  #introDialog .idg-thunder-flash {
+    inset: 0 !important;
+    opacity: 0 !important;
+    background:
+      radial-gradient(circle at 20% 16%, rgba(190, 228, 255, 0.86), transparent 23%),
+      radial-gradient(circle at 78% 18%, rgba(255, 242, 188, 0.54), transparent 28%),
+      linear-gradient(180deg, rgba(190, 222, 255, 0.24), transparent 48%) !important;
+    mix-blend-mode: screen !important;
+    will-change: opacity !important;
+  }
+  #introDialog .idg-thunder-flash-a {
+    animation: idgThunderFlash 6.8s steps(1, end) infinite !important;
+  }
+  #introDialog .idg-thunder-flash-b {
+    animation: idgThunderFlash 7.9s steps(1, end) infinite 3.4s !important;
+  }
+  @keyframes idgRainBack {
+    from { background-position: 0 0; }
+    to { background-position: -92px 260px; }
+  }
+  @keyframes idgRainFront {
+    from { background-position: 0 0; }
+    to { background-position: -148px 340px; }
+  }
+  @keyframes idgLightningStrike {
+    0%, 5.8%, 6.24%, 6.72%, 100% { opacity: 0; }
+    5.88% { opacity: calc(var(--idg-lightning-opacity) * 0.96); }
+    6.36% { opacity: calc(var(--idg-lightning-opacity) * 0.52); }
+  }
+  @keyframes idgThunderFlash {
+    0%, 5.78%, 6.28%, 6.76%, 100% { opacity: 0; }
+    5.9% { opacity: calc(var(--idg-flash-opacity) * 1.00); }
+    6.4% { opacity: calc(var(--idg-flash-opacity) * 0.55); }
   }
   #introDialog .idg-clash {
     position: absolute !important;
@@ -29074,6 +29339,8 @@ function closeTutorialOffer(accept) {
   #introDialog .idg-stage {
     width: min(1180px, 100%) !important;
     max-width: min(1180px, calc(100vw - 28px)) !important;
+    position: relative !important;
+    z-index: 3 !important;
     isolation: isolate !important;
   }
   #introDialog .idg-stage::before {
@@ -29325,6 +29592,7 @@ function closeTutorialOffer(accept) {
     background:
       linear-gradient(180deg, rgba(20, 16, 10, 0.88), rgba(4, 6, 10, 0.86)) !important;
     color: #fff4c8 !important;
+    z-index: 6002 !important;
   }
   @media (min-width: 720px) and (orientation: landscape) {
     #introDialog .idg-stage {
@@ -29351,6 +29619,19 @@ function closeTutorialOffer(accept) {
   @media (max-width: 520px), (max-height: 760px) {
     #introDialog .idg-stage {
       max-width: min(520px, calc(100vw - 18px)) !important;
+    }
+    #introDialog .idg-rain {
+      inset: -28% -46% !important;
+    }
+    #introDialog .idg-lightning {
+      top: -5% !important;
+      width: clamp(150px, 42vw, 250px) !important;
+    }
+    #introDialog .idg-lightning-a {
+      left: -5% !important;
+    }
+    #introDialog .idg-lightning-b {
+      right: -9% !important;
     }
     #introDialog .idg-stage::before {
       width: 54px !important;
@@ -29381,6 +29662,16 @@ function closeTutorialOffer(accept) {
     }
     #introDialog .idg-portrait.idg-right {
       right: 12px !important;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #introDialog .idg-rain,
+    #introDialog .idg-lightning,
+    #introDialog .idg-thunder-flash {
+      animation: none !important;
+    }
+    #introDialog .idg-rain {
+      opacity: calc(var(--idg-rain-opacity) * 0.42) !important;
     }
   }
 
@@ -32231,6 +32522,9 @@ function closeTutorialOffer(accept) {
   #generalDetailModal {
     --card-edge: #bdc7d4;
     --card-edge-dark: #566070;
+    --card-edge-soft: #e2e9f3;
+    --card-chip-edge: #8ca2c2;
+    --card-art-glow: rgba(184,192,204,0.34);
     --card-glow: rgba(184,192,204,0.24);
     --card-foil: rgba(255,255,255,0.12);
     --card-name-bg: rgba(13,20,31,0.96);
@@ -32238,6 +32532,9 @@ function closeTutorialOffer(accept) {
   #generalDetailModal[data-tier="star1"] {
     --card-edge: #c8d0db;
     --card-edge-dark: #596371;
+    --card-edge-soft: #eef3f9;
+    --card-chip-edge: #8f9db0;
+    --card-art-glow: rgba(200,208,219,0.36);
     --card-glow: rgba(190,202,217,0.22);
     --card-foil: rgba(236,242,250,0.12);
     --card-name-bg: rgba(20,27,36,0.97);
@@ -32245,6 +32542,9 @@ function closeTutorialOffer(accept) {
   #generalDetailModal[data-tier="star2"] {
     --card-edge: #55d98e;
     --card-edge-dark: #14613e;
+    --card-edge-soft: #bff8d6;
+    --card-chip-edge: #5fbf8d;
+    --card-art-glow: rgba(74,222,128,0.40);
     --card-glow: rgba(74,222,128,0.27);
     --card-foil: rgba(142,255,190,0.15);
     --card-name-bg: rgba(10,35,27,0.97);
@@ -32252,6 +32552,9 @@ function closeTutorialOffer(accept) {
   #generalDetailModal[data-tier="star3"] {
     --card-edge: #58b7ff;
     --card-edge-dark: #173f78;
+    --card-edge-soft: #bce2ff;
+    --card-chip-edge: #79a8dc;
+    --card-art-glow: rgba(61,165,255,0.44);
     --card-glow: rgba(61,165,255,0.34);
     --card-foil: rgba(115,202,255,0.18);
     --card-name-bg: rgba(10,25,45,0.98);
@@ -32259,6 +32562,9 @@ function closeTutorialOffer(accept) {
   #generalDetailModal[data-tier="star4"] {
     --card-edge: #ce9aff;
     --card-edge-dark: #513078;
+    --card-edge-soft: #ead2ff;
+    --card-chip-edge: #a98bd0;
+    --card-art-glow: rgba(192,132,252,0.46);
     --card-glow: rgba(192,132,252,0.38);
     --card-foil: rgba(221,178,255,0.22);
     --card-name-bg: rgba(29,18,45,0.98);
@@ -32266,6 +32572,9 @@ function closeTutorialOffer(accept) {
   #generalDetailModal[data-tier="star5"] {
     --card-edge: #ffd45f;
     --card-edge-dark: #8c4216;
+    --card-edge-soft: #fff0b7;
+    --card-chip-edge: #d5a14b;
+    --card-art-glow: rgba(255,176,32,0.52);
     --card-glow: rgba(255,176,32,0.46);
     --card-foil: rgba(255,240,150,0.25);
     --card-name-bg: rgba(52,24,10,0.98);
@@ -32301,7 +32610,7 @@ function closeTutorialOffer(accept) {
   #generalDetailModal .general-detail-card::after {
     inset: 11px !important;
     z-index: 4 !important;
-    border: 1px solid color-mix(in srgb, var(--card-edge) 72%, #ffffff 28%) !important;
+    border: 1px solid var(--card-edge-soft) !important;
     border-radius: 5px !important;
     box-shadow:
       inset 0 0 0 1px rgba(0,0,0,0.42),
@@ -32321,7 +32630,7 @@ function closeTutorialOffer(accept) {
   }
   #generalDetailModal .general-detail-aura {
     inset: 54px 10px 46px !important;
-    opacity: 0.76 !important;
+    opacity: 0.66 !important;
     filter: blur(9px) saturate(1.12) !important;
   }
   #generalDetailModal .general-detail-art {
@@ -32331,7 +32640,7 @@ function closeTutorialOffer(accept) {
     object-position: center bottom !important;
     filter:
       drop-shadow(0 0 3px rgba(255,239,178,0.52))
-      drop-shadow(0 0 10px color-mix(in srgb, var(--card-edge) 55%, transparent))
+      drop-shadow(0 0 10px var(--card-art-glow))
       drop-shadow(0 19px 18px rgba(0,0,0,0.72)) !important;
   }
   #generalDetailModal .general-detail-grade {
@@ -32342,7 +32651,7 @@ function closeTutorialOffer(accept) {
     border: 2px solid var(--card-edge) !important;
     background:
       linear-gradient(180deg, rgba(7,10,17,0.96), rgba(1,3,8,0.96)) !important;
-    color: var(--detail-rarity) !important;
+    color: #ffd34d !important;
     font-size: 15px !important;
     line-height: 1 !important;
     box-shadow: 0 8px 14px rgba(0,0,0,0.44), 0 0 13px var(--card-glow) !important;
@@ -32362,7 +32671,7 @@ function closeTutorialOffer(accept) {
     border-top: 2px solid var(--card-edge) !important;
     border-radius: 0 0 5px 5px !important;
     background:
-      linear-gradient(180deg, color-mix(in srgb, var(--card-name-bg) 88%, transparent), rgba(3,6,11,0.99)),
+      linear-gradient(180deg, var(--card-name-bg), rgba(3,6,11,0.99)),
       #05080e !important;
   }
   #generalDetailModal .general-detail-kicker {
@@ -32372,7 +32681,7 @@ function closeTutorialOffer(accept) {
   #generalDetailModal .general-detail-kicker span {
     min-width: 50px !important;
     padding: 3px 8px 4px !important;
-    border: 1px solid color-mix(in srgb, var(--card-edge) 65%, #ffffff 15%) !important;
+    border: 1px solid var(--card-edge-soft) !important;
     background: rgba(255,255,255,0.07) !important;
     font-size: 11px !important;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 0 8px var(--card-glow);
@@ -32402,7 +32711,7 @@ function closeTutorialOffer(accept) {
   #generalDetailModal .general-detail-stats .buff-chip {
     min-height: 32px !important;
     padding: 5px 9px !important;
-    border: 1px solid color-mix(in srgb, var(--card-edge) 64%, #9bbfff 18%) !important;
+    border: 1px solid var(--card-chip-edge) !important;
     border-radius: 5px !important;
     background:
       linear-gradient(180deg, rgba(35,46,61,0.96), rgba(14,21,32,0.98)) !important;
@@ -32426,6 +32735,681 @@ function closeTutorialOffer(accept) {
     #generalDetailModal .general-detail-stats .buff-chip {
       min-height: 29px !important;
       font-size: 11px !important;
+    }
+  }
+
+  /* 장수 상세 팝업 카드 배경 가독성: 전장 이미지를 더 읽히게 */
+  #generalDetailModal .general-detail-backdrop {
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(255,220,128,0.13), transparent 34%),
+      linear-gradient(180deg, rgba(0,0,0,0.03), rgba(0,0,0,0.28) 70%, rgba(0,0,0,0.50)),
+      linear-gradient(90deg, rgba(0,0,0,0.34), transparent 23% 77%, rgba(0,0,0,0.34)),
+      var(--detail-bg) center / cover no-repeat !important;
+    filter: saturate(1.18) contrast(1.06) brightness(0.98) !important;
+  }
+  #generalDetailModal .general-detail-backdrop::after {
+    background:
+      radial-gradient(ellipse at 50% 42%, transparent 0 38%, rgba(0,0,0,0.08) 66%, rgba(0,0,0,0.26) 100%),
+      radial-gradient(ellipse at 50% 88%, rgba(224,112,26,0.18), transparent 34%),
+      linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.16)) !important;
+  }
+
+  /* 장수 상세 팝업 메인 팔레트: 흑금/동판 카드 베이스 */
+  #generalDetailModal {
+    --card-edge: #c48a3a;
+    --card-edge-dark: #3d190c;
+    --card-edge-soft: #f0c66a;
+    --card-chip-edge: #a87438;
+    --card-art-glow: rgba(255,158,54,0.42);
+    --card-glow: rgba(215,111,34,0.36);
+    --card-foil: rgba(255,214,112,0.18);
+    --card-name-bg: rgba(39,17,8,0.97);
+  }
+  #generalDetailModal[data-tier="star1"] {
+    --card-edge: #9b7750;
+    --card-edge-dark: #27170d;
+    --card-edge-soft: #d6b27a;
+    --card-chip-edge: #73593e;
+    --card-art-glow: rgba(215,168,96,0.26);
+    --card-glow: rgba(168,120,70,0.22);
+    --card-foil: rgba(238,208,154,0.10);
+    --card-name-bg: rgba(26,18,13,0.97);
+  }
+  #generalDetailModal[data-tier="star2"] {
+    --card-edge: #b8873f;
+    --card-edge-dark: #31210c;
+    --card-edge-soft: #e4bf67;
+    --card-chip-edge: #8a6f36;
+    --card-art-glow: rgba(191,189,82,0.30);
+    --card-glow: rgba(186,126,48,0.28);
+    --card-foil: rgba(220,255,146,0.12);
+    --card-name-bg: rgba(26,29,10,0.97);
+  }
+  #generalDetailModal[data-tier="star3"] {
+    --card-edge: #c68c3b;
+    --card-edge-dark: #34180b;
+    --card-edge-soft: #edc468;
+    --card-chip-edge: #9a6b37;
+    --card-art-glow: rgba(255,154,54,0.36);
+    --card-glow: rgba(205,105,34,0.34);
+    --card-foil: rgba(255,220,122,0.15);
+    --card-name-bg: rgba(34,17,8,0.98);
+  }
+  #generalDetailModal[data-tier="star4"] {
+    --card-edge: #d09a45;
+    --card-edge-dark: #41170b;
+    --card-edge-soft: #f2ce76;
+    --card-chip-edge: #a7743b;
+    --card-art-glow: rgba(255,159,65,0.42);
+    --card-glow: rgba(222,120,42,0.40);
+    --card-foil: rgba(255,220,128,0.20);
+    --card-name-bg: rgba(42,16,10,0.98);
+  }
+  #generalDetailModal[data-tier="star5"] {
+    --card-edge: #f4bf4e;
+    --card-edge-dark: #6a270c;
+    --card-edge-soft: #ffe38d;
+    --card-chip-edge: #c9903e;
+    --card-art-glow: rgba(255,183,59,0.56);
+    --card-glow: rgba(255,142,35,0.48);
+    --card-foil: rgba(255,238,156,0.26);
+    --card-name-bg: rgba(58,23,7,0.98);
+  }
+  #generalDetailModal .general-detail-card {
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255,204,103,0.25), transparent 36%),
+      linear-gradient(145deg, rgba(255,238,178,0.20), transparent 22% 74%, rgba(0,0,0,0.38)),
+      linear-gradient(180deg, #5b2a10 0%, var(--card-edge) 4%, #2c1209 44%, var(--card-edge-dark) 100%) !important;
+    box-shadow:
+      0 22px 56px rgba(0,0,0,0.78),
+      0 0 0 1px rgba(255,214,112,0.18),
+      0 0 26px var(--card-glow),
+      inset 0 1px 0 rgba(255,236,172,0.34) !important;
+  }
+  #generalDetailModal .general-detail-info {
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255,166,54,0.16), transparent 42%),
+      linear-gradient(180deg, var(--card-name-bg), rgba(9,5,3,0.99)),
+      #130904 !important;
+  }
+  #generalDetailModal .general-detail-stats .buff-chip {
+    background:
+      linear-gradient(180deg, rgba(70,43,24,0.97), rgba(22,13,8,0.99)) !important;
+    color: #fff0b2 !important;
+  }
+  #generalDetailModal .general-detail-kicker span {
+    background: rgba(33,18,9,0.78) !important;
+    color: #fff0b2 !important;
+  }
+  #generalDetailModal #generalDetailRarity {
+    color: var(--detail-rarity) !important;
+    text-shadow: 0 0 8px rgba(255,211,77,0.14), 0 1px 0 rgba(0,0,0,0.62);
+  }
+  .rarity-badge {
+    color: #ffd34d !important;
+  }
+
+  /* 장수 상세 프로필: FIFA 카드식 오버롤/역할/스탯 카드화 */
+  #generalDetailModal .general-detail-card {
+    width: min(334px, calc(100vw - 42px)) !important;
+    max-height: min(688px, calc(100dvh - 34px)) !important;
+    grid-template-rows: minmax(405px, 1fr) auto !important;
+    padding: 8px !important;
+    border: 0 !important;
+    border-radius: 13px !important;
+    background:
+      linear-gradient(138deg, rgba(255,255,255,0.28), transparent 18% 78%, rgba(0,0,0,0.42)),
+      repeating-linear-gradient(125deg, rgba(255,255,255,0.11) 0 2px, transparent 2px 18px),
+      radial-gradient(circle at 68% 16%, rgba(255,238,156,0.42), transparent 24%),
+      linear-gradient(180deg, var(--card-edge-soft) 0%, var(--card-edge) 7%, var(--card-edge-dark) 62%, #07080d 100%) !important;
+    box-shadow:
+      0 24px 68px rgba(0,0,0,0.78),
+      0 0 0 1px rgba(255,255,255,0.20),
+      0 0 34px var(--card-glow),
+      inset 0 2px 0 rgba(255,255,255,0.34) !important;
+  }
+  #generalDetailModal .general-detail-card::before {
+    inset: 8px !important;
+    z-index: 5 !important;
+    border-radius: 9px !important;
+    background:
+      linear-gradient(126deg, transparent 0 35%, rgba(255,255,255,0.24) 43%, transparent 52%),
+      linear-gradient(90deg, rgba(255,255,255,0.16), transparent 22% 78%, rgba(0,0,0,0.28)) !important;
+    opacity: 0.78 !important;
+    pointer-events: none !important;
+  }
+  #generalDetailModal .general-detail-card::after {
+    inset: 13px !important;
+    z-index: 5 !important;
+    border: 1px solid var(--card-edge-soft) !important;
+    border-radius: 8px !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(0,0,0,0.50),
+      inset 0 0 24px rgba(0,0,0,0.24) !important;
+    pointer-events: none !important;
+  }
+  #generalDetailModal .general-detail-portrait {
+    min-height: clamp(382px, 55dvh, 472px) !important;
+    border: 1px solid rgba(0,0,0,0.72) !important;
+    border-radius: 9px 9px 0 0 !important;
+    overflow: hidden !important;
+    background:
+      radial-gradient(ellipse at 50% 38%, var(--card-art-glow), transparent 38%),
+      linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.50)),
+      #05070c !important;
+  }
+  #generalDetailModal .general-detail-backdrop {
+    background:
+      radial-gradient(ellipse at 48% 30%, rgba(255,240,172,0.22), transparent 28%),
+      linear-gradient(180deg, rgba(2,5,10,0.04), rgba(1,3,8,0.38) 58%, rgba(1,3,8,0.76)),
+      linear-gradient(90deg, rgba(0,0,0,0.44), transparent 22% 78%, rgba(0,0,0,0.44)),
+      var(--detail-bg) center / cover no-repeat !important;
+    filter: saturate(1.26) contrast(1.08) brightness(0.94) !important;
+  }
+  #generalDetailModal .general-detail-aura {
+    inset: 64px -20px 34px !important;
+    z-index: 1 !important;
+    opacity: 0.78 !important;
+    background:
+      conic-gradient(from 18deg at 52% 48%, transparent 0 10%, var(--card-foil) 12% 14%, transparent 16% 42%, rgba(255,255,255,0.18) 45% 47%, transparent 50% 100%),
+      radial-gradient(ellipse at 50% 50%, var(--card-art-glow), transparent 54%) !important;
+    filter: blur(7px) saturate(1.22) !important;
+    mix-blend-mode: screen !important;
+  }
+  #generalDetailModal .general-detail-art {
+    z-index: 3 !important;
+    left: 54% !important;
+    bottom: 2px !important;
+    width: 112% !important;
+    height: 94% !important;
+    object-position: center bottom !important;
+    filter:
+      drop-shadow(0 0 4px rgba(255,239,178,0.60))
+      drop-shadow(0 0 13px var(--card-art-glow))
+      drop-shadow(0 20px 18px rgba(0,0,0,0.76)) !important;
+  }
+  #generalDetailModal .general-detail-rating {
+    position: absolute !important;
+    left: 18px !important;
+    top: 17px !important;
+    z-index: 6 !important;
+    width: 72px !important;
+    min-height: 78px !important;
+    padding: 6px 5px 7px !important;
+    display: grid !important;
+    justify-items: center !important;
+    gap: 2px !important;
+    border-radius: 9px !important;
+    border: 1px solid rgba(255,255,255,0.22) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.24), transparent 42%),
+      linear-gradient(180deg, rgba(10,13,21,0.90), rgba(2,4,9,0.86)) !important;
+    box-shadow:
+      0 10px 16px rgba(0,0,0,0.42),
+      0 0 16px var(--card-glow),
+      inset 0 1px 0 rgba(255,255,255,0.18) !important;
+    pointer-events: none !important;
+  }
+  #generalDetailModal .general-detail-rating b {
+    color: #fff26f !important;
+    font-family: 'Noto Sans KR', system-ui, sans-serif !important;
+    font-size: 37px !important;
+    font-weight: 1000 !important;
+    line-height: 0.92 !important;
+    letter-spacing: 0 !important;
+    text-shadow:
+      0 2px 0 rgba(0,0,0,0.84),
+      0 0 13px var(--card-glow) !important;
+  }
+  #generalDetailModal .general-detail-rating span {
+    min-width: 44px !important;
+    padding: 3px 5px 4px !important;
+    border-radius: 999px !important;
+    background: rgba(255,255,255,0.10) !important;
+    color: #fff4bd !important;
+    font-size: 13px !important;
+    font-weight: 1000 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.76) !important;
+  }
+  #generalDetailModal .general-detail-grade {
+    top: 101px !important;
+    left: 20px !important;
+    z-index: 6 !important;
+    min-width: 68px !important;
+    max-width: 72px !important;
+    padding: 4px 5px 5px !important;
+    border: 1px solid rgba(255,255,255,0.20) !important;
+    border-radius: 7px !important;
+    background: rgba(2,5,10,0.78) !important;
+    color: #ffd34d !important;
+    font-size: 13px !important;
+    letter-spacing: 0 !important;
+    line-height: 1 !important;
+    box-shadow: 0 8px 13px rgba(0,0,0,0.38), 0 0 11px var(--card-glow) !important;
+  }
+  #generalDetailModal .general-detail-floor {
+    z-index: 2 !important;
+    height: 120px !important;
+    background:
+      radial-gradient(ellipse at 52% 48%, var(--card-art-glow), transparent 36%),
+      linear-gradient(180deg, transparent, rgba(0,0,0,0.86)) !important;
+  }
+  #generalDetailModal .general-detail-info {
+    margin-top: 0 !important;
+    padding: 9px 13px 13px !important;
+    border: 1px solid rgba(0,0,0,0.72) !important;
+    border-top: 2px solid var(--card-edge-soft) !important;
+    border-radius: 0 0 9px 9px !important;
+    background:
+      linear-gradient(180deg, var(--card-name-bg), rgba(3,6,11,0.99)),
+      #05080e !important;
+  }
+  #generalDetailModal .general-detail-kicker {
+    min-height: 19px !important;
+    gap: 6px !important;
+  }
+  #generalDetailModal .general-detail-kicker span {
+    min-width: 48px !important;
+    padding: 3px 7px 4px !important;
+    border: 1px solid var(--card-edge-soft) !important;
+    background: rgba(255,255,255,0.07) !important;
+    color: #fff4bd !important;
+    font-size: 10px !important;
+  }
+  #generalDetailModal .general-detail-name {
+    margin-top: 5px !important;
+    padding: 0 4px !important;
+    color: #fff2bd !important;
+    font-size: clamp(24px, 6.8vw, 33px) !important;
+    line-height: 1.02 !important;
+    text-shadow:
+      0 2px 0 rgba(0,0,0,0.9),
+      0 0 14px var(--card-glow) !important;
+  }
+  #generalDetailModal .general-detail-power {
+    margin-top: 6px !important;
+    padding: 4px 12px 5px !important;
+    border: 1px solid var(--card-edge) !important;
+    background: linear-gradient(180deg, rgba(18,25,36,0.96), rgba(4,8,15,0.98)) !important;
+    color: #ffe89b !important;
+    font-size: 11px !important;
+  }
+  #generalDetailModal .general-detail-stats {
+    margin-top: 8px !important;
+  }
+  #generalDetailModal .profile-stat-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+  #generalDetailModal .profile-stat {
+    min-width: 0 !important;
+    min-height: 31px !important;
+    padding: 5px 8px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 6px !important;
+    border-radius: 6px !important;
+    border: 1px solid var(--card-chip-edge) !important;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(255,255,255,0.10), transparent 46%),
+      linear-gradient(180deg, rgba(26,37,53,0.95), rgba(10,15,25,0.98)) !important;
+    color: #fff2bd !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.10) !important;
+  }
+  #generalDetailModal .profile-stat b,
+  #generalDetailModal .profile-stat i {
+    min-width: 0 !important;
+    font-family: 'Noto Sans KR', system-ui, sans-serif !important;
+    font-style: normal !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.68) !important;
+  }
+  #generalDetailModal .profile-stat b {
+    color: rgba(235,242,255,0.84) !important;
+    font-size: 11px !important;
+    font-weight: 900 !important;
+  }
+  #generalDetailModal .profile-stat i {
+    color: #ffdf5e !important;
+    font-size: 16px !important;
+    font-weight: 1000 !important;
+  }
+  #generalDetailModal .profile-stat.is-empty {
+    opacity: 0.46 !important;
+  }
+  #generalDetailModal .profile-stat-grid .profile-stat:last-child:nth-child(odd) {
+    grid-column: 1 / -1 !important;
+  }
+  @media (max-height: 720px) {
+    #generalDetailModal .general-detail-card {
+      width: min(318px, calc(100vw - 38px)) !important;
+      grid-template-rows: minmax(330px, 1fr) auto !important;
+      max-height: min(650px, calc(100dvh - 22px)) !important;
+    }
+    #generalDetailModal .general-detail-portrait {
+      min-height: clamp(318px, 50dvh, 382px) !important;
+    }
+    #generalDetailModal .general-detail-art {
+      width: 108% !important;
+      height: 92% !important;
+    }
+    #generalDetailModal .general-detail-rating {
+      width: 66px !important;
+      min-height: 71px !important;
+    }
+    #generalDetailModal .general-detail-rating b {
+      font-size: 33px !important;
+    }
+    #generalDetailModal .general-detail-rating span {
+      font-size: 12px !important;
+    }
+    #generalDetailModal .general-detail-grade {
+      top: 92px !important;
+      max-width: 66px !important;
+      font-size: 12px !important;
+    }
+    #generalDetailModal .general-detail-name {
+      font-size: clamp(22px, 6.3vw, 29px) !important;
+    }
+    #generalDetailModal .profile-stat {
+      min-height: 28px !important;
+      padding: 4px 7px !important;
+    }
+    #generalDetailModal .profile-stat i {
+      font-size: 14px !important;
+    }
+  }
+
+  /* Enhance ritual: harder impact mood + in-card stat delta preview. */
+  .enh-ritual {
+    background:
+      radial-gradient(circle at 50% 39%, rgba(255, 232, 112, 0.28), transparent 20%),
+      radial-gradient(circle at 50% 62%, rgba(84, 225, 255, 0.14), transparent 25%),
+      radial-gradient(circle at 18% 24%, rgba(255, 48, 34, 0.24), transparent 25%),
+      radial-gradient(circle at 84% 70%, rgba(255, 148, 34, 0.18), transparent 28%),
+      linear-gradient(180deg, rgba(17, 5, 2, 0.74), rgba(58, 9, 4, 0.90) 42%, rgba(4, 1, 0, 0.99)),
+      url('./assets/recruit/palace_captive_bg.png') center top / cover no-repeat !important;
+  }
+  .enh-ritual::before {
+    background:
+      radial-gradient(ellipse at 50% 45%, rgba(255, 220, 90, 0.10), rgba(38, 6, 2, 0.46) 44%, rgba(0, 0, 0, 0.84) 100%),
+      linear-gradient(90deg, rgba(0,0,0,0.84), transparent 20%, transparent 80%, rgba(0,0,0,0.84)) !important;
+    animation: er-ritual-heat 1.35s ease-in-out infinite alternate !important;
+  }
+  .enh-ritual::after {
+    opacity: 0.72 !important;
+    background:
+      linear-gradient(90deg, transparent 0 38%, rgba(255, 62, 30, 0.26) 46%, rgba(255, 255, 224, 0.44) 50%, rgba(255, 197, 72, 0.28) 54%, transparent 62%),
+      radial-gradient(ellipse at 50% 34%, rgba(255, 222, 104, 0.56), transparent 54%),
+      radial-gradient(ellipse at 50% 72%, rgba(78, 222, 255, 0.22), transparent 62%) !important;
+    animation: er-ritual-column 0.9s ease-in-out infinite alternate !important;
+  }
+  @keyframes er-ritual-heat {
+    from { filter: brightness(0.95) saturate(1.06); opacity: 0.94; }
+    to { filter: brightness(1.18) saturate(1.22); opacity: 1; }
+  }
+  @keyframes er-ritual-column {
+    from { transform: translateX(-50%) scaleX(0.78) scaleY(0.96); opacity: 0.46; }
+    to { transform: translateX(-50%) scaleX(1.02) scaleY(1.06); opacity: 0.88; }
+  }
+  .enh-ritual.show .er-rays {
+    display: none !important;
+    background: none !important;
+    animation: none !important;
+  }
+  .enh-ritual.charging .er-rays,
+  .enh-ritual.near-max .er-rays {
+    display: none !important;
+    opacity: 0 !important;
+    animation: none !important;
+  }
+  @keyframes er-ritual-rays {
+    from { transform: rotate(0deg) scale(1); filter: brightness(1); }
+    to { transform: rotate(10deg) scale(1.045); filter: brightness(1.22); }
+  }
+  .enh-ritual.preparing .er-title,
+  .enh-ritual.armed .er-title {
+    color: #ffdf5e !important;
+    -webkit-text-fill-color: #ffdf5e !important;
+    filter: none !important;
+    text-shadow:
+      0 2px 0 rgba(42, 8, 2, 0.92),
+      0 0 22px rgba(255, 218, 82, 0.62),
+      0 0 54px rgba(255, 68, 34, 0.46) !important;
+  }
+  .enh-ritual.preparing .er-title::after,
+  .enh-ritual.armed .er-title::after {
+    background: linear-gradient(90deg, transparent, rgba(255, 222, 94, 0.86), rgba(255, 80, 34, 0.42), transparent) !important;
+    box-shadow: 0 0 18px rgba(255, 74, 34, 0.32) !important;
+  }
+  .er-target {
+    width: min(302px, 72vw) !important;
+    height: min(448px, 57dvh) !important;
+    padding: 32px 30px 28px !important;
+    grid-template-rows: minmax(118px, 1fr) 24px 33px auto !important;
+    gap: 4px !important;
+    filter: drop-shadow(0 0 18px rgba(255, 64, 34, 0.20)) !important;
+    transition: top 0.36s cubic-bezier(.18,1.1,.28,1) !important;
+  }
+  .er-card-art {
+    min-height: 0 !important;
+    border-radius: 15px !important;
+  }
+  .er-target img,
+  .er-target.success-pop img {
+    transform: translateY(1px) scale(1.02) !important;
+  }
+  .er-rarity-label {
+    height: 24px !important;
+    font-size: 14px !important;
+    line-height: 1 !important;
+  }
+  .er-target-name {
+    height: 33px !important;
+    font-size: 16px !important;
+  }
+  .er-card-stats {
+    position: relative !important;
+    z-index: 4 !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    padding: 7px 7px 8px !important;
+    display: grid !important;
+    gap: 4px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 219, 98, 0.45) !important;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 216, 86, 0.20), transparent 62%),
+      linear-gradient(180deg, rgba(28, 11, 5, 0.88), rgba(4, 7, 14, 0.92)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      0 0 18px rgba(255, 70, 34, 0.12) !important;
+    overflow: hidden !important;
+  }
+  .er-card-stats::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none !important;
+    background: linear-gradient(112deg, transparent 0 36%, rgba(255,255,255,0.15) 46%, transparent 58%) !important;
+    transform: translateX(-62%) !important;
+    animation: er-card-stat-sheen 2.15s ease-in-out infinite !important;
+  }
+  @keyframes er-card-stat-sheen {
+    0%, 35% { opacity: 0; transform: translateX(-62%); }
+    48% { opacity: 0.85; }
+    72%, 100% { opacity: 0; transform: translateX(62%); }
+  }
+  .er-card-stats-head {
+    min-width: 0 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 6px !important;
+    align-items: center !important;
+    color: #ffdc59 !important;
+    font-family: 'Noto Sans KR', system-ui, sans-serif !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.62) !important;
+  }
+  .er-card-stats-head span {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+  .er-card-stats-head b {
+    padding: 3px 6px !important;
+    border-radius: 999px !important;
+    background: rgba(255, 216, 86, 0.16) !important;
+    color: #fff4c8 !important;
+    font-size: 10px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+  .er-card-stat-list {
+    width: 100% !important;
+    min-width: 0 !important;
+    display: grid !important;
+    gap: 3px !important;
+  }
+  .er-card-stat-row {
+    min-width: 0 !important;
+    height: 19px !important;
+    display: grid !important;
+    grid-template-columns: 34px minmax(0, 1fr) 10px minmax(0, 1fr) 36px !important;
+    gap: 3px !important;
+    align-items: center !important;
+    padding: 0 5px !important;
+    border-radius: 7px !important;
+    background: rgba(255, 255, 255, 0.055) !important;
+    color: #f8eac9 !important;
+    font-family: 'Noto Sans KR', system-ui, sans-serif !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+  }
+  .er-card-stat-row span {
+    color: rgba(216, 230, 245, 0.82) !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+  }
+  .er-card-stat-row b,
+  .er-card-stat-row strong {
+    min-width: 0 !important;
+    color: #dce9f5 !important;
+    font-size: 10px !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+  .er-card-stat-row i {
+    color: rgba(255, 255, 255, 0.48) !important;
+    font-style: normal !important;
+    text-align: center !important;
+  }
+  .er-card-stat-row strong {
+    color: #ffdf5e !important;
+  }
+  .er-card-stat-row em {
+    min-width: 0 !important;
+    padding: 3px 4px !important;
+    border-radius: 999px !important;
+    background: rgba(51, 255, 133, 0.14) !important;
+    border: 1px solid rgba(116, 255, 154, 0.22) !important;
+    color: #82ffa5 !important;
+    font-size: 9px !important;
+    font-style: normal !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    box-shadow: 0 0 10px rgba(69, 255, 130, 0.10) !important;
+  }
+  .er-target.success-pop .er-card-stats {
+    border-color: rgba(130, 255, 165, 0.78) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.18),
+      0 0 26px rgba(75, 255, 137, 0.22),
+      0 0 32px rgba(255, 220, 94, 0.18) !important;
+  }
+  .enh-ritual.success .er-target {
+    top: 37% !important;
+  }
+  .enh-ritual.charging .er-target.slow-shake {
+    animation: er-card-slow-shake 1.02s ease-in-out infinite !important;
+  }
+  .enh-ritual.charging .er-target.fast-shake {
+    animation: er-card-fast-shake 0.15s linear infinite !important;
+  }
+  .enh-ritual.charging .er-target.frantic-shake {
+    animation: er-card-frantic-shake 0.055s linear infinite !important;
+    filter: brightness(1.48) saturate(1.30) drop-shadow(0 0 24px rgba(255, 74, 34, 0.32)) !important;
+  }
+  @keyframes er-card-slow-shake {
+    0%, 100% { transform: translate(-50%, -50%) scale(1.02) rotate(-1.1deg); }
+    25% { transform: translate(calc(-50% + 3px), calc(-50% - 2px)) scale(1.035) rotate(1deg); }
+    50% { transform: translate(calc(-50% - 2px), calc(-50% + 2px)) scale(1.02) rotate(-0.6deg); }
+    75% { transform: translate(calc(-50% + 2px), calc(-50% + 1px)) scale(1.04) rotate(0.8deg); }
+  }
+  @keyframes er-card-fast-shake {
+    0%, 100% { transform: translate(calc(-50% - 5px), calc(-50% + 1px)) scale(1.08) rotate(-2deg); }
+    25% { transform: translate(calc(-50% + 5px), calc(-50% - 4px)) scale(1.10) rotate(2.2deg); }
+    50% { transform: translate(calc(-50% - 3px), calc(-50% + 4px)) scale(1.09) rotate(-1.4deg); }
+    75% { transform: translate(calc(-50% + 4px), calc(-50% + 2px)) scale(1.11) rotate(1.8deg); }
+  }
+  @keyframes er-card-frantic-shake {
+    0% { transform: translate(calc(-50% - 13px), calc(-50% - 5px)) scale(1.14) rotate(-4.2deg); }
+    20% { transform: translate(calc(-50% + 11px), calc(-50% + 7px)) scale(1.17) rotate(3.7deg); }
+    40% { transform: translate(calc(-50% - 8px), calc(-50% + 9px)) scale(1.15) rotate(-3deg); }
+    60% { transform: translate(calc(-50% + 13px), calc(-50% - 7px)) scale(1.18) rotate(4.4deg); }
+    80% { transform: translate(calc(-50% - 10px), calc(-50% + 4px)) scale(1.16) rotate(-2.5deg); }
+    100% { transform: translate(calc(-50% + 9px), calc(-50% - 8px)) scale(1.18) rotate(3.2deg); }
+  }
+  @media (max-width: 390px), (max-height: 760px) {
+    .er-target {
+      width: min(284px, 72vw) !important;
+      height: min(408px, 57dvh) !important;
+      padding: 28px 27px 25px !important;
+      grid-template-rows: minmax(100px, 1fr) 22px 30px auto !important;
+      gap: 3px !important;
+    }
+    .er-rarity-label {
+      height: 22px !important;
+      font-size: 13px !important;
+    }
+    .er-target-name {
+      height: 30px !important;
+      font-size: 15px !important;
+    }
+    .er-card-stats {
+      padding: 6px !important;
+      gap: 3px !important;
+    }
+    .er-card-stats-head,
+    .er-card-stats-head b {
+      font-size: 9px !important;
+    }
+    .er-card-stat-row {
+      height: 17px !important;
+      grid-template-columns: 31px minmax(0, 1fr) 9px minmax(0, 1fr) 32px !important;
+      padding: 0 4px !important;
+      font-size: 9px !important;
+    }
+    .er-card-stat-row b,
+    .er-card-stat-row strong {
+      font-size: 9px !important;
+    }
+    .er-card-stat-row em {
+      padding: 2px 3px !important;
+      font-size: 8px !important;
     }
   }
 </style>
@@ -33424,11 +34408,52 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
   resultLv.className = 'er-result-lv';
   actions.classList.remove('show');
 
+  function cardPctText(v) {
+    const n = Math.round(v || 0);
+    return `${n > 0 ? '+' : ''}${n}%`;
+  }
+
+  function buildRitualCardStatsHtml(baseTarget, fromLv) {
+    const toLv = Math.min(ENHANCE_MAX_LV, fromLv + 1);
+    const buffLabels = [
+      ['unitAtk', '병공'],
+      ['unitDef', '병방'],
+      ['castleAtk', '성공'],
+      ['castleDef', '성방'],
+      ['prodRate', '생산'],
+    ];
+    const oldMult = ENHANCE_MULT[fromLv] || 1;
+    const newMult = ENHANCE_MULT[toLv] || oldMult;
+    const rows = buffLabels
+      .filter(([k]) => baseTarget && baseTarget.buffs && baseTarget.buffs[k])
+      .map(([k, label]) => {
+        const before = Math.round(baseTarget.buffs[k] * oldMult * 100);
+        const after = Math.round(baseTarget.buffs[k] * newMult * 100);
+        return `
+          <div class="er-card-stat-row">
+            <span>${safe(label)}</span>
+            <b>${cardPctText(before)}</b>
+            <i>→</i>
+            <strong>${cardPctText(after)}</strong>
+            <em>${cardPctText(after - before)}</em>
+          </div>
+        `;
+      }).join('');
+    return `
+      <div class="er-card-stats">
+        <div class="er-card-stats-head"><span>성공 시 능력치</span><b>Lv ${fromLv} → ${toLv}</b></div>
+        <div class="er-card-stat-list">${rows || '<div class="er-card-stat-row"><span>지휘</span><b>+2%</b><i>→</i><strong>+2%</strong><em>+0%</em></div>'}</div>
+      </div>
+    `;
+  }
+
   const rarity = getGeneralRarity(target);
+  const previewFromLv = Math.max(1, Math.min(ENHANCE_MAX_LV, oldLv || target.lv || 1));
   targetEl.innerHTML = `
     <div class="er-card-art"><img src="${target.bust || target.face}" alt=""></div>
     <div class="er-rarity-label">${safe(rarity.label)}</div>
     <div class="er-target-name">${safe(target.name)}</div>
+    ${buildRitualCardStatsHtml(target, previewFromLv)}
   `;
 
   fodderRow.innerHTML = '';
