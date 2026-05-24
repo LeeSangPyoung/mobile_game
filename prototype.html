@@ -13812,6 +13812,9 @@ function _renderIntroLine() {
   if (overlay) {
     overlay.classList.toggle('enemy-speaking', fromLeft);
     overlay.classList.toggle('player-speaking', !fromLeft);
+    overlay.classList.remove('idg-hit-flash');
+    void overlay.offsetWidth;
+    overlay.classList.add('idg-hit-flash');
   }
   // animation 재시작 트릭
   bubble.style.animation = 'none'; void bubble.offsetWidth;
@@ -28853,9 +28856,80 @@ function closeTutorialOffer(accept) {
       0 0 86px rgba(56, 166, 255, 0.24),
       0 20px 36px rgba(0,0,0,0.74) !important;
   }
+  #introDialog .idg-portrait img {
+    transition:
+      transform 0.36s cubic-bezier(.18,1.35,.32,1),
+      filter 0.28s ease !important;
+    will-change: transform, filter !important;
+  }
+  #introDialog.enemy-speaking .idg-portrait.idg-left.active {
+    color: #ff6048 !important;
+    transform: translateX(clamp(14px, 2.4vw, 34px)) translateY(-14px) scale(1.13) !important;
+    animation: idgPortraitStrikeLeft 0.46s cubic-bezier(.18,1.45,.24,1) !important;
+  }
+  #introDialog.player-speaking .idg-portrait.idg-right.active {
+    color: #5fcaff !important;
+    transform: translateX(clamp(-34px, -2.4vw, -14px)) translateY(-14px) scale(1.13) !important;
+    animation: idgPortraitStrikeRight 0.46s cubic-bezier(.18,1.45,.24,1) !important;
+  }
+  #introDialog.enemy-speaking .idg-left.active img {
+    transform: scaleX(1) scale(1.13) translateY(-2%) !important;
+    filter:
+      drop-shadow(0 11px 12px rgba(0,0,0,0.70))
+      saturate(1.14)
+      contrast(1.06) !important;
+  }
+  #introDialog.player-speaking .idg-right.active img {
+    transform: scaleX(-1) scale(1.13) translateY(-2%) !important;
+    filter:
+      drop-shadow(0 11px 12px rgba(0,0,0,0.70))
+      saturate(1.14)
+      contrast(1.06) !important;
+  }
+  #introDialog .idg-portrait.active::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: -18% !important;
+    z-index: 2 !important;
+    pointer-events: none !important;
+    background:
+      linear-gradient(118deg, transparent 0 38%, rgba(255,255,255,0.28) 47%, transparent 57%),
+      repeating-linear-gradient(112deg, rgba(255,255,255,0.10) 0 1px, transparent 1px 15px) !important;
+    opacity: 0.85 !important;
+    mix-blend-mode: screen !important;
+    animation: idgPortraitShear 0.58s ease-out !important;
+  }
+  #introDialog .idg-portrait.active::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: auto 10px 38px 10px !important;
+    height: 3px !important;
+    z-index: 3 !important;
+    border-radius: 999px !important;
+    background: currentColor !important;
+    box-shadow: 0 0 16px currentColor !important;
+    opacity: 0.76 !important;
+    pointer-events: none !important;
+  }
+  @keyframes idgPortraitStrikeLeft {
+    0% { transform: translateX(-24px) translateY(10px) scale(0.94); filter: brightness(0.78); }
+    58% { transform: translateX(clamp(18px, 3vw, 42px)) translateY(-17px) scale(1.17); filter: brightness(1.18); }
+    100% { transform: translateX(clamp(14px, 2.4vw, 34px)) translateY(-14px) scale(1.13); filter: brightness(1.08); }
+  }
+  @keyframes idgPortraitStrikeRight {
+    0% { transform: translateX(24px) translateY(10px) scale(0.94); filter: brightness(0.78); }
+    58% { transform: translateX(clamp(-42px, -3vw, -18px)) translateY(-17px) scale(1.17); filter: brightness(1.18); }
+    100% { transform: translateX(clamp(-34px, -2.4vw, -14px)) translateY(-14px) scale(1.13); filter: brightness(1.08); }
+  }
+  @keyframes idgPortraitShear {
+    0% { transform: translateX(-42%) skewX(-12deg); opacity: 0; }
+    38% { opacity: 0.85; }
+    100% { transform: translateX(46%) skewX(-12deg); opacity: 0; }
+  }
   #introDialog .idg-name {
     border-radius: 6px !important;
     letter-spacing: 0 !important;
+    z-index: 6 !important;
   }
   #introDialog .idg-skip {
     border-color: rgba(255, 225, 126, 0.68) !important;
