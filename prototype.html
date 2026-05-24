@@ -1533,9 +1533,9 @@
     display: block; font-size: 9px; opacity: 0.75;
     font-family: 'Noto Serif KR', serif; font-weight: 500; letter-spacing: 0;
   }
-  /* 전쟁 캠페인 루트 — 배경 길 위에 행군 자국처럼 얹음 */
+  /* 전쟁 캠페인 루트 — 배경 일러스트의 길을 그대로 사용한다. */
   #stageSelect .stage-map .map-path {
-    display: block;
+    display: none;
     position: absolute;
     inset: 0;
     width: 100%;
@@ -1544,62 +1544,6 @@
     z-index: 2;
   }
   #stageSelect .region-labels { display: none; }
-
-  /* 사용 안 하는 옛 SVG path 룰 (호환용) */
-  #stageSelect .stage-map .map-path-old {
-    position: absolute;
-    inset: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 1;
-  }
-  #stageSelect .stage-map .map-path .road {
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    vector-effect: non-scaling-stroke;
-  }
-  #stageSelect .stage-map .map-path .route-shadow {
-    stroke: rgba(18, 11, 6, 0.72);
-    stroke-width: 9.5;
-    opacity: 0.42;
-    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.65));
-  }
-  #stageSelect .stage-map .map-path .route-base {
-    stroke: rgba(124, 82, 42, 0.54);
-    stroke-width: 5.8;
-    opacity: 0.72;
-  }
-  #stageSelect .stage-map .map-path .route-rest.route-base {
-    stroke: rgba(82, 74, 58, 0.5);
-    stroke-width: 3.8;
-    stroke-dasharray: 18 18;
-    opacity: 0.42;
-  }
-  #stageSelect .stage-map .map-path .route-done.route-base {
-    stroke: rgba(178, 105, 42, 0.72);
-    stroke-width: 6.2;
-    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45));
-  }
-  #stageSelect .stage-map .map-path .route-flow {
-    stroke: rgba(255, 214, 111, 0.92);
-    stroke-width: 2.8;
-    stroke-dasharray: 18 24;
-    animation: routeMarch 2.6s linear infinite, routeGlow 1.8s ease-in-out infinite alternate;
-    filter: drop-shadow(0 0 6px rgba(255, 180, 62, 0.72));
-  }
-  @keyframes routeMarch {
-    to { stroke-dashoffset: -84; }
-  }
-  @keyframes routeGlow {
-    from { opacity: 0.58; }
-    to { opacity: 0.98; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    #stageSelect .stage-map .map-path .route-flow {
-      animation: none;
-    }
-  }
 
   /* ===== 여정 지도 핀 — 컴팩트 동그라미 배지 (지도 일러스트 위) ===== */
   #stageSelect .stage {
@@ -5373,6 +5317,31 @@
       linear-gradient(180deg, #d89d36 0%, #8b4f10 100%);
     color: #fff;
   }
+  .formation-slot.slot-selected {
+    border-color: #fff2bd;
+    box-shadow:
+      0 0 0 2px rgba(255,210,63,0.95),
+      0 0 14px rgba(255,210,63,0.72),
+      inset 0 0 18px rgba(255,236,150,0.20);
+    filter: brightness(1.12);
+  }
+  .formation-slot.slot-selected::after {
+    content: '선택';
+    position: absolute;
+    left: 50%;
+    bottom: 3px;
+    transform: translateX(-50%);
+    padding: 1px 6px 2px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #fff2bd, #d99a27);
+    color: #2a1205;
+    font-size: 9px;
+    font-weight: 900;
+    line-height: 1;
+    z-index: 10;
+    text-shadow: none;
+    pointer-events: none;
+  }
   .formation-slot img { width: 100%; height: 100%; object-fit: cover; }
   .formation-slot .slot-rank {
     position: absolute; top: 1px; left: 3px;
@@ -6995,37 +6964,12 @@
     z-index: 1;
   }
   #stageSelect .stage-map .map-path {
+    display: none !important;
     z-index: 3 !important;
-  }
-  #stageSelect .stage-map .map-path .road {
-    stroke-linecap: round !important;
-    stroke-linejoin: round !important;
-  }
-  #stageSelect .stage-map .map-path .route-shadow {
-    stroke: rgba(12, 7, 4, 0.78) !important;
-    stroke-width: 9.5 !important;
-    opacity: 0.42 !important;
-  }
-  #stageSelect .stage-map .map-path .route-rest.route-base {
-    stroke: rgba(84, 76, 59, 0.5) !important;
-    stroke-width: 3.8 !important;
-    stroke-dasharray: 18 18 !important;
-    opacity: 0.42 !important;
-  }
-  #stageSelect .stage-map .map-path .route-done.route-base {
-    stroke: rgba(178, 105, 42, 0.72) !important;
-    stroke-width: 6.2 !important;
-    stroke-dasharray: none !important;
-  }
-  #stageSelect .stage-map .map-path .route-flow {
-    stroke: rgba(255, 214, 111, 0.92) !important;
-    stroke-width: 2.8 !important;
-    stroke-dasharray: 18 24 !important;
-    filter: drop-shadow(0 0 6px rgba(255,180,62,0.72)) !important;
   }
   #stageSelect .stage {
     z-index: 5 !important;
-    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.44)) !important;
+    filter: drop-shadow(0 9px 8px rgba(0,0,0,0.48)) !important;
   }
   #stageSelect .stage:not(.boss)::before,
   #stageSelect .stage:not(.boss)::after {
@@ -7033,70 +6977,124 @@
   }
   #stageSelect .stage .castle {
     border: 0 !important;
-    color: #ffffff !important;
+    color: #f8f1df !important;
     background:
-      radial-gradient(circle at 35% 25%, rgba(255,255,255,0.8), transparent 20%),
-      linear-gradient(180deg, #33405a, #111827) !important;
+      radial-gradient(circle at 34% 22%, rgba(255,255,255,0.76), transparent 18%),
+      radial-gradient(circle at 50% 62%, rgba(9,13,21,0.88), transparent 58%),
+      linear-gradient(180deg, #516071 0%, #253142 52%, #111722 100%) !important;
     box-shadow:
-      0 0 0 2px rgba(255,255,255,0.82),
-      0 0 0 5px rgba(9,18,34,0.86),
-      0 10px 20px rgba(0,0,0,0.28),
-      inset 0 1px 0 rgba(255,255,255,0.24) !important;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.5) !important;
+      0 0 0 1px rgba(255,245,210,0.82),
+      0 0 0 3px #8b5a25,
+      0 0 0 6px rgba(10,13,19,0.92),
+      0 9px 15px rgba(0,0,0,0.36),
+      inset 0 2px 0 rgba(255,255,255,0.24),
+      inset 0 -5px 8px rgba(0,0,0,0.55) !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.7), 0 0 7px rgba(255,239,190,0.18) !important;
   }
   #stageSelect .stage.cleared1 .castle,
   #stageSelect .stage.cleared2 .castle,
   #stageSelect .stage.cleared3 .castle {
     background:
-      radial-gradient(circle at 35% 25%, rgba(255,255,255,0.78), transparent 21%),
-      linear-gradient(180deg, #52d7ae, #177f69) !important;
+      radial-gradient(circle at 35% 24%, rgba(255,255,255,0.72), transparent 19%),
+      radial-gradient(circle at 50% 72%, rgba(3,55,43,0.76), transparent 58%),
+      linear-gradient(180deg, #70d8b5 0%, #22906f 52%, #0d5648 100%) !important;
     box-shadow:
-      0 0 0 2px rgba(255,255,255,0.85),
-      0 0 0 5px rgba(12,70,58,0.78),
-      0 0 18px rgba(78,227,181,0.34),
-      0 10px 20px rgba(0,0,0,0.3),
-      inset 0 1px 0 rgba(255,255,255,0.26) !important;
+      0 0 0 1px rgba(255,245,210,0.86),
+      0 0 0 3px #d0a04a,
+      0 0 0 6px rgba(9,53,44,0.9),
+      0 0 14px rgba(73,212,167,0.24),
+      0 9px 15px rgba(0,0,0,0.35),
+      inset 0 2px 0 rgba(255,255,255,0.24),
+      inset 0 -5px 8px rgba(0,0,0,0.42) !important;
   }
   #stageSelect .stage.active .castle {
     background:
-      radial-gradient(circle at 35% 24%, rgba(255,255,255,0.82), transparent 20%),
-      linear-gradient(180deg, #ffdf7a, #e23d32 52%, #7c1211) !important;
+      radial-gradient(circle at 35% 22%, rgba(255,255,255,0.86), transparent 18%),
+      radial-gradient(circle at 50% 72%, rgba(70,3,6,0.82), transparent 60%),
+      linear-gradient(180deg, #ffc365 0%, #e13a28 48%, #7f0d10 100%) !important;
     box-shadow:
-      0 0 0 2px rgba(255,255,255,0.95),
-      0 0 0 5px rgba(247,201,90,0.85),
-      0 0 14px rgba(247,201,90,0.42),
-      0 12px 22px rgba(0,0,0,0.34),
-      inset 0 1px 0 rgba(255,255,255,0.32) !important;
+      0 0 0 1px rgba(255,252,229,0.96),
+      0 0 0 4px #f3c75a,
+      0 0 0 7px rgba(82,9,9,0.94),
+      0 0 18px rgba(247,201,90,0.46),
+      0 12px 22px rgba(0,0,0,0.38),
+      inset 0 2px 0 rgba(255,255,255,0.3),
+      inset 0 -5px 9px rgba(0,0,0,0.5) !important;
+    animation: stageSealReady 1.7s ease-in-out infinite !important;
   }
   #stageSelect .stage.locked .castle {
-    background: linear-gradient(180deg, #5e6673, #202733) !important;
-    color: rgba(255,255,255,0.5) !important;
+    background:
+      radial-gradient(circle at 35% 24%, rgba(255,255,255,0.34), transparent 20%),
+      linear-gradient(180deg, #5d6570, #242b34 58%, #11161d) !important;
+    color: rgba(235,239,244,0.5) !important;
     box-shadow:
-      0 0 0 2px rgba(255,255,255,0.35),
-      0 0 0 5px rgba(12,18,28,0.82),
-      0 10px 18px rgba(0,0,0,0.3),
-      inset 0 1px 0 rgba(255,255,255,0.16) !important;
+      0 0 0 1px rgba(220,226,232,0.34),
+      0 0 0 3px #5f6872,
+      0 0 0 6px rgba(11,15,21,0.92),
+      0 9px 15px rgba(0,0,0,0.35),
+      inset 0 1px 0 rgba(255,255,255,0.14),
+      inset 0 -5px 8px rgba(0,0,0,0.54) !important;
+  }
+  #stageSelect .stage.locked .castle::after {
+    content: none !important;
   }
   #stageSelect .stage.boss .castle {
+    color: #ffe7a1 !important;
     background:
-      radial-gradient(circle at 35% 24%, rgba(255,255,255,0.75), transparent 20%),
-      linear-gradient(180deg, #ff8f62, #a1141e 58%, #2a0610) !important;
+      radial-gradient(circle at 35% 24%, rgba(255,255,255,0.72), transparent 18%),
+      radial-gradient(circle at 50% 72%, rgba(20,0,4,0.9), transparent 62%),
+      linear-gradient(180deg, #b82e24 0%, #5e0710 57%, #160207 100%) !important;
+    box-shadow:
+      0 0 0 1px rgba(255,252,229,0.9),
+      0 0 0 4px #d8a449,
+      0 0 0 7px rgba(38,4,8,0.96),
+      0 0 17px rgba(212,51,42,0.34),
+      0 12px 22px rgba(0,0,0,0.42),
+      inset 0 2px 0 rgba(255,223,150,0.22),
+      inset 0 -6px 10px rgba(0,0,0,0.66) !important;
+  }
+  #stageSelect .stage.boss::before {
+    width: 26px !important;
+    height: 11px !important;
+    top: -8px !important;
+    background: linear-gradient(180deg, #fff0a8 0%, #d99c36 64%, #6d3b08 100%) !important;
   }
   #stageSelect .stage .stars {
     bottom: -22px !important;
     font-size: 11px !important;
     padding: 3px 5px !important;
     border-radius: 999px !important;
-    background: rgba(6, 12, 24, 0.66) !important;
+    background: rgba(7, 10, 16, 0.72) !important;
+    box-shadow: inset 0 0 0 1px rgba(255,220,130,0.16), 0 3px 8px rgba(0,0,0,0.28) !important;
     backdrop-filter: blur(8px);
   }
   #stageSelect .stage .badge-go {
     left: 100% !important;
     top: 50% !important;
-    border: 0 !important;
-    border-radius: 999px !important;
-    background: linear-gradient(90deg, #ff6b52, #e23d32) !important;
-    box-shadow: 0 6px 14px rgba(226,61,50,0.45), 0 0 12px rgba(255,180,60,0.55) !important;
+    transform: translate(8px, -50%) !important;
+    border: 1px solid rgba(255,223,128,0.9) !important;
+    border-radius: 5px !important;
+    padding: 4px 9px 5px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.2), transparent 34%),
+      linear-gradient(90deg, #b01618, #f04a32 58%, #9d1014) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,230,160,0.34),
+      0 5px 12px rgba(120,8,10,0.5),
+      0 0 12px rgba(255,176,54,0.4) !important;
+    animation: badgeCommandPulse 1.2s ease-in-out infinite !important;
+  }
+  #stageSelect .stage .badge-go::before {
+    border-right-color: #f3c75a !important;
+    filter: drop-shadow(-1px 0 0 rgba(255,248,218,0.9)) drop-shadow(0 2px 2px rgba(0,0,0,0.55)) !important;
+  }
+  @keyframes stageSealReady {
+    0%, 100% { filter: brightness(1); transform: scale(1); }
+    50% { filter: brightness(1.08); transform: scale(1.035); }
+  }
+  @keyframes badgeCommandPulse {
+    0%, 100% { transform: translate(8px, -50%); filter: brightness(1); }
+    50% { transform: translate(4px, -50%); filter: brightness(1.08); }
   }
 
   #hud {
@@ -11105,11 +11103,11 @@
       <button class="side-rail-btn" id="btnEnhance" aria-label="장수 강화">
         <span class="srb-icon srb-kor">鍛</span><span class="srb-label">강화</span>
       </button>
-	      <button class="side-rail-btn" id="btnPowerManage" aria-label="전략 관리">
-	        <span class="srb-icon srb-kor">戰</span><span class="srb-label">전략</span>
+	      <button class="side-rail-btn" id="btnPowerManage" aria-label="전투력 관리">
+	        <span class="srb-icon srb-kor">戰</span><span class="srb-label">전투력</span>
 	      </button>
-	      <button class="side-rail-btn" id="btnMainExchange" aria-label="별 골드 교환">
-	        <span class="srb-icon srb-kor">商</span><span class="srb-label">상점</span>
+	      <button class="side-rail-btn" id="btnMainExchange" aria-label="별교환">
+	        <span class="srb-icon srb-kor">商</span><span class="srb-label">별교환</span>
 	      </button>
 	      <button class="side-rail-btn" id="btnMainSettings" aria-label="설정">
 	        <span class="srb-icon srb-kor">⚙</span><span class="srb-label">설정</span>
@@ -11254,6 +11252,31 @@
     </div>
     <div class="manage-roster" id="manageRoster"></div>
   </div>
+</div>
+
+<!-- ===== 장수 상세 카드 팝업 ===== -->
+<div id="generalDetailModal" class="general-detail-modal" style="display:none" aria-hidden="true">
+  <button type="button" class="general-detail-scrim" id="generalDetailScrim" aria-label="닫기"></button>
+  <section class="general-detail-card" role="dialog" aria-modal="true" aria-labelledby="generalDetailName">
+    <div class="general-detail-impact" aria-hidden="true"></div>
+    <button type="button" class="general-detail-close" id="generalDetailClose" aria-label="닫기"></button>
+    <div class="general-detail-portrait">
+      <div class="general-detail-backdrop" aria-hidden="true"></div>
+      <div class="general-detail-aura" aria-hidden="true"></div>
+      <img id="generalDetailArt" class="general-detail-art" alt="">
+      <div class="general-detail-floor" aria-hidden="true"></div>
+      <div class="general-detail-grade" id="generalDetailStars"></div>
+    </div>
+    <div class="general-detail-info">
+      <div class="general-detail-kicker">
+        <span id="generalDetailRarity">일반</span>
+        <span id="generalDetailLevel">Lv.1</span>
+      </div>
+      <div class="general-detail-name" id="generalDetailName"></div>
+      <div class="general-detail-power" id="generalDetailPower"></div>
+      <div class="general-detail-stats" id="generalDetailBuffs"></div>
+    </div>
+  </section>
 </div>
 
 <!-- ===== 포로 등용 화면 ===== -->
@@ -11426,12 +11449,7 @@
       <div class="idg-line" id="idgLine"></div>
     </div>
     <div class="idg-clash" id="idgClash" aria-hidden="true">
-      <i class="idg-slash idg-slash-a"></i>
-      <i class="idg-slash idg-slash-b"></i>
-      <span class="idg-spark s1"></span>
-      <span class="idg-spark s2"></span>
-      <span class="idg-spark s3"></span>
-      <span class="idg-spark s4"></span>
+      <img src="./assets/battle/intro_vs_brush_gold.png" alt="">
     </div>
     <div class="idg-hint" id="idgHint">탭해서 다음 ▸</div>
   </div>
@@ -12593,7 +12611,7 @@ function getDeployableGenerals() {
   const owned = Array.isArray(SAVE.generals) ? SAVE.generals : [];
   const list = owned.map(inst => {
     const def = getGeneralById(inst.id);
-    return def ? { ...def, uid: inst.uid, lv: inst.lv || 1 } : null;
+    return def ? { ...def, uid: inst.uid, lv: inst.lv || 1, stars: instanceStars(inst) } : null;
   }).filter(Boolean);
   // 보유 0이면 미리보기로 전체 로스터(uid 없음, Lv1) 반환
   if (!list.length) return sortGeneralsByRarityDesc(GENERAL_ROSTER.map(g => ({ ...g, uid: null, lv: 1 })));
@@ -12742,7 +12760,7 @@ function getManagedGenerals() {
   const owned = Array.isArray(SAVE.generals) ? SAVE.generals : [];
   const list = owned.map(inst => {
     const def = getGeneralById(inst.id);
-    return def ? { ...def, uid: inst.uid, lv: inst.lv || 1 } : null;
+    return def ? { ...def, uid: inst.uid, lv: inst.lv || 1, stars: instanceStars(inst) } : null;
   }).filter(Boolean);
   if (!list.length) return sortGeneralsByRarityDesc(GENERAL_ROSTER.map(g => ({ ...g, uid: null, lv: 1 })));
   return sortGeneralsByRarityDesc(list);
@@ -12754,6 +12772,7 @@ function showGeneralManage() {
 }
 const FORMATION_KEYS = ['天','地','人'];
 const FORMATION_SUBS  = { '天': '하늘', '地': '땅', '人': '사람' };
+let manageSelectedSlotIndex = null;
 function getActiveFormationKey() {
   return FORMATION_KEYS.includes(SAVE.activeFormation) ? SAVE.activeFormation : '天';
 }
@@ -12788,6 +12807,184 @@ function removeFromActiveFormation(uid) {
   if (i >= 0) { arr.splice(i, 1); saveProgress(); return true; }
   return false;
 }
+function clearManageSlotSelection() {
+  manageSelectedSlotIndex = null;
+}
+function setManageSlotSelection(idx) {
+  manageSelectedSlotIndex = Number.isInteger(idx) ? idx : null;
+}
+function normalizeManageSlotSelection(arr) {
+  if (!Number.isInteger(manageSelectedSlotIndex)) return null;
+  if (manageSelectedSlotIndex < 0 || manageSelectedSlotIndex >= MAX_DEPLOY_GENERALS || arr[manageSelectedSlotIndex] == null) {
+    clearManageSlotSelection();
+    return null;
+  }
+  return manageSelectedSlotIndex;
+}
+function moveActiveFormationSlot(fromIdx, toIdx) {
+  const arr = getFormationIds(getActiveFormationKey());
+  if (!Number.isInteger(fromIdx) || !Number.isInteger(toIdx)) return false;
+  if (fromIdx < 0 || fromIdx >= arr.length || toIdx < 0 || toIdx >= MAX_DEPLOY_GENERALS) return false;
+  if (fromIdx === toIdx) return false;
+  const uid = arr[fromIdx];
+  if (uid == null) return false;
+  if (toIdx < arr.length && arr[toIdx] != null) {
+    const tmp = arr[toIdx];
+    arr[toIdx] = uid;
+    arr[fromIdx] = tmp;
+  } else {
+    arr.splice(fromIdx, 1);
+    arr.splice(Math.min(toIdx, arr.length), 0, uid);
+  }
+  saveProgress();
+  return true;
+}
+function replaceActiveFormationSlot(slotIdx, uid) {
+  const arr = getFormationIds(getActiveFormationKey());
+  if (!Number.isInteger(slotIdx) || slotIdx < 0 || slotIdx >= arr.length || uid == null) return false;
+  arr[slotIdx] = uid;
+  saveProgress();
+  return true;
+}
+function htmlSafe(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+function resolveGeneralFullbodySources(g) {
+  const id = String((g && g.id) || '');
+  const ids = [];
+  const alias = GENERAL_BUST_ALIASES[id];
+  if (alias) ids.push(alias);
+  if (id) ids.push(id);
+  if (id && !id.startsWith('real_')) ids.push(`real_${id}`);
+  const uniqueIds = [...new Set(ids.filter(Boolean))];
+  const dirs = [
+    './assets/generals/mainstyle_fullbody',
+    './assets/generals/generated_fullbody_mainstyle',
+    './assets/generals/mobile_fullbody_backup_20260516_093605',
+    './assets/generals/busts',
+  ];
+  const sources = [];
+  dirs.forEach(dir => uniqueIds.forEach(fileId => sources.push(`${dir}/${fileId}.png`)));
+  if (g && g.bust) sources.push(g.bust);
+  if (g && g.face) sources.push(g.face);
+  return [...new Set(sources)];
+}
+const GENERAL_DETAIL_BACKGROUNDS = [
+  './assets/battle/intro_duel_bg_cityfire.png',
+  './assets/battle/intro_duel_bg_storm.png',
+  './assets/battle/intro_duel_bg_tomb.png',
+  './assets/battle/intro_duel_bg_bridge.png',
+  './assets/battle/intro_duel_bg.png',
+  './assets/battle/intro_duel_bg_fleet.png',
+  './assets/battle/intro_duel_bg_desert.png',
+  './assets/battle/intro_duel_bg_bamboo.png',
+  './assets/battle/intro_duel_bg_snow.png',
+  './assets/battle/intro_duel_bg_cityfire.png',
+  './assets/battle/intro_duel_bg_cityfire.png',
+  './assets/battle/intro_duel_bg_storm.png',
+  './assets/battle/intro_duel_bg_tomb.png',
+  './assets/battle/intro_duel_bg_bridge.png',
+  './assets/battle/intro_duel_bg.png',
+  './assets/battle/intro_duel_bg_fleet.png',
+  './assets/battle/intro_duel_bg_desert.png',
+  './assets/battle/intro_duel_bg_bamboo.png',
+  './assets/battle/intro_duel_bg_snow.png',
+  './assets/battle/intro_duel_bg_cityfire.png',
+];
+function getGeneralDetailBackground(g) {
+  const key = `${(g && g.id) || ''}:${(g && g.uid) || ''}:${(g && g.name) || ''}`;
+  const i = hashGeneralId(key) % GENERAL_DETAIL_BACKGROUNDS.length;
+  return GENERAL_DETAIL_BACKGROUNDS[i];
+}
+function setImageFallback(img, sources) {
+  if (!img) return;
+  const list = [...new Set((sources || []).filter(Boolean))];
+  let idx = 0;
+  img.onerror = () => {
+    idx += 1;
+    if (idx < list.length) img.src = list[idx];
+    else img.onerror = null;
+  };
+  img.src = list[0] || '';
+}
+function generalDetailPower(g) {
+  const stars = clampStars((g && g.stars) || 1);
+  const lv = Math.max(1, Math.min(ENHANCE_MAX_LV, (g && g.lv) || 1));
+  const starMult = STAR_MULT[stars] || 1;
+  const lvMult = ENHANCE_MULT[lv] || 1;
+  return Math.round(100 + generalScoreOf(g) * 1000 * starMult * lvMult + (stars * 18) + ((lv - 1) * 42));
+}
+let generalDetailEventsBound = false;
+let generalDetailCloseTimer = 0;
+let generalDetailLastFocus = null;
+function ensureGeneralDetailEvents() {
+  if (generalDetailEventsBound) return;
+  generalDetailEventsBound = true;
+  bindTap(document.getElementById('generalDetailScrim'), closeGeneralDetailModal);
+  bindTap(document.getElementById('generalDetailClose'), closeGeneralDetailModal);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeGeneralDetailModal();
+  });
+}
+function showGeneralDetail(g) {
+  if (!g) return;
+  ensureGeneralDetailEvents();
+  const modal = document.getElementById('generalDetailModal');
+  if (!modal) return;
+  const rarity = getGeneralRarity(g);
+  const stars = clampStars((g && g.stars) || 1);
+  const lv = Math.max(1, Math.min(ENHANCE_MAX_LV, (g && g.lv) || 1));
+  const art = document.getElementById('generalDetailArt');
+  const nameEl = document.getElementById('generalDetailName');
+  const rarityEl = document.getElementById('generalDetailRarity');
+  const levelEl = document.getElementById('generalDetailLevel');
+  const starsEl = document.getElementById('generalDetailStars');
+  const powerEl = document.getElementById('generalDetailPower');
+  const buffsEl = document.getElementById('generalDetailBuffs');
+
+  modal.dataset.tier = rarity.tier;
+  modal.style.setProperty('--detail-rarity', rarity.color);
+  modal.style.setProperty('--detail-bg', `url("${getGeneralDetailBackground(g)}")`);
+  if (art) {
+    art.alt = `${g.name} 전신`;
+    setImageFallback(art, resolveGeneralFullbodySources(g));
+  }
+  if (nameEl) nameEl.textContent = g.name || '';
+  if (rarityEl) {
+    rarityEl.textContent = rarity.label;
+    rarityEl.style.color = rarity.color;
+  }
+  if (levelEl) levelEl.textContent = lv > 1 ? `+${lv - 1}` : 'Lv.1';
+  if (starsEl) {
+    starsEl.textContent = '★'.repeat(stars);
+    starsEl.style.color = rarity.color;
+  }
+  if (powerEl) powerEl.textContent = `전투력 ${generalDetailPower(g).toLocaleString()}`;
+  if (buffsEl) buffsEl.innerHTML = formatGeneralBuffsChips(g.buffs, lv);
+
+  generalDetailLastFocus = document.activeElement;
+  clearTimeout(generalDetailCloseTimer);
+  modal.style.display = 'flex';
+  modal.setAttribute('aria-hidden', 'false');
+  requestAnimationFrame(() => modal.classList.add('show'));
+  setTimeout(() => document.getElementById('generalDetailClose')?.focus({ preventScroll: true }), 40);
+}
+function closeGeneralDetailModal(e) {
+  if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+  const modal = document.getElementById('generalDetailModal');
+  if (!modal || modal.style.display === 'none') return;
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+  clearTimeout(generalDetailCloseTimer);
+  generalDetailCloseTimer = setTimeout(() => {
+    modal.style.display = 'none';
+    if (generalDetailLastFocus && typeof generalDetailLastFocus.focus === 'function') {
+      generalDetailLastFocus.focus({ preventScroll: true });
+    }
+  }, 180);
+}
 function renderGeneralManage() {
   const roster = getManagedGenerals();
   const ownedCount = Array.isArray(SAVE.generals) ? SAVE.generals.length : 0;
@@ -12798,10 +12995,13 @@ function renderGeneralManage() {
   if (countEl) countEl.textContent = `${ownedCount}명`;
   const activeKey = getActiveFormationKey();
   const activeArr = getFormationIds(activeKey);
+  const selectedSlotIdx = normalizeManageSlotSelection(activeArr);
   if (titleEl) titleEl.textContent = ownedCount ? `보유 장수 ${ownedCount}명` : '전체 장수 미리보기';
   if (noteEl) {
     noteEl.textContent = ownedCount
-      ? `[${activeKey} ${FORMATION_SUBS[activeKey]}] 포메이션 ${activeArr.length}/${MAX_DEPLOY_GENERALS} — 카드를 탭해 추가, 슬롯을 탭해 제거`
+      ? (selectedSlotIdx == null
+        ? `[${activeKey} ${FORMATION_SUBS[activeKey]}] 포메이션 ${activeArr.length}/${MAX_DEPLOY_GENERALS} — 슬롯을 탭해 선택, 카드/슬롯을 탭해 교체`
+        : `${selectedSlotIdx + 1}번 위치 선택 중 — 다른 슬롯 또는 장수 카드를 탭해 교체`)
       : '보유 장수가 없어 현재는 전체 장수를 미리 표시합니다.';
   }
   // 포메이션 탭
@@ -12814,7 +13014,7 @@ function renderGeneralManage() {
       tab.type = 'button';
       tab.className = 'formation-tab' + (k === activeKey ? ' active' : '');
       tab.innerHTML = `<b>${k}</b><small>${FORMATION_SUBS[k]} · ${arr.length}/${MAX_DEPLOY_GENERALS}</small>`;
-      bindTap(tab, () => { setActiveFormation(k); renderGeneralManage(); });
+      bindTap(tab, () => { clearManageSlotSelection(); setActiveFormation(k); renderGeneralManage(); });
       tabsEl.appendChild(tab);
     });
   }
@@ -12826,7 +13026,7 @@ function renderGeneralManage() {
       const uid = activeArr[i];
       const g = uid != null ? getOwnedGeneral(uid) : null;
       const slot = document.createElement('div');
-      slot.className = 'formation-slot' + (g ? ' filled' : '');
+      slot.className = 'formation-slot' + (g ? ' filled' : '') + (i === selectedSlotIdx ? ' slot-selected' : '');
       if (g) {
         slot.innerHTML = `
           <span class="slot-rank">${i + 1}</span>
@@ -12835,9 +13035,34 @@ function renderGeneralManage() {
           <span class="slot-name">${g.name}${g.lv > 1 ? ` <small style="color:#ffd23f;">+${g.lv-1}</small>` : ''}</span>
           <span class="slot-x">×</span>
         `;
-        bindTap(slot, () => { removeFromActiveFormation(uid); renderGeneralManage(); });
+        bindTap(slot, () => {
+          const arr = getFormationIds(getActiveFormationKey());
+          const picked = normalizeManageSlotSelection(arr);
+          if (picked == null) {
+            setManageSlotSelection(i);
+            showSelectToast(`${i + 1}번 위치 선택`, '#ffd23f');
+          } else if (picked === i) {
+            removeFromActiveFormation(uid);
+            clearManageSlotSelection();
+            showSelectToast(`${g.name} 편성 해제`, '#ffd23f');
+          } else {
+            moveActiveFormationSlot(picked, i);
+            clearManageSlotSelection();
+            showSelectToast(`${picked + 1}번 ↔ ${i + 1}번 자리교체`, '#ffd23f');
+          }
+          renderGeneralManage();
+        });
       } else {
         slot.textContent = '+';
+        bindTap(slot, () => {
+          const arr = getFormationIds(getActiveFormationKey());
+          const picked = normalizeManageSlotSelection(arr);
+          if (picked == null) return;
+          moveActiveFormationSlot(picked, i);
+          clearManageSlotSelection();
+          showSelectToast('마지막 위치로 이동', '#ffd23f');
+          renderGeneralManage();
+        });
       }
       slotsEl.appendChild(slot);
     }
@@ -12853,13 +13078,15 @@ function renderGeneralManage() {
     if (og && og.id) inFormationIds.add(og.id);
   }
   roster.forEach((g) => {
-    const card = document.createElement('button');
-    card.type = 'button';
+    const card = document.createElement('div');
     card.style.position = 'relative';
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `${g.name} 편성`);
     const isIn = g.uid != null && inFormation.has(g.uid);
     const isLeader = isIn && activeArr[0] === g.uid;
     const isDupId = !isIn && inFormationIds.has(g.id);
-    card.className = 'deploy-card tier-' + getGeneralRarity(g).tier
+    card.className = 'deploy-card has-detail tier-' + getGeneralRarity(g).tier
       + (isIn ? ' in-formation' : '')
       + (isDupId ? ' duplicate-id' : '');
     const badgeHTML = isLeader
@@ -12868,16 +13095,51 @@ function renderGeneralManage() {
     card.innerHTML = `
       ${rarityBadgeHTML(g)}
       ${badgeHTML}
+      <button type="button" class="general-detail-btn" title="상세보기" aria-label="${htmlSafe(g.name)} 상세보기"></button>
       <div class="deploy-face"><img src="${g.face}" alt=""></div>
       <div class="deploy-name">${g.name}${g.lv > 1 ? ` <span class="lv-pill">+${g.lv-1}</span>` : ''}</div>
       <div class="deploy-stat">${formatGeneralBuffsChips(g.buffs, g.lv)}</div>
     `;
-    bindTap(card, () => {
+    const detailBtn = card.querySelector('.general-detail-btn');
+    if (detailBtn) {
+      detailBtn.addEventListener('touchstart', ev => ev.stopPropagation(), { passive: true });
+      detailBtn.addEventListener('touchmove', ev => ev.stopPropagation(), { passive: true });
+    }
+    bindTap(detailBtn, (ev) => {
+      if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+      if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+      showGeneralDetail(g);
+    });
+    card.addEventListener('keydown', (ev) => {
+      if (ev.target !== card) return;
+      if (ev.key === 'Enter' || ev.key === ' ') {
+        ev.preventDefault();
+        card.click();
+      }
+    });
+    bindTap(card, (ev) => {
+      if (ev && ev.target && ev.target.closest && ev.target.closest('.general-detail-btn')) return;
       if (g.uid == null) return; // 미리보기 모드
       const k = getActiveFormationKey();
       const arr = getFormationIds(k);
+      const picked = normalizeManageSlotSelection(arr);
       const idx = arr.indexOf(g.uid);
-      if (idx === 0) {
+      if (picked != null) {
+        if (idx === picked) {
+          clearManageSlotSelection();
+        } else if (idx >= 0) {
+          moveActiveFormationSlot(picked, idx);
+          clearManageSlotSelection();
+          showSelectToast(`${picked + 1}번 ↔ ${idx + 1}번 자리교체`, '#ffd23f');
+        } else if (inFormationIds.has(g.id)) {
+          showSelectToast(`동일 장수(${g.name})는 한 명만 편성 가능`, '#c1121f');
+          return;
+        } else {
+          replaceActiveFormationSlot(picked, g.uid);
+          clearManageSlotSelection();
+          showSelectToast(`${picked + 1}번 위치에 ${g.name} 편성`, '#ffd23f');
+        }
+      } else if (idx === 0) {
         // 이미 선봉 — 탭으로 제거
         removeFromActiveFormation(g.uid);
       } else if (idx > 0) {
@@ -13542,19 +13804,52 @@ function startOpeningCinematic() {
   cinematic = { phases, idx: 0, phaseT: 0, baseZoom };
   drawCinematicLabel('');
 }
+const CINEMATIC_LABEL_ASSETS = {
+  '아 군': { src: './assets/battle/cinematic_label_ally.png', alt: '아군', start: false },
+  '적 군': { src: './assets/battle/cinematic_label_enemy.png', alt: '적군', start: false },
+  '공 성': { src: './assets/battle/cinematic_label_siege.png', alt: '공성', start: false },
+  'START!': { src: './assets/battle/cinematic_label_start.png', alt: 'START!', start: true },
+};
 function drawCinematicLabel(text, big) {
   let el = document.getElementById('cinematicLabel');
   if (!el) {
     el = document.createElement('div');
     el.id = 'cinematicLabel';
-    el.style.cssText = 'position:fixed; left:50%; top:38%; transform:translate(-50%,-50%); font-weight:900; color:#fff; -webkit-text-stroke:5px #2a1810; paint-order:stroke fill; pointer-events:none; z-index:5000; transition:opacity 0.25s; letter-spacing:8px; font-family:inherit; text-shadow: 0 0 24px rgba(255,210,80,0.6); white-space:nowrap;';
+    el.style.cssText = 'position:fixed; left:50%; top:38%; transform:translate(-50%,-50%) scale(.96); pointer-events:none; z-index:5000; transition:opacity .18s ease, transform .18s ease; white-space:nowrap; opacity:0; filter:drop-shadow(0 18px 22px rgba(0,0,0,.48));';
+    el.innerHTML = '<img alt="" style="display:block;width:100%;height:auto;object-fit:contain;"><span style="display:none;"></span>';
     document.body.appendChild(el);
   }
-  if (!text) { el.style.opacity = '0'; el.textContent = ''; return; }
-  el.textContent = text;
-  el.style.fontSize = big ? '72px' : '40px';
-  el.style.color = big ? '#ffd23f' : '#fff';
-  el.style.letterSpacing = big ? '12px' : '8px';
+  const img = el.querySelector('img');
+  const fallback = el.querySelector('span');
+  if (!text) {
+    el.style.opacity = '0';
+    el.style.transform = 'translate(-50%,-50%) scale(.96)';
+    if (img) img.removeAttribute('src');
+    if (fallback) fallback.textContent = '';
+    return;
+  }
+  const asset = CINEMATIC_LABEL_ASSETS[text];
+  if (asset && img) {
+    img.src = asset.src;
+    img.alt = asset.alt;
+    img.style.display = 'block';
+    if (fallback) {
+      fallback.style.display = 'none';
+      fallback.textContent = '';
+    }
+    el.style.width = asset.start || big ? 'clamp(300px, 48vw, 760px)' : 'clamp(220px, 34vw, 470px)';
+  } else {
+    if (img) img.style.display = 'none';
+    if (fallback) {
+      fallback.style.cssText = 'display:block;font-weight:900;color:#fff;-webkit-text-stroke:5px #2a1810;paint-order:stroke fill;letter-spacing:8px;font-family:inherit;text-shadow:0 0 24px rgba(255,210,80,.6);';
+      fallback.textContent = text;
+      fallback.style.fontSize = big ? '72px' : '40px';
+      fallback.style.color = big ? '#ffd23f' : '#fff';
+      fallback.style.letterSpacing = big ? '12px' : '8px';
+    }
+    el.style.width = 'auto';
+  }
+  el.style.transform = 'translate(-50%,-50%) scale(1)';
   el.style.opacity = '1';
 }
 function updateCinematic(dt) {
@@ -13981,54 +14276,82 @@ const CHAPTER_SYNOPSIS = {
   9: '용암과 화산재 사이로 최후의 길을 연다',
   10: '무너지는 황궁 앞에서 천하의 결말을 가른다',
 };
-/* 핀 좌표 — 배경 일러스트의 실제 길 중앙선을 따라 배치.
-   1번이 맨 아래, 20번이 맨 위. */
-const PIN_POSITIONS_CH1 = [
-  /* 1 */ { x: 50, y: 94 },
-  /* 2 */ { x: 57, y: 89 },
-  /* 3 */ { x: 42, y: 76 },
-  /* 4 */ { x: 49, y: 71 },
-  /* 5 */ { x: 57, y: 66 },
-  /* 6 */ { x: 56, y: 62 },
-  /* 7 */ { x: 45, y: 58 },
-  /* 8 */ { x: 24, y: 54 },
-  /* 9 */ { x: 30, y: 50 },
-  /* 10 */ { x: 48, y: 46 },
-  /* 11 */ { x: 65, y: 42 },
-  /* 12 */ { x: 58, y: 38 },
-  /* 13 */ { x: 47, y: 34 },
-  /* 14 */ { x: 54, y: 30 },
-  /* 15 */ { x: 45, y: 27 },
-  /* 16 */ { x: 50, y: 24 },
-  /* 17 */ { x: 58, y: 21 },
-  /* 18 */ { x: 66, y: 18 },
-  /* 19 */ { x: 64, y: 15 },
-  /* 20 */ { x: 54, y: 12 },
-];
-const PIN_POSITIONS_MOUNTAIN = [
-  /* 1 */ { x: 15, y: 94 },
-  /* 2 */ { x: 55, y: 89 },
-  /* 3 */ { x: 42, y: 76 },
-  /* 4 */ { x: 49, y: 71 },
-  /* 5 */ { x: 57, y: 66 },
-  /* 6 */ { x: 56, y: 62 },
-  /* 7 */ { x: 45, y: 58 },
-  /* 8 */ { x: 24, y: 54 },
-  /* 9 */ { x: 30, y: 50 },
-  /* 10 */ { x: 48, y: 46 },
-  /* 11 */ { x: 65, y: 42 },
-  /* 12 */ { x: 58, y: 38 },
-  /* 13 */ { x: 47, y: 34 },
-  /* 14 */ { x: 54, y: 30 },
-  /* 15 */ { x: 45, y: 27 },
-  /* 16 */ { x: 50, y: 24 },
-  /* 17 */ { x: 58, y: 21 },
-  /* 18 */ { x: 66, y: 18 },
-  /* 19 */ { x: 64, y: 15 },
-  /* 20 */ { x: 54, y: 12 },
-];
+/* 핀 좌표 — 챕터별 배경 길 중앙선에 맞춘 말판 좌표.
+   1번이 맨 아래 출발점, 20번이 맨 위 성문/최종 보스. */
+const PIN_POSITIONS_BY_CHAPTER = {
+  1: [
+    { x: 50, y: 94 }, { x: 57, y: 89 }, { x: 43, y: 76 }, { x: 49, y: 71 },
+    { x: 57, y: 66 }, { x: 56, y: 61 }, { x: 45, y: 56 }, { x: 26, y: 52 },
+    { x: 31, y: 48 }, { x: 50, y: 44 }, { x: 65, y: 40 }, { x: 58, y: 36 },
+    { x: 48, y: 34 }, { x: 54, y: 30 }, { x: 45, y: 27 }, { x: 50, y: 24 },
+    { x: 58, y: 21 }, { x: 66, y: 18 }, { x: 64, y: 15 }, { x: 54, y: 12 },
+  ],
+  2: [
+    { x: 45, y: 94 }, { x: 55, y: 89 }, { x: 52, y: 82 }, { x: 42, y: 76 },
+    { x: 49, y: 71 }, { x: 57, y: 66 }, { x: 56, y: 61 }, { x: 45, y: 56 },
+    { x: 24, y: 52 }, { x: 30, y: 48 }, { x: 49, y: 44 }, { x: 65, y: 40 },
+    { x: 58, y: 36 }, { x: 47, y: 32 }, { x: 54, y: 28 }, { x: 45, y: 25 },
+    { x: 50, y: 22 }, { x: 58, y: 19 }, { x: 64, y: 16 }, { x: 54, y: 12 },
+  ],
+  3: [
+    { x: 46, y: 94 }, { x: 55, y: 89 }, { x: 54, y: 82 }, { x: 43, y: 76 },
+    { x: 50, y: 71 }, { x: 58, y: 66 }, { x: 57, y: 61 }, { x: 47, y: 56 },
+    { x: 30, y: 52 }, { x: 36, y: 48 }, { x: 53, y: 44 }, { x: 65, y: 40 },
+    { x: 59, y: 36 }, { x: 48, y: 32 }, { x: 54, y: 28 }, { x: 45, y: 25 },
+    { x: 50, y: 22 }, { x: 58, y: 19 }, { x: 64, y: 16 }, { x: 54, y: 12 },
+  ],
+  4: [
+    { x: 18, y: 94 }, { x: 23, y: 89 }, { x: 28, y: 82 }, { x: 34, y: 76 },
+    { x: 44, y: 71 }, { x: 52, y: 66 }, { x: 52, y: 61 }, { x: 44, y: 56 },
+    { x: 30, y: 52 }, { x: 34, y: 48 }, { x: 51, y: 44 }, { x: 65, y: 40 },
+    { x: 58, y: 36 }, { x: 48, y: 32 }, { x: 54, y: 28 }, { x: 45, y: 25 },
+    { x: 50, y: 22 }, { x: 58, y: 19 }, { x: 64, y: 16 }, { x: 54, y: 12 },
+  ],
+  5: [
+    { x: 49, y: 94 }, { x: 57, y: 89 }, { x: 44, y: 76 }, { x: 50, y: 71 },
+    { x: 58, y: 66 }, { x: 58, y: 61 }, { x: 49, y: 56 }, { x: 37, y: 52 },
+    { x: 43, y: 48 }, { x: 60, y: 44 }, { x: 67, y: 40 }, { x: 60, y: 36 },
+    { x: 50, y: 34 }, { x: 57, y: 30 }, { x: 49, y: 27 }, { x: 54, y: 24 },
+    { x: 61, y: 21 }, { x: 67, y: 18 }, { x: 69, y: 15 }, { x: 64, y: 12 },
+  ],
+  6: [
+    { x: 15, y: 94 }, { x: 26, y: 89 }, { x: 32, y: 82 }, { x: 39, y: 76 },
+    { x: 50, y: 71 }, { x: 58, y: 66 }, { x: 57, y: 61 }, { x: 48, y: 56 },
+    { x: 37, y: 52 }, { x: 43, y: 48 }, { x: 58, y: 44 }, { x: 66, y: 40 },
+    { x: 58, y: 36 }, { x: 48, y: 32 }, { x: 55, y: 28 }, { x: 45, y: 25 },
+    { x: 50, y: 22 }, { x: 58, y: 19 }, { x: 64, y: 16 }, { x: 54, y: 12 },
+  ],
+  7: [
+    { x: 18, y: 94 }, { x: 31, y: 89 }, { x: 38, y: 82 }, { x: 41, y: 76 },
+    { x: 51, y: 71 }, { x: 58, y: 66 }, { x: 56, y: 61 }, { x: 47, y: 56 },
+    { x: 35, y: 52 }, { x: 42, y: 48 }, { x: 59, y: 44 }, { x: 66, y: 40 },
+    { x: 59, y: 36 }, { x: 48, y: 32 }, { x: 54, y: 28 }, { x: 45, y: 25 },
+    { x: 50, y: 22 }, { x: 58, y: 19 }, { x: 64, y: 16 }, { x: 54, y: 12 },
+  ],
+  8: [
+    { x: 36, y: 94 }, { x: 47, y: 89 }, { x: 50, y: 82 }, { x: 42, y: 76 },
+    { x: 49, y: 71 }, { x: 58, y: 66 }, { x: 58, y: 61 }, { x: 48, y: 56 },
+    { x: 35, y: 52 }, { x: 41, y: 48 }, { x: 58, y: 44 }, { x: 66, y: 40 },
+    { x: 59, y: 36 }, { x: 48, y: 32 }, { x: 54, y: 28 }, { x: 45, y: 25 },
+    { x: 50, y: 22 }, { x: 58, y: 19 }, { x: 64, y: 16 }, { x: 54, y: 12 },
+  ],
+  9: [
+    { x: 15, y: 94 }, { x: 22, y: 89 }, { x: 28, y: 82 }, { x: 35, y: 76 },
+    { x: 48, y: 71 }, { x: 58, y: 66 }, { x: 57, y: 61 }, { x: 47, y: 56 },
+    { x: 35, y: 52 }, { x: 42, y: 48 }, { x: 58, y: 44 }, { x: 66, y: 40 },
+    { x: 59, y: 36 }, { x: 49, y: 32 }, { x: 55, y: 28 }, { x: 45, y: 25 },
+    { x: 50, y: 22 }, { x: 58, y: 19 }, { x: 64, y: 16 }, { x: 54, y: 12 },
+  ],
+  10: [
+    { x: 43, y: 94 }, { x: 55, y: 89 }, { x: 57, y: 82 }, { x: 46, y: 76 },
+    { x: 53, y: 71 }, { x: 62, y: 66 }, { x: 61, y: 61 }, { x: 50, y: 56 },
+    { x: 37, y: 52 }, { x: 42, y: 48 }, { x: 60, y: 44 }, { x: 68, y: 40 },
+    { x: 61, y: 36 }, { x: 51, y: 32 }, { x: 58, y: 28 }, { x: 50, y: 25 },
+    { x: 56, y: 22 }, { x: 65, y: 19 }, { x: 70, y: 16 }, { x: 55, y: 12 },
+  ],
+};
 function stageMapPinPosition(ch, local) {
-  const route = ch === 1 ? PIN_POSITIONS_CH1 : PIN_POSITIONS_MOUNTAIN;
+  const route = PIN_POSITIONS_BY_CHAPTER[Math.min(10, Math.max(1, ch))] || PIN_POSITIONS_BY_CHAPTER[1];
   return route[local] || route[route.length - 1];
 }
 function getCurrentChapter() {
@@ -14174,51 +14497,9 @@ function renderStageGrid() {
 	      const cap = Math.min(10, Math.max(1, ch));
 	      mapEl.dataset.chapter = String(cap);
     }
-    /* SVG 경로 — 핀 사이의 진행 흐름을 실제 길 위에 은은하게 얹는다. */
+    /* 보조 SVG 경로는 사용하지 않는다. 배경 일러스트의 길과 핀 위치만으로 진행감을 만든다. */
     const svg = document.getElementById('mapPath');
-    if (svg) {
-      svg.innerHTML = '';
-      const pts = [];
-      for (let i = startIdx; i < endIdx; i++) {
-        if (!isCampaignStageIndex(i)) continue;
-        const local = i - startIdx;
-        const p = stageMapPinPosition(ch, local);
-        pts.push({ x: p.x, y: p.y });
-      }
-      // 하나의 path 문자열 구성, 클리어 구간만 별도 색
-      const buildPath = (arr) => {
-        if (!arr.length) return '';
-        let d = `M ${arr[0].x},${arr[0].y}`;
-        for (let i = 1; i < arr.length; i++) {
-          const prev = arr[i-1], cur = arr[i];
-          const cx = (prev.x + cur.x) / 2;
-          d += ` Q ${cx},${prev.y} ${cur.x},${cur.y}`;
-        }
-        return d;
-      };
-      // 클리어된 구간 (활성 핀까지)
-      const lastDoneIdx = Math.max(0, Math.min(SAVE.unlocked - startIdx - 1, endIdx - startIdx - 1));
-      const donePts = pts.slice(0, lastDoneIdx + 1);
-      const restPts = pts.slice(lastDoneIdx);
-      const ns = 'http://www.w3.org/2000/svg';
-      const appendRoutePath = (d, className) => {
-        if (!d || !/[QLC]/.test(d)) return null;
-        const el = document.createElementNS(ns, 'path');
-        el.setAttribute('d', d);
-        el.setAttribute('class', className);
-        svg.appendChild(el);
-        return el;
-      };
-      const restD = buildPath(restPts);
-      appendRoutePath(restD, 'road route-shadow route-rest');
-      appendRoutePath(restD, 'road route-base route-rest');
-      if (donePts.length > 1) {
-        const doneD = buildPath(donePts);
-        appendRoutePath(doneD, 'road route-shadow route-done');
-        appendRoutePath(doneD, 'road route-base route-done');
-        appendRoutePath(doneD, 'road route-flow route-done');
-      }
-    }
+    if (svg) svg.innerHTML = '';
 
     /* 핀 생성 — 튜토리얼은 지도에서 숨김 */
     let activeCell = null;
@@ -28739,95 +29020,52 @@ function closeTutorialOffer(accept) {
     position: absolute !important;
     left: 50% !important;
     top: 51% !important;
-    width: clamp(118px, 12vw, 176px) !important;
-    height: clamp(118px, 12vw, 176px) !important;
-    transform: translate(-50%, -50%) rotate(-8deg) !important;
+    width: clamp(260px, 29vw, 540px) !important;
+    aspect-ratio: 1024 / 560 !important;
+    height: auto !important;
+    transform: translate(-50%, -50%) scale(1) !important;
     z-index: 4 !important;
     pointer-events: none !important;
-    filter: drop-shadow(0 0 18px rgba(255, 112, 42, 0.54)) !important;
+    opacity: 0.97 !important;
+    filter:
+      drop-shadow(0 18px 22px rgba(0, 0, 0, 0.56))
+      drop-shadow(0 0 18px rgba(210, 112, 38, 0.30)) !important;
+    animation: idgClashBreath 2.35s ease-in-out infinite !important;
+  }
+  #introDialog .idg-clash img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
   }
   #introDialog .idg-clash::before,
   #introDialog .idg-clash::after {
-    content: "" !important;
-    position: absolute !important;
-    inset: 13% !important;
-    border-radius: 50% !important;
-    border: 1px solid rgba(255, 220, 118, 0.42) !important;
-    box-shadow:
-      0 0 24px rgba(255, 94, 36, 0.28),
-      inset 0 0 18px rgba(255, 238, 156, 0.12) !important;
-    animation: idgClashRing 1.25s ease-out infinite !important;
+    content: none !important;
   }
-  #introDialog .idg-clash::after {
-    inset: 0 !important;
-    border-style: dashed !important;
-    opacity: 0.62 !important;
-    animation-delay: 0.38s !important;
-  }
-  #introDialog .idg-slash {
-    position: absolute !important;
-    left: 50% !important;
-    top: 50% !important;
-    width: 20% !important;
-    height: 116% !important;
-    border-radius: 999px !important;
-    transform-origin: center !important;
-    background:
-      linear-gradient(90deg, transparent 0 12%, rgba(255,255,255,0.96) 36%, rgba(255,221,118,0.98) 50%, rgba(255,109,45,0.72) 66%, transparent 88%),
-      linear-gradient(180deg, transparent, rgba(255, 231, 141, 0.95) 34%, rgba(255, 69, 38, 0.82) 50%, rgba(78, 198, 255, 0.74) 66%, transparent) !important;
-    box-shadow:
-      0 0 18px rgba(255, 206, 93, 0.76),
-      0 0 44px rgba(255, 82, 36, 0.34) !important;
-    clip-path: polygon(42% 0, 62% 0, 70% 46%, 98% 52%, 68% 59%, 57% 100%, 37% 100%, 30% 60%, 0 52%, 31% 45%) !important;
-  }
-  #introDialog .idg-slash-a {
-    transform: translate(-50%, -50%) rotate(38deg) !important;
-  }
-  #introDialog .idg-slash-b {
-    transform: translate(-50%, -50%) rotate(-42deg) !important;
-    background:
-      linear-gradient(90deg, transparent 0 12%, rgba(255,255,255,0.92) 36%, rgba(167,226,255,0.98) 50%, rgba(53,176,255,0.72) 66%, transparent 88%),
-      linear-gradient(180deg, transparent, rgba(218, 246, 255, 0.92) 34%, rgba(73, 196, 255, 0.84) 50%, rgba(255, 93, 48, 0.62) 66%, transparent) !important;
-    box-shadow:
-      0 0 18px rgba(133, 221, 255, 0.72),
-      0 0 42px rgba(65, 170, 255, 0.32) !important;
-  }
-  #introDialog .idg-spark {
-    position: absolute !important;
-    left: 50% !important;
-    top: 50% !important;
-    width: 7px !important;
-    height: 7px !important;
-    border-radius: 50% !important;
-    background: #fff2a8 !important;
-    box-shadow: 0 0 14px rgba(255, 210, 80, 0.86) !important;
-    opacity: 0 !important;
-    animation: idgSparkBurst 1.15s ease-out infinite !important;
-  }
-  #introDialog .idg-spark.s1 { --sx: -58px; --sy: -36px; animation-delay: 0.04s !important; }
-  #introDialog .idg-spark.s2 { --sx: 54px; --sy: -30px; animation-delay: 0.16s !important; }
-  #introDialog .idg-spark.s3 { --sx: -44px; --sy: 42px; animation-delay: 0.28s !important; }
-  #introDialog .idg-spark.s4 { --sx: 60px; --sy: 38px; animation-delay: 0.40s !important; }
   #introDialog.idg-hit-flash .idg-clash {
     animation: idgClashHit 0.42s cubic-bezier(.18,1.55,.26,1) !important;
   }
-  #introDialog.idg-hit-flash .idg-slash {
-    filter: brightness(1.55) saturate(1.25) !important;
+  #introDialog.idg-hit-flash .idg-clash img {
+    filter: brightness(1.18) saturate(1.12) !important;
   }
-  @keyframes idgClashRing {
-    0% { transform: scale(0.42) rotate(0deg); opacity: 0.88; }
-    70% { opacity: 0.24; }
-    100% { transform: scale(1.26) rotate(64deg); opacity: 0; }
+  @keyframes idgClashBreath {
+    0%, 100% {
+      transform: translate(-50%, -50%) scale(0.985);
+      filter:
+        drop-shadow(0 18px 22px rgba(0, 0, 0, 0.56))
+        drop-shadow(0 0 15px rgba(210, 112, 38, 0.24));
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.025);
+      filter:
+        drop-shadow(0 20px 25px rgba(0, 0, 0, 0.62))
+        drop-shadow(0 0 24px rgba(210, 112, 38, 0.36));
+    }
   }
   @keyframes idgClashHit {
-    0% { transform: translate(-50%, -50%) rotate(-8deg) scale(0.72); filter: brightness(1.9) drop-shadow(0 0 26px rgba(255, 226, 118, 0.78)); }
-    42% { transform: translate(-50%, -50%) rotate(-8deg) scale(1.24); }
-    100% { transform: translate(-50%, -50%) rotate(-8deg) scale(1); }
-  }
-  @keyframes idgSparkBurst {
-    0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
-    18% { opacity: 1; }
-    100% { transform: translate(calc(-50% + var(--sx)), calc(-50% + var(--sy))) scale(0.1); opacity: 0; }
+    0% { transform: translate(-50%, -50%) scale(0.78); filter: brightness(1.42) drop-shadow(0 0 26px rgba(255, 197, 86, 0.56)); }
+    42% { transform: translate(-50%, -50%) scale(1.13); }
+    100% { transform: translate(-50%, -50%) scale(1); }
   }
   @keyframes idgStormSweep {
     from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
@@ -31142,6 +31380,1053 @@ function closeTutorialOffer(accept) {
     display: none !important;
     border: 0 !important;
     background: transparent !important;
+  }
+
+  .manage-roster .deploy-card.has-detail .formation-badge {
+    top: 35px !important;
+    right: 7px !important;
+  }
+  .general-detail-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    z-index: 6;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 1px solid rgba(255,218,104,0.9);
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 25%, rgba(255,255,255,0.34), transparent 36%),
+      linear-gradient(180deg, rgba(30,43,66,0.96), rgba(5,10,18,0.98));
+    color: #ffe49a;
+    box-shadow:
+      0 6px 12px rgba(0,0,0,0.36),
+      inset 0 1px 0 rgba(255,255,255,0.18);
+    cursor: pointer;
+    touch-action: manipulation !important;
+  }
+  .general-detail-btn::before {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    left: 7px;
+    top: 6px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+  }
+  .general-detail-btn::after {
+    content: '';
+    position: absolute;
+    width: 7px;
+    height: 2px;
+    left: 15px;
+    top: 16px;
+    border-radius: 2px;
+    background: currentColor;
+    transform: rotate(45deg);
+    transform-origin: left center;
+  }
+  .general-detail-btn:active {
+    transform: translateY(1px) scale(0.96);
+    filter: brightness(1.08);
+  }
+  .general-detail-btn:focus,
+  .general-detail-close:focus {
+    outline: none;
+  }
+  .general-detail-btn:focus-visible,
+  .general-detail-close:focus-visible {
+    outline: 2px solid rgba(255,242,189,0.92);
+    outline-offset: 2px;
+  }
+
+  #generalDetailModal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 12000 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: max(18px, env(safe-area-inset-top)) 14px max(18px, env(safe-area-inset-bottom)) !important;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+  }
+  #generalDetailModal.show {
+    opacity: 1;
+  }
+  .general-detail-scrim {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    border-radius: 0;
+    background:
+      radial-gradient(circle at 50% 22%, rgba(255,218,104,0.18), transparent 34%),
+      radial-gradient(circle at 50% 80%, rgba(80,170,255,0.14), transparent 38%),
+      rgba(1,5,13,0.78);
+    backdrop-filter: blur(7px) saturate(1.05);
+    cursor: pointer;
+  }
+  .general-detail-card {
+    position: relative;
+    width: min(374px, calc(100vw - 28px));
+    max-height: min(760px, calc(100dvh - 28px));
+    display: grid;
+    grid-template-rows: minmax(350px, 1fr) auto;
+    overflow: hidden;
+    border: 2px solid rgba(235,184,68,0.88);
+    border-radius: 8px;
+    background:
+      radial-gradient(circle at 50% -10%, rgba(255,218,104,0.18), transparent 34%),
+      linear-gradient(180deg, #1b2a3d 0%, #0b1422 54%, #070b12 100%);
+    box-shadow:
+      0 30px 82px rgba(0,0,0,0.72),
+      0 0 0 1px rgba(255,242,189,0.16),
+      inset 0 1px 0 rgba(255,255,255,0.12);
+    transform: translateY(12px) scale(0.97);
+    transition: transform 0.2s cubic-bezier(.2,.85,.22,1.1);
+  }
+  #generalDetailModal.show .general-detail-card {
+    transform: translateY(0) scale(1);
+  }
+  .general-detail-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 5;
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(255,218,104,0.74);
+    border-radius: 50%;
+    background: rgba(4,8,15,0.72);
+    color: #fff3be;
+    font-size: 23px;
+    line-height: 28px;
+    font-weight: 900;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.12);
+    cursor: pointer;
+  }
+  .general-detail-portrait {
+    position: relative;
+    min-height: 350px;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at 50% 16%, rgba(255,226,140,0.36), transparent 34%),
+      linear-gradient(180deg, rgba(73,99,136,0.44), rgba(8,16,29,0.22) 48%, rgba(2,5,10,0.66));
+  }
+  .general-detail-portrait::after {
+    content: '';
+    position: absolute;
+    left: 9%;
+    right: 9%;
+    bottom: 8px;
+    height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.54), transparent 68%);
+    filter: blur(3px);
+  }
+  .general-detail-aura {
+    position: absolute;
+    inset: 38px 22px 82px;
+    border: 1px solid rgba(255,218,104,0.26);
+    border-radius: 50%;
+    background:
+      conic-gradient(from 24deg, transparent 0 16%, rgba(255,218,104,0.22) 18% 20%, transparent 22% 47%, rgba(80,170,255,0.18) 49% 52%, transparent 54% 100%),
+      radial-gradient(circle, rgba(255,218,104,0.14), transparent 61%);
+    filter: blur(0.2px);
+    opacity: 0.92;
+  }
+  .general-detail-art {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    bottom: -4px;
+    width: 90%;
+    height: 96%;
+    object-fit: contain;
+    object-position: center bottom;
+    transform: translateX(-50%);
+    filter: drop-shadow(0 18px 22px rgba(0,0,0,0.58));
+  }
+  .general-detail-grade {
+    position: absolute;
+    z-index: 4;
+    left: 12px;
+    top: 12px;
+    padding: 4px 9px 5px;
+    border: 1px solid rgba(255,218,104,0.72);
+    border-radius: 999px;
+    background: rgba(5,9,17,0.72);
+    color: #ffd96a;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.28);
+    backdrop-filter: blur(6px);
+  }
+  .general-detail-info {
+    position: relative;
+    z-index: 3;
+    padding: 15px 16px 17px;
+    border-top: 1px solid rgba(255,218,104,0.34);
+    background:
+      linear-gradient(180deg, rgba(10,18,31,0.74), rgba(4,8,14,0.96)),
+      rgba(4,8,14,0.96);
+  }
+  .general-detail-kicker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 22px;
+  }
+  .general-detail-kicker span,
+  .general-detail-power {
+    padding: 4px 9px;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,245,216,0.82);
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .general-detail-name {
+    margin-top: 8px;
+    color: #fff1b8;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 31px;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: 0;
+    text-align: center;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.72), 0 0 18px rgba(255,218,104,0.28);
+    overflow-wrap: anywhere;
+  }
+  .general-detail-power {
+    width: max-content;
+    margin: 10px auto 0;
+    color: #ffe49a;
+    background: rgba(132,34,22,0.34);
+    border-color: rgba(255,218,104,0.32);
+  }
+  .general-detail-stats {
+    margin-top: 12px;
+  }
+  .general-detail-stats .buff-chips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .general-detail-stats .buff-chip {
+    min-height: 31px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 1px solid rgba(144,188,255,0.32) !important;
+    border-radius: 6px !important;
+    background: linear-gradient(180deg, rgba(214,225,240,0.18), rgba(136,156,184,0.12)) !important;
+    color: #eef5ff !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+    text-shadow: none !important;
+  }
+  .general-detail-stats .buff-chip b,
+  .general-detail-stats .buff-chip i {
+    color: #fff1b8 !important;
+    font-style: normal !important;
+    font-weight: 900 !important;
+  }
+  @media (max-height: 690px) {
+    .general-detail-card {
+      grid-template-rows: minmax(280px, 1fr) auto;
+    }
+    .general-detail-portrait {
+      min-height: 280px;
+    }
+    .general-detail-name {
+      font-size: 27px;
+    }
+    .general-detail-info {
+      padding-bottom: 13px;
+    }
+  }
+  @media (max-width: 360px) {
+    .general-detail-card {
+      width: calc(100vw - 20px);
+    }
+    .general-detail-stats .buff-chips {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* 장수 상세 팝업 임팩트 패스: 쇼케이스 */
+  #generalDetailModal {
+    --detail-rarity: #ffd96a;
+    --detail-bg: url('./assets/battle/bg_battle_03_mountain.jpg');
+    perspective: 900px;
+  }
+  .general-detail-scrim {
+    background:
+      radial-gradient(ellipse at 50% 48%, rgba(231,134,36,0.22), transparent 36%),
+      radial-gradient(ellipse at 50% 94%, rgba(255,184,80,0.13), transparent 28%),
+      linear-gradient(180deg, rgba(0,0,0,0.48), rgba(1,3,8,0.88)),
+      rgba(0,0,0,0.74) !important;
+    backdrop-filter: blur(9px) saturate(1.12) contrast(1.04);
+  }
+  .general-detail-card {
+    width: min(392px, calc(100vw - 18px)) !important;
+    max-height: min(840px, calc(100dvh - 16px)) !important;
+    grid-template-rows: minmax(455px, 1fr) auto !important;
+    border: 3px solid #f0c35c !important;
+    border-radius: 8px !important;
+    background:
+      linear-gradient(180deg, rgba(48,58,62,0.78), rgba(12,14,18,0.98) 48%, rgba(2,5,10,1)),
+      #07090d !important;
+    box-shadow:
+      0 34px 94px rgba(0,0,0,0.78),
+      0 0 0 1px rgba(255,242,183,0.58),
+      0 0 42px rgba(226,151,46,0.26),
+      inset 0 0 0 1px rgba(255,255,255,0.12) !important;
+    transform: rotateX(8deg) translateY(18px) scale(0.94) !important;
+    transition: transform 0.28s cubic-bezier(.16,.9,.23,1.22), filter 0.28s ease !important;
+  }
+  #generalDetailModal.show .general-detail-card {
+    transform: rotateX(0deg) translateY(0) scale(1) !important;
+  }
+  .general-detail-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, rgba(255,242,183,0.0), rgba(255,242,183,0.28), rgba(255,242,183,0.0)),
+      linear-gradient(130deg, transparent 0 38%, rgba(255,255,255,0.10) 44%, transparent 51% 100%);
+    opacity: 0;
+    transform: translateX(-48%) skewX(-12deg);
+  }
+  #generalDetailModal.show .general-detail-card::before {
+    animation: detailCardSweep 1.1s ease-out 0.1s 1;
+  }
+  .general-detail-card::after {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    z-index: 1;
+    border: 1px solid rgba(255,218,104,0.26);
+    border-radius: 5px;
+    pointer-events: none;
+  }
+  .general-detail-impact {
+    position: absolute;
+    inset: -26px -18px auto;
+    height: 58%;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 50% 76%, rgba(255,208,112,0.46), transparent 16%),
+      radial-gradient(ellipse at 50% 58%, rgba(196,98,30,0.42), transparent 33%),
+      repeating-radial-gradient(circle at 50% 64%, rgba(255,218,104,0.13) 0 1px, transparent 1px 18px);
+    opacity: 0.98;
+    filter: saturate(1.12);
+  }
+  .general-detail-impact::before,
+  .general-detail-impact::after {
+    content: '';
+    position: absolute;
+    left: 11%;
+    right: 11%;
+    bottom: 4%;
+    height: 42%;
+    background:
+      linear-gradient(70deg, transparent 0 8%, rgba(255,184,80,0.28) 10% 11%, transparent 13% 34%, rgba(255,218,104,0.16) 36% 37%, transparent 39% 100%);
+    transform-origin: center bottom;
+    opacity: 0.68;
+  }
+  .general-detail-impact::after {
+    transform: scaleX(-1);
+    opacity: 0.5;
+  }
+  .general-detail-close {
+    top: 14px !important;
+    right: 14px !important;
+    width: 47px !important;
+    height: 47px !important;
+    border: 3px solid #fff0aa !important;
+    background: radial-gradient(circle, rgba(9,14,22,0.82), rgba(2,4,8,0.92)) !important;
+    color: #fff4be !important;
+    font-size: 34px !important;
+    line-height: 37px !important;
+    box-shadow:
+      0 0 0 4px rgba(255,240,170,0.34),
+      0 12px 20px rgba(0,0,0,0.42),
+      inset 0 1px 0 rgba(255,255,255,0.16) !important;
+  }
+  .general-detail-close:active {
+    transform: scale(0.94);
+  }
+  .general-detail-portrait {
+    min-height: clamp(455px, 64dvh, 610px) !important;
+    background:
+      linear-gradient(180deg, rgba(70,78,75,0.80) 0%, rgba(37,33,24,0.62) 34%, rgba(11,14,20,0.92) 78%, rgba(5,8,13,1) 100%) !important;
+    border-bottom: 2px solid rgba(218,166,58,0.78);
+  }
+  .general-detail-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse at 50% 32%, rgba(255,230,150,0.36), transparent 20%),
+      radial-gradient(ellipse at 50% 82%, rgba(239,122,32,0.26), transparent 34%),
+      linear-gradient(180deg, rgba(4,7,12,0.26), rgba(4,6,10,0.48) 56%, rgba(3,5,9,0.78)),
+      linear-gradient(90deg, rgba(0,0,0,0.56), transparent 26% 74%, rgba(0,0,0,0.56)),
+      var(--detail-bg) center / cover no-repeat !important;
+    filter: saturate(1.13) contrast(1.04);
+  }
+  .general-detail-backdrop::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(116deg, rgba(255,220,126,0.12) 0 1px, transparent 1px 34px),
+      radial-gradient(ellipse at 50% 55%, transparent 0 46%, rgba(0,0,0,0.34) 76%),
+      linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.32));
+    pointer-events: none;
+  }
+  .general-detail-backdrop::before {
+    content: '';
+    position: absolute;
+    inset: 18% -8% 1%;
+    background:
+      radial-gradient(circle at 18% 12%, rgba(255,147,47,0.95) 0 2px, transparent 3px),
+      radial-gradient(circle at 82% 32%, rgba(255,216,118,0.85) 0 2px, transparent 3px),
+      radial-gradient(circle at 62% 8%, rgba(255,126,44,0.85) 0 1.5px, transparent 2.5px),
+      radial-gradient(circle at 34% 47%, rgba(255,216,118,0.72) 0 1.5px, transparent 2.5px),
+      radial-gradient(circle at 76% 72%, rgba(255,126,44,0.78) 0 1.5px, transparent 2.5px);
+    filter: drop-shadow(0 0 7px rgba(255,128,44,0.78));
+    opacity: 0.74;
+    animation: detailEmbers 4s linear infinite;
+  }
+  .general-detail-aura {
+    inset: 48px -72px 48px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background:
+      radial-gradient(ellipse at 50% 50%, transparent 0 37%, rgba(255,222,128,0.26) 38% 39%, transparent 40% 100%),
+      conic-gradient(from 12deg at 50% 58%, transparent 0 7%, rgba(255,221,122,0.28) 8% 9%, transparent 10% 32%, rgba(255,139,42,0.28) 33% 35%, transparent 36% 67%, rgba(255,221,122,0.22) 68% 69%, transparent 70% 100%) !important;
+    filter: blur(0.3px) drop-shadow(0 0 16px rgba(255,191,73,0.28)) !important;
+    opacity: 1 !important;
+  }
+  .general-detail-art {
+    bottom: 0 !important;
+    width: 106% !important;
+    height: 96% !important;
+    object-position: center bottom !important;
+    filter:
+      drop-shadow(0 0 3px rgba(255,236,177,0.68))
+      drop-shadow(0 0 11px rgba(255,174,64,0.48))
+      drop-shadow(0 24px 24px rgba(0,0,0,0.72)) !important;
+  }
+  #generalDetailModal.show .general-detail-art {
+    animation: detailHeroPop 0.42s cubic-bezier(.18,.92,.25,1.2) both;
+  }
+  .general-detail-floor {
+    position: absolute;
+    z-index: 1;
+    left: -12%;
+    right: -12%;
+    bottom: -16px;
+    height: 115px;
+    background:
+      radial-gradient(ellipse at 50% 45%, rgba(255,169,62,0.72), rgba(104,48,18,0.26) 34%, transparent 66%),
+      linear-gradient(180deg, transparent, rgba(0,0,0,0.78));
+    filter: blur(0.2px);
+    opacity: 0.95;
+  }
+  .general-detail-portrait::after {
+    left: 2% !important;
+    right: 2% !important;
+    bottom: 2px !important;
+    height: 70px !important;
+    background:
+      radial-gradient(ellipse, rgba(255,139,42,0.34), transparent 32%),
+      radial-gradient(ellipse, rgba(0,0,0,0.72), transparent 68%) !important;
+  }
+  .general-detail-grade {
+    top: 61px !important;
+    left: 24px !important;
+    padding: 6px 12px 7px !important;
+    min-width: 92px;
+    text-align: center;
+    border: 2px solid #d9ab42 !important;
+    background: rgba(7,9,13,0.88) !important;
+    color: var(--detail-rarity) !important;
+    font-size: 21px !important;
+    letter-spacing: 1px !important;
+    box-shadow: 0 10px 18px rgba(0,0,0,0.42), 0 0 16px rgba(255,190,72,0.28) !important;
+  }
+  .general-detail-info {
+    margin-top: -1px;
+    padding: 13px 28px 18px !important;
+    border-top: 2px solid rgba(218,166,58,0.78) !important;
+    background:
+      linear-gradient(180deg, rgba(4,8,14,0.96), rgba(2,5,10,1) 64%),
+      #03070d !important;
+  }
+  .general-detail-kicker {
+    gap: 12px !important;
+  }
+  .general-detail-kicker span {
+    min-width: 68px;
+    padding: 5px 12px 6px !important;
+    border: 2px solid rgba(255,255,255,0.14) !important;
+    border-radius: 999px !important;
+    background: rgba(255,255,255,0.07) !important;
+    color: #f3f2e8 !important;
+    font-size: 15px !important;
+    text-align: center;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+  #generalDetailRarity {
+    color: var(--detail-rarity) !important;
+  }
+  .general-detail-name {
+    margin-top: 10px !important;
+    font-size: clamp(38px, 10.8vw, 52px) !important;
+    color: #fff1b8 !important;
+    text-shadow:
+      0 3px 0 #000,
+      0 0 18px rgba(255,221,122,0.48),
+      0 0 32px rgba(255,144,48,0.22) !important;
+  }
+  .general-detail-power {
+    margin-top: 8px !important;
+    padding: 6px 16px 7px !important;
+    border: 2px solid rgba(232,143,47,0.82) !important;
+    background: linear-gradient(180deg, rgba(104,33,23,0.96), rgba(62,19,16,0.98)) !important;
+    color: #ffe89b !important;
+    font-size: 14px !important;
+    box-shadow: 0 0 14px rgba(255,124,48,0.20), inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+  .general-detail-stats {
+    margin-top: 13px !important;
+  }
+  .general-detail-stats .buff-chips {
+    gap: 9px !important;
+  }
+  .general-detail-stats .buff-chip {
+    min-height: 47px !important;
+    padding: 8px 14px !important;
+    border: 2px solid rgba(116,144,183,0.78) !important;
+    border-radius: 8px !important;
+    background:
+      linear-gradient(180deg, rgba(43,55,72,0.96), rgba(22,30,43,0.98)) !important;
+    color: #fff2bd !important;
+    font-size: 16px !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.11), 0 10px 16px rgba(0,0,0,0.22);
+  }
+  .general-detail-stats .buff-chip b,
+  .general-detail-stats .buff-chip i {
+    color: #fff2bd !important;
+  }
+  .general-detail-stats .buff-chip i {
+    font-size: 18px !important;
+  }
+  @keyframes detailCardSweep {
+    0% { opacity: 0; transform: translateX(-62%) skewX(-12deg); }
+    22% { opacity: 0.85; }
+    100% { opacity: 0; transform: translateX(72%) skewX(-12deg); }
+  }
+  @keyframes detailHeroPop {
+    0% { opacity: 0; transform: translateX(-50%) translateY(28px) scale(0.88); }
+    70% { opacity: 1; transform: translateX(-50%) translateY(-7px) scale(1.04); }
+    100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  }
+  @keyframes detailEmbers {
+    from { transform: translateY(26px); }
+    to { transform: translateY(-42px); }
+  }
+  @media (max-height: 760px) {
+    .general-detail-card {
+      grid-template-rows: minmax(340px, 1fr) auto !important;
+    }
+    .general-detail-portrait {
+      min-height: clamp(330px, 54dvh, 430px) !important;
+    }
+    .general-detail-info {
+      padding: 13px 22px 18px !important;
+    }
+    .general-detail-name {
+      font-size: clamp(35px, 10vw, 46px) !important;
+      margin-top: 9px !important;
+    }
+    .general-detail-stats {
+      margin-top: 12px !important;
+    }
+    .general-detail-stats .buff-chip {
+      min-height: 44px !important;
+      font-size: 15px !important;
+      padding: 8px 12px !important;
+    }
+    .general-detail-stats .buff-chip i {
+      font-size: 17px !important;
+    }
+  }
+  @media (max-width: 360px) {
+    .general-detail-close {
+      width: 42px !important;
+      height: 42px !important;
+      font-size: 30px !important;
+      line-height: 32px !important;
+    }
+    .general-detail-info {
+      padding-left: 18px !important;
+      padding-right: 18px !important;
+    }
+  }
+
+  /* 장수 상세 팝업 컴팩트 패스: 임팩트는 유지하고 부담감만 줄임 */
+  .general-detail-card {
+    width: min(336px, calc(100vw - 54px)) !important;
+    max-height: min(720px, calc(100dvh - 44px)) !important;
+    grid-template-rows: minmax(345px, 1fr) auto !important;
+    border-width: 2px !important;
+    box-shadow:
+      0 28px 72px rgba(0,0,0,0.72),
+      0 0 0 1px rgba(255,242,183,0.48),
+      0 0 28px rgba(226,151,46,0.22),
+      inset 0 0 0 1px rgba(255,255,255,0.10) !important;
+  }
+  .general-detail-close {
+    top: 11px !important;
+    right: 11px !important;
+    width: 40px !important;
+    height: 40px !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: transparent url('./assets/ui/detail_close_round.svg') center / contain no-repeat !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    box-shadow: none !important;
+  }
+  .general-detail-portrait {
+    min-height: clamp(340px, 52dvh, 440px) !important;
+  }
+  .general-detail-grade {
+    top: 14px !important;
+    left: 18px !important;
+    min-width: 78px !important;
+    padding: 5px 10px 6px !important;
+    font-size: 17px !important;
+  }
+  .general-detail-art {
+    width: 102% !important;
+    height: 94% !important;
+  }
+  .general-detail-info {
+    padding: 11px 22px 16px !important;
+    background:
+      linear-gradient(180deg, rgba(4,8,14,0.93), rgba(2,5,10,0.98) 62%),
+      var(--detail-bg) center bottom / cover no-repeat !important;
+  }
+  .general-detail-kicker {
+    gap: 8px !important;
+  }
+  .general-detail-kicker span {
+    min-width: 58px !important;
+    padding: 4px 10px 5px !important;
+    font-size: 13px !important;
+  }
+  .general-detail-name {
+    margin-top: 8px !important;
+    font-size: clamp(25px, 6.9vw, 32px) !important;
+  }
+  .general-detail-power {
+    margin-top: 7px !important;
+    padding: 5px 14px 6px !important;
+    font-size: 13px !important;
+  }
+  .general-detail-stats {
+    margin-top: 11px !important;
+  }
+  .general-detail-stats .buff-chips {
+    gap: 8px !important;
+  }
+  .general-detail-stats .buff-chip {
+    min-height: 40px !important;
+    padding: 7px 12px !important;
+    font-size: 14px !important;
+  }
+  .general-detail-stats .buff-chip i {
+    font-size: 16px !important;
+  }
+  @media (max-height: 720px) {
+    .general-detail-card {
+      grid-template-rows: minmax(300px, 1fr) auto !important;
+    }
+    .general-detail-portrait {
+      min-height: clamp(292px, 48dvh, 360px) !important;
+    }
+    .general-detail-info {
+      padding: 9px 18px 13px !important;
+    }
+    .general-detail-name {
+      font-size: clamp(23px, 6.7vw, 30px) !important;
+    }
+    .general-detail-stats .buff-chip {
+      min-height: 34px !important;
+      font-size: 12px !important;
+      padding: 6px 9px !important;
+    }
+    .general-detail-stats .buff-chip i {
+      font-size: 14px !important;
+    }
+  }
+
+  /* 보유 장수 카드 상세 아이콘: 이미지 자산 사용 + 배지와 분리 */
+  .manage-roster .deploy-card.has-detail .formation-badge {
+    top: 7px !important;
+    right: 39px !important;
+    max-width: calc(100% - 72px);
+    height: 20px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 1px 6px !important;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    z-index: 7 !important;
+  }
+  .manage-roster .general-detail-btn {
+    top: 7px !important;
+    right: 7px !important;
+    width: 28px !important;
+    height: 28px !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: transparent url('./assets/ui/detail_magnifier_round.svg') center / contain no-repeat !important;
+    color: transparent !important;
+    box-shadow: none !important;
+    z-index: 8 !important;
+  }
+  .manage-roster .general-detail-btn::before,
+  .manage-roster .general-detail-btn::after {
+    content: none !important;
+    display: none !important;
+  }
+  .manage-roster .general-detail-btn:active {
+    transform: translateY(1px) scale(0.94);
+    filter: brightness(1.08);
+  }
+
+  /* 장수 상세 팝업 시네마틱 패스: 어두운 전장 + 은은한 림라이트 */
+  .general-detail-backdrop {
+    background:
+      radial-gradient(ellipse at 50% 62%, rgba(255,183,72,0.12), transparent 30%),
+      linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.64) 72%, rgba(0,0,0,0.86)),
+      linear-gradient(90deg, rgba(0,0,0,0.72), transparent 28% 72%, rgba(0,0,0,0.72)),
+      var(--detail-bg) center / cover no-repeat !important;
+    filter: saturate(1.08) contrast(1.14) brightness(0.74) !important;
+  }
+  .general-detail-backdrop::after {
+    background:
+      radial-gradient(ellipse at 50% 43%, transparent 0 28%, rgba(0,0,0,0.18) 54%, rgba(0,0,0,0.48) 100%),
+      radial-gradient(ellipse at 50% 87%, rgba(224,112,26,0.25), transparent 34%),
+      linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.36)) !important;
+  }
+  .general-detail-backdrop::before {
+    inset: 12% -10% 4% !important;
+    background:
+      radial-gradient(circle at 18% 18%, rgba(255,136,42,0.78) 0 1.6px, transparent 2.6px),
+      radial-gradient(circle at 78% 24%, rgba(255,201,92,0.62) 0 1.4px, transparent 2.3px),
+      radial-gradient(circle at 62% 10%, rgba(255,107,32,0.58) 0 1.2px, transparent 2px),
+      radial-gradient(circle at 33% 52%, rgba(255,190,86,0.48) 0 1.2px, transparent 2px),
+      radial-gradient(circle at 83% 70%, rgba(255,103,28,0.58) 0 1.4px, transparent 2.4px) !important;
+    filter: drop-shadow(0 0 6px rgba(255,128,44,0.54)) !important;
+    opacity: 0.54 !important;
+    animation: detailEmberFloat 5.2s linear infinite !important;
+  }
+  .general-detail-aura {
+    inset: 58px -4px 28px !important;
+    z-index: 1 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    overflow: visible;
+    background:
+      radial-gradient(ellipse at 50% 34%, rgba(255,228,130,0.30), transparent 24%),
+      radial-gradient(ellipse at 50% 55%, rgba(255,181,66,0.22), transparent 36%),
+      radial-gradient(ellipse at 50% 84%, rgba(255,112,28,0.28), transparent 38%) !important;
+    filter: blur(8px) saturate(1.18) !important;
+    opacity: 0.86 !important;
+    mix-blend-mode: screen;
+    animation: detailAuraBreath 2.6s ease-in-out infinite alternate;
+  }
+  .general-detail-aura::before,
+  .general-detail-aura::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    clip-path: none !important;
+  }
+  .general-detail-aura::before {
+    left: 16%;
+    right: 16%;
+    top: 8%;
+    bottom: 8%;
+    border-radius: 48% 48% 44% 44%;
+    background:
+      radial-gradient(ellipse at 50% 28%, rgba(255,246,180,0.36), transparent 30%),
+      radial-gradient(ellipse at 50% 52%, transparent 0 36%, rgba(255,205,95,0.28) 43%, transparent 56%),
+      radial-gradient(ellipse at 50% 78%, rgba(255,137,35,0.20), transparent 42%);
+    filter: blur(11px);
+    opacity: 0.84;
+  }
+  .general-detail-aura::after {
+    inset: 0;
+    background:
+      radial-gradient(circle at 23% 22%, rgba(255,121,38,0.56) 0 1.2px, transparent 2.2px),
+      radial-gradient(circle at 73% 20%, rgba(255,196,78,0.42) 0 1px, transparent 2px),
+      radial-gradient(circle at 81% 58%, rgba(255,130,44,0.38) 0 1.1px, transparent 2.2px),
+      radial-gradient(circle at 31% 71%, rgba(255,217,112,0.32) 0 1px, transparent 2px);
+    filter: blur(0.2px) drop-shadow(0 0 5px rgba(255,146,50,0.45));
+    opacity: 0.72;
+    animation: detailEmberFloat 6.5s linear infinite reverse;
+  }
+  .general-detail-impact {
+    background:
+      radial-gradient(ellipse at 50% 56%, rgba(255,214,128,0.14), transparent 32%),
+      radial-gradient(ellipse at 50% 88%, rgba(255,117,34,0.18), transparent 28%) !important;
+  }
+  .general-detail-art {
+    filter:
+      drop-shadow(0 0 4px rgba(255,239,178,0.62))
+      drop-shadow(0 0 13px rgba(255,178,70,0.42))
+      drop-shadow(0 24px 24px rgba(0,0,0,0.76)) !important;
+  }
+  .general-detail-floor {
+    background:
+      radial-gradient(ellipse at 50% 46%, rgba(255,123,35,0.48), rgba(118,43,13,0.24) 34%, transparent 68%),
+      linear-gradient(180deg, transparent, rgba(0,0,0,0.82)) !important;
+  }
+  .general-detail-portrait::after {
+    background:
+      radial-gradient(ellipse, rgba(255,165,72,0.20), transparent 30%),
+      radial-gradient(ellipse, rgba(0,0,0,0.76), transparent 68%) !important;
+  }
+  @keyframes detailAuraBreath {
+    from { opacity: 0.70; transform: scale(0.985); }
+    to { opacity: 0.94; transform: scale(1.015); }
+  }
+  @keyframes detailEmberFloat {
+    from { transform: translateY(18px); }
+    to { transform: translateY(-28px); }
+  }
+
+  /* 장수 상세 팝업 카드 패스: 수집 카드 프레임 + 등급별 질감 */
+  #generalDetailModal {
+    --card-edge: #bdc7d4;
+    --card-edge-dark: #566070;
+    --card-glow: rgba(184,192,204,0.24);
+    --card-foil: rgba(255,255,255,0.12);
+    --card-name-bg: rgba(13,20,31,0.96);
+  }
+  #generalDetailModal[data-tier="star1"] {
+    --card-edge: #c8d0db;
+    --card-edge-dark: #596371;
+    --card-glow: rgba(190,202,217,0.22);
+    --card-foil: rgba(236,242,250,0.12);
+    --card-name-bg: rgba(20,27,36,0.97);
+  }
+  #generalDetailModal[data-tier="star2"] {
+    --card-edge: #55d98e;
+    --card-edge-dark: #14613e;
+    --card-glow: rgba(74,222,128,0.27);
+    --card-foil: rgba(142,255,190,0.15);
+    --card-name-bg: rgba(10,35,27,0.97);
+  }
+  #generalDetailModal[data-tier="star3"] {
+    --card-edge: #58b7ff;
+    --card-edge-dark: #173f78;
+    --card-glow: rgba(61,165,255,0.34);
+    --card-foil: rgba(115,202,255,0.18);
+    --card-name-bg: rgba(10,25,45,0.98);
+  }
+  #generalDetailModal[data-tier="star4"] {
+    --card-edge: #ce9aff;
+    --card-edge-dark: #513078;
+    --card-glow: rgba(192,132,252,0.38);
+    --card-foil: rgba(221,178,255,0.22);
+    --card-name-bg: rgba(29,18,45,0.98);
+  }
+  #generalDetailModal[data-tier="star5"] {
+    --card-edge: #ffd45f;
+    --card-edge-dark: #8c4216;
+    --card-glow: rgba(255,176,32,0.46);
+    --card-foil: rgba(255,240,150,0.25);
+    --card-name-bg: rgba(52,24,10,0.98);
+  }
+  #generalDetailModal .general-detail-card {
+    width: min(304px, calc(100vw - 66px)) !important;
+    max-height: min(620px, calc(100dvh - 54px)) !important;
+    grid-template-rows: minmax(315px, 1fr) auto !important;
+    border: 2px solid var(--card-edge) !important;
+    border-radius: 10px !important;
+    padding: 7px !important;
+    overflow: hidden !important;
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.16), transparent 23% 75%, rgba(0,0,0,0.34)),
+      linear-gradient(180deg, var(--card-edge), var(--card-edge-dark) 52%, #07090e 100%) !important;
+    box-shadow:
+      0 22px 56px rgba(0,0,0,0.76),
+      0 0 0 1px rgba(255,255,255,0.16),
+      0 0 28px var(--card-glow),
+      inset 0 1px 0 rgba(255,255,255,0.32) !important;
+  }
+  #generalDetailModal .general-detail-card::before {
+    inset: 7px !important;
+    z-index: 4 !important;
+    border-radius: 6px !important;
+    opacity: 0.72 !important;
+    transform: none !important;
+    background:
+      linear-gradient(128deg, transparent 0 35%, var(--card-foil) 42%, transparent 50% 100%),
+      linear-gradient(90deg, rgba(255,255,255,0.10), transparent 16% 84%, rgba(0,0,0,0.22)) !important;
+    animation: none !important;
+  }
+  #generalDetailModal .general-detail-card::after {
+    inset: 11px !important;
+    z-index: 4 !important;
+    border: 1px solid color-mix(in srgb, var(--card-edge) 72%, #ffffff 28%) !important;
+    border-radius: 5px !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(0,0,0,0.42),
+      inset 0 0 20px rgba(0,0,0,0.18) !important;
+  }
+  #generalDetailModal .general-detail-portrait {
+    min-height: clamp(300px, 47dvh, 360px) !important;
+    border: 1px solid rgba(0,0,0,0.62) !important;
+    border-radius: 5px 5px 0 0 !important;
+    overflow: hidden !important;
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.10), transparent 34%),
+      #06080d !important;
+  }
+  #generalDetailModal .general-detail-backdrop {
+    inset: 0 !important;
+  }
+  #generalDetailModal .general-detail-aura {
+    inset: 54px 10px 46px !important;
+    opacity: 0.76 !important;
+    filter: blur(9px) saturate(1.12) !important;
+  }
+  #generalDetailModal .general-detail-art {
+    width: 86% !important;
+    height: 88% !important;
+    bottom: 10px !important;
+    object-position: center bottom !important;
+    filter:
+      drop-shadow(0 0 3px rgba(255,239,178,0.52))
+      drop-shadow(0 0 10px color-mix(in srgb, var(--card-edge) 55%, transparent))
+      drop-shadow(0 19px 18px rgba(0,0,0,0.72)) !important;
+  }
+  #generalDetailModal .general-detail-grade {
+    top: 18px !important;
+    left: 18px !important;
+    min-width: 68px !important;
+    padding: 4px 9px 5px !important;
+    border: 2px solid var(--card-edge) !important;
+    background:
+      linear-gradient(180deg, rgba(7,10,17,0.96), rgba(1,3,8,0.96)) !important;
+    color: var(--detail-rarity) !important;
+    font-size: 15px !important;
+    line-height: 1 !important;
+    box-shadow: 0 8px 14px rgba(0,0,0,0.44), 0 0 13px var(--card-glow) !important;
+  }
+  #generalDetailModal .general-detail-close {
+    top: 15px !important;
+    right: 15px !important;
+    width: 34px !important;
+    height: 34px !important;
+    z-index: 6 !important;
+    filter: drop-shadow(0 3px 7px rgba(0,0,0,0.62));
+  }
+  #generalDetailModal .general-detail-info {
+    margin-top: 0 !important;
+    padding: 10px 13px 13px !important;
+    border: 1px solid rgba(0,0,0,0.68) !important;
+    border-top: 2px solid var(--card-edge) !important;
+    border-radius: 0 0 5px 5px !important;
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--card-name-bg) 88%, transparent), rgba(3,6,11,0.99)),
+      #05080e !important;
+  }
+  #generalDetailModal .general-detail-kicker {
+    gap: 7px !important;
+    min-height: 20px !important;
+  }
+  #generalDetailModal .general-detail-kicker span {
+    min-width: 50px !important;
+    padding: 3px 8px 4px !important;
+    border: 1px solid color-mix(in srgb, var(--card-edge) 65%, #ffffff 15%) !important;
+    background: rgba(255,255,255,0.07) !important;
+    font-size: 11px !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 0 8px var(--card-glow);
+  }
+  #generalDetailModal .general-detail-name {
+    margin-top: 6px !important;
+    font-size: clamp(22px, 5.9vw, 28px) !important;
+    line-height: 1.05 !important;
+    color: #fff2bd !important;
+    text-shadow:
+      0 2px 0 rgba(0,0,0,0.88),
+      0 0 13px var(--card-glow) !important;
+  }
+  #generalDetailModal .general-detail-power {
+    margin-top: 6px !important;
+    padding: 4px 12px 5px !important;
+    border: 1px solid var(--card-edge) !important;
+    background: linear-gradient(180deg, rgba(96,36,18,0.98), rgba(40,15,12,0.98)) !important;
+    font-size: 12px !important;
+  }
+  #generalDetailModal .general-detail-stats {
+    margin-top: 9px !important;
+  }
+  #generalDetailModal .general-detail-stats .buff-chips {
+    gap: 6px !important;
+  }
+  #generalDetailModal .general-detail-stats .buff-chip {
+    min-height: 32px !important;
+    padding: 5px 9px !important;
+    border: 1px solid color-mix(in srgb, var(--card-edge) 64%, #9bbfff 18%) !important;
+    border-radius: 5px !important;
+    background:
+      linear-gradient(180deg, rgba(35,46,61,0.96), rgba(14,21,32,0.98)) !important;
+    color: #fff2bd !important;
+    font-size: 12px !important;
+  }
+  #generalDetailModal .general-detail-stats .buff-chip i {
+    font-size: 13px !important;
+  }
+  @media (max-height: 720px) {
+    #generalDetailModal .general-detail-card {
+      width: min(292px, calc(100vw - 58px)) !important;
+      grid-template-rows: minmax(270px, 1fr) auto !important;
+    }
+    #generalDetailModal .general-detail-portrait {
+      min-height: clamp(260px, 43dvh, 318px) !important;
+    }
+    #generalDetailModal .general-detail-info {
+      padding: 8px 12px 11px !important;
+    }
+    #generalDetailModal .general-detail-stats .buff-chip {
+      min-height: 29px !important;
+      font-size: 11px !important;
+    }
   }
 </style>
 <script>

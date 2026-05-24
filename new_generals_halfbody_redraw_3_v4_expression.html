@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>전신 파이널 기준 신규 반신 3명 v4 표정 다양화</title>
+<style>
+* { box-sizing: border-box; }
+:root { color-scheme: dark; --bg:#130f0b; --panel:#211913; --line:rgba(244,223,184,.18); --gold:#ffd36a; --text:#f4dfb8; --muted:#bfa986; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif; }
+header { position:sticky; top:0; z-index:5; display:flex; align-items:baseline; gap:14px; padding:17px 20px 14px; background:rgba(20,16,12,.95); border-bottom:1px solid var(--line); backdrop-filter:blur(10px); }
+h1 { margin:0; font-size:22px; font-weight:850; letter-spacing:0; }
+.note { color:#cbb894; font-size:13px; line-height:1.45; }
+main { padding:18px 20px 28px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(350px,1fr)); gap:16px; }
+article { overflow:hidden; border:1px solid rgba(244,223,184,.17); border-radius:8px; background:var(--panel); box-shadow:0 10px 22px rgba(0,0,0,.22); }
+.pair { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(244,223,184,.16); }
+.art { position:relative; aspect-ratio:4/5; overflow:hidden; background:#0f0c09; }
+.art img { display:block; width:100%; height:100%; object-fit:contain; object-position:center bottom; }
+.full img { object-fit:cover; object-position:center 42%; }
+.badge { position:absolute; left:8px; top:8px; z-index:1; padding:3px 7px 4px; border-radius:6px; background:rgba(13,9,6,.76); border:1px solid rgba(255,211,106,.32); color:var(--gold); font-size:11px; font-weight:800; }
+.meta { padding:10px 11px 12px; }
+.name { display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin:0 0 7px; font-size:16px; font-weight:850; }
+.name small { color:#9e8a67; font-size:11px; font-weight:700; }
+.expr { margin:0 0 8px; color:var(--muted); font-size:12px; line-height:1.4; }
+a { display:block; overflow-wrap:anywhere; color:var(--gold); font-size:11px; line-height:1.35; text-decoration:none; }
+a:hover { text-decoration:underline; }
+@media (max-width:720px) { header { flex-wrap:wrap; } h1,.note { width:100%; } main { padding:12px; } .grid { grid-template-columns:1fr; gap:12px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>신규 반신 3명 v4</h1>
+  <div class="note">표정 다양화 반영: 전신 표정 복제 금지, 정면 시선 유지, 포즈 변경, 불꽃/불씨 배경 제외.</div>
+</header>
+<main><section id="grid" class="grid"></section></main>
+<script>
+const items = [
+  ["001", "조조", "cao_cao", "계산적인 비대칭 미소"],
+  ["002", "조흥", "cao_xing", "활시위 직전의 집중한 눈매"],
+  ["003", "전위", "dian_wei", "고함 대신 이를 악문 낮은 위협감"],
+];
+const version = "v4-expression-20260524";
+const grid = document.getElementById("grid");
+for (const [no, ko, id, expr] of items) {
+  const full = `./assets/generals/new_characters/front_gaze_200_v10_scale_audit/${id}_front_gaze_v1.png?v=${version}`;
+  const half = `./assets/generals/new_characters/upper_body_200_redraw_v4_expression/${id}_halfbody_redraw_v4.png?v=${version}`;
+  const el = document.createElement("article");
+  el.innerHTML = `
+    <div class="pair">
+      <div class="art full"><span class="badge">전신 파이널</span><img loading="lazy" src="${full}" alt="${ko} 전신"></div>
+      <div class="art"><span class="badge">표정 변경 반신</span><img loading="lazy" src="${half}" alt="${ko} 신규 반신"></div>
+    </div>
+    <div class="meta">
+      <p class="name"><span>${ko}</span><small>${no} · ${id}</small></p>
+      <p class="expr">${expr}</p>
+      <a href="${half}">${half}</a>
+    </div>`;
+  grid.appendChild(el);
+}
+</script>
+</body>
+</html>
