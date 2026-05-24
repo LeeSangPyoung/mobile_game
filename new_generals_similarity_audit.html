@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>장수 이미지 유사도 검토</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #15110d; color: #f3dfbd; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+header { position: sticky; top: 0; z-index: 5; padding: 18px 22px 14px; background: rgba(21,17,13,.95); border-bottom: 1px solid rgba(243,223,189,.18); backdrop-filter: blur(10px); }
+h1 { margin: 0 0 6px; font-size: 23px; }
+.note { margin: 0; color: #c9b896; font-size: 13px; line-height: 1.5; }
+main { padding: 20px; }
+section { margin: 0 0 24px; border-top: 1px solid rgba(243,223,189,.16); padding-top: 16px; }
+.section-head { max-width: 980px; margin-bottom: 12px; }
+.level { display: inline-block; margin: 0 0 8px; padding: 3px 7px; border-radius: 5px; font-size: 12px; font-weight: 800; color: #15110d; }
+.high .level { background: #ffb36a; }
+.medium .level { background: #d8c37b; }
+h2 { margin: 0 0 6px; font-size: 18px; }
+.section-head p:last-child { margin: 0; color: #d2c09d; font-size: 13px; line-height: 1.5; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 13px; }
+article { overflow: hidden; border-radius: 8px; border: 1px solid rgba(243,223,189,.16); background: #211913; }
+img { display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; background: #0f0c09; }
+.meta { padding: 9px 10px 11px; }
+strong { display: block; font-size: 15px; }
+small { display: block; margin-top: 2px; color: #a99778; font-size: 11px; }
+a { display: block; margin-top: 7px; overflow-wrap: anywhere; color: #ffd36a; font-size: 10px; line-height: 1.35; text-decoration: none; }
+a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<header>
+  <h1>장수 이미지 유사도 검토</h1>
+  <p class="note">자동 유사도 후보와 전체 200명 눈검수를 합쳐서, 다시 그리거나 개성을 강화하면 좋은 후보만 묶었습니다. 원본/보정본 이미지는 수정하지 않았습니다.</p>
+</header>
+<main>
+<section class="high">
+  <div class="section-head">
+    <p class="level">강함</p>
+    <h2>황건 계열 - 관해/장만성 중심</h2>
+    <p>관해와 장만성은 얼굴형, 수염, 노란 머리띠, 금색 갑옷 실루엣이 특히 겹칩니다. 장각/장보/장량/한충도 같은 계열로 너무 가까워 보입니다.</p>
+  </div>
+  <div class="grid">
+    <article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/guan_hai_front_gaze_v1.png" alt="관해">
+  <div class="meta">
+    <strong>관해</strong>
+    <small>guan_hai</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/guan_hai_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/guan_hai_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/zhang_man_cheng_front_gaze_v1.png" alt="장만성">
+  <div class="meta">
+    <strong>장만성</strong>
+    <small>zhang_man_cheng</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhang_man_cheng_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhang_man_cheng_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/zhang_jiao_front_gaze_v1.png" alt="장각">
+  <div class="meta">
+    <strong>장각</strong>
+    <small>zhang_jiao</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhang_jiao_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhang_jiao_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/zhang_bao_yellow_front_gaze_v1.png" alt="장보">
+  <div class="meta">
+    <strong>장보</strong>
+    <small>zhang_bao_yellow</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhang_bao_yellow_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhang_bao_yellow_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/zhang_liang_yellow_front_gaze_v1.png" alt="장량">
+  <div class="meta">
+    <strong>장량</strong>
+    <small>zhang_liang_yellow</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhang_liang_yellow_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhang_liang_yellow_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/han_zhong_front_gaze_v1.png" alt="한충">
+  <div class="meta">
+    <strong>한충</strong>
+    <small>han_zhong</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/han_zhong_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/han_zhong_front_gaze_v1.png</a>
+  </div>
+</article>
+  </div>
+</section>
+<section class="high">
+  <div class="section-head">
+    <p class="level">강함</p>
+    <h2>공손도/공손강</h2>
+    <p>검은 갑옷, 투구, 창, 망토, 자세가 거의 같은 축입니다. 둘 중 최소 한 명은 의상 색/무기/체형을 바꾸는 편이 좋습니다.</p>
+  </div>
+  <div class="grid">
+    <article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/gongsun_du_front_gaze_v1.png" alt="공손도">
+  <div class="meta">
+    <strong>공손도</strong>
+    <small>gongsun_du</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/gongsun_du_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/gongsun_du_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/gongsun_kang_front_gaze_v1.png" alt="공손강">
+  <div class="meta">
+    <strong>공손강</strong>
+    <small>gongsun_kang</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/gongsun_kang_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/gongsun_kang_front_gaze_v1.png</a>
+  </div>
+</article>
+  </div>
+</section>
+<section class="high">
+  <div class="section-head">
+    <p class="level">강함</p>
+    <h2>후반 군벌형 중갑 장수</h2>
+    <p>성의/양봉/진란/뇌박/한섬은 어두운 중갑, 수염, 거친 산적형 인상이 많이 겹칩니다. 개별 캐릭터성이 약합니다.</p>
+  </div>
+  <div class="grid">
+    <article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/cheng_yin_front_gaze_v1.png" alt="성의">
+  <div class="meta">
+    <strong>성의</strong>
+    <small>cheng_yin</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/cheng_yin_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/cheng_yin_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/yang_feng_front_gaze_v1.png" alt="양봉">
+  <div class="meta">
+    <strong>양봉</strong>
+    <small>yang_feng</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/yang_feng_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/yang_feng_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/chen_lan_front_gaze_v1.png" alt="진란">
+  <div class="meta">
+    <strong>진란</strong>
+    <small>chen_lan</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/chen_lan_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/chen_lan_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/lei_bo_front_gaze_v1.png" alt="뇌박">
+  <div class="meta">
+    <strong>뇌박</strong>
+    <small>lei_bo</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/lei_bo_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/lei_bo_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/han_xian_front_gaze_v1.png" alt="한섬">
+  <div class="meta">
+    <strong>한섬</strong>
+    <small>han_xian</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/han_xian_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/han_xian_front_gaze_v1.png</a>
+  </div>
+</article>
+  </div>
+</section>
+<section class="high">
+  <div class="section-head">
+    <p class="level">강함</p>
+    <h2>도사/은자 계열</h2>
+    <p>좌자와 우길은 흰 머리, 흰 도포, 지팡이/두루마리 실루엣이 가까워 한 화면에서 구분력이 낮습니다. 화타도 같은 흰 도포 계열이라 함께 점검 대상입니다.</p>
+  </div>
+  <div class="grid">
+    <article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/zuo_ci_front_gaze_v1.png" alt="좌자">
+  <div class="meta">
+    <strong>좌자</strong>
+    <small>zuo_ci</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zuo_ci_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zuo_ci_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/yu_ji_front_gaze_v1.png" alt="우길">
+  <div class="meta">
+    <strong>우길</strong>
+    <small>yu_ji</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/yu_ji_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/yu_ji_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/hua_tuo_front_gaze_v1.png" alt="화타">
+  <div class="meta">
+    <strong>화타</strong>
+    <small>hua_tuo</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/hua_tuo_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/hua_tuo_front_gaze_v1.png</a>
+  </div>
+</article>
+  </div>
+</section>
+<section class="medium">
+  <div class="section-head">
+    <p class="level">중간</p>
+    <h2>문관 형제/참모 계열</h2>
+    <p>신평/신비는 형제 느낌은 살아 있지만, 부채/두루마리와 회색 갑옷 도포 조합이 너무 비슷합니다.</p>
+  </div>
+  <div class="grid">
+    <article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/xin_ping_front_gaze_v1.png" alt="신평">
+  <div class="meta">
+    <strong>신평</strong>
+    <small>xin_ping</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/xin_ping_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/xin_ping_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/xin_pi_front_gaze_v1.png" alt="신비">
+  <div class="meta">
+    <strong>신비</strong>
+    <small>xin_pi</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/xin_pi_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/xin_pi_front_gaze_v1.png</a>
+  </div>
+</article>
+  </div>
+</section>
+<section class="medium">
+  <div class="section-head">
+    <p class="level">중간</p>
+    <h2>녹색 문관/원로 계열</h2>
+    <p>유우/도겸/공융/장로/유표는 흰 수염, 녹색 도포, 두루마리 조합이 반복됩니다. 역사적 역할은 다르지만 시각 언어가 겹칩니다.</p>
+  </div>
+  <div class="grid">
+    <article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/liu_yu_front_gaze_v1.png" alt="유우">
+  <div class="meta">
+    <strong>유우</strong>
+    <small>liu_yu</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/liu_yu_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/liu_yu_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/tao_qian_front_gaze_v1.png" alt="도겸">
+  <div class="meta">
+    <strong>도겸</strong>
+    <small>tao_qian</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/tao_qian_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/tao_qian_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/kong_rong_front_gaze_v1.png" alt="공융">
+  <div class="meta">
+    <strong>공융</strong>
+    <small>kong_rong</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/kong_rong_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/kong_rong_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/zhang_lu_front_gaze_v1.png" alt="장로">
+  <div class="meta">
+    <strong>장로</strong>
+    <small>zhang_lu</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhang_lu_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhang_lu_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/liu_biao_front_gaze_v1.png" alt="유표">
+  <div class="meta">
+    <strong>유표</strong>
+    <small>liu_biao</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/liu_biao_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/liu_biao_front_gaze_v1.png</a>
+  </div>
+</article>
+  </div>
+</section>
+<section class="medium">
+  <div class="section-head">
+    <p class="level">중간</p>
+    <h2>초록 갑옷 관우 계열</h2>
+    <p>관평/관흥/관색/관은병/주창은 의도된 관우 진영 색감으로 보이지만, 일부는 머리띠와 갑옷 색이 가까워 추가 차별화 여지가 있습니다.</p>
+  </div>
+  <div class="grid">
+    <article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/guan_ping_front_gaze_v1.png" alt="관평">
+  <div class="meta">
+    <strong>관평</strong>
+    <small>guan_ping</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/guan_ping_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/guan_ping_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/guan_xing_front_gaze_v1.png" alt="관흥">
+  <div class="meta">
+    <strong>관흥</strong>
+    <small>guan_xing</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/guan_xing_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/guan_xing_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/guan_suo_front_gaze_v1.png" alt="관색">
+  <div class="meta">
+    <strong>관색</strong>
+    <small>guan_suo</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/guan_suo_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/guan_suo_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/guan_yinping_front_gaze_v1.png" alt="관은병">
+  <div class="meta">
+    <strong>관은병</strong>
+    <small>guan_yinping</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/guan_yinping_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/guan_yinping_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/zhou_cang_front_gaze_v1.png" alt="주창">
+  <div class="meta">
+    <strong>주창</strong>
+    <small>zhou_cang</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhou_cang_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhou_cang_front_gaze_v1.png</a>
+  </div>
+</article>
+  </div>
+</section>
+<section class="medium">
+  <div class="section-head">
+    <p class="level">중간</p>
+    <h2>범용 청회색 무장 계열</h2>
+    <p>조진/곽회/장윤/등애/하후패는 실루엣과 청회색 갑옷 톤이 가까운 편입니다. 완전 중복은 아니지만 대표성을 키우면 좋습니다.</p>
+  </div>
+  <div class="grid">
+    <article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/cao_zhen_front_gaze_v1.png" alt="조진">
+  <div class="meta">
+    <strong>조진</strong>
+    <small>cao_zhen</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/cao_zhen_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/cao_zhen_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/guo_huai_front_gaze_v1.png" alt="곽회">
+  <div class="meta">
+    <strong>곽회</strong>
+    <small>guo_huai</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/guo_huai_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/guo_huai_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/zhang_yun_front_gaze_v1.png" alt="장윤">
+  <div class="meta">
+    <strong>장윤</strong>
+    <small>zhang_yun</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhang_yun_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhang_yun_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/deng_ai_front_gaze_v1.png" alt="등애">
+  <div class="meta">
+    <strong>등애</strong>
+    <small>deng_ai</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/deng_ai_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/deng_ai_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/xiahou_ba_front_gaze_v1.png" alt="하후패">
+  <div class="meta">
+    <strong>하후패</strong>
+    <small>xiahou_ba</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/xiahou_ba_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/xiahou_ba_front_gaze_v1.png</a>
+  </div>
+</article>
+  </div>
+</section>
+<section class="medium">
+  <div class="section-head">
+    <p class="level">중간</p>
+    <h2>녹색 장수 계열</h2>
+    <p>장익/동궐/유요/마대/이엄은 녹색 망토와 창/도 조합이 반복됩니다. 한두 명은 무기나 머리 장식 변경이 좋아 보입니다.</p>
+  </div>
+  <div class="grid">
+    <article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/zhang_yi_shu_front_gaze_v1.png" alt="장익">
+  <div class="meta">
+    <strong>장익</strong>
+    <small>zhang_yi_shu</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhang_yi_shu_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/zhang_yi_shu_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/dong_jue_front_gaze_v1.png" alt="동궐">
+  <div class="meta">
+    <strong>동궐</strong>
+    <small>dong_jue</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/dong_jue_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/dong_jue_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/liu_yao_front_gaze_v1.png" alt="유요">
+  <div class="meta">
+    <strong>유요</strong>
+    <small>liu_yao</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/liu_yao_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/liu_yao_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/ma_dai_front_gaze_v1.png" alt="마대">
+  <div class="meta">
+    <strong>마대</strong>
+    <small>ma_dai</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/ma_dai_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/ma_dai_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/li_yan_front_gaze_v1.png" alt="이엄">
+  <div class="meta">
+    <strong>이엄</strong>
+    <small>li_yan</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/li_yan_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/li_yan_front_gaze_v1.png</a>
+  </div>
+</article>
+  </div>
+</section>
+<section class="medium">
+  <div class="section-head">
+    <p class="level">중간</p>
+    <h2>웃는 문관/상인형</h2>
+    <p>유선/미축/미방/손건/간옹은 둥근 얼굴과 녹색 도포 인상이 비슷합니다. 유선과 미축은 특히 한 화면에서 닮아 보입니다.</p>
+  </div>
+  <div class="grid">
+    <article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/liu_shan_front_gaze_v1.png" alt="유선">
+  <div class="meta">
+    <strong>유선</strong>
+    <small>liu_shan</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/liu_shan_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/liu_shan_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/mi_zhu_front_gaze_v1.png" alt="미축">
+  <div class="meta">
+    <strong>미축</strong>
+    <small>mi_zhu</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/mi_zhu_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/mi_zhu_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/mi_fang_front_gaze_v1.png" alt="미방">
+  <div class="meta">
+    <strong>미방</strong>
+    <small>mi_fang</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/mi_fang_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/mi_fang_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/sun_qian_front_gaze_v1.png" alt="손건">
+  <div class="meta">
+    <strong>손건</strong>
+    <small>sun_qian</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/sun_qian_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/sun_qian_front_gaze_v1.png</a>
+  </div>
+</article>
+<article>
+  <img src="./assets/generals/new_characters/front_gaze_200_normalized/jian_yong_front_gaze_v1.png" alt="간옹">
+  <div class="meta">
+    <strong>간옹</strong>
+    <small>jian_yong</small>
+    <a href="http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/jian_yong_front_gaze_v1.png">http://127.0.0.1:5174/assets/generals/new_characters/front_gaze_200_normalized/jian_yong_front_gaze_v1.png</a>
+  </div>
+</article>
+  </div>
+</section>
+</main>
+</body>
+</html>

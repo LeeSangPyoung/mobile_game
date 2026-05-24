@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="520" viewBox="0 0 1400 520" role="img" aria-label="손가락삼국지">
+  <defs>
+    <linearGradient id="brushGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff7c2"/>
+      <stop offset=".17" stop-color="#ffd86a"/>
+      <stop offset=".44" stop-color="#d98c1d"/>
+      <stop offset=".68" stop-color="#6e2605"/>
+      <stop offset=".86" stop-color="#f2bd50"/>
+      <stop offset="1" stop-color="#fff2a6"/>
+    </linearGradient>
+    <linearGradient id="edgeGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff6b9"/>
+      <stop offset=".52" stop-color="#f1aa32"/>
+      <stop offset="1" stop-color="#8a3407"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff9ce" stop-opacity="0"/>
+      <stop offset=".45" stop-color="#fff9ce" stop-opacity=".95"/>
+      <stop offset=".55" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="1" stop-color="#fff9ce" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="roughShadow" x="-12%" y="-45%" width="124%" height="210%">
+      <feTurbulence type="fractalNoise" baseFrequency=".018 .052" numOctaves="2" seed="8" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" result="rough"/>
+      <feDropShadow in="rough" dx="0" dy="15" stdDeviation="7" flood-color="#000000" flood-opacity=".78"/>
+      <feDropShadow in="rough" dx="0" dy="5" stdDeviation="1.4" flood-color="#2a0600" flood-opacity=".96"/>
+      <feDropShadow in="rough" dx="0" dy="0" stdDeviation="8" flood-color="#ffd76c" flood-opacity=".24"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="rough"/>
+      </feMerge>
+    </filter>
+    <filter id="inkBlur" x="-16%" y="-70%" width="132%" height="240%">
+      <feGaussianBlur stdDeviation="1.2"/>
+    </filter>
+    <style>
+      .brush {
+        font-family: "Noto Serif KR", "Apple SD Gothic Neo", "Malgun Gothic", serif;
+        font-weight: 900;
+        letter-spacing: -16px;
+        paint-order: stroke fill;
+      }
+      .titleStroke {
+        font-size: 178px;
+        fill: url(#brushGold);
+        stroke: #100300;
+        stroke-width: 28px;
+        stroke-linejoin: round;
+      }
+      .titleEdge {
+        font-size: 178px;
+        fill: none;
+        stroke: url(#edgeGold);
+        stroke-width: 5px;
+        opacity: .92;
+      }
+      .subtitle {
+        font-family: "Noto Serif KR", "Apple SD Gothic Neo", serif;
+        font-size: 32px;
+        font-weight: 900;
+        letter-spacing: 8px;
+        fill: #f8df9c;
+        stroke: #1c0801;
+        stroke-width: 5px;
+        paint-order: stroke fill;
+      }
+      .logoStack { animation: logoFloat 3.4s ease-in-out infinite; transform-origin: 50% 52%; }
+      .shinePass { animation: shinePass 3.6s ease-in-out infinite .6s; opacity: 0; }
+      .spark { opacity: 0; animation: spark 3.1s ease-in-out infinite; transform-origin: center; }
+      .s2 { animation-delay: .85s; }
+      .s3 { animation-delay: 1.7s; }
+      @keyframes logoFloat {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-5px) scale(1.01); }
+      }
+      @keyframes shinePass {
+        0%, 38% { opacity: 0; transform: translateX(-720px) rotate(11deg); }
+        52% { opacity: .74; }
+        68%, 100% { opacity: 0; transform: translateX(760px) rotate(11deg); }
+      }
+      @keyframes spark {
+        0%, 48%, 100% { opacity: 0; transform: scale(.45) rotate(0deg); }
+        60% { opacity: 1; transform: scale(1) rotate(18deg); }
+        74% { opacity: .15; transform: scale(1.35) rotate(42deg); }
+      }
+    </style>
+  </defs>
+
+  <g class="logoStack">
+    <path filter="url(#inkBlur)" opacity=".98" fill="#050302" d="M54 250 C170 215 252 236 351 210 C477 176 582 205 694 188 C828 166 936 194 1065 176 C1177 161 1267 184 1343 221 C1288 244 1198 242 1130 264 C1208 273 1290 294 1362 331 C1226 343 1130 332 1018 353 C862 382 737 352 598 380 C461 409 325 363 197 388 C128 401 83 393 35 371 C88 339 153 333 219 318 C145 313 86 295 54 250 Z"/>
+    <path opacity=".72" fill="#000000" d="M110 287 C242 254 380 273 514 244 C685 207 814 248 963 218 C1095 192 1234 220 1305 259 C1206 261 1125 279 1047 302 C860 356 704 315 516 350 C356 379 206 360 88 340 C136 325 184 309 252 300 C190 300 145 296 110 287 Z"/>
+
+    <g filter="url(#roughShadow)">
+      <text class="brush titleStroke" x="700" y="302" text-anchor="middle" textLength="1250" lengthAdjust="spacingAndGlyphs" rotate="-5 -1 3 -4 2 -3">손가락삼국지</text>
+      <text class="brush titleEdge" x="700" y="302" text-anchor="middle" textLength="1250" lengthAdjust="spacingAndGlyphs" rotate="-5 -1 3 -4 2 -3">손가락삼국지</text>
+    </g>
+
+    <path class="shinePass" d="M92 110 L178 82 L1318 382 L1230 416 Z" fill="url(#shine)"/>
+    <text class="subtitle" x="700" y="414" text-anchor="middle">손끝으로 그리는 삼국의 시대</text>
+
+    <g transform="translate(1233 259)">
+      <rect x="0" y="0" width="64" height="92" rx="8" fill="#a91410" stroke="#180200" stroke-width="6"/>
+      <rect x="8" y="8" width="48" height="76" rx="4" fill="none" stroke="#280502" stroke-width="3" opacity=".9"/>
+      <text x="32" y="35" text-anchor="middle" font-family="Noto Serif KR, serif" font-size="24" font-weight="900" fill="#120200">三</text>
+      <text x="32" y="61" text-anchor="middle" font-family="Noto Serif KR, serif" font-size="24" font-weight="900" fill="#120200">國</text>
+      <text x="32" y="84" text-anchor="middle" font-family="Noto Serif KR, serif" font-size="20" font-weight="900" fill="#120200">志</text>
+    </g>
+
+    <path class="spark s1" d="M168 142 l14 31 l31 14 l-31 14 l-14 31 l-14 -31 l-31 -14 l31 -14 Z" fill="#fff1a6"/>
+    <path class="spark s2" d="M1128 124 l11 24 l24 11 l-24 11 l-11 24 l-11 -24 l-24 -11 l24 -11 Z" fill="#fff1a6"/>
+    <path class="spark s3" d="M1030 388 l8 18 l18 8 l-18 8 l-8 18 l-8 -18 l-18 -8 l18 -8 Z" fill="#fff1a6"/>
+  </g>
+</svg>

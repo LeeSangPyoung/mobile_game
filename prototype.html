@@ -57,13 +57,13 @@
     border-bottom: 2px solid #d4a850;
     font-family: 'Noto Serif KR', serif; color: #e8d4a8; font-size: clamp(10px, 2.8vw, 13px); font-weight: 700;
   }
-  .top-stats-bar .ts-item { display: flex; align-items: center; gap: 4px; min-width: 0; max-width: 25%; white-space: nowrap; }
+  .top-stats-bar .ts-item { display: flex; align-items: center; gap: 4px; min-width: 0; max-width: 40%; flex: 0 0 auto; white-space: nowrap; }
   .top-stats-bar .ts-item span {
     min-width: 0;
     color: #ffd23f;
     font-size: clamp(11px, 3vw, 14px);
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow: visible;
+    text-overflow: clip;
   }
   /* ===== 결과 모달: 전투 보상 패널 ===== */
   #msgBackdrop {
@@ -1499,15 +1499,20 @@
     position: relative;
     width: 100%;
     aspect-ratio: 307 / 1024;
-    background-image: url('./assets/maps/chapter1.png');
+    background-image: url('./assets/maps_escalation/chapter1.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: 0 0;
   }
-  #stageSelect .stage-map[data-chapter="2"] { background-image: url('./assets/maps/chapter2.png'); }
-  #stageSelect .stage-map[data-chapter="3"] { background-image: url('./assets/maps/chapter3.png'); }
-  #stageSelect .stage-map[data-chapter="4"] { background-image: url('./assets/maps/chapter4.png'); }
-  #stageSelect .stage-map[data-chapter="5"] { background-image: url('./assets/maps/chapter5.png'); }
+  #stageSelect .stage-map[data-chapter="2"] { background-image: url('./assets/maps_escalation/chapter2.png'); }
+  #stageSelect .stage-map[data-chapter="3"] { background-image: url('./assets/maps_escalation/chapter3.png'); }
+  #stageSelect .stage-map[data-chapter="4"] { background-image: url('./assets/maps_escalation/chapter4.png'); }
+  #stageSelect .stage-map[data-chapter="5"] { background-image: url('./assets/maps_escalation/chapter5.png'); }
+  #stageSelect .stage-map[data-chapter="6"] { background-image: url('./assets/maps_escalation/chapter6.png'); }
+  #stageSelect .stage-map[data-chapter="7"] { background-image: url('./assets/maps_escalation/chapter7.png'); }
+  #stageSelect .stage-map[data-chapter="8"] { background-image: url('./assets/maps_escalation/chapter8.png'); }
+  #stageSelect .stage-map[data-chapter="9"] { background-image: url('./assets/maps_escalation/chapter9.png'); }
+  #stageSelect .stage-map[data-chapter="10"] { background-image: url('./assets/maps_escalation/chapter10.png'); }
   /* 지명 라벨 */
   #stageSelect .region-labels { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
   #stageSelect .region-labels .region {
@@ -11007,6 +11012,14 @@
 <!-- ===== 메인 메뉴 — 단일 이미지(assets/main.png) + 투명 출정 버튼 ===== -->
 <div id="menu" class="screen menu-fresh app" style="display:none">
   <div class="main-bg">
+    <div class="home-scene-vfx" aria-hidden="true">
+      <span class="vfx-ray vfx-ray--left"></span>
+      <span class="vfx-ray vfx-ray--right"></span>
+      <span class="vfx-smoke vfx-smoke--left"></span>
+      <span class="vfx-smoke vfx-smoke--right"></span>
+      <i class="vfx-ember e1"></i><i class="vfx-ember e2"></i><i class="vfx-ember e3"></i><i class="vfx-ember e4"></i>
+      <i class="vfx-ember e5"></i><i class="vfx-ember e6"></i><i class="vfx-ember e7"></i><i class="vfx-ember e8"></i>
+    </div>
     <div class="home-top">
       <div class="home-profile">
         <div class="home-avatar">主</div>
@@ -11022,10 +11035,8 @@
     </div>
     <section class="home-hero" aria-hidden="true">
       <div class="home-title-mark">三國</div>
-      <div class="home-title" aria-label="손가락삼국지">
-        <span class="home-title-kicker">손가락</span>
-        <span class="home-title-main">삼국지</span>
-        <span class="home-title-seal" aria-hidden="true">戰</span>
+      <div class="home-title" aria-label="손가락 삼국지">
+        <img class="home-title-logo" src="./assets/ui/home_logo_samguk.png?v=ai-keyart-5" alt="">
       </div>
       <div class="home-subtitle">천하를 향한 첫 진군</div>
       <div class="home-generals">
@@ -11035,22 +11046,28 @@
       </div>
     </section>
     <button class="start-btn" id="btnCampaign" aria-label="출정"></button>
+    <span class="start-visual" aria-hidden="true"></span>
     <div class="side-rail" id="sideRail" aria-label="관리 메뉴">
+      <span class="dock-visual dock-visual-general" aria-hidden="true"></span>
+      <span class="dock-visual dock-visual-enhance" aria-hidden="true"></span>
+      <span class="dock-visual dock-visual-strategy" aria-hidden="true"></span>
+      <span class="dock-visual dock-visual-shop" aria-hidden="true"></span>
+      <span class="dock-visual dock-visual-settings" aria-hidden="true"></span>
       <button class="side-rail-btn" id="btnGeneralManage" aria-label="내 장수 관리">
         <span class="srb-icon srb-kor">將</span><span class="srb-label">장수</span>
       </button>
       <button class="side-rail-btn" id="btnEnhance" aria-label="장수 강화">
         <span class="srb-icon srb-kor">鍛</span><span class="srb-label">강화</span>
       </button>
-      <button class="side-rail-btn" id="btnPowerManage" aria-label="전투력 관리">
-        <span class="srb-icon srb-kor">戰</span><span class="srb-label">전투력</span>
-      </button>
-      <button class="side-rail-btn" id="btnMainExchange" aria-label="별 골드 교환">
-        <span class="srb-icon srb-kor">星</span><span class="srb-label">별교환</span>
-      </button>
-      <button class="side-rail-btn" id="btnMainSettings" aria-label="설정">
-        <span class="srb-icon srb-kor">設</span><span class="srb-label">설정</span>
-      </button>
+	      <button class="side-rail-btn" id="btnPowerManage" aria-label="전략 관리">
+	        <span class="srb-icon srb-kor">戰</span><span class="srb-label">전략</span>
+	      </button>
+	      <button class="side-rail-btn" id="btnMainExchange" aria-label="별 골드 교환">
+	        <span class="srb-icon srb-kor">商</span><span class="srb-label">상점</span>
+	      </button>
+	      <button class="side-rail-btn" id="btnMainSettings" aria-label="설정">
+	        <span class="srb-icon srb-kor">⚙</span><span class="srb-label">설정</span>
+	      </button>
     </div>
     <button class="tutorial-btn" id="btnTutorial" aria-label="튜토리얼">튜토리얼</button>
     <nav class="home-dock" aria-label="하단 메뉴">
@@ -11591,6 +11608,7 @@
   </div>
 </div>
 
+<script src="./assets/generals/roster_200.js"></script>
 <script>
 // ===== 화면 전환 + 진행 상태 =====
 const SCREENS = ['splash', 'menu', 'stageSelect', 'stageInfo', 'generalSelectScreen', 'generalManageScreen', 'upgradeScreen', 'prisonerScreen', 'enhanceScreen', 'starterPickScreen'];
@@ -11707,7 +11725,7 @@ const UPG_DEFS = {
   unitAtk:   { label: '병력 공격력', icon: '⚔️', desc: '아군 부대 전투 시 공격력', per: 0.06, currency: 'gold' },
   unitDef:   { label: '병력 방어력', icon: '🦾', desc: '아군 부대 받는 피해 감소', per: 0.05, currency: 'gold' },
 };
-const GENERAL_ROSTER = [
+const MANUAL_GENERAL_DEFS = [
   { id: 'liu_bei', name: '유비', buffs: { unitAtk: 0.10, unitDef: 0.05, castleDef: 0.05, castleAtk: 0.05 } },
   { id: 'guan_yu', name: '관우', buffs: { unitAtk: 0.10, unitDef: 0.04, castleAtk: 0.08 } },
   { id: 'zhang_fei', name: '장비', buffs: { unitAtk: 0.10, unitDef: 0.03, castleAtk: 0.06 } },
@@ -11758,12 +11776,88 @@ const GENERAL_ROSTER = [
   { id: 'cao_ang', name: '조앙', buffs: { unitDef: 0.05, castleDef: 0.04 } },
   { id: 'cao_chun', name: '조순', buffs: { unitAtk: 0.06, unitDef: 0.05 } },
   { id: 'cao_rui', name: '조예', buffs: { castleDef: 0.06, prodRate: 0.04 } },
-].map(g => ({
-  ...g,
-  stat: g.stat || formatGeneralBuffs(g.buffs),
-  face: `./assets/generals/faces/${g.id}.png`,
-  bust: `./assets/generals/busts/${g.id}.png`,
-}));
+];
+const GENERAL_FACE_IDS = new Set('cao_cao cao_xing dian_wei dong_zhuo gan_ning guan_yu guo_jia huang_gai huang_zhong liu_bei lu_bu lu_xun ma_chao meng_huo pang_tong sima_yi sun_ce sun_quan taishi_ci wen_chou xiahou_dun xu_chu xu_huang yan_liang yuan_shao zhang_fei zhang_liao zhao_yun zhou_yu zhuge_liang zhang_he yu_jin yue_jin li_dian cao_ren cao_hong cao_pi cao_zhi cao_zhang cao_ang cao_rui cheng_yu xun_yu xun_you jia_xu li_jue guo_si zhang_ji zhang_xiu hua_xiong li_ru'.split(' '));
+const GENERAL_BUST_REAL_IDS = new Set('zhang_he yu_jin yue_jin li_dian cao_ren cao_hong cao_pi cao_zhang cao_ang cao_rui cao_shuang cao_zhen cao_xiu xiahou_yuan xiahou_ba cheng_yu xun_yu xun_you jia_xu man_chong deng_ai zhong_hui guo_huai wang_ping zang_ba liu_ye xu_sheng ding_feng han_dang cheng_pu zhou_tai jiang_qin ling_tong lu_su zhang_zhao zhang_hong zhu_huan zhu_ran bu_zhi kan_ze yu_fan he_qi pan_zhang quan_cong sun_jian sun_shao sun_huan guan_ping guan_xing liu_feng ma_su ma_liang jiang_wei wei_yan fa_zheng jian_yong mi_zhu mi_fang sun_qian liao_hua ma_dai yan_yan li_yan fei_yi dong_yun jiang_wan huang_quan chen_dao meng_da li_hui huo_jun zhuge_zhan zhuge_jin zhuge_dan zhang_yi_shu dong_jue xin_pi gongsun_zan gongsun_du gongsun_kang liu_biao liu_zhang liu_yao tao_qian kong_rong zhang_lu zhang_ren ma_teng han_sui dong_cheng he_jin wang_yun zhang_xiu hua_xiong yuan_shu liu_xun'.split(' '));
+const GENERAL_BUST_ALIASES = {
+  wen_pin: 'real_wen_ping',
+  ma_zhong_wu: 'real_wu_ma_zhong',
+  zhang_bao: 'real_zhang_bao_shu',
+};
+const GENERAL_BUFF_KEYS = ['unitAtk', 'unitDef', 'castleAtk', 'castleDef', 'prodRate'];
+function hashGeneralId(id) {
+  let h = 2166136261;
+  for (const ch of String(id || '')) {
+    h ^= ch.charCodeAt(0);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+function generatedGeneralBuffs(id, name, index) {
+  const h = hashGeneralId(`${id}:${name}:${index}`);
+  const first = h % GENERAL_BUFF_KEYS.length;
+  let second = Math.floor(h / 7) % GENERAL_BUFF_KEYS.length;
+  if (second === first) second = (second + 2) % GENERAL_BUFF_KEYS.length;
+  let third = Math.floor(h / 37) % GENERAL_BUFF_KEYS.length;
+  if (third === first || third === second) third = (third + 1) % GENERAL_BUFF_KEYS.length;
+  const buffs = {};
+  buffs[GENERAL_BUFF_KEYS[first]] = 0.045 + (h % 4) * 0.005;
+  buffs[GENERAL_BUFF_KEYS[second]] = 0.030 + (Math.floor(h / 11) % 4) * 0.005;
+  if (h % 3 === 0) buffs[GENERAL_BUFF_KEYS[third]] = 0.020 + (Math.floor(h / 17) % 3) * 0.005;
+  Object.keys(buffs).forEach(k => { buffs[k] = Math.round(buffs[k] * 1000) / 1000; });
+  return buffs;
+}
+function generalPlaceholderImage(name, id) {
+  const mark = String(name || id || '?').trim().slice(0, 1) || '?';
+  const h = hashGeneralId(id || name || mark);
+  const bg1 = `hsl(${h % 360},38%,24%)`;
+  const bg2 = `hsl(${(h + 42) % 360},55%,34%)`;
+  const safeMark = mark.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${bg1}"/><stop offset="1" stop-color="${bg2}"/></linearGradient></defs><rect width="160" height="160" fill="url(#g)"/><circle cx="80" cy="68" r="34" fill="rgba(255,226,150,.18)"/><path d="M24 148c8-34 28-52 56-52s48 18 56 52" fill="rgba(255,226,150,.22)"/><text x="80" y="95" text-anchor="middle" font-family="serif" font-size="58" font-weight="900" fill="#ffe6a0">${safeMark}</text></svg>`;
+  return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+}
+function resolveGeneralBust(id, name) {
+  const alias = GENERAL_BUST_ALIASES[id];
+  if (alias) return `./assets/generals/busts/${alias}.png`;
+  if (GENERAL_FACE_IDS.has(id)) return `./assets/generals/busts/${id}.png`;
+  if (GENERAL_BUST_REAL_IDS.has(id)) return `./assets/generals/busts/real_${id}.png`;
+  return generalPlaceholderImage(name, id);
+}
+function resolveGeneralFace(id, name) {
+  if (GENERAL_FACE_IDS.has(id)) return `./assets/generals/faces/${id}.png`;
+  return resolveGeneralBust(id, name);
+}
+function completeGeneralDef(g, rosterIndex) {
+  return {
+    ...g,
+    rosterIndex,
+    stat: g.stat || formatGeneralBuffs(g.buffs),
+    face: resolveGeneralFace(g.id, g.name),
+    bust: resolveGeneralBust(g.id, g.name),
+  };
+}
+function buildGeneralRoster() {
+  const manualById = new Map(MANUAL_GENERAL_DEFS.map(g => [g.id, g]));
+  const rawPairs = Array.isArray(window.GENERALS_200) && window.GENERALS_200.length
+    ? window.GENERALS_200
+    : MANUAL_GENERAL_DEFS.map(g => [g.id, g.name]);
+  const seen = new Set();
+  return rawPairs.reduce((list, pair, index) => {
+    const id = pair && String(pair[0] || '').trim();
+    const name = pair && String(pair[1] || '').trim();
+    if (!id || !name || seen.has(id)) return list;
+    seen.add(id);
+    const base = manualById.get(id) || { id, name, buffs: generatedGeneralBuffs(id, name, index) };
+    const g = { ...base, name: base.name || name };
+    list.push(completeGeneralDef(g, index));
+    return list;
+  }, []);
+}
+const GENERAL_ROSTER = buildGeneralRoster();
+const GENERAL_BY_ID = new Map(GENERAL_ROSTER.map(g => [g.id, g]));
+MANUAL_GENERAL_DEFS.forEach((g, index) => {
+  if (!GENERAL_BY_ID.has(g.id)) GENERAL_BY_ID.set(g.id, completeGeneralDef(g, -1 - index));
+});
 
 // === V2 인스턴스 모델 마이그레이션 ===
 // SAVE.generals: ID 배열 → 인스턴스 배열 [{uid, id, lv}, ...]
@@ -11777,7 +11871,7 @@ if (!SAVE.generalsV2) {
   if (isOldFormat) {
     // ID-기반 → 인스턴스 변환 (id→uid 일대일 매핑 임시 보관)
     const idToUid = {};
-    SAVE.generals = oldArr.filter(id => GENERAL_ROSTER.find(g => g.id === id)).map(id => {
+    SAVE.generals = oldArr.filter(id => GENERAL_BY_ID.has(id)).map(id => {
       const uid = nextUid++;
       idToUid[id] = uid;
       return { uid, id, lv: oldLevels[id] || 1 };
@@ -12197,15 +12291,21 @@ function showBpDetail() {
   document.getElementById('bpBreakdown').innerHTML = html;
   document.getElementById('bpDetailModal').style.display = 'flex';
 }
+function abbrevNum(n) {
+  n = Math.floor(Number(n) || 0);
+  if (n >= 1e8) { const v = n / 1e8; return (v >= 10 ? Math.round(v) : Math.round(v * 10) / 10) + '억'; }
+  if (n >= 1e4) { const v = n / 1e4; return (v >= 10 ? Math.round(v) : Math.round(v * 10) / 10) + '만'; }
+  return n.toLocaleString();
+}
 function refreshTopStats() {
   const campaignStars = campaignStarValues();
   const stars = campaignStars.reduce((a,b)=>a+(b||0),0);
   const cleared = campaignStars.filter(s=>s>0).length;
   const bp = calcBattlePower().total;
-  document.querySelectorAll('.ts-gold').forEach(e => e.textContent = (SAVE.gold||0).toLocaleString());
+  document.querySelectorAll('.ts-gold').forEach(e => e.textContent = abbrevNum(SAVE.gold||0));
   document.querySelectorAll('.ts-stars').forEach(e => e.textContent = (SAVE.starsAvailable || 0));
   document.querySelectorAll('.ts-cleared').forEach(e => e.textContent = cleared);
-  document.querySelectorAll('.ts-bp').forEach(e => e.textContent = bp.toLocaleString());
+  document.querySelectorAll('.ts-bp').forEach(e => e.textContent = abbrevNum(bp));
   const homeGold = document.getElementById('homeGold');
   const homeStars = document.getElementById('homeStars');
   const homeBattlePower = document.getElementById('homeBattlePower');
@@ -12281,7 +12381,7 @@ function launchTutorialStage() {
 const MAX_DEPLOY_GENERALS = 10;
 let selectedDeployGenerals = [];
 function getGeneralById(id) {
-  return GENERAL_ROSTER.find(g => g.id === id) || null;
+  return GENERAL_BY_ID.get(id) || null;
 }
 // === 장수 별 등급 시스템 (등용 시 랜덤 결정, per-instance) ===
 const STAR_MAX = 5;
@@ -13544,6 +13644,35 @@ function buildWarIntroLines(enemyDef, playerDef) {
   ];
 }
 
+const INTRO_DUEL_BG_VARIANTS = [
+  { cls: 'intro-duel-night', src: './assets/battle/intro_duel_bg.png' },
+  { cls: 'intro-duel-day', src: './assets/battle/intro_duel_bg_day.png' },
+  { cls: 'intro-duel-snow', src: './assets/battle/intro_duel_bg_snow.png' },
+  { cls: 'intro-duel-storm', src: './assets/battle/intro_duel_bg_storm.png' },
+];
+let _lastIntroDuelBgClass = '';
+function preloadIntroDuelBackgrounds() {
+  if (typeof Image !== 'function') return;
+  INTRO_DUEL_BG_VARIANTS.forEach(v => {
+    const img = new Image();
+    img.src = v.src;
+  });
+}
+preloadIntroDuelBackgrounds();
+function applyIntroDuelBgVariant(overlay) {
+  if (!overlay || !INTRO_DUEL_BG_VARIANTS.length) return;
+  INTRO_DUEL_BG_VARIANTS.forEach(v => overlay.classList.remove(v.cls));
+  let idx = Math.floor(Math.random() * INTRO_DUEL_BG_VARIANTS.length);
+  if (typeof currentStage === 'number') idx = (idx + currentStage) % INTRO_DUEL_BG_VARIANTS.length;
+  let variant = INTRO_DUEL_BG_VARIANTS[idx];
+  if (variant.cls === _lastIntroDuelBgClass && INTRO_DUEL_BG_VARIANTS.length > 1) {
+    variant = INTRO_DUEL_BG_VARIANTS[(idx + 1) % INTRO_DUEL_BG_VARIANTS.length];
+  }
+  _lastIntroDuelBgClass = variant.cls;
+  overlay.classList.add(variant.cls);
+  overlay.dataset.duelBg = variant.cls.replace('intro-duel-', '');
+}
+
 function _getIntroEnemyInst() {
   if (typeof castles === 'undefined') return null;
   // 1순위: 적장(_commanderUid)이 배정된 가장 큰 적 성
@@ -13592,6 +13721,7 @@ function startIntroDialog() {
   const eDef = getGeneralById(eInst.id);
   const pDef = getGeneralById(pInst.id);
   if (!eDef || !pDef) return;
+  applyIntroDuelBgVariant(overlay);
   // 라인 결정 (적 id에 매칭, 없으면 기본 + ${enemy} 치환)
   const raw = INTRO_LINES_BY_ID[eInst.id] || INTRO_LINES_DEFAULT;
   const lines = raw.map(s => s.replace('${enemy}', eDef.name).replace('${player}', pDef.name));
@@ -13765,18 +13895,28 @@ function nextCampaignStageIndex() {
   return Math.min(Math.max(lastUnlocked, first), STAGES.length - 1);
 }
 const CHAPTER_NAMES = {
-  1: '제1장 — 천하의 시작',
-  2: '제2장 — 중원 진출',
-  3: '제3장 — 천하쟁패',
-  4: '제4장 — 북벌의 깃발',
-  5: '제5장 — 천하통일',
+  1: '제1장 — 맑은 출정',
+  2: '제2장 — 먹구름 산길',
+  3: '제3장 — 설원의 관문',
+  4: '제4장 — 폭우의 전선',
+  5: '제5장 — 대홍수',
+  6: '제6장 — 사막의 관문',
+  7: '제7장 — 태풍 해안',
+  8: '제8장 — 불타는 중원',
+  9: '제9장 — 화산의 길',
+  10: '제10장 — 최후의 황궁',
 };
 const CHAPTER_SYNOPSIS = {
-  1: '황건적이 일어나니 영웅들이 모인다',
-  2: '동탁이 낙양을 불태우고 제후가 일어선다',
-  3: '천하 삼분, 영웅이 패권을 다툰다',
-  4: '험한 산맥을 넘어 북방의 강적과 겨룬다',
-  5: '마지막 패권을 두고 천하의 성문이 열린다',
+  1: '봄빛이 남아 있는 길에서 첫 깃발을 든다',
+  2: '먹구름이 산길을 덮고 적의 초소가 길을 막는다',
+  3: '눈보라 속 얼어붙은 관문을 넘어야 한다',
+  4: '폭우와 진흙이 전선을 삼키기 시작한다',
+  5: '무너진 제방과 홍수 위로 진군로를 세운다',
+  6: '모래바람이 부는 서량 관문으로 향한다',
+  7: '태풍이 몰아치는 해안 성채를 돌파한다',
+  8: '불타는 중원에서 마지막 보급로를 지킨다',
+  9: '용암과 화산재 사이로 최후의 길을 연다',
+  10: '무너지는 황궁 앞에서 천하의 결말을 가른다',
 };
 /* 핀 좌표 — 배경 일러스트의 S자 길 중앙을 따라 배치.
    1번이 맨 아래, 20번이 맨 위. */
@@ -13805,8 +13945,13 @@ const PIN_POSITIONS = [
 function getCurrentChapter() {
   return Math.max(1, SAVE.currentChapter || 1);
 }
+function campaignStageCount() {
+  // 무한 모드 스테이지(_infinite)는 캠페인 챕터 계산에서 제외
+  const idx = STAGES.findIndex(s => s && s._infinite);
+  return (idx >= 0 ? idx : STAGES.length);
+}
 function maxChapter() {
-  return Math.max(1, Math.ceil((STAGES.length - campaignOffset()) / STAGES_PER_CHAPTER));
+  return Math.max(1, Math.ceil((campaignStageCount() - campaignOffset()) / STAGES_PER_CHAPTER));
 }
 function renderStageGrid() {
   const ch = getCurrentChapter();
@@ -13865,13 +14010,43 @@ function renderStageGrid() {
         { name: '장안', sub: '71~75장', y: 32, x: 70 },
         { name: '업성', sub: '76~80장', y: 8,  x: 30 },
       ],
-      5: [
-        { name: '합비', sub: '81~85장', y: 86, x: 70 },
-        { name: '수춘', sub: '86~90장', y: 60, x: 30 },
-        { name: '건업', sub: '91~95장', y: 32, x: 70 },
-        { name: '황궁', sub: '96~100장', y: 8,  x: 30 },
-      ],
-    };
+	      5: [
+	        { name: '합비', sub: '81~85장', y: 86, x: 70 },
+	        { name: '수춘', sub: '86~90장', y: 60, x: 30 },
+	        { name: '건업', sub: '91~95장', y: 32, x: 70 },
+	        { name: '황궁', sub: '96~100장', y: 8,  x: 30 },
+	      ],
+	      6: [
+	        { name: '무위', sub: '101~105장', y: 86, x: 70 },
+	        { name: '돈황', sub: '106~110장', y: 60, x: 30 },
+	        { name: '양관', sub: '111~115장', y: 32, x: 70 },
+	        { name: '옥문관', sub: '116~120장', y: 8,  x: 30 },
+	      ],
+	      7: [
+	        { name: '회계', sub: '121~125장', y: 86, x: 70 },
+	        { name: '남해', sub: '126~130장', y: 60, x: 30 },
+	        { name: '교지', sub: '131~135장', y: 32, x: 70 },
+	        { name: '해문', sub: '136~140장', y: 8,  x: 30 },
+	      ],
+	      8: [
+	        { name: '관도', sub: '141~145장', y: 86, x: 70 },
+	        { name: '진류', sub: '146~150장', y: 60, x: 30 },
+	        { name: '복양', sub: '151~155장', y: 32, x: 70 },
+	        { name: '업성', sub: '156~160장', y: 8,  x: 30 },
+	      ],
+	      9: [
+	        { name: '진창', sub: '161~165장', y: 86, x: 70 },
+	        { name: '동관', sub: '166~170장', y: 60, x: 30 },
+	        { name: '화산', sub: '171~175장', y: 32, x: 70 },
+	        { name: '적염봉', sub: '176~180장', y: 8,  x: 30 },
+	      ],
+	      10: [
+	        { name: '금마문', sub: '181~185장', y: 86, x: 70 },
+	        { name: '황성문', sub: '186~190장', y: 60, x: 30 },
+	        { name: '천자전', sub: '191~195장', y: 32, x: 70 },
+	        { name: '황궁심전', sub: '196~200장', y: 8,  x: 30 },
+	      ],
+	    };
     const rl = document.getElementById('regionLabels');
     if (rl) {
       rl.innerHTML = '';
@@ -13904,8 +14079,8 @@ function renderStageGrid() {
     /* 지도 챕터 PNG 교체 */
     const mapEl = document.getElementById('stageGrid');
     if (mapEl) {
-      const cap = Math.min(5, Math.max(1, ch));
-      mapEl.dataset.chapter = String(cap);
+	      const cap = Math.min(10, Math.max(1, ch));
+	      mapEl.dataset.chapter = String(cap);
     }
     /* SVG 경로 ‒ 이미지에 길이 그려져 있어 비활성 (CSS display:none) */
     const svg = document.getElementById('mapPath');
@@ -14112,14 +14287,15 @@ function resetStage() {
   castles.length = 0;
   st.castles.forEach(c => castles.push(JSON.parse(JSON.stringify(c))));
   castles.forEach(c => { releaseCastleCommander(c); delete c._commanderQueue; });
-  // === 전반 난이도 완화: 챕터 진행에 따라 적 약하게, 아군 강하게 (튜토리얼 제외) ===
+  // === 전역 보정 중립화 ===
+  // 난이도 스케일링은 makeGeneratedStage(생성식) + 챕터1 수동 스테이지가 전담.
+  // 여기서 챕터별 완화를 하면 후반이 쉬워지는 역전이 생기므로 모두 0(중립)으로 둠.
   if (!st.isTutorial) {
     const ch = campaignChapterForIndex(currentStage);
-    // 챕터별 미세 보정: 1=0% / 2=4% / 3=8% / 4=12% / 5=16% (적 감소)
-    const enemyEase = Math.max(0, (ch - 1)) * 0.04;
-    const playerBoost = Math.max(0, (ch - 1)) * 0.03;
-    const enemyBase = 0.05;
-    const playerNerf = 0.00;
+    const enemyEase = 0;
+    const playerBoost = 0;
+    const enemyBase = 0;
+    const playerNerf = 0;
     castles.forEach(c => {
       if (c.owner === 2) {
         for (const k of ['spear','cavalry','archer']) {
@@ -14203,6 +14379,7 @@ function resetStage() {
   if (window._footprints) window._footprints.length = 0;
   buildEdges();
   stageStartTime = performance.now();
+  window._winHandled = false; // 스테이지 시작 시 승리 처리 가드 초기화
   resize();
   initCamera();
   updateMinimap();
@@ -14245,13 +14422,14 @@ window.addEventListener('DOMContentLoaded', () => {
   showScreen('splash');
   const bootParams = new URLSearchParams(window.location.search || '');
   const prisonerPreview = bootParams.get('preview') === 'prisoner' && (bootParams.get('cheat') === '1' || localStorage.getItem('devCheats') === '1');
-  const upgradePreview = bootParams.get('preview') === 'upgrade' && (bootParams.get('cheat') === '1' || localStorage.getItem('devCheats') === '1');
-  const exchangePreview = bootParams.get('preview') === 'exchange' && (bootParams.get('cheat') === '1' || localStorage.getItem('devCheats') === '1');
-  const battlePreview = bootParams.get('preview') === 'battle' && (bootParams.get('cheat') === '1' || localStorage.getItem('devCheats') === '1');
-  if (prisonerPreview) {
-    setTimeout(() => {
-      const previewPrisoner = SAMPLE_GENERALS.find(g => g.id === 'lu_bu') || SAMPLE_GENERALS[0];
-      showPrisonerScreen([previewPrisoner], () => goToMenu());
+	  const upgradePreview = bootParams.get('preview') === 'upgrade' && (bootParams.get('cheat') === '1' || localStorage.getItem('devCheats') === '1');
+	  const exchangePreview = bootParams.get('preview') === 'exchange' && (bootParams.get('cheat') === '1' || localStorage.getItem('devCheats') === '1');
+	  const battlePreview = bootParams.get('preview') === 'battle' && (bootParams.get('cheat') === '1' || localStorage.getItem('devCheats') === '1');
+	  const stagePreview = bootParams.get('preview') === 'stage' && (bootParams.get('cheat') === '1' || localStorage.getItem('devCheats') === '1');
+	  if (prisonerPreview) {
+	    setTimeout(() => {
+	      const previewPrisoner = SAMPLE_GENERALS.find(g => g.id === 'lu_bu') || SAMPLE_GENERALS[0];
+	      showPrisonerScreen([previewPrisoner], () => goToMenu());
     }, 350);
   } else if (upgradePreview) {
     setTimeout(() => {
@@ -14266,14 +14444,21 @@ window.addEventListener('DOMContentLoaded', () => {
       goToMenu();
       setTimeout(() => showStarExchange(), 80);
     }, 350);
-  } else if (battlePreview) {
-    setTimeout(() => {
-      selectedStage = 0;
-      startStage();
-    }, 350);
-  } else {
-    setTimeout(() => goToMenu(), 1500);
-  }
+	  } else if (battlePreview) {
+	    setTimeout(() => {
+	      selectedStage = 0;
+	      startStage();
+	    }, 350);
+	  } else if (stagePreview) {
+	    setTimeout(() => {
+	      const previewChapter = Math.max(1, Math.min(maxChapter(), parseInt(bootParams.get('chapter') || '1', 10) || 1));
+	      SAVE.currentChapter = previewChapter;
+	      SAVE.unlocked = Math.max(SAVE.unlocked || 0, campaignEndIndex(previewChapter));
+	      goToStageSelectAt(campaignStartIndex(previewChapter));
+	    }, 350);
+	  } else {
+	    setTimeout(() => goToMenu(), 1500);
+	  }
 
   bindTap(document.getElementById('btnCampaign'), goToStageSelect);
   bindTap(document.getElementById('btnCampaign2'), goToStageSelect);
@@ -14309,9 +14494,11 @@ window.addEventListener('DOMContentLoaded', () => {
       ev.stopPropagation();
       closeStageToolsMenu();
       const tool = btn.dataset.stageTool;
+      // 스테이지에서 진입 → 뒤로가기 시 스테이지로 복귀하도록 설정
+      setPostBattleReturnStage(selectedStage);
       if (tool === 'generals') showGeneralManage();
       else if (tool === 'enhance') showEnhanceScreen();
-      else if (tool === 'power') { _postUpgradeStage = null; goToUpgrade(); }
+      else if (tool === 'power') goToUpgrade();
     });
   });
   document.addEventListener('click', (ev) => {
@@ -14323,8 +14510,15 @@ window.addEventListener('DOMContentLoaded', () => {
   });
     // 튜토리얼 스테이지(인덱스 0) 강제 진입 — 다시 보기 가능
   bindTap(document.getElementById('btnInfinite'), () => {
-    if (SAVE.unlocked > 20) alert('무한 모드 (준비중)');
-    else alert('20장 클리어 후 해제됩니다');
+    // 1챕터(20장) 클리어 후 해금. 최고 기록 안내 후 1층부터 시작.
+    if (SAVE.unlocked > 20) {
+      window._infiniteFloor = 1;
+      const best = SAVE.infiniteBest || 0;
+      showSelectToast(best > 0 ? `무한 모드 시작 (최고 ${best}층)` : '무한 모드 시작!', '#ffd23f');
+      startInfiniteMode();
+    } else {
+      alert('1챕터(20장) 클리어 후 해제됩니다');
+    }
   });
   bindTap(document.getElementById('btnChallenge'), () => {
     // 임시: 큰 영토 테스트 스테이지
@@ -14579,54 +14773,49 @@ const STAGES = [
   },
   // === 1챕터: 1~20장 (쉬움, AI Lv1) ===
   // 1~3: 1대1 기본
-  // 1장: 유일한 워밍업 — 무업글로 무난히 클리어 가능
+  // 1~4장: 입문 구간 — 상성만 맞추면 무투자로 클리어 (게임 손에 익히기)
   {
     name: '1장 - 첫 출진', aiLevel: 1,
     castles: [
       C(0.5, 0.78, 1, '성도', 'spear', T(25,5,5), {size:1.1, trait:'prod'}),
-      C(0.5, 0.22, 2, '낙양', 'spear', T(16,2,0), {size:1.0, trait:'def'}),
+      C(0.5, 0.22, 2, '낙양', 'spear', T(14,2,0), {size:1.0, trait:'def'}),
     ],
     edges: [E('성도', '낙양', 'curve', -1)],
   },
-  // 2장: 첫 난이도 벽 — 무업글이면 힘들다. 적 궁수가 아군 창을 카운터.
   {
-    name: '2장 - 산길', aiLevel: 2,
+    name: '2장 - 산길', aiLevel: 1,
     castles: [
       C(0.3, 0.8, 1, '성도', 'spear', T(20,8,2), {size:1.05}),
-      C(0.7, 0.2, 2, '낙양', 'archer', T(4,4,24), {size:1.05, trait:'def'}),
+      C(0.7, 0.2, 2, '낙양', 'cavalry', T(2,14,0), {size:1.0}),  // 창>기 유리
     ],
     edges: [E('성도', '낙양', 'curve', 1)],
   },
-  // 3장: 빡셈 — 적이 상성으로 압박(아군 궁수 ↔ 적 기병), 병력 동등 이상. 업글 없으면 막힘.
   {
-    name: '3장 - 활의 길', aiLevel: 2,
+    name: '3장 - 활의 길', aiLevel: 1,
     castles: [
       C(0.5, 0.85, 1, '성도', 'archer', T(5,5,18), {size:1.1, trait:'atk'}),
-      C(0.5, 0.15, 2, '낙양', 'cavalry', T(4,28,4), {size:1.05, trait:'def'}),
+      C(0.5, 0.15, 2, '낙양', 'spear', T(16,0,0), {size:1.0}),  // 궁>창 유리
     ],
     edges: [E('성도', '낙양', 'curve', -1)],
   },
-  // 4장: 전략가 — 강한 단일 적 + 빈 성 거점 활용 필수. 업글+장수 투자 요구.
   {
-    name: '4장 - 빈 성', aiLevel: 3,
+    name: '4장 - 빈 성', aiLevel: 1,
     castles: [
-      C(0.5, 0.85, 1, '성도', 'spear', T(20,5,5)),
-      C(0.5, 0.5, 0, '형주', 'archer', T(0,0,0), {size:0.9}),
-      C(0.5, 0.15, 2, '낙양', 'cavalry', T(6,30,6), {size:1.1, trait:'prod'}),
+      C(0.5, 0.85, 1, '성도', 'spear', T(20,6,5)),
+      C(0.5, 0.5, 0, '형주', 'archer', T(0,0,0), {size:0.9}),  // 빈 성 거점 학습
+      C(0.5, 0.15, 2, '낙양', 'cavalry', T(3,15,2)),
     ],
     edges: [E('성도', '형주'), E('형주', '낙양')],
   },
-  // 5장: 거의 만렙 — 두 전선의 적 성. 충분한 업글+장수 강화 없으면 돌파 불가.
+  // 5장: 첫 난이도 벽 — 적 궁수가 아군 창을 카운터 + 동등 병력 + AI↑.
+  // 무투자면 손해 누적 → "전투력 관리(업그레이드)"를 처음 신경쓰게 됨.
   {
-    name: '5장 - 두 갈래', aiLevel: 4,
+    name: '5장 - 활잡이 관문', aiLevel: 2,
     castles: [
       C(0.5, 0.85, 1, '성도', 'spear', T(22,8,5)),
-      C(0.25, 0.5, 2, '한중', 'archer', T(8,6,26), {size:0.95, trait:'def'}),
-      C(0.75, 0.5, 0, '강동', 'spear', T(0,0,0), {size:0.85, trait:'def'}),
-      C(0.5, 0.15, 2, '낙양', 'cavalry', T(8,30,8), {size:1.1, trait:'prod'}),
+      C(0.5, 0.15, 2, '낙양', 'archer', T(5,4,27), {size:1.08, trait:'def'}),
     ],
-    edges: [E('성도', '한중', 'curve', -1), E('성도', '강동', 'curve', 1),
-            E('한중', '낙양', 'curve', -1), E('강동', '낙양', 'curve', 1)],
+    edges: [E('성도', '낙양', 'curve', -1)],
   },
   {
     name: '6장 - 형주 점령', aiLevel: 1,
@@ -14846,13 +15035,43 @@ const GENERATED_CHAPTERS = {
     boss: '업성대전',
     places: ['기산', '진창', '장안', '동관', '홍농', '낙양', '하내', '평양', '태원', '업성'],
   },
-  5: {
-    theme: '통일',
-    home: '건업',
-    boss: '황궁결전',
-    places: ['합비', '수춘', '광릉', '하비', '허창', '초군', '관도', '낙양', '장안', '황궁'],
-  },
-};
+	  5: {
+	    theme: '통일',
+	    home: '건업',
+	    boss: '황궁결전',
+	    places: ['합비', '수춘', '광릉', '하비', '허창', '초군', '관도', '낙양', '장안', '황궁'],
+	  },
+	  6: {
+	    theme: '서량 사막',
+	    home: '장안',
+	    boss: '옥문관',
+	    places: ['무위', '금성', '안정', '천수', '서평', '돈황', '주천', '장액', '고창', '양관'],
+	  },
+	  7: {
+	    theme: '태풍 해안',
+	    home: '건업',
+	    boss: '해문대채',
+	    places: ['회계', '오군', '동해', '광릉', '임해', '번우', '남해', '합포', '교지', '해문'],
+	  },
+	  8: {
+	    theme: '불타는 중원',
+	    home: '허창',
+	    boss: '업성화전',
+	    places: ['관도', '진류', '초군', '양평', '하내', '평양', '조가', '백마', '복양', '업성'],
+	  },
+	  9: {
+	    theme: '화산 겁화',
+	    home: '한중',
+	    boss: '적염봉',
+	    places: ['진창', '동관', '홍농', '화음', '태백', '상락', '무관', '화산', '용문', '흑석'],
+	  },
+	  10: {
+	    theme: '최후 황궁',
+	    home: '낙양',
+	    boss: '황궁심전',
+	    places: ['광무', '태학', '상림원', '미앙궁', '장락궁', '금마문', '승상부', '황성문', '천자전', '황궁'],
+	  },
+	};
 
 const GENERATED_STAGE_TITLES = [
   '전초전', '갈림길', '보급 차단', '측면 돌파', '소관문',
@@ -15021,10 +15240,12 @@ function makeGeneratedStage(ch, local) {
   const p = (offset) => def.places[(local + offset) % def.places.length];
   const phase = Math.ceil(local / 5);
   const variant = (local - 1) % 5;
-  const enemyMult = 0.75 + ((ch - 1) * 0.08) + (local * 0.018);
-  const playerMult = 1.10 + ((ch - 1) * 0.10) + (local * 0.014);
+  // 난이도 곡선(시뮬 검증): 챕터당 적 +21%, 아군 +1.8%(성장은 투자로). 후반으로 갈수록 우상향.
+  const enemyMult = 0.70 + ((ch - 1) * 0.21) + ((local - 1) * 0.024);
+  const playerMult = 1.0 + ((ch - 1) * 0.018);
   const neutralMult = 0.40 + (phase * 0.08);
-  const aiLevel = Math.min(4, Math.max(1, (ch - 1) + (local > 13 ? 1 : 0) - (local < 5 ? 1 : 0)));
+  // AI 최고 5까지: 챕터 비례 + 후반 스테이지 가산
+  const aiLevel = Math.min(5, Math.max(1, Math.round(1 + (ch - 1) * 0.5) + (local > 15 ? 1 : 0) - (local < 5 ? 1 : 0)));
   const primary = ['spear', 'cavalry', 'archer'][(local + ch) % 3];
   const enemyPrimary = ['cavalry', 'archer', 'spear'][(local + phase) % 3];
   const boss = local === STAGES_PER_CHAPTER;
@@ -15139,10 +15360,52 @@ function makeGeneratedStage(ch, local) {
   };
 }
 
-for (let ch = 2; ch <= 5; ch++) {
+for (let ch = 2; ch <= 10; ch++) {
   for (let local = 1; local <= STAGES_PER_CHAPTER; local++) {
     STAGES.push(makeGeneratedStage(ch, local));
   }
+}
+
+// === 무한 모드 (엔드게임) — 10챕터 이후로 무한 상승하는 도전 ===
+function makeInfiniteStage(floor) {
+  const em = 1.7 + floor * 0.13;   // 적 배수: 층마다 +13% (ch10 보스 이상에서 시작해 계속 상승)
+  const pm = 1.15;                  // 아군 고정 — 오직 투자(업글·장수)로만 극복
+  const L = genStageLayout(99000 + floor * 7, 6);
+  const nm = ['본영', '전초', '관문', '보루', '대채', '아성'];
+  const pr = ['spear', 'cavalry', 'archer'][floor % 3];
+  const epr = ['cavalry', 'archer', 'spear'][floor % 3];
+  return {
+    name: `무한 ${floor}층`,
+    aiLevel: 5,
+    growthMult: 1.6,
+    _infinite: true, _floor: floor,
+    castles: [
+      C(L[0].x, L[0].y, 1, nm[0], pr, scaleTroops(T(34,14,12), pm), {size:1.15, trait:'prod'}),
+      C(L[1].x, L[1].y, 0, nm[1], 'spear', scaleTroops(T(4,2,2), 0.5), {trait:'def'}),
+      C(L[2].x, L[2].y, 2, nm[2], epr, scaleTroops(T(14,9,9), em)),
+      C(L[3].x, L[3].y, 2, nm[3], 'cavalry', scaleTroops(T(5,16,5), em), {trait:'prod'}),
+      C(L[4].x, L[4].y, 2, nm[4], 'archer', scaleTroops(T(6,5,16), em), {trait:'atk'}),
+      C(L[5].x, L[5].y, 2, nm[5], 'spear', scaleTroops(T(20,10,10), em + 0.3), {size:1.28, trait:'def'}),
+    ],
+    edges: [
+      E(nm[0], nm[1]), E(nm[1], nm[2], 'curve', -1), E(nm[1], nm[3], 'curve', 1),
+      E(nm[2], nm[4]), E(nm[3], nm[5]), E(nm[2], nm[5], 'curve', -1), E(nm[4], nm[5]),
+    ],
+  };
+}
+function startInfiniteMode() {
+  if (!window._infiniteFloor || window._infiniteFloor < 1) window._infiniteFloor = 1;
+  const st = makeInfiniteStage(window._infiniteFloor);
+  if (window._infiniteStageIdx == null) {
+    STAGES.push(st);
+    window._infiniteStageIdx = STAGES.length - 1;
+  } else {
+    STAGES[window._infiniteStageIdx] = st;
+  }
+  selectedStage = window._infiniteStageIdx;
+  currentStage = selectedStage;
+  resetStage();
+  showScreen('game');
 }
 
 // 임시: 큰 영토 테스트 스테이지 (도전 모드 칩에서 진입)
@@ -15232,6 +15495,12 @@ window._targetCamX = 0; window._targetCamY = 0; window._targetZoom = 1.0;
 const ZOOM_MIN = 0.55, ZOOM_MAX = 2.2;
 function worldPxW() { return worldW * W; }
 function worldPxH() { return worldH * H; }
+// 축소(zoom-out) 한계 = 월드 전체가 화면에 꼭 들어오는 줌 (= 미니맵 전체 화면).
+// 이보다 더 축소하면 배경 바깥 빈공간만 보이므로 무의미. 끝→끝 컨트롤을 위해 ZOOM_MIN 고정값 대신 사용.
+function minZoom() {
+  if (!worldPxW() || !worldPxH()) return ZOOM_MIN;
+  return Math.max(0.05, Math.min(W / worldPxW(), H / worldPxH()));
+}
 function clampCamera() {
   const halfW = W / (2 * zoom), halfH = H / (2 * zoom);
   const wW = worldPxW(), wH = worldPxH();
@@ -15262,7 +15531,7 @@ function initCamera() {
   const cover = Math.max(W / worldPxW(), H / worldPxH());
   // 더 줌인 값 채택: 적은 성은 한 화면에, 큰 맵은 배경 끊김 없음
   // fitCastles 우선 — 성이 화면을 꽉 채우도록 (cover로 인한 줌아웃 방지). 약간의 여유 10%
-  zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, fitCastles * 0.73));
+  zoom = Math.min(ZOOM_MAX, Math.max(minZoom(), fitCastles * 0.73));
   clampCamera();
   window._targetCamX = camX; window._targetCamY = camY; window._targetZoom = zoom;
 }
@@ -15300,6 +15569,7 @@ let menuCastle = null;       // 메뉴 열린 성
 let dragUnit = null;          // 드래그중인 병종
 let dragMoved = false;        // 드래그가 임계치 이상 이동했는지
 let dragSourceCastle = null;  // 드래그 시작 성 (menuCastle 과 분리 — 메뉴는 탭일 때만 열림)
+let dragSourceArmy = null;    // 드래그 시작 아군 부대(선봉) — 재지정 명령용
 let dragTo = { x: 0, y: 0 };
 let armedUnit = null;         // 탭으로 선택한 병종 (목표성 탭 대기)
 let dragStart = null;         // 드래그 시작점
@@ -15331,9 +15601,8 @@ function friendlyArmyAt(px, py, myFaction) {
   for (const a of armies) {
     if (a.owner !== myFaction || a.troops <= 0 || a.dying) continue;
     if (a.isRetreat) continue;
-    const cmdUid = a.groupCommanderUid != null ? a.groupCommanderUid : a.commanderUid;
-    if (cmdUid == null) continue; // 장수 없는 일반 부대는 합류 대상에서 제외
-    if (a.groupId && getGroupLeader(a.groupId) !== a) continue; // 그룹 리더만 후보
+    // 장수 없는 부대도 디폴트 장수로 합류/재지정 대상 포함 (선두만 후보)
+    if (a.groupId && getGroupLeader(a.groupId) !== a) continue;
     const sx = (a.x - camX) * zoom + W / 2;
     const sy = (a.y - camY) * zoom + H / 2;
     const d = Math.hypot(px - sx, py - sy);
@@ -16105,7 +16374,7 @@ function pointerDown(e) {
     pinchStartDist = pinch.dist;
     pinchStartZoom = zoom;
     pinchCenter = { x: pinch.cx, y: pinch.cy };
-    panActive = false; minimapDrag = false; menuCastle = null; dragUnit = null;
+    panActive = false; minimapDrag = false; menuCastle = null; dragUnit = null; dragSourceArmy = null;
     return;
   }
 
@@ -16135,7 +16404,7 @@ function pointerDown(e) {
       menuCastle.selectFloatText = null;
       menuCastle.selectFloatTime = now;
       menuCastle.selectFloatColor = UNITS[u].accent;
-      showSelectToast(`주력을 ${UNITS[u].full}으로 변경`, UNITS[u].accent);
+      // 주력 변경 토스트 제거 — 성 위 이펙트(반짝임+병종 에코)로 충분
       menuCastle = null;
       return;
     }
@@ -16165,6 +16434,16 @@ function pointerDown(e) {
     return;
   }
 
+  // 아군 부대(선봉) 누르기 → 재지정 드래그 시작
+  const myArmy = friendlyArmyAt(p.x, p.y, 1);
+  if (myArmy) {
+    dragSourceArmy = myArmy;
+    dragStart = p;
+    dragTo = p;
+    dragMoved = false;
+    return;
+  }
+
   // 빈곳 → 팬 모드 (열려 있던 메뉴는 닫음)
   menuCastle = null;
   dragUnit = null;
@@ -16178,7 +16457,7 @@ function pointerMove(e) {
   const pinch = getPinchInfo(e);
   if (pinchActive && pinch) {
     e.preventDefault();
-    const newZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, pinchStartZoom * (pinch.dist / pinchStartDist)));
+    const newZoom = Math.max(minZoom(), Math.min(ZOOM_MAX, pinchStartZoom * (pinch.dist / pinchStartDist)));
     // 핀치 중심점이 화면상 같은 월드 위치를 가리키도록 보정
     const before = screenToWorld(pinch.cx, pinch.cy);
     zoom = newZoom;
@@ -16208,6 +16487,14 @@ function pointerMove(e) {
       if (Math.hypot(dx, dy) > 14 * DPR()) dragMoved = true;
     }
   }
+  if (dragSourceArmy) {
+    e.preventDefault();
+    dragTo = getPos(e);
+    if (!dragMoved && dragStart) {
+      const dx = dragTo.x - dragStart.x, dy = dragTo.y - dragStart.y;
+      if (Math.hypot(dx, dy) > 14 * DPR()) dragMoved = true;
+    }
+  }
 }
 
 function pointerUp(e) {
@@ -16219,6 +16506,37 @@ function pointerUp(e) {
   }
   if (minimapDrag) { minimapDrag = false; return; }
   if (panActive) { panActive = false; panLast = null; return; }
+  // 아군 부대(선봉) 재지정 드래그 처리
+  if (dragSourceArmy) {
+    const src = dragSourceArmy; dragSourceArmy = null;
+    const p = getPos(e);
+    const dragDist = dragStart ? Math.hypot(p.x - dragStart.x, p.y - dragStart.y) : 0;
+    if (dragDist <= 14 * DPR()) { dragStart = null; dragMoved = false; return; } // 탭은 무시
+    let tgtCastle = castleAt(p.x, p.y);
+    let tgtFoe = !tgtCastle ? enemyArmyAt(p.x, p.y, 1) : null;
+    if (!tgtCastle && !tgtFoe) {
+      let bestD = 80 * DPR(), best = null;
+      for (const cc of castles) {
+        const dd = Math.hypot(p.x - cx(cc), p.y - cy(cc)) - CASTLE_R() * cc.size;
+        if (dd < bestD) { bestD = dd; best = cc; }
+      }
+      if (best) tgtCastle = best;
+    }
+    const gid = src.groupId;
+    const members = gid ? armies.filter(x => x.groupId === gid && !x.dying && x.troops > 0) : [src];
+    if (tgtFoe) {
+      for (const m of members) { m.pursuingArmy = tgtFoe; if (!m.target || m.target.isArmy) m.target = m.homeCastle || m.target; m._returnAnnounced = false; }
+      showSpeech(src, pickRandom(['요격하라!', '적을 친다!', '돌격!']), { life: 1.4 });
+    } else if (tgtCastle && tgtCastle.owner !== 1) {
+      for (const m of members) { m.pursuingArmy = null; m.target = tgtCastle; m._returnAnnounced = false; }
+      showSpeech(src, pickRandom(['저 성을 친다!', '진격하라!', '공성!']), { life: 1.4 });
+    } else if (tgtCastle && tgtCastle.owner === 1) {
+      for (const m of members) { m.pursuingArmy = null; m.target = tgtCastle; m.homeCastle = tgtCastle; }
+      showSpeech(src, '복귀합니다!', { life: 1.2 });
+    }
+    dragStart = null; dragMoved = false;
+    return;
+  }
   if (!dragUnit || !dragSourceCastle) { dragUnit = null; dragStart = null; dragMoved = false; dragSourceCastle = null; return; }
   const p = getPos(e);
   const dragDist = dragStart ? Math.hypot(p.x - dragStart.x, p.y - dragStart.y) : 0;
@@ -16528,8 +16846,13 @@ function enemyAI(dt) {
 function dist(a,b){ const dx=cx(a)-cx(b),dy=cy(a)-cy(b); return Math.sqrt(dx*dx+dy*dy); }
 
 function growth(dt) {
+  const now = performance.now();
   for (const c of castles) {
     if (c.owner !== 0) {
+      // 분쟁중(함락 후 야전)에는 생산 정지
+      if (c._contested) continue;
+      // 공성 중(최근 0.7초 내 공격받음)에는 생산 정지
+      if (c._lastSiegeT && now - c._lastSiegeT < 700) continue;
       c._grow = (c._grow || 0) + dt;
       let rate = c.trait === 'prod' ? 0.7 : 1.2;
       const sMult = STAGES[currentStage].growthMult || 1;
@@ -16678,6 +17001,13 @@ function resolveEngagements(dt) {
 const ATTACK_RANGE = () => 80 * DPR() / zoom; // 월드 단위 (성 외곽 둘러싸기)
 
 function resolveSieges(dt) {
+  // 분쟁 해제 전역 패스: 출진 수비대가 모두 사라지면 분쟁 종료(공성군 유무 무관)
+  for (const c of castles) {
+    if (c._contested) {
+      const def = armies.some(x => x._defendCastle === c && !x.dying && x.troops > 0);
+      if (!def) c._contested = false;
+    }
+  }
   const siegers = new Map();
   for (const a of armies) {
     a._sieging = false;
@@ -16696,6 +17026,8 @@ function resolveSieges(dt) {
   }
 
   for (const [castle, atks] of siegers) {
+    // 공성당하는 성은 생산 정지 (충원으로 인한 무한 출진/점령 불가 방지)
+    castle._lastSiegeT = performance.now();
     for (const a of atks) {
       // 강화: 공성 시 성벽이 받는 피해는 castleDef로 감소
       const cDef = castle.owner === 1 ? upgVal('castleDef') * commanderCastleMult(castle, 'castleDef') : commanderCastleMult(castle, 'castleDef');
@@ -16765,23 +17097,35 @@ function resolveSieges(dt) {
             : pickRandom(['성벽이 무너졌다!', '방어선 붕괴!']);
           showSpeech(castle, phr, { life: 1.6, side: a.owner === 1 ? 'ally' : 'enemy', kind: 'castle' });
           spawnWallBreachFx(castle, a);
-          // 성안 병력은 사라지지 않고 출진해서 공성군과 야전
-          const aliveAtks = atks.filter(x => x.troops > 0);
-          if (aliveAtks.length > 0) {
-            const sortieDefenderPhr = castle.owner === 1
-              ? pickRandom(['전군 출격!', '나가서 싸운다!', '성문을 열어라!'])
-              : pickRandom(['결사항전!', '맞서라!']);
-            showSpeech(castle, sortieDefenderPhr, { life: 1.4, side: castle.owner === 1 ? 'ally' : 'enemy', kind: 'castle' });
-            const units = ['spear', 'cavalry', 'archer'];
-            let i = 0;
-            units.forEach((u) => {
-              if ((castle.troops[u] || 0) > 0) {
-                const target = aliveAtks[i % aliveAtks.length];
-                i++;
-                sendArmy(castle, target, u, castle, castle.owner === 1);
-              }
-            });
+          // 수비병이 있으면: 전원 성 밖으로 출진(야전) + 성벽 절반 복구 → 즉시 점령 X.
+          // 공격군이 출진한 수비대를 이겨야 비로소 빈 성을 다시 깎아 입성하게 됨.
+          if (totalTroops(castle) > 0) {
+            const aliveAtks = atks.filter(x => x.troops > 0);
+            if (aliveAtks.length > 0) {
+              const sortieDefenderPhr = castle.owner === 1
+                ? pickRandom(['전군 출격!', '나가서 싸운다!', '성문을 열어라!'])
+                : pickRandom(['결사항전!', '맞서라!']);
+              showSpeech(castle, sortieDefenderPhr, { life: 1.4, side: castle.owner === 1 ? 'ally' : 'enemy', kind: 'castle' });
+              const units = ['spear', 'cavalry', 'archer'];
+              let i = 0;
+              units.forEach((u) => {
+                if ((castle.troops[u] || 0) > 0) {
+                  const target = aliveAtks[i % aliveAtks.length];
+                  i++;
+                  sendArmy(castle, target, u, castle, castle.owner === 1);
+                  // 방금 출진한 수비대 부대에 표식 — 야전 미해결 동안 성 점령 잠금
+                  const sortied = armies[armies.length - 1];
+                  if (sortied) sortied._defendCastle = castle;
+                }
+              });
+            }
+            // 함락: 성벽 0 + 불타는 상태 유지. 전투가 끝날 때까지 아무도 차지 못함.
+            castle.wallHP = 0;
+            castle._tdmg = 0;
+            // 분쟁 상태: 출진 수비대가 전멸하기 전까지는 아무도 점령 못 함
+            castle._contested = true;
           }
+          // 수비병이 없으면 성벽 0 유지 → 아래 점령 블록에서 공격군 입성
         }
       } else {
         // 성벽 박살 → 안에 병력 직공
@@ -16811,13 +17155,20 @@ function resolveSieges(dt) {
       // 적 병력은 출진해서 길에서 만나야 전투됨
     }
 
-    // 점령: 성벽 0 + 수비 0
-    if (totalTroops(castle) === 0 && castle.wallHP === 0 && atks.some(a => a.troops > 0)) {
+    // 야전 미해결(분쟁중): 출진 수비대가 살아있으면 아무도 점령 못 함
+    const liveDefenders = armies.some(x => x._defendCastle === castle && !x.dying && x.troops > 0);
+    if (castle._contested && !liveDefenders) {
+      // 출진 수비대 전멸 → 분쟁 종료, 점령 허용
+      castle._contested = false;
+    }
+    // 점령: 성벽 0 + 수비 0 + 분쟁 종료
+    if (totalTroops(castle) === 0 && castle.wallHP === 0 && atks.some(a => a.troops > 0) && !castle._contested && !liveDefenders) {
       const aliveAtks = atks.filter(a => a.troops > 0);
       const winner = aliveAtks.reduce((p, x) => (p && p.troops > x.troops ? p : x), null);
       if (winner) {
         const prevOwner = castle.owner;
         castle.owner = winner.owner;
+        castle._contested = false;
         // 점령 시 이전 소유자의 장수 정보(특히 적장 음수 uid)를 항상 비움
         releaseCastleCommander(castle);
         if (winner.owner === 1) {
@@ -16835,8 +17186,8 @@ function resolveSieges(dt) {
             armies.splice(i, 1);
           }
         }
-        // 점령 후 성벽 일부 복구
-        castle.wallHP = Math.floor(castle.wallMax * 0.4);
+        // 점령 시 성벽은 절반 + 불타는 상태 → 이후 자연 회복으로 점점 보수
+        castle.wallHP = Math.floor(castle.wallMax * 0.5);
         castle._captureFlash = performance.now();
         pingMinimapCapture(castle, prevOwner, winner.owner);
         spawnCastleCaptureExplosion(castle, winner.owner, { prevOwner });
@@ -16858,6 +17209,8 @@ function resolveSieges(dt) {
 // 아군 성벽 자연 회복 + 화염 파티클
 function wallRegenAndFire(dt) {
   for (const c of castles) {
+    // 분쟁중(함락 후 야전 진행)에는 성벽 0 유지 — 회복 금지
+    if (c._contested) { c.wallHP = 0; continue; }
     if (c.owner !== 0 && c.wallHP < c.wallMax) {
       c._wreg = (c._wreg || 0) + dt;
       const rate = 1.5; // 1.5초당 1 (회복 2배)
@@ -16932,12 +17285,29 @@ function update(dt) {
           // 그대로 fall-through (continue 없음)
         }
       } else if (!stillAlive) {
-        // 요격 완료 → 같은 자리에서 즉시 홈으로 합류 처리 (혼란스러운 이동 방지)
-        if (a.homeCastle && a.troops > 0) {
-          a.homeCastle.troops[a.unit] = Math.min(99, (a.homeCastle.troops[a.unit] || 0) + a.troops);
+        // 요격 완료 → 순간이동 대신 홈으로 '행군 복귀' (도착 시 위의 합류 블록에서 흡수)
+        a.pursuingArmy = null;
+        let home = (a.homeCastle && a.homeCastle.owner === a.owner) ? a.homeCastle : null;
+        if (!home) {
+          // 홈이 함락됨 → 가까운 아군 성으로 복귀
+          let bestD = Infinity;
+          for (const k of castles) {
+            if (k.owner !== a.owner) continue;
+            const dx = k.x * worldPxW() - a.x, dy = k.y * worldPxH() - a.y;
+            const dd = dx * dx + dy * dy;
+            if (dd < bestD) { bestD = dd; home = k; }
+          }
         }
-        armies.splice(i, 1);
-        continue;
+        if (home) {
+          a.homeCastle = home;
+          a.target = home;
+          // 복귀 시작 대사 (한 번만)
+          if (!a._returnAnnounced) {
+            a._returnAnnounced = true;
+            showSpeech(a, pickRandom(['복귀합니다. 명령만 주세요!', '임무 완수! 다음 명령은?', '돌아갑니다, 주공!', '적을 베었습니다. 어디로 갈까요?']), { life: 1.9 });
+          }
+        }
+        // 홈이 전혀 없으면 그 자리 야전 유지 (target 그대로)
       }
     }
     let tx, ty;
@@ -17001,9 +17371,14 @@ function update(dt) {
     // 공성중이거나 교전중이면 이동 X (궁수 사격은 위에서 이미 처리됨)
     if (a._sieging || a._engaged) continue;
 
-    // 아군 성에 합류
+    // 아군 성에 합류 (행군 복귀 도착 포함)
     if (!a.pursuingArmy && a.target.owner === a.owner && d < 10 * DPR() / zoom) {
       a.target.troops[a.unit] = Math.min(99, (a.target.troops[a.unit] || 0) + a.troops);
+      // 출진 수비대가 복귀해 재수성 → 분쟁 해제 + 성벽 절반 복구
+      if (a._defendCastle === a.target) {
+        a.target._contested = false;
+        if (a.target.wallHP < a.target.wallMax * 0.5) a.target.wallHP = Math.floor(a.target.wallMax * 0.5);
+      }
       armies.splice(i, 1);
       continue;
     }
@@ -17178,7 +17553,7 @@ function arrive(a) {
       c.primary = a.unit;
       c.troops = { spear: 0, cavalry: 0, archer: 0 };
       c.troops[a.unit] = remain;
-      c.wallHP = Math.floor(c.wallMax * 0.4);
+      c.wallHP = Math.floor(c.wallMax * 0.5);
       c._captureFlash = performance.now();
       pingMinimapCapture(c, prevOwner, a.owner);
       spawnCastleCaptureExplosion(c, a.owner, { prevOwner });
@@ -17293,8 +17668,26 @@ function checkWin() {
   const enemyCount = castles.filter(c => c.owner === 2).length;
   console.log('[checkWin]', 'my=', myCount, 'enemy=', enemyCount, 'msgShown=', msgShown, 'visible=', _visible);
   if (enemyCount === 0) {
-    // 적 성이 모두 점령되면 도중의 적 부대는 의미 없음 — 즉시 승리
+    // 승리 처리는 1회만 — 재진입 방지(매 프레임 포로 재추첨/골드 중복지급 버그 차단)
+    if (window._winHandled) return;
+    window._winHandled = true;
     for (let i = armies.length - 1; i >= 0; i--) if (armies[i].owner === 2) armies.splice(i, 1);
+    // === 무한 모드: 캠페인 보상/포로 스킵, 층 갱신 ===
+    if (STAGES[currentStage] && STAGES[currentStage]._infinite) {
+      const floor = STAGES[currentStage]._floor;
+      SAVE.infiniteBest = Math.max(SAVE.infiniteBest || 0, floor);
+      const goldGain = 200 + floor * 120;
+      SAVE.gold = (SAVE.gold || 0) + goldGain;
+      saveProgress();
+      vibrate([90, 70, 90, 70, 140]);
+      showVictoryFlash(() => {
+        showMsg(`무한 ${floor}층 돌파! (최고 ${SAVE.infiniteBest}층) +${goldGain}G`, 3, [
+          { text: '다음 층', variant: 'primary', action: () => { window._infiniteFloor = floor + 1; startInfiniteMode(); } },
+          { text: '그만두기', variant: 'tertiary', action: () => goToStageSelectAt(campaignOffset()) },
+        ], undefined, 'victory');
+      });
+      return;
+    }
     // 별 계산
     const elapsed = (performance.now() - stageStartTime) / 1000;
     let stars = 1; // 클리어
@@ -17358,6 +17751,15 @@ function checkWin() {
     });
   } else if (myCount === 0 && armies.every(a => a.owner !== 1)) {
     vibrate([220, 80, 220]);
+    // 무한 모드 패배: 1층부터 재도전 안내
+    if (STAGES[currentStage] && STAGES[currentStage]._infinite) {
+      const floor = STAGES[currentStage]._floor;
+      showMsg(`무한 ${floor}층에서 패배 (최고 ${SAVE.infiniteBest || 0}층)`, 0, [
+        { text: '1층부터 재도전', variant: 'primary', action: () => { window._infiniteFloor = 1; startInfiniteMode(); } },
+        { text: '그만두기', variant: 'tertiary', action: () => goToStageSelectAt(campaignOffset()) },
+      ], undefined, 'defeat');
+      return;
+    }
     showMsg('패배', 0, [
       { text: '재도전', variant: 'primary', action: () => { openGeneralSelect(currentStage); }},
       { text: '스테이지로 이동', variant: 'tertiary', action: () => goToStageSelectAt(currentStage) },
@@ -17499,7 +17901,7 @@ function showStarterPick(onDone) {
     card.className = 'deploy-card tier-' + getGeneralRarity(g).tier;
     card.innerHTML = `
       ${rarityBadgeHTML(g)}
-      <div class="deploy-face"><img src="./assets/generals/faces/${def.id}.png" alt="" onerror="this.onerror=null;this.src='./assets/generals/busts/${def.id}.png'"></div>
+      <div class="deploy-face"><img src="${def.face}" alt=""></div>
       <div class="deploy-name">${def.name}</div>
       <div class="deploy-stat">${formatGeneralBuffsChips(def.buffs, 1)}</div>
     `;
@@ -19704,11 +20106,11 @@ function drawSoldierGroup(x, y, count, unit, factionColor, radius, seed, marchAn
 // 그룹별 선두 캐시 (매 프레임 0회 재계산: render 호출 1회당 1번만 계산)
 let _groupLeaderCache = null;
 let _groupLeaderCacheT = 0;
+const _groupLeaderPersist = new Map(); // gid -> 고정 리더 (전멸 전까지 유지)
 function getGroupLeader(groupId) {
   if (_groupLeaderCacheT !== window._frameT) {
     _groupLeaderCache = new Map();
     _groupLeaderCacheT = window._frameT;
-    // 각 그룹별로 타겟에 가장 가까운(=가장 앞선) 살아있는 부대 찾기
     const groups = new Map();
     for (const a of armies) {
       if (!a.groupId || a.dying || a.troops <= 0) continue;
@@ -19716,43 +20118,97 @@ function getGroupLeader(groupId) {
       groups.get(a.groupId).push(a);
     }
     for (const [gid, list] of groups) {
-      let best = null, bestD = Infinity;
-      for (const a of list) {
-        let tx, ty;
-        if (a.pursuingArmy) { tx = a.pursuingArmy.x; ty = a.pursuingArmy.y; }
-        else if (a.target) { tx = a.target.x * worldPxW(); ty = a.target.y * worldPxH(); }
-        else continue;
-        const d = Math.hypot(tx - a.x, ty - a.y);
-        if (d < bestD) { bestD = d; best = a; }
+      // 선봉 고정: 이전 리더가 아직 생존 목록에 있으면 그대로 유지
+      const prev = _groupLeaderPersist.get(gid);
+      let lead = (prev && list.indexOf(prev) >= 0) ? prev : null;
+      if (!lead) {
+        // 리더 부재/전멸 → 타겟에 가장 가까운(=가장 앞선) 생존 부대를 새 선봉으로
+        let best = null, bestD = Infinity;
+        for (const a of list) {
+          let tx, ty;
+          if (a.pursuingArmy) { tx = a.pursuingArmy.x; ty = a.pursuingArmy.y; }
+          else if (a.target) { tx = a.target.x * worldPxW(); ty = a.target.y * worldPxH(); }
+          else continue;
+          const d = Math.hypot(tx - a.x, ty - a.y);
+          if (d < bestD) { bestD = d; best = a; }
+        }
+        lead = best || list[0];
       }
-      if (best) _groupLeaderCache.set(gid, best);
+      _groupLeaderPersist.set(gid, lead);
+      _groupLeaderCache.set(gid, lead);
     }
   }
   return _groupLeaderCache.get(groupId);
 }
+// 부대 병력 수 표기 — 그룹은 선두에만(총합), 단독 부대는 자기 수. 선두 전멸 시 다음 선두로 이동.
+function drawArmyTroopCount(a, sx, sy, marchAngle) {
+  if (a.groupId) {
+    const leader = getGroupLeader(a.groupId);
+    if (leader !== a) return; // 선두만 표시
+  }
+  let total = a.troops;
+  if (a.groupId) {
+    total = 0;
+    for (const x of armies) {
+      if (x.groupId === a.groupId && !x.dying && x.troops > 0) total += x.troops;
+    }
+  }
+  if (total <= 0) return;
+  const z = Math.max(0.82, Math.min(1.25, zoom));
+  const fontPx = Math.round(11 * DPR() * z);
+  const txt = String(total);
+  ctx.save();
+  ctx.font = `900 ${fontPx}px 'Noto Sans KR', system-ui, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const padX = 4 * DPR(), h = fontPx + 4 * DPR();
+  const w = ctx.measureText(txt).width + padX * 2;
+  // 위치: 선두 배지(무리 위쪽 고정)의 오른쪽 위
+  const pos = commanderBadgePos(a, sx, sy);
+  const bx = pos.bx + pos.r * 0.95;
+  const by = pos.by - pos.r * 0.85;
+  // 배경 칩
+  ctx.fillStyle = 'rgba(12,16,24,0.78)';
+  ctx.beginPath();
+  const rr = h / 2;
+  ctx.moveTo(bx - w/2 + rr, by - h/2);
+  ctx.arcTo(bx + w/2, by - h/2, bx + w/2, by + h/2, rr);
+  ctx.arcTo(bx + w/2, by + h/2, bx - w/2, by + h/2, rr);
+  ctx.arcTo(bx - w/2, by + h/2, bx - w/2, by - h/2, rr);
+  ctx.arcTo(bx - w/2, by - h/2, bx + w/2, by - h/2, rr);
+  ctx.fill();
+  ctx.lineWidth = 1 * DPR();
+  ctx.strokeStyle = a.owner === 1 ? 'rgba(120,190,255,0.55)' : 'rgba(255,140,120,0.55)';
+  ctx.stroke();
+  ctx.fillStyle = a.owner === 1 ? '#cfe8ff' : '#ffd6c8';
+  ctx.fillText(txt, bx, by + 0.5 * DPR());
+  ctx.restore();
+}
+// 장수 배지 위치 — march 방향과 무관하게 부대 무리 '위쪽'에 고정 (병사 안 가림)
+function commanderBadgePos(army, sx, sy) {
+  const z = Math.max(0.82, Math.min(1.25, zoom));
+  const size = 36 * DPR() * z, r = size / 2;
+  const vis = Math.max(1, Math.min((army.troops || 1), 30));
+  const minDist = 11 * DPR() * z;
+  const cols = Math.max(1, Math.min(7, Math.ceil(Math.sqrt(vis))));
+  const rows = Math.ceil(vis / cols);
+  const clusterH = rows * minDist;          // 무리의 대략 높이
+  return { bx: sx, by: sy - clusterH * 0.7 - r - 4 * DPR() * z, r, z };
+}
 function drawCommanderBadge(army, sx, sy, marchAngle) {
   if (!army) return;
-  // 그룹 멤버라면 그룹 선두에만 배지 표시 + 장수 정보는 그룹 commander 사용
-  let cmdUid = army.commanderUid;
-  if (army.groupId && army.groupCommanderUid != null) {
+  // 그룹이면 선두에만 배지. 장수 유무와 무관하게 선두엔 항상 배지(없으면 디폴트 실루엣).
+  if (army.groupId) {
     const leader = getGroupLeader(army.groupId);
     if (leader !== army) return;
-    cmdUid = army.groupCommanderUid;
   }
-  if (cmdUid == null) return;
-  const inst = getInstance(cmdUid);
-  if (!inst) return;
-  const img = getGeneralFaceImage(inst.id);
-  if (!img || !img.complete || !img.naturalWidth) return;
+  const cmdUid = (army.groupId && army.groupCommanderUid != null) ? army.groupCommanderUid : army.commanderUid;
+  const inst = cmdUid != null ? getInstance(cmdUid) : null;
+  const img = inst ? getGeneralFaceImage(inst.id) : null;
+  const hasFace = !!(img && img.complete && img.naturalWidth);
   const isEnemy = army.owner === 2;
-  const z = Math.max(0.82, Math.min(1.25, zoom));
-  const size = 36 * DPR() * z; // +20% 가독성 향상
-  const r = size / 2;
-  const angle = marchAngle ?? army._marchAngle ?? 0;
-  const ca = Math.cos(angle), sa = Math.sin(angle);
-  const lx = -sa, ly = ca;
-  const bx = sx + ca * 8 * DPR() * z + lx * 18 * DPR() * z - 10 * DPR();
-  const by = sy + sa * 8 * DPR() * z + ly * 18 * DPR() * z - 24 * DPR() * z;
+  const pos = commanderBadgePos(army, sx, sy);
+  const z = pos.z, r = pos.r, bx = pos.bx, by = pos.by;
 
   ctx.save();
   ctx.translate(bx, by);
@@ -19774,11 +20230,22 @@ function drawCommanderBadge(army, sx, sy, marchAngle) {
   ctx.beginPath(); ctx.arc(0, 0, r + 2 * DPR(), 0, Math.PI * 2); ctx.fill();
   ctx.save();
   ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.clip();
-  if (isEnemy) {
-    // 적 — 약간 어둡게 + 채도 낮춰서 그림 (filter 직접 사용)
-    ctx.filter = 'grayscale(0.45) brightness(0.78) contrast(1.05)';
+  if (hasFace) {
+    if (isEnemy) ctx.filter = 'grayscale(0.45) brightness(0.78) contrast(1.05)';
+    ctx.drawImage(img, -r * 1.08, -r * 1.08, r * 2.16, r * 2.16);
+  } else {
+    // 디폴트 장수: 얼굴 없이 무난한 실루엣 (어두운 배경 + 투구/상반신 형태)
+    ctx.fillStyle = isEnemy ? '#3a1410' : '#2a1c0c';
+    ctx.fillRect(-r, -r, r * 2, r * 2);
+    ctx.fillStyle = isEnemy ? 'rgba(255,180,160,0.5)' : 'rgba(255,230,170,0.5)';
+    // 어깨/상반신
+    ctx.beginPath(); ctx.ellipse(0, r * 0.62, r * 0.82, r * 0.5, 0, Math.PI, 0); ctx.fill();
+    // 머리
+    ctx.beginPath(); ctx.arc(0, -r * 0.12, r * 0.42, 0, Math.PI * 2); ctx.fill();
+    // 투구 챙
+    ctx.fillStyle = isEnemy ? 'rgba(255,180,160,0.7)' : 'rgba(255,230,170,0.7)';
+    ctx.beginPath(); ctx.ellipse(0, -r * 0.34, r * 0.5, r * 0.16, 0, 0, Math.PI * 2); ctx.fill();
   }
-  ctx.drawImage(img, -r * 1.08, -r * 1.08, r * 2.16, r * 2.16);
   ctx.restore();
   ctx.strokeStyle = '#210804';
   ctx.lineWidth = 2 * DPR();
@@ -20913,8 +21380,9 @@ function castleWallRatio(c) {
 
 function castleFireIntensity(c) {
   const ratio = castleWallRatio(c);
-  if (ratio > 0.5) return 0;
-  return Math.max(0.12, Math.min(1, (0.5 - ratio) / 0.5));
+  if (ratio >= 0.55) return 0;
+  // 절반(0.5) 부근에서도 또렷이 불타도록 최소 강도 보장
+  return Math.max(0.25, Math.min(1, (0.55 - ratio) / 0.45));
 }
 
 // 성에 직접 그리는 화염. HP 50% 이하부터 작게 시작해 성벽이 무너질수록 커진다.
@@ -21253,16 +21721,6 @@ function drawDuskAtmosphere(cw, ch, alpha) {
   g.addColorStop(1, `rgba(18,22,42,${0.15 * alpha})`);
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, cw, ch);
-  ctx.globalCompositeOperation = 'screen';
-  ctx.strokeStyle = `rgba(255,220,130,${0.07 * alpha})`;
-  ctx.lineWidth = 2.2 * DPR();
-  for (let i = 0; i < 6; i++) {
-    const y = ch * (0.08 + i * 0.105);
-    ctx.beginPath();
-    ctx.moveTo(-cw * 0.08, y);
-    ctx.lineTo(cw * 0.82, y + ch * (0.18 + i * 0.018));
-    ctx.stroke();
-  }
   ctx.restore();
 }
 
@@ -21534,6 +21992,36 @@ function render(dt) {
     ctx.setLineDash([]);
   }
 
+  // 아군 부대(선봉) 재지정 드래그 조준선
+  if (dragSourceArmy && dragMoved && dragTo) {
+    const asx = (dragSourceArmy.x - camX) * zoom + W / 2;
+    const asy = (dragSourceArmy.y - camY) * zoom + H / 2;
+    let hoverCastle = castleAt(dragTo.x, dragTo.y);
+    let hoverArmy = !hoverCastle ? enemyArmyAt(dragTo.x, dragTo.y, 1) : null;
+    if (!hoverCastle && !hoverArmy) {
+      let bestD = 80 * DPR(), best = null;
+      for (const c of castles) {
+        const d = Math.hypot(dragTo.x - cx(c), dragTo.y - cy(c)) - CASTLE_R() * c.size;
+        if (d < bestD) { bestD = d; best = c; }
+      }
+      if (best) hoverCastle = best;
+    }
+    ctx.strokeStyle = '#7ec8ff';
+    ctx.lineWidth = 4 * DPR();
+    ctx.setLineDash([12 * DPR(), 8 * DPR()]);
+    ctx.lineDashOffset = -performance.now() * 0.03;
+    ctx.beginPath(); ctx.moveTo(asx, asy); ctx.lineTo(dragTo.x, dragTo.y); ctx.stroke();
+    ctx.strokeStyle = '#ffd23f';
+    if (hoverCastle) {
+      const baseR = CASTLE_R() * hoverCastle.size;
+      ctx.beginPath(); ctx.arc(cx(hoverCastle), cy(hoverCastle) + baseR * 0.25, baseR * 1.9, 0, Math.PI * 2); ctx.stroke();
+    } else if (hoverArmy) {
+      const tx = (hoverArmy.x - camX) * zoom + W / 2, ty = (hoverArmy.y - camY) * zoom + H / 2;
+      ctx.beginPath(); ctx.arc(tx, ty, 50 * DPR(), 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.setLineDash([]);
+  }
+
   for (const c of castles) drawCastle(c);
 
   // === 부대 발자국 잔존 효과 ===
@@ -21582,6 +22070,7 @@ function render(dt) {
       const attacking = (a._engaged || a._sieging) && !a.dying;
       drawSoldierGroup(sx, sy, a.troops, a.unit, f.flag, 14 * DPR() * zoom, a.seed, marchAngle, attacking);
       drawCommanderBadge(a, sx, sy, marchAngle);
+      drawArmyTroopCount(a, sx, sy, marchAngle);
     }
   }
 
@@ -22851,6 +23340,83 @@ function closeTutorialOffer(accept) {
     }
   }
 
+  /* Main title logo: animated gate treatment. */
+  #menu.menu-fresh .home-title {
+    top: clamp(4px, 1.4dvh, 12px) !important;
+    width: min(94vw, 410px) !important;
+    height: 190px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: visible !important;
+    isolation: isolate !important;
+    filter:
+      drop-shadow(0 18px 22px rgba(0,0,0,0.66))
+      drop-shadow(0 0 24px rgba(255, 205, 70, 0.24)) !important;
+    animation: homeTitleGateIn 0.72s cubic-bezier(.17, 1.18, .24, 1) both !important;
+  }
+  #menu.menu-fresh .home-title::before {
+    content: "" !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 53% !important;
+    width: 118% !important;
+    height: 106% !important;
+    transform: translate(-50%, -50%) !important;
+    border-radius: 50% !important;
+    background:
+      radial-gradient(ellipse at 52% 45%, rgba(255,218,99,0.34), rgba(188,26,18,0.14) 40%, transparent 70%),
+      radial-gradient(ellipse at 50% 78%, rgba(0,0,0,0.32), transparent 62%) !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
+    animation: homeTitleAura 2.8s ease-in-out infinite !important;
+  }
+  #menu.menu-fresh .home-title::after {
+    content: none !important;
+    display: none !important;
+  }
+  #menu.menu-fresh .home-title-logo {
+    position: relative !important;
+    z-index: 1 !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: 190px !important;
+    object-fit: contain !important;
+    pointer-events: none !important;
+    user-select: none !important;
+    animation: homeTitleFloat 3.2s ease-in-out infinite 0.72s !important;
+  }
+  @keyframes homeTitleGateIn {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-26px) scale(1.08);
+      filter: drop-shadow(0 0 0 rgba(0,0,0,0));
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+  }
+  @keyframes homeTitleAura {
+    0%, 100% { opacity: 0.76; transform: translate(-50%, -50%) scale(0.98); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.04); }
+  }
+  @keyframes homeTitleFloat {
+    0%, 100% { transform: translateY(0) scale(1); filter: brightness(1); }
+    50% { transform: translateY(-3px) scale(1.012); filter: brightness(1.06); }
+  }
+  @media (max-width: 390px), (max-height: 760px) {
+    #menu.menu-fresh .home-title {
+      top: clamp(2px, 1dvh, 8px) !important;
+      width: min(94vw, 376px) !important;
+      height: 166px !important;
+    }
+    #menu.menu-fresh .home-title-logo {
+      max-height: 166px !important;
+    }
+  }
+
   /* Main bottom fill pass: keep the lower art readable on phones instead of fading to black. */
   #menu.menu-fresh {
     background: #0b0710 !important;
@@ -22868,15 +23434,168 @@ function closeTutorialOffer(accept) {
         rgba(5,8,14,0.16) 78%,
         rgba(5,8,14,0.42) 100%),
       url('./assets/main_hero_moonlit_navy_bgonly_02.png') center top / cover no-repeat !important;
+    background-size: 100% 100%, 100% 100%, auto 101.5% !important;
+    background-position: center, center, 50% 50% !important;
+    position: absolute !important;
+    isolation: isolate !important;
+    animation: homeBgBreath 9s ease-in-out infinite !important;
+  }
+  #menu.menu-fresh > .main-bg::before {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+    background:
+      radial-gradient(circle at 18% 7.2%, rgba(229,242,255,0.44) 0 4.8%, rgba(229,242,255,0.14) 7.5%, transparent 12%),
+      radial-gradient(ellipse at 50% 23%, rgba(111,177,236,0.22), transparent 47%),
+      linear-gradient(102deg, transparent 14%, rgba(255,229,150,0.08) 30%, transparent 44%),
+      linear-gradient(78deg, transparent 52%, rgba(255,229,150,0.07) 67%, transparent 82%) !important;
+    mix-blend-mode: screen !important;
+    opacity: 0.78 !important;
+    animation: homeSceneLight 5.6s ease-in-out infinite !important;
+  }
+  #menu.menu-fresh > .main-bg::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+    background:
+      radial-gradient(circle at 7% 41%, rgba(255,122,32,0.62) 0 2px, transparent 5px),
+      radial-gradient(circle at 94% 41%, rgba(255,122,32,0.5) 0 2px, transparent 5px),
+      radial-gradient(ellipse at 50% 84%, rgba(255,164,48,0.18), transparent 58%),
+      radial-gradient(circle, rgba(255,214,116,0.62) 0 1.4px, transparent 3px) !important;
+    background-size: 100% 100%, 100% 100%, 100% 100%, 92px 158px !important;
+    background-position: center, center, center, 0 108% !important;
+    mix-blend-mode: screen !important;
+    opacity: 0.56 !important;
+    animation: homeEmbersRise 5.4s linear infinite !important;
+  }
+  .home-hero {
+    animation: homeHeroParallax 7.5s ease-in-out infinite !important;
+  }
+  #menu.menu-fresh .home-scene-vfx {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+    mix-blend-mode: screen !important;
+  }
+  #menu.menu-fresh .vfx-ray {
+    position: absolute !important;
+    top: 0 !important;
+    width: 36% !important;
+    height: 54% !important;
+    opacity: 0.34 !important;
+    filter: blur(1px) !important;
+    background: linear-gradient(180deg, rgba(170,219,255,0.5), rgba(255,216,128,0.12) 48%, transparent 86%) !important;
+    clip-path: polygon(40% 0, 68% 0, 100% 100%, 0 100%) !important;
+    animation: homeRayDrift 6.4s ease-in-out infinite !important;
+  }
+  #menu.menu-fresh .vfx-ray--left {
+    left: 7% !important;
+    transform: rotate(15deg) !important;
+  }
+  #menu.menu-fresh .vfx-ray--right {
+    right: 4% !important;
+    transform: rotate(-12deg) !important;
+    animation-delay: -2.2s !important;
+  }
+  #menu.menu-fresh .vfx-smoke {
+    position: absolute !important;
+    top: 9% !important;
+    width: 56% !important;
+    height: 18% !important;
+    border-radius: 50% !important;
+    background: radial-gradient(ellipse, rgba(170,190,220,0.24), rgba(90,100,124,0.12) 48%, transparent 72%) !important;
+    filter: blur(12px) !important;
+    opacity: 0.32 !important;
+    animation: homeSmokeDrift 8.8s ease-in-out infinite !important;
+  }
+  #menu.menu-fresh .vfx-smoke--left {
+    left: -18% !important;
+  }
+  #menu.menu-fresh .vfx-smoke--right {
+    right: -20% !important;
+    animation-delay: -4.1s !important;
+  }
+  #menu.menu-fresh .vfx-ember {
+    position: absolute !important;
+    bottom: -18px !important;
+    width: 4px !important;
+    height: 4px !important;
+    border-radius: 50% !important;
+    background: #ffd36d !important;
+    box-shadow: 0 0 9px rgba(255,142,42,0.9), 0 0 18px rgba(255,90,20,0.4) !important;
+    opacity: 0 !important;
+    animation: homeEmberFloat 5.8s linear infinite !important;
+  }
+  #menu.menu-fresh .e1 { left: 8% !important; animation-delay: 0s !important; }
+  #menu.menu-fresh .e2 { left: 17% !important; animation-delay: -1.3s !important; transform: scale(.72); }
+  #menu.menu-fresh .e3 { left: 28% !important; animation-delay: -3.2s !important; transform: scale(1.15); }
+  #menu.menu-fresh .e4 { left: 43% !important; animation-delay: -2.1s !important; transform: scale(.82); }
+  #menu.menu-fresh .e5 { left: 58% !important; animation-delay: -4.5s !important; transform: scale(.9); }
+  #menu.menu-fresh .e6 { left: 72% !important; animation-delay: -.7s !important; transform: scale(1.08); }
+  #menu.menu-fresh .e7 { left: 84% !important; animation-delay: -3.7s !important; transform: scale(.68); }
+  #menu.menu-fresh .e8 { left: 94% !important; animation-delay: -1.9s !important; transform: scale(1.2); }
+  @keyframes homeSceneLight {
+    0%, 100% { opacity: 0.66; filter: brightness(1) saturate(1); transform: translateX(0); }
+    45% { opacity: 0.92; filter: brightness(1.13) saturate(1.08); transform: translateX(-1.5%); }
+    70% { opacity: 0.78; filter: brightness(1.04) saturate(1.04); transform: translateX(1%); }
+  }
+  @keyframes homeEmbersRise {
+    from { background-position: center, center, center, 0 112%; opacity: 0.42; }
+    45% { opacity: 0.64; }
+    to { background-position: center, center, center, 36px 12%; opacity: 0.42; }
+  }
+  @keyframes homeBgBreath {
+    0%, 100% {
+      background-size: 100% 100%, 100% 100%, auto 101.5%;
+      background-position: center, center, 50% 50%;
+      filter: brightness(1) contrast(1);
+    }
+    45% {
+      background-size: 100% 100%, 100% 100%, auto 103.4%;
+      background-position: center, center, 51.2% 49.2%;
+      filter: brightness(1.04) contrast(1.02);
+    }
+    70% {
+      background-size: 100% 100%, 100% 100%, auto 102.4%;
+      background-position: center, center, 49.3% 50.5%;
+      filter: brightness(1.02) contrast(1.01);
+    }
+  }
+  @keyframes homeHeroParallax {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+  }
+  @keyframes homeRayDrift {
+    0%, 100% { opacity: 0.22; filter: blur(1.5px) brightness(1); }
+    45% { opacity: 0.46; filter: blur(0.7px) brightness(1.22); }
+    70% { opacity: 0.3; }
+  }
+  @keyframes homeSmokeDrift {
+    0%, 100% { transform: translateX(0) translateY(0) scale(1); opacity: 0.2; }
+    50% { transform: translateX(9%) translateY(-7px) scale(1.12); opacity: 0.36; }
+  }
+  @keyframes homeEmberFloat {
+    0% { opacity: 0; transform: translate3d(0, 0, 0) scale(.65); }
+    12% { opacity: .74; }
+    58% { opacity: .46; }
+    100% { opacity: 0; transform: translate3d(22px, -68vh, 0) scale(1.25); }
   }
   #menu.menu-fresh .start-btn {
     bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 4.8dvh)) !important;
   }
-  @media (max-width: 390px), (max-height: 760px) {
-    #menu.menu-fresh .start-btn {
-      bottom: max(18px, calc(env(safe-area-inset-bottom, 0px) + 3.4dvh)) !important;
-      width: min(82%, 350px) !important;
-      height: 68px !important;
+	  @media (max-width: 390px), (max-height: 760px) {
+	    #menu.menu-fresh .start-btn {
+	      bottom: max(18px, calc(env(safe-area-inset-bottom, 0px) + 3.4dvh)) !important;
+	      width: min(82%, 350px) !important;
+	      height: 68px !important;
     }
     #menu.menu-fresh .side-rail {
       top: 49% !important;
@@ -22884,14 +23603,2010 @@ function closeTutorialOffer(accept) {
     }
     #menu.menu-fresh .side-rail-btn {
       width: 52px !important;
-      height: 52px !important;
-    }
-  }
+	      height: 52px !important;
+	    }
+	  }
 
-  /* Tutorial entry: remove it from the home CTA stack and expose it as a stage-screen action. */
-  #menu.menu-fresh .tutorial-btn {
-    display: none !important;
-    visibility: hidden !important;
+	  /* Home side rail micro-motion: subtle game feel without stealing focus from 출정. */
+	  #menu.menu-fresh .side-rail {
+	    perspective: 520px !important;
+	    filter:
+	      drop-shadow(0 9px 12px rgba(0,0,0,0.38))
+	      drop-shadow(0 0 12px rgba(255, 197, 71, 0.12)) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn {
+	    --rail-delay: 0s;
+	    --rail-spark-delay: 1.2s;
+	    position: relative !important;
+	    isolation: isolate !important;
+	    overflow: hidden !important;
+	    transform-origin: 88% 50% !important;
+	    background:
+	      radial-gradient(circle at 48% 4%, rgba(255, 237, 156, 0.20), transparent 42%),
+	      linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.00) 46%),
+	      url('./assets/ui/ui_square_tool.png') center / 100% 100% no-repeat !important;
+	    filter: brightness(1) saturate(1) !important;
+	    animation-name: homeSideButtonIn, homeSideButtonGlow !important;
+	    animation-duration: 0.54s, 3.6s !important;
+	    animation-timing-function: cubic-bezier(.18, 1.18, .26, 1), ease-in-out !important;
+	    animation-delay: var(--rail-delay), calc(var(--rail-delay) + 0.64s) !important;
+	    animation-iteration-count: 1, infinite !important;
+	    animation-fill-mode: both, none !important;
+	    transition: transform 0.12s ease, filter 0.16s ease !important;
+	    will-change: transform, filter;
+	  }
+	  #menu.menu-fresh .side-rail-btn:nth-child(1) { --rail-delay: 0.05s; --rail-spark-delay: 1.0s; }
+	  #menu.menu-fresh .side-rail-btn:nth-child(2) { --rail-delay: 0.12s; --rail-spark-delay: 1.45s; }
+	  #menu.menu-fresh .side-rail-btn:nth-child(3) { --rail-delay: 0.19s; --rail-spark-delay: 1.9s; }
+	  #menu.menu-fresh .side-rail-btn:nth-child(4) { --rail-delay: 0.26s; --rail-spark-delay: 2.35s; }
+	  #menu.menu-fresh .side-rail-btn:nth-child(5) { --rail-delay: 0.33s; --rail-spark-delay: 2.8s; }
+	  #menu.menu-fresh .side-rail-btn::before {
+	    content: "" !important;
+	    position: absolute !important;
+	    inset: 7px !important;
+	    border-radius: 12px !important;
+	    border: 1px solid rgba(255, 226, 120, 0.42) !important;
+	    box-shadow:
+	      inset 0 0 0 1px rgba(255,255,255,0.08),
+	      inset 0 0 14px rgba(255, 214, 106, 0.08),
+	      0 0 10px rgba(255, 198, 75, 0.10) !important;
+	    pointer-events: none !important;
+	    z-index: 1 !important;
+	    animation: homeSideInnerGlow 3.6s ease-in-out infinite !important;
+	    animation-delay: calc(var(--rail-delay) + 0.64s) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::after {
+	    content: "" !important;
+	    position: absolute !important;
+	    top: -28% !important;
+	    bottom: -28% !important;
+	    left: -58% !important;
+	    width: 34% !important;
+	    transform: translateX(-120%) rotate(18deg) !important;
+	    background: linear-gradient(90deg, transparent, rgba(255, 247, 189, 0.72), transparent) !important;
+	    mix-blend-mode: screen !important;
+	    opacity: 0 !important;
+	    pointer-events: none !important;
+	    z-index: 2 !important;
+	    animation: homeSideSweep 4.4s ease-in-out infinite !important;
+	    animation-delay: calc(var(--rail-spark-delay) + 0.6s) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn .srb-icon {
+	    position: relative !important;
+	    z-index: 3 !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn .srb-label {
+	    position: static !important;
+	    right: auto !important;
+	    top: auto !important;
+	    transform: none !important;
+	    z-index: 3 !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn .srb-icon {
+	    text-shadow:
+	      0 2px 0 rgba(32, 10, 2, 0.7),
+	      0 0 12px rgba(255, 224, 125, 0.28) !important;
+	    animation: homeSideIconBreath 3.2s ease-in-out infinite !important;
+	    animation-delay: calc(var(--rail-delay) + 0.8s) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn:hover,
+	  #menu.menu-fresh .side-rail-btn:focus-visible {
+	    transform: translateX(-2px) scale(1.045) !important;
+	    filter: brightness(1.16) saturate(1.12) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn:active {
+	    animation-play-state: paused, paused !important;
+	    transform: translateX(1px) translateY(3px) scale(0.95) !important;
+	    filter: brightness(1.24) saturate(1.18) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn:active::before {
+	    animation: homeSideTapRing 0.32s ease-out both !important;
+	  }
+	  #menu.menu-fresh #btnEnhance .srb-icon::after,
+	  #menu.menu-fresh #btnPowerManage .srb-icon::after,
+	  #menu.menu-fresh #btnMainExchange .srb-icon::after {
+	    content: "" !important;
+	    position: absolute !important;
+	    pointer-events: none !important;
+	    z-index: -1 !important;
+	  }
+	  #menu.menu-fresh #btnEnhance .srb-icon::after {
+	    right: -8px !important;
+	    top: -5px !important;
+	    width: 5px !important;
+	    height: 5px !important;
+	    border-radius: 50% !important;
+	    background: #fff0a6 !important;
+	    box-shadow:
+	      -8px 12px 0 -1px rgba(255, 150, 47, 0.72),
+	      5px 17px 0 -1px rgba(255, 226, 120, 0.82),
+	      0 0 9px rgba(255, 170, 45, 0.9) !important;
+	    animation: homeSideSpark 2.8s ease-in-out infinite !important;
+	    animation-delay: var(--rail-spark-delay) !important;
+	  }
+	  #menu.menu-fresh #btnPowerManage .srb-icon::after {
+	    left: -7px !important;
+	    top: 48% !important;
+	    width: 30px !important;
+	    height: 3px !important;
+	    border-radius: 999px !important;
+	    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.92), rgba(255,214,94,0.1)) !important;
+	    transform: translateX(-18px) rotate(-23deg) !important;
+	    opacity: 0 !important;
+	    animation: homeSideSlash 3.4s ease-in-out infinite !important;
+	    animation-delay: var(--rail-spark-delay) !important;
+	  }
+	  #menu.menu-fresh #btnMainExchange .srb-icon::after {
+	    content: "✦" !important;
+	    right: -9px !important;
+	    top: -9px !important;
+	    color: #fff6bf !important;
+	    font-size: 11px !important;
+	    line-height: 1 !important;
+	    text-shadow: 0 0 9px rgba(255, 224, 102, 0.95) !important;
+	    animation: homeSideStar 2.9s ease-in-out infinite !important;
+	    animation-delay: var(--rail-spark-delay) !important;
+	  }
+	  #menu.menu-fresh #btnMainSettings .srb-icon {
+	    animation: homeSideSettingRock 4.2s ease-in-out infinite !important;
+	    animation-delay: calc(var(--rail-delay) + 1.0s) !important;
+	  }
+	  @keyframes homeSideButtonIn {
+	    0% { opacity: 0; transform: translateX(28px) scale(0.88) rotateY(-18deg); }
+	    68% { opacity: 1; transform: translateX(-3px) scale(1.04) rotateY(4deg); }
+	    100% { opacity: 1; transform: translateX(0) scale(1) rotateY(0); }
+	  }
+	  @keyframes homeSideButtonGlow {
+	    0%, 100% { filter: brightness(1) saturate(1); }
+	    50% { filter: brightness(1.12) saturate(1.08); }
+	  }
+	  @keyframes homeSideInnerGlow {
+	    0%, 100% { opacity: 0.62; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), inset 0 0 10px rgba(255,214,106,0.06), 0 0 8px rgba(255,198,75,0.08); }
+	    50% { opacity: 1; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.16), inset 0 0 18px rgba(255,214,106,0.14), 0 0 15px rgba(255,198,75,0.2); }
+	  }
+	  @keyframes homeSideSweep {
+	    0%, 62% { opacity: 0; transform: translateX(-120%) rotate(18deg); }
+	    72% { opacity: 0.78; }
+	    88%, 100% { opacity: 0; transform: translateX(480%) rotate(18deg); }
+	  }
+	  @keyframes homeSideIconBreath {
+	    0%, 100% { transform: translateY(0) scale(1); filter: brightness(1); }
+	    50% { transform: translateY(-1px) scale(1.035); filter: brightness(1.1); }
+	  }
+	  @keyframes homeSideTapRing {
+	    0% { inset: 9px; opacity: 0.92; transform: scale(0.82); }
+	    100% { inset: 1px; opacity: 0; transform: scale(1.14); }
+	  }
+	  @keyframes homeSideSpark {
+	    0%, 68%, 100% { opacity: 0; transform: translateY(5px) scale(0.55); }
+	    74% { opacity: 1; transform: translateY(0) scale(1); }
+	    88% { opacity: 0.36; transform: translateY(-8px) scale(0.72); }
+	  }
+	  @keyframes homeSideSlash {
+	    0%, 66%, 100% { opacity: 0; transform: translateX(-20px) rotate(-23deg); }
+	    74% { opacity: 0.86; transform: translateX(0) rotate(-23deg); }
+	    84% { opacity: 0; transform: translateX(22px) rotate(-23deg); }
+	  }
+	  @keyframes homeSideStar {
+	    0%, 62%, 100% { opacity: 0; transform: scale(0.35) rotate(0deg); }
+	    72% { opacity: 1; transform: scale(1.1) rotate(18deg); }
+	    86% { opacity: 0.3; transform: scale(0.72) rotate(40deg); }
+	  }
+	  @keyframes homeSideSettingRock {
+	    0%, 82%, 100% { transform: translateY(0) scale(1) rotate(0deg); filter: brightness(1); }
+	    88% { transform: translateY(-1px) scale(1.035) rotate(5deg); filter: brightness(1.1); }
+	    94% { transform: translateY(0) scale(1.015) rotate(-4deg); filter: brightness(1.05); }
+	  }
+	  @media (prefers-reduced-motion: reduce) {
+	    #menu.menu-fresh .side-rail-btn,
+	    #menu.menu-fresh .side-rail-btn::before,
+	    #menu.menu-fresh .side-rail-btn::after,
+	    #menu.menu-fresh .side-rail-btn .srb-icon,
+	    #menu.menu-fresh .side-rail-btn .srb-icon::after {
+	      animation: none !important;
+	    }
+	  }
+
+	  /* Reference pass: brush logo + bottom icon dock like the concept image. */
+	  #menu.menu-fresh .home-title {
+	    top: clamp(8px, 1.8dvh, 18px) !important;
+	    width: min(98vw, 428px) !important;
+	    height: clamp(138px, 19dvh, 178px) !important;
+	    filter:
+	      drop-shadow(0 15px 19px rgba(0,0,0,0.72))
+	      drop-shadow(0 0 18px rgba(255, 195, 62, 0.22)) !important;
+	  }
+	  #menu.menu-fresh .home-title::before {
+	    width: 106% !important;
+	    height: 74% !important;
+	    top: 62% !important;
+	    background:
+	      radial-gradient(ellipse at 50% 48%, rgba(0,0,0,0.52), rgba(0,0,0,0.25) 48%, transparent 73%),
+	      radial-gradient(ellipse at 50% 42%, rgba(255,196,66,0.18), transparent 68%) !important;
+	    animation: homeTitleAura 3.6s ease-in-out infinite !important;
+	  }
+	  #menu.menu-fresh .home-title-logo {
+	    width: 105% !important;
+	    max-height: 178px !important;
+	    filter: saturate(1.08) contrast(1.04) !important;
+	  }
+	  #menu.menu-fresh .start-btn {
+	    bottom: max(106px, calc(env(safe-area-inset-bottom, 0px) + 11.4dvh)) !important;
+	    width: min(78%, 348px) !important;
+	    height: 66px !important;
+	    border-radius: 14px !important;
+	    box-shadow:
+	      0 0 0 2px rgba(255, 226, 104, 0.9),
+	      0 0 0 6px rgba(42,10,3,0.96),
+	      0 7px 0 #7b2f00,
+	      0 14px 25px rgba(0,0,0,0.58),
+	      0 0 24px rgba(255,159,31,0.28),
+	      inset 0 3px 0 rgba(255,255,255,0.7),
+	      inset 0 -16px 22px rgba(100,28,0,0.32) !important;
+	  }
+	  #menu.menu-fresh .side-rail {
+	    left: 50% !important;
+	    right: auto !important;
+	    top: auto !important;
+	    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+	    width: min(94vw, 398px) !important;
+	    height: 78px !important;
+	    transform: translateX(-50%) !important;
+	    display: flex !important;
+	    flex-direction: row !important;
+	    align-items: flex-end !important;
+	    justify-content: space-between !important;
+	    gap: 4px !important;
+	    padding: 0 8px 2px !important;
+	    z-index: 9 !important;
+	    perspective: none !important;
+	    filter: drop-shadow(0 12px 14px rgba(0,0,0,0.5)) !important;
+	  }
+	  #menu.menu-fresh .side-rail::before {
+	    content: "" !important;
+	    position: absolute !important;
+	    left: 50% !important;
+	    bottom: -3px !important;
+	    width: 105% !important;
+	    height: 64px !important;
+	    transform: translateX(-50%) !important;
+	    border-radius: 50% !important;
+	    background:
+	      radial-gradient(ellipse, rgba(0,0,0,0.58), rgba(0,0,0,0.26) 48%, transparent 72%) !important;
+	    pointer-events: none !important;
+	    z-index: -1 !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn {
+	    flex: 0 0 clamp(54px, 16.4vw, 66px) !important;
+	    width: clamp(54px, 16.4vw, 66px) !important;
+	    height: 72px !important;
+	    margin: 0 !important;
+	    padding: 0 !important;
+	    display: flex !important;
+	    flex-direction: column !important;
+	    align-items: center !important;
+	    justify-content: flex-start !important;
+	    gap: 3px !important;
+	    border: 0 !important;
+	    border-radius: 0 !important;
+	    background: transparent !important;
+	    box-shadow: none !important;
+	    overflow: visible !important;
+	    filter: none !important;
+	    transform-origin: 50% 100% !important;
+	    animation: homeDockButtonIn 0.54s cubic-bezier(.18, 1.18, .26, 1) both,
+	               homeDockButtonFloat 3.8s ease-in-out infinite !important;
+	    animation-delay: var(--rail-delay), calc(var(--rail-delay) + 0.8s) !important;
+	    transition: transform 0.12s ease, filter 0.12s ease !important;
+	    will-change: transform, filter;
+	  }
+	  #menu.menu-fresh .side-rail-btn::before {
+	    content: "" !important;
+	    position: absolute !important;
+	    left: 50% !important;
+	    top: 0 !important;
+	    width: 48px !important;
+	    height: 45px !important;
+	    transform: translateX(-50%) !important;
+	    clip-path: polygon(50% 0, 94% 18%, 100% 74%, 50% 100%, 0 74%, 6% 18%) !important;
+	    border: 0 !important;
+	    background:
+	      radial-gradient(circle at 42% 18%, rgba(255,255,255,0.52), transparent 24%),
+	      linear-gradient(135deg, #fff0a4 0%, #b9872d 28%, #39200a 50%, #c99b3d 75%, #fff1a8 100%) !important;
+	    box-shadow:
+	      0 0 0 2px rgba(34, 16, 6, 0.92),
+	      0 0 0 4px rgba(211, 170, 82, 0.48),
+	      0 8px 12px rgba(0,0,0,0.46),
+	      inset 0 2px 0 rgba(255,255,255,0.36) !important;
+	    pointer-events: none !important;
+	    z-index: 1 !important;
+	    animation: homeDockGoldBreath 3.6s ease-in-out infinite !important;
+	    animation-delay: calc(var(--rail-delay) + 0.5s) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::after {
+	    content: "" !important;
+	    position: absolute !important;
+	    left: 50% !important;
+	    top: 5px !important;
+	    width: 39px !important;
+	    height: 10px !important;
+	    transform: translateX(-50%) rotate(-10deg) !important;
+	    border-radius: 999px !important;
+	    background: linear-gradient(90deg, transparent, rgba(255,248,197,0.75), transparent) !important;
+	    mix-blend-mode: screen !important;
+	    opacity: .42 !important;
+	    pointer-events: none !important;
+	    z-index: 2 !important;
+	    animation: homeDockGlint 4.2s ease-in-out infinite !important;
+	    animation-delay: calc(var(--rail-spark-delay) + 0.3s) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn .srb-icon {
+	    width: 48px !important;
+	    height: 43px !important;
+	    display: flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    position: relative !important;
+	    z-index: 4 !important;
+	    color: #2a1606 !important;
+	    font-family: 'Noto Serif KR', serif !important;
+	    font-size: 24px !important;
+	    line-height: 1 !important;
+	    text-shadow:
+	      0 1px 0 rgba(255,244,186,0.8),
+	      0 0 8px rgba(255,227,128,0.35) !important;
+	    filter: drop-shadow(0 2px 0 rgba(255,236,164,0.14)) !important;
+	    animation: homeDockIconBreath 3.2s ease-in-out infinite !important;
+	    animation-delay: calc(var(--rail-delay) + 0.8s) !important;
+	  }
+	  #menu.menu-fresh #btnMainSettings .srb-icon {
+	    font-family: system-ui, sans-serif !important;
+	    font-size: 28px !important;
+	    animation: homeSideSettingRock 4.2s ease-in-out infinite !important;
+	    animation-delay: calc(var(--rail-delay) + 1s) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn .srb-label {
+	    position: static !important;
+	    width: 100% !important;
+	    display: block !important;
+	    padding: 0 !important;
+	    border: 0 !important;
+	    background: transparent !important;
+	    box-shadow: none !important;
+	    color: #f9df9a !important;
+	    font-family: 'Noto Serif KR', serif !important;
+	    font-size: 13px !important;
+	    font-weight: 900 !important;
+	    line-height: 1.05 !important;
+	    letter-spacing: 0 !important;
+	    text-align: center !important;
+	    text-shadow:
+	      0 2px 0 rgba(23,8,2,0.86),
+	      0 0 8px rgba(255,207,82,0.28) !important;
+	    opacity: 1 !important;
+	    transform: none !important;
+	    z-index: 4 !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn:hover,
+	  #menu.menu-fresh .side-rail-btn:focus-visible {
+	    transform: translateY(-3px) scale(1.05) !important;
+	    filter: brightness(1.1) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn:active {
+	    animation-play-state: paused, paused !important;
+	    transform: translateY(4px) scale(0.94) !important;
+	    filter: brightness(1.18) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn:active::before {
+	    animation: homeDockTap 0.28s ease-out both !important;
+	  }
+	  #menu.menu-fresh #btnEnhance .srb-icon::after {
+	    right: 1px !important;
+	    top: 5px !important;
+	  }
+	  #menu.menu-fresh #btnPowerManage .srb-icon::after {
+	    left: 10px !important;
+	    top: 45% !important;
+	  }
+	  #menu.menu-fresh #btnMainExchange .srb-icon::after {
+	    right: 2px !important;
+	    top: 4px !important;
+	  }
+	  @keyframes homeDockButtonIn {
+	    0% { opacity: 0; transform: translateY(26px) scale(0.86); }
+	    72% { opacity: 1; transform: translateY(-3px) scale(1.05); }
+	    100% { opacity: 1; transform: translateY(0) scale(1); }
+	  }
+	  @keyframes homeDockButtonFloat {
+	    0%, 100% { transform: translateY(0); }
+	    50% { transform: translateY(-2px); }
+	  }
+	  @keyframes homeDockGoldBreath {
+	    0%, 100% { filter: brightness(1) saturate(1); }
+	    50% { filter: brightness(1.16) saturate(1.08); }
+	  }
+	  @keyframes homeDockGlint {
+	    0%, 58%, 100% { opacity: 0; transform: translateX(-120%) rotate(-10deg); }
+	    70% { opacity: .7; }
+	    86% { opacity: 0; transform: translateX(78%) rotate(-10deg); }
+	  }
+	  @keyframes homeDockIconBreath {
+	    0%, 100% { transform: translateY(0) scale(1); }
+	    50% { transform: translateY(-1px) scale(1.04); }
+	  }
+	  @keyframes homeDockTap {
+	    0% { transform: translateX(-50%) scale(0.88); filter: brightness(1.25); }
+	    100% { transform: translateX(-50%) scale(1.08); filter: brightness(1); }
+	  }
+	  @media (max-width: 390px), (max-height: 760px) {
+	    #menu.menu-fresh .home-title {
+	      top: 4px !important;
+	      height: 132px !important;
+	    }
+	    #menu.menu-fresh .home-title-logo {
+	      max-height: 132px !important;
+	    }
+	    #menu.menu-fresh .start-btn {
+	      bottom: max(91px, calc(env(safe-area-inset-bottom, 0px) + 10.2dvh)) !important;
+	      width: min(80%, 332px) !important;
+	      height: 62px !important;
+	    }
+	    #menu.menu-fresh .side-rail {
+	      width: min(96vw, 370px) !important;
+	      height: 72px !important;
+	      padding-inline: 4px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn {
+	      flex-basis: 56px !important;
+	      width: 56px !important;
+	      height: 68px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn::before {
+	      width: 44px !important;
+	      height: 41px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn .srb-icon {
+	      width: 44px !important;
+	      height: 39px !important;
+	      font-size: 22px !important;
+	    }
+	    #menu.menu-fresh #btnMainSettings .srb-icon {
+	      font-size: 26px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn .srb-label {
+	      font-size: 12px !important;
+	    }
+	  }
+
+	  /* Premium war lobby pass: darker metal, ink logo, restrained gold. */
+	  #menu.menu-fresh .home-title {
+	    top: clamp(2px, 1.1dvh, 12px) !important;
+	    width: min(106vw, 456px) !important;
+	    height: clamp(146px, 20.4dvh, 194px) !important;
+	    filter:
+	      drop-shadow(0 18px 24px rgba(0,0,0,0.82))
+	      drop-shadow(0 0 18px rgba(201, 122, 36, 0.18)) !important;
+	  }
+	  #menu.menu-fresh .home-title::before {
+	    top: 56% !important;
+	    width: 116% !important;
+	    height: 84% !important;
+	    background:
+	      radial-gradient(ellipse at 50% 56%, rgba(0,0,0,0.68), rgba(0,0,0,0.34) 46%, transparent 74%),
+	      radial-gradient(ellipse at 50% 44%, rgba(122,20,12,0.22), transparent 66%),
+	      radial-gradient(ellipse at 50% 40%, rgba(214,158,70,0.12), transparent 72%) !important;
+	    animation: homeTitleAura 4.2s ease-in-out infinite !important;
+	  }
+	  #menu.menu-fresh .home-title-logo {
+	    width: 108% !important;
+	    max-height: 190px !important;
+	    transform-origin: 50% 48% !important;
+	    filter: saturate(0.92) contrast(1.08) brightness(0.98) !important;
+	  }
+	  #menu.menu-fresh .start-btn {
+	    bottom: max(108px, calc(env(safe-area-inset-bottom, 0px) + 11.2dvh)) !important;
+	    width: min(74%, 336px) !important;
+	    height: 64px !important;
+	    border: 1px solid rgba(180, 132, 54, 0.9) !important;
+	    border-radius: 12px !important;
+	    background:
+	      linear-gradient(110deg, transparent 0 25%, rgba(255,232,159,0.18) 35%, transparent 47%),
+	      radial-gradient(ellipse at 50% 0%, rgba(255,228,139,0.22), transparent 48%),
+	      linear-gradient(180deg, #4c3419 0%, #1d1410 42%, #070606 48%, #5b230c 100%) !important;
+	    color: #efd38e !important;
+	    letter-spacing: 0 !important;
+	    box-shadow:
+	      0 0 0 2px rgba(16,7,3,0.96),
+	      0 0 0 4px rgba(187,139,57,0.58),
+	      0 8px 0 rgba(45,18,6,0.98),
+	      0 15px 26px rgba(0,0,0,0.68),
+	      0 0 22px rgba(200,74,18,0.22),
+	      inset 0 1px 0 rgba(255,232,163,0.32),
+	      inset 0 -13px 18px rgba(0,0,0,0.42) !important;
+	    animation: homeStartWarPulse 2.8s ease-in-out infinite !important;
+	  }
+	  #menu.menu-fresh .start-btn::before {
+	    content: "⚔" !important;
+	    margin-right: 0.18em !important;
+	    color: #f5e7c4 !important;
+	    font-size: 0.82em !important;
+	    text-shadow:
+	      0 2px 0 rgba(0,0,0,0.88),
+	      0 0 10px rgba(229,168,72,0.4) !important;
+	    filter: none !important;
+	  }
+	  #menu.menu-fresh .start-btn::after {
+	    content: "출정" !important;
+	    color: #efd38e !important;
+	    -webkit-text-stroke: 0 !important;
+	    paint-order: normal !important;
+	    text-shadow:
+	      0 2px 0 rgba(0,0,0,0.92),
+	      0 0 13px rgba(226,154,55,0.26) !important;
+	  }
+	  #menu.menu-fresh .start-btn:active {
+	    transform: translateX(-50%) translateY(4px) scale(0.985) !important;
+	    box-shadow:
+	      0 0 0 2px rgba(16,7,3,0.96),
+	      0 0 0 4px rgba(187,139,57,0.52),
+	      0 3px 0 rgba(45,18,6,0.98),
+	      0 9px 18px rgba(0,0,0,0.62),
+	      inset 0 1px 0 rgba(255,232,163,0.24),
+	      inset 0 -8px 14px rgba(0,0,0,0.48) !important;
+	  }
+	  #menu.menu-fresh .side-rail {
+	    bottom: max(7px, env(safe-area-inset-bottom)) !important;
+	    width: min(92vw, 392px) !important;
+	    height: 82px !important;
+	    padding: 0 7px 3px !important;
+	    gap: 2px !important;
+	    filter:
+	      drop-shadow(0 12px 18px rgba(0,0,0,0.62))
+	      drop-shadow(0 0 13px rgba(175,104,38,0.12)) !important;
+	  }
+	  #menu.menu-fresh .side-rail::before {
+	    bottom: -5px !important;
+	    width: 108% !important;
+	    height: 70px !important;
+	    border-radius: 50% !important;
+	    background:
+	      radial-gradient(ellipse, rgba(0,0,0,0.68), rgba(0,0,0,0.36) 48%, transparent 74%),
+	      linear-gradient(90deg, transparent, rgba(117,64,25,0.22), transparent) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn {
+	    flex: 0 0 clamp(54px, 15.6vw, 64px) !important;
+	    width: clamp(54px, 15.6vw, 64px) !important;
+	    height: 76px !important;
+	    gap: 4px !important;
+	    animation: homeDockButtonIn 0.54s cubic-bezier(.18, 1.18, .26, 1) both,
+	               homeDockButtonFloat 4.6s ease-in-out infinite !important;
+	    animation-delay: var(--rail-delay), calc(var(--rail-delay) + 0.95s) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::before {
+	    left: 50% !important;
+	    top: 1px !important;
+	    width: 48px !important;
+	    height: 48px !important;
+	    transform: translateX(-50%) !important;
+	    clip-path: none !important;
+	    border: 1px solid rgba(206,158,73,0.86) !important;
+	    border-radius: 14px !important;
+	    background:
+	      linear-gradient(145deg, rgba(255,234,153,0.32) 0 12%, transparent 30%),
+	      radial-gradient(circle at 50% 23%, rgba(184,142,61,0.72), rgba(55,37,20,0.94) 48%, #0a0705 100%),
+	      linear-gradient(180deg, #2a1b0f, #090706) !important;
+	    box-shadow:
+	      0 0 0 2px rgba(7,4,2,0.96),
+	      0 0 0 3px rgba(164,113,42,0.48),
+	      0 8px 14px rgba(0,0,0,0.54),
+	      inset 0 1px 0 rgba(255,235,170,0.28),
+	      inset 0 -10px 14px rgba(0,0,0,0.5) !important;
+	    animation: homeDockBronzeBreath 4.4s ease-in-out infinite !important;
+	    animation-delay: calc(var(--rail-delay) + 0.8s) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::after {
+	    top: 7px !important;
+	    width: 34px !important;
+	    height: 2px !important;
+	    border-radius: 999px !important;
+	    background: linear-gradient(90deg, transparent, rgba(255,225,145,0.72), transparent) !important;
+	    opacity: 0 !important;
+	    animation: homeDockGlint 5.2s ease-in-out infinite !important;
+	    animation-delay: calc(var(--rail-spark-delay) + 0.55s) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn .srb-icon {
+	    width: 48px !important;
+	    height: 47px !important;
+	    color: #e9c977 !important;
+	    font-size: 24px !important;
+	    font-family: 'Noto Serif KR', serif !important;
+	    text-shadow:
+	      0 2px 0 rgba(0,0,0,0.96),
+	      0 0 10px rgba(211,151,58,0.34) !important;
+	    filter: none !important;
+	  }
+	  #menu.menu-fresh #btnMainSettings .srb-icon {
+	    color: #e6c678 !important;
+	    font-size: 25px !important;
+	    font-family: system-ui, sans-serif !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn .srb-label {
+	    color: #e9d6a1 !important;
+	    font-size: 13px !important;
+	    font-weight: 900 !important;
+	    text-shadow:
+	      0 2px 0 rgba(0,0,0,0.95),
+	      0 0 8px rgba(190,118,37,0.22) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn:hover,
+	  #menu.menu-fresh .side-rail-btn:focus-visible {
+	    transform: translateY(-3px) scale(1.035) !important;
+	    filter: brightness(1.08) saturate(1.02) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn:active {
+	    transform: translateY(4px) scale(0.95) !important;
+	    filter: brightness(1.14) !important;
+	  }
+	  @keyframes homeStartWarPulse {
+	    0%, 100% {
+	      filter: brightness(1) saturate(0.96);
+	      transform: translateX(-50%) translateY(0) scale(1);
+	    }
+	    50% {
+	      filter: brightness(1.08) saturate(1.03);
+	      transform: translateX(-50%) translateY(-2px) scale(1.012);
+	    }
+	  }
+	  @keyframes homeDockBronzeBreath {
+	    0%, 100% { filter: brightness(0.98) saturate(0.95); }
+	    50% { filter: brightness(1.09) saturate(1.02); }
+	  }
+	  @media (max-width: 390px), (max-height: 760px) {
+	    #menu.menu-fresh .home-title {
+	      top: 0 !important;
+	      height: 140px !important;
+	    }
+	    #menu.menu-fresh .home-title-logo {
+	      max-height: 140px !important;
+	    }
+	    #menu.menu-fresh .start-btn {
+	      bottom: max(94px, calc(env(safe-area-inset-bottom, 0px) + 10.4dvh)) !important;
+	      width: min(76%, 322px) !important;
+	      height: 60px !important;
+	    }
+	    #menu.menu-fresh .side-rail {
+	      width: min(94vw, 366px) !important;
+	      height: 76px !important;
+	      padding-inline: 4px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn {
+	      flex-basis: 55px !important;
+	      width: 55px !important;
+	      height: 70px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn::before {
+	      width: 44px !important;
+	      height: 44px !important;
+	      border-radius: 13px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn .srb-icon {
+	      width: 44px !important;
+	      height: 43px !important;
+	      font-size: 22px !important;
+	    }
+	    #menu.menu-fresh #btnMainSettings .srb-icon {
+	      font-size: 24px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn .srb-label {
+	      font-size: 12px !important;
+	    }
+	  }
+
+	  /* Reference target pass: one-line ink logo, bronze command plaque, diamond dock. */
+	  #menu.menu-fresh > .main-bg {
+	    background:
+	      radial-gradient(ellipse 68% 27% at 50% 9%, rgba(255,223,154,0.18), transparent 72%),
+	      radial-gradient(ellipse 92% 34% at 50% 86%, rgba(255,110,28,0.18), transparent 70%),
+	      linear-gradient(180deg,
+	        rgba(20,12,8,0.00) 0%,
+	        rgba(20,12,8,0.04) 44%,
+	        rgba(9,6,7,0.22) 74%,
+	        rgba(3,3,5,0.52) 100%),
+	      url('./assets/main_keyart_reference.png') center top / cover no-repeat !important;
+	    background-size: 100% 100%, 100% 100%, 100% 100%, auto 101.5% !important;
+	    background-position: center, center, center, 50% 50% !important;
+	    filter: contrast(1.04) saturate(1.04) brightness(0.98) !important;
+	  }
+	  #menu.menu-fresh > .main-bg::before {
+	    display: none !important;
+	  }
+	  #menu.menu-fresh .vfx-ray,
+	  #menu.menu-fresh .vfx-smoke {
+	    display: none !important;
+	  }
+	  #menu.menu-fresh .home-title {
+	    top: clamp(4px, 1.4dvh, 16px) !important;
+	    width: min(112vw, 482px) !important;
+	    height: clamp(128px, 17.6dvh, 168px) !important;
+	    filter:
+	      drop-shadow(0 15px 22px rgba(0,0,0,0.9))
+	      drop-shadow(0 0 16px rgba(220, 139, 42, 0.2)) !important;
+	  }
+	  #menu.menu-fresh .home-title::before {
+	    content: none !important;
+	    display: none !important;
+	  }
+	  #menu.menu-fresh .home-title::after {
+	    content: none !important;
+	    display: none !important;
+	  }
+	  #menu.menu-fresh .home-title-logo {
+	    width: 112% !important;
+	    max-height: 168px !important;
+	    filter: contrast(1.1) saturate(0.98) brightness(1.03) !important;
+	  }
+	  #menu.menu-fresh .start-btn {
+	    bottom: max(109px, calc(env(safe-area-inset-bottom, 0px) + 11.6dvh)) !important;
+	    width: min(82%, 366px) !important;
+	    height: 69px !important;
+	    border: 1px solid rgba(206,153,72,0.92) !important;
+	    border-radius: 0 !important;
+	    clip-path: polygon(8% 0, 92% 0, 100% 50%, 92% 100%, 8% 100%, 0 50%) !important;
+	    background:
+	      linear-gradient(112deg, transparent 0 20%, rgba(255,235,173,0.22) 31%, transparent 44%),
+	      radial-gradient(ellipse at 50% 8%, rgba(255,219,139,0.28), transparent 42%),
+	      linear-gradient(180deg, #7a421d 0%, #3a2114 41%, #110d0b 48%, #5b2710 100%) !important;
+	    box-shadow:
+	      0 0 0 2px rgba(18,8,3,0.98),
+	      0 0 0 5px rgba(179,118,46,0.62),
+	      0 9px 0 rgba(48,18,6,0.98),
+	      0 18px 30px rgba(0,0,0,0.72),
+	      0 0 26px rgba(220,86,22,0.26),
+	      inset 0 1px 0 rgba(255,230,160,0.35),
+	      inset 0 -15px 20px rgba(0,0,0,0.44) !important;
+	  }
+	  #menu.menu-fresh .start-btn::before {
+	    font-size: 0.82em !important;
+	    margin-right: 0.2em !important;
+	    color: #f4dfad !important;
+	  }
+	  #menu.menu-fresh .start-btn::after {
+	    color: #ffe0a0 !important;
+	    font-size: 1.02em !important;
+	    text-shadow:
+	      0 2px 0 rgba(0,0,0,0.95),
+	      0 0 14px rgba(255,174,64,0.36) !important;
+	  }
+	  #menu.menu-fresh .side-rail {
+	    width: min(90vw, 392px) !important;
+	    height: 91px !important;
+	    bottom: max(2px, env(safe-area-inset-bottom)) !important;
+	    align-items: flex-end !important;
+	    padding: 0 12px 4px !important;
+	    filter: drop-shadow(0 14px 18px rgba(0,0,0,0.72)) !important;
+	  }
+	  #menu.menu-fresh .side-rail::before {
+	    height: 82px !important;
+	    background:
+	      radial-gradient(ellipse, rgba(0,0,0,0.74), rgba(0,0,0,0.36) 48%, transparent 72%),
+	      radial-gradient(ellipse at 50% 0%, rgba(186,108,43,0.18), transparent 64%) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn {
+	    flex-basis: clamp(58px, 17.2vw, 70px) !important;
+	    width: clamp(58px, 17.2vw, 70px) !important;
+	    height: 86px !important;
+	    gap: 6px !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::before {
+	    top: 3px !important;
+	    width: 48px !important;
+	    height: 48px !important;
+	    border-radius: 5px !important;
+	    transform: translateX(-50%) rotate(45deg) !important;
+	    border: 1px solid rgba(221,174,86,0.9) !important;
+	    background:
+	      linear-gradient(135deg, rgba(255,236,164,0.32), transparent 22%, rgba(0,0,0,0.2) 56%, rgba(245,190,88,0.18)),
+	      radial-gradient(circle at 32% 24%, rgba(182,135,61,0.88), rgba(49,33,19,0.95) 48%, #080605 100%) !important;
+	    box-shadow:
+	      0 0 0 2px rgba(8,5,2,0.96),
+	      0 0 0 4px rgba(159,105,39,0.46),
+	      0 9px 13px rgba(0,0,0,0.58),
+	      inset 0 1px 0 rgba(255,235,168,0.3),
+	      inset 0 -10px 14px rgba(0,0,0,0.5) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::after {
+	    top: 12px !important;
+	    width: 30px !important;
+	    height: 2px !important;
+	    transform: translateX(-50%) rotate(-12deg) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn .srb-icon {
+	    width: 48px !important;
+	    height: 49px !important;
+	    font-size: 25px !important;
+	    color: #e8ca7f !important;
+	    text-shadow:
+	      0 2px 0 rgba(0,0,0,0.96),
+	      0 0 10px rgba(220,153,56,0.36) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn .srb-label {
+	    font-size: 13px !important;
+	    color: #f0ddb0 !important;
+	    line-height: 1 !important;
+	  }
+	  #menu.menu-fresh #btnEnhance .srb-icon::before,
+	  #menu.menu-fresh #btnMainExchange .srb-icon::before {
+	    content: "" !important;
+	    position: absolute !important;
+	    right: -3px !important;
+	    top: 2px !important;
+	    width: 10px !important;
+	    height: 10px !important;
+	    border-radius: 50% !important;
+	    background: #d71917 !important;
+	    border: 2px solid rgba(255,238,167,0.92) !important;
+	    box-shadow: 0 0 8px rgba(255,52,37,0.7) !important;
+	  }
+	  @media (max-width: 390px), (max-height: 760px) {
+	    #menu.menu-fresh .home-title {
+	      height: 125px !important;
+	    }
+	    #menu.menu-fresh .home-title-logo {
+	      max-height: 125px !important;
+	    }
+	    #menu.menu-fresh .start-btn {
+	      bottom: max(98px, calc(env(safe-area-inset-bottom, 0px) + 10.8dvh)) !important;
+	      width: min(82%, 338px) !important;
+	      height: 62px !important;
+	    }
+	    #menu.menu-fresh .side-rail {
+	      width: min(91vw, 356px) !important;
+	      height: 84px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn {
+	      flex-basis: 58px !important;
+	      width: 58px !important;
+	      height: 80px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn::before {
+	      width: 43px !important;
+	      height: 43px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn .srb-icon {
+	      width: 43px !important;
+	      height: 44px !important;
+	      font-size: 22px !important;
+	    }
+	  }
+
+	  /* Asset-backed command controls: match the key-art UI set instead of CSS-only shapes. */
+	  #menu.menu-fresh .start-btn {
+	    bottom: max(105px, calc(env(safe-area-inset-bottom, 0px) + 11.1dvh)) !important;
+	    width: min(86%, 382px) !important;
+	    height: 86px !important;
+	    border: 0 !important;
+	    border-radius: 0 !important;
+	    clip-path: none !important;
+	    background: url('./assets/ui/home_start_plaque.png') center / 100% 100% no-repeat !important;
+	    box-shadow:
+	      0 18px 30px rgba(0,0,0,0.72),
+	      0 0 28px rgba(224,102,27,0.20) !important;
+	    display: flex !important;
+	    align-items: center !important;
+	    justify-content: center !important;
+	    gap: 16px !important;
+	    overflow: visible !important;
+	  }
+	  #menu.menu-fresh .start-btn::before {
+	    content: "" !important;
+	    width: 38px !important;
+	    height: 38px !important;
+	    margin: 0 !important;
+	    flex: 0 0 38px !important;
+	    background: url('./assets/ui/home_icon_swords.png') center / contain no-repeat !important;
+	    filter:
+	      drop-shadow(0 2px 0 rgba(0,0,0,0.85))
+	      drop-shadow(0 0 8px rgba(255,190,79,0.26)) !important;
+	  }
+	  #menu.menu-fresh .start-btn::after {
+	    content: "출정" !important;
+	    color: #ffe6a8 !important;
+	    font-size: clamp(36px, 10.5vw, 54px) !important;
+	    font-family: 'Noto Serif KR', serif !important;
+	    font-weight: 900 !important;
+	    letter-spacing: 0 !important;
+	    line-height: 1 !important;
+	    -webkit-text-stroke: 0.7px rgba(87,35,7,0.74) !important;
+	    paint-order: stroke fill !important;
+	    text-shadow:
+	      0 2px 0 rgba(88,36,8,0.92),
+	      0 5px 10px rgba(0,0,0,0.52),
+	      0 0 16px rgba(255,185,72,0.42) !important;
+	  }
+	  #menu.menu-fresh .side-rail {
+	    width: min(88vw, 380px) !important;
+	    height: 96px !important;
+	    padding: 0 10px 4px !important;
+	    gap: 2px !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn {
+	    flex-basis: clamp(58px, 15.8vw, 64px) !important;
+	    width: clamp(58px, 15.8vw, 64px) !important;
+	    height: 90px !important;
+	    gap: 5px !important;
+	    overflow: visible !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::before {
+	    top: -1px !important;
+	    left: 50% !important;
+	    width: 64px !important;
+	    height: 64px !important;
+	    transform: translateX(-50%) !important;
+	    clip-path: none !important;
+	    border: 0 !important;
+	    border-radius: 0 !important;
+	    background: url('./assets/ui/home_dock_diamond.png') center / 100% 100% no-repeat !important;
+	    box-shadow: none !important;
+	    animation: homeDockBronzeBreath 4.4s ease-in-out infinite !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::after {
+	    display: none !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn .srb-icon {
+	    width: 64px !important;
+	    height: 64px !important;
+	    margin: 0 !important;
+	    color: transparent !important;
+	    font-size: 0 !important;
+	    text-shadow: none !important;
+	    background: var(--dock-icon) center / 73% 73% no-repeat !important;
+	    filter:
+	      drop-shadow(0 2px 0 rgba(0,0,0,0.9))
+	      drop-shadow(0 0 9px rgba(220,156,66,0.22)) !important;
+	  }
+	  #menu.menu-fresh #btnGeneralManage .srb-icon { --dock-icon: url('./assets/ui/home_icon_general.png'); }
+	  #menu.menu-fresh #btnEnhance .srb-icon { --dock-icon: url('./assets/ui/home_icon_enhance.png'); }
+	  #menu.menu-fresh #btnPowerManage .srb-icon { --dock-icon: url('./assets/ui/home_icon_strategy.png'); }
+	  #menu.menu-fresh #btnMainExchange .srb-icon { --dock-icon: url('./assets/ui/home_icon_shop.png'); }
+	  #menu.menu-fresh #btnMainSettings .srb-icon { --dock-icon: url('./assets/ui/home_icon_settings.png'); }
+	  #menu.menu-fresh .side-rail-btn .srb-icon::after {
+	    content: none !important;
+	    display: none !important;
+	  }
+	  #menu.menu-fresh #btnEnhance .srb-icon::before,
+	  #menu.menu-fresh #btnMainExchange .srb-icon::before {
+	    right: 3px !important;
+	    top: 3px !important;
+	    width: 11px !important;
+	    height: 11px !important;
+	    z-index: 5 !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn .srb-label {
+	    margin-top: -4px !important;
+	    color: #f2ddb0 !important;
+	    font-family: 'Noto Serif KR', serif !important;
+	    font-size: 14px !important;
+	    line-height: 1 !important;
+	    text-shadow:
+	      0 2px 0 rgba(0,0,0,0.94),
+	      0 0 9px rgba(226,166,65,0.24) !important;
+	  }
+	  @media (max-width: 390px), (max-height: 760px) {
+	    #menu.menu-fresh .start-btn {
+	      bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 10.4dvh)) !important;
+	      width: min(86%, 346px) !important;
+	      height: 76px !important;
+	      gap: 12px !important;
+	    }
+	    #menu.menu-fresh .start-btn::before {
+	      width: 32px !important;
+	      height: 32px !important;
+	      flex-basis: 32px !important;
+	    }
+	    #menu.menu-fresh .start-btn::after {
+	      font-size: clamp(31px, 9.6vw, 44px) !important;
+	    }
+	    #menu.menu-fresh .side-rail {
+	      width: min(89vw, 348px) !important;
+	      height: 88px !important;
+	      padding-inline: 6px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn {
+	      flex-basis: 56px !important;
+	      width: 56px !important;
+	      height: 84px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn::before,
+	    #menu.menu-fresh .side-rail-btn .srb-icon {
+	      width: 56px !important;
+	      height: 56px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn .srb-label {
+	      font-size: 12px !important;
+	    }
+	  }
+
+	  /* Exact lower-lobby plate: render 출정 + dock as one artwork, keep buttons as hitboxes. */
+	  #menu.menu-fresh {
+	    --home-bottom-ui-h: clamp(222px, 65.12vw, 280px);
+	  }
+	  #menu.menu-fresh > .main-bg::before {
+	    content: "" !important;
+	    display: block !important;
+	    position: absolute !important;
+	    left: 50% !important;
+	    top: auto !important;
+	    right: auto !important;
+	    bottom: 0 !important;
+	    width: min(100vw, 430px) !important;
+	    height: var(--home-bottom-ui-h) !important;
+	    transform: translateX(-50%) !important;
+	    transform-origin: center bottom !important;
+	    z-index: 9 !important;
+	    pointer-events: none !important;
+	    background: url('./assets/ui/home_bottom_ui_overlay.png') center bottom / 100% 100% no-repeat !important;
+	    filter:
+	      drop-shadow(0 16px 22px rgba(0,0,0,0.66))
+	      drop-shadow(0 0 8px rgba(245,153,48,0.12)) !important;
+	    mix-blend-mode: normal !important;
+	    opacity: 1 !important;
+	    animation: homeBottomUiAura 5.8s ease-in-out infinite !important;
+	    will-change: transform, filter !important;
+	  }
+	  #menu.menu-fresh .start-btn {
+	    bottom: calc(var(--home-bottom-ui-h) - 100px) !important;
+	    width: min(82vw, 350px) !important;
+	    height: 82px !important;
+	    z-index: 11 !important;
+	    opacity: 1 !important;
+	    background: transparent !important;
+	    border: 0 !important;
+	    box-shadow: none !important;
+	    clip-path: none !important;
+	    filter: none !important;
+	    overflow: visible !important;
+	  }
+	  #menu.menu-fresh .start-btn::before,
+	  #menu.menu-fresh .start-btn::after {
+	    content: none !important;
+	    display: none !important;
+	  }
+	  #menu.menu-fresh .side-rail {
+	    left: 50% !important;
+	    bottom: max(4px, env(safe-area-inset-bottom)) !important;
+	    width: min(100vw, 430px) !important;
+	    height: 136px !important;
+	    padding: 0 15px 0 !important;
+	    gap: 0 !important;
+	    z-index: 11 !important;
+	    filter: none !important;
+	    pointer-events: auto !important;
+	    opacity: 1 !important;
+	    overflow: visible !important;
+	  }
+	  #menu.menu-fresh .side-rail::before {
+	    content: none !important;
+	    display: none !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn {
+	    flex: 0 0 74px !important;
+	    width: 74px !important;
+	    height: 128px !important;
+	    background: transparent !important;
+	    box-shadow: none !important;
+	    border: 0 !important;
+	    animation: none !important;
+	    filter: none !important;
+	    opacity: 0 !important;
+	    position: relative !important;
+	    overflow: visible !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::before,
+	  #menu.menu-fresh .side-rail-btn::after,
+	  #menu.menu-fresh .side-rail-btn .srb-icon,
+	  #menu.menu-fresh .side-rail-btn .srb-label,
+	  #menu.menu-fresh #btnEnhance .srb-icon::before,
+	  #menu.menu-fresh #btnMainExchange .srb-icon::before {
+	    content: none !important;
+	    display: none !important;
+	  }
+	  #menu.menu-fresh .start-btn:active,
+	  #menu.menu-fresh .side-rail-btn:active {
+	    transform: translateX(-50%) scale(0.99) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn:active {
+	    transform: translateY(2px) scale(0.98) !important;
+	  }
+	  @media (max-width: 390px), (max-height: 760px) {
+	    #menu.menu-fresh {
+	      --home-bottom-ui-h: clamp(220px, 65.12vw, 254px);
+	    }
+	    #menu.menu-fresh > .main-bg::before {
+	      height: var(--home-bottom-ui-h) !important;
+	    }
+	    #menu.menu-fresh .start-btn {
+	      bottom: calc(var(--home-bottom-ui-h) - 88px) !important;
+	      width: min(82vw, 320px) !important;
+	      height: 72px !important;
+	    }
+	    #menu.menu-fresh .side-rail {
+	      width: min(100vw, 390px) !important;
+	      height: 120px !important;
+	      padding-inline: 13px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn {
+	      flex-basis: 68px !important;
+	      width: 68px !important;
+	      height: 116px !important;
+	    }
+	  }
+
+	  /* Premium lobby motion pass: keep the generated artwork exact, add logo-like gold motion on top. */
+	  #menu.menu-fresh .start-btn::before {
+	    content: "" !important;
+	    display: block !important;
+	    position: absolute !important;
+	    inset: 9px 22px 10px !important;
+	    clip-path: polygon(9% 0, 91% 0, 100% 50%, 91% 100%, 9% 100%, 0 50%) !important;
+	    border-radius: 12px !important;
+	    pointer-events: none !important;
+	    background:
+	      linear-gradient(102deg,
+	        transparent 0%,
+	        transparent 38%,
+	        rgba(255,243,174,0.00) 43%,
+	        rgba(255,241,161,0.54) 48%,
+	        rgba(255,166,54,0.16) 53%,
+	        transparent 60%,
+	        transparent 100%) !important;
+	    mix-blend-mode: screen !important;
+	    opacity: 0 !important;
+	    transform: translateX(-128%) skewX(-10deg) !important;
+	    filter: blur(0.2px) drop-shadow(0 0 10px rgba(255,188,70,0.36)) !important;
+	    animation: homeStartGoldSweep 4.4s ease-in-out infinite !important;
+	  }
+	  #menu.menu-fresh .start-btn::after {
+	    content: "" !important;
+	    display: block !important;
+	    position: absolute !important;
+	    left: 11% !important;
+	    right: 11% !important;
+	    bottom: 8px !important;
+	    height: 2px !important;
+	    border-radius: 999px !important;
+	    pointer-events: none !important;
+	    background: linear-gradient(90deg, transparent, rgba(255,190,78,0.76), rgba(255,237,157,0.82), rgba(255,141,34,0.46), transparent) !important;
+	    box-shadow: 0 0 13px rgba(255,150,39,0.48) !important;
+	    opacity: 0.18 !important;
+	    animation: homeStartEdgeGlow 2.8s ease-in-out infinite !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn:nth-child(1) { --dock-delay: 0.0s; --dock-glint-delay: 0.9s; }
+	  #menu.menu-fresh .side-rail-btn:nth-child(2) { --dock-delay: 0.18s; --dock-glint-delay: 1.35s; }
+	  #menu.menu-fresh .side-rail-btn:nth-child(3) { --dock-delay: 0.36s; --dock-glint-delay: 1.8s; }
+	  #menu.menu-fresh .side-rail-btn:nth-child(4) { --dock-delay: 0.54s; --dock-glint-delay: 2.25s; }
+	  #menu.menu-fresh .side-rail-btn:nth-child(5) { --dock-delay: 0.72s; --dock-glint-delay: 2.7s; }
+	  #menu.menu-fresh .side-rail-btn::before {
+	    content: "" !important;
+	    display: block !important;
+	    position: absolute !important;
+	    left: 50% !important;
+	    top: 6px !important;
+	    width: 58px !important;
+	    height: 58px !important;
+	    border: 1px solid rgba(255,222,131,0.24) !important;
+	    border-radius: 4px !important;
+	    background:
+	      radial-gradient(circle at 38% 28%, rgba(255,238,166,0.24), transparent 24%),
+	      linear-gradient(135deg, rgba(255,210,102,0.18), transparent 36%, rgba(255,143,37,0.08) 100%) !important;
+	    box-shadow:
+	      0 0 12px rgba(244,159,54,0.22),
+	      inset 0 0 11px rgba(255,213,105,0.12) !important;
+	    opacity: 0.24 !important;
+	    pointer-events: none !important;
+	    mix-blend-mode: screen !important;
+	    transform: translateX(-50%) rotate(45deg) scale(0.92) !important;
+	    animation: homeDockDiamondGlow 4.8s ease-in-out infinite !important;
+	    animation-delay: var(--dock-delay) !important;
+	    will-change: transform, opacity !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::after {
+	    content: "" !important;
+	    display: block !important;
+	    position: absolute !important;
+	    left: 50% !important;
+	    top: 27px !important;
+	    width: 30px !important;
+	    height: 3px !important;
+	    border-radius: 999px !important;
+	    pointer-events: none !important;
+	    background: linear-gradient(90deg, transparent, rgba(255,238,161,0.9), rgba(255,148,35,0.38), transparent) !important;
+	    box-shadow: 0 0 10px rgba(255,187,67,0.48) !important;
+	    opacity: 0 !important;
+	    mix-blend-mode: screen !important;
+	    transform: translateX(-120%) rotate(-16deg) !important;
+	    animation: homeDockGlint 5.2s ease-in-out infinite !important;
+	    animation-delay: var(--dock-glint-delay) !important;
+	  }
+	  #menu.menu-fresh .start-btn:hover::before,
+	  #menu.menu-fresh .start-btn:focus-visible::before {
+	    animation-duration: 2.8s !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn:hover::before,
+	  #menu.menu-fresh .side-rail-btn:focus-visible::before {
+	    opacity: 0.52 !important;
+	    box-shadow:
+	      0 0 18px rgba(255,187,69,0.36),
+	      inset 0 0 13px rgba(255,226,128,0.2) !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn {
+	    opacity: 0 !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::before,
+	  #menu.menu-fresh .side-rail-btn::after {
+	    content: none !important;
+	    display: none !important;
+	  }
+	  #menu.menu-fresh .side-rail::before {
+	    content: "" !important;
+	    display: block !important;
+	    position: absolute !important;
+	    left: 0 !important;
+	    right: 0 !important;
+	    top: 0 !important;
+	    bottom: 0 !important;
+	    width: auto !important;
+	    height: auto !important;
+	    border-radius: 0 !important;
+	    pointer-events: none !important;
+	    z-index: 0 !important;
+	    background:
+	      radial-gradient(circle at 12% 32%, rgba(255,227,121,0.34) 0 4%, rgba(238,144,40,0.15) 8%, transparent 17%),
+	      radial-gradient(circle at 30% 32%, rgba(255,227,121,0.32) 0 4%, rgba(238,144,40,0.14) 8%, transparent 17%),
+	      radial-gradient(circle at 47% 32%, rgba(255,227,121,0.28) 0 4%, rgba(238,144,40,0.12) 8%, transparent 17%),
+	      radial-gradient(circle at 65% 32%, rgba(255,227,121,0.32) 0 4%, rgba(238,144,40,0.14) 8%, transparent 17%),
+	      radial-gradient(circle at 83% 32%, rgba(255,227,121,0.34) 0 4%, rgba(238,144,40,0.15) 8%, transparent 17%) !important;
+	    filter: blur(1px) !important;
+	    mix-blend-mode: screen !important;
+	    opacity: 0.34 !important;
+	    animation: homeDockFieldGlow 4.8s ease-in-out infinite !important;
+	  }
+	  #menu.menu-fresh .side-rail::after {
+	    content: "" !important;
+	    display: block !important;
+	    position: absolute !important;
+	    left: 0 !important;
+	    right: 0 !important;
+	    top: 0 !important;
+	    bottom: 0 !important;
+	    pointer-events: none !important;
+	    z-index: 0 !important;
+	    background:
+	      linear-gradient(105deg, transparent 0 35%, rgba(255,239,158,0.86) 48%, rgba(255,156,39,0.2) 55%, transparent 66%) 5% 25px / 54px 5px no-repeat,
+	      linear-gradient(105deg, transparent 0 35%, rgba(255,239,158,0.86) 48%, rgba(255,156,39,0.2) 55%, transparent 66%) 23% 25px / 54px 5px no-repeat,
+	      linear-gradient(105deg, transparent 0 35%, rgba(255,239,158,0.82) 48%, rgba(255,156,39,0.18) 55%, transparent 66%) 41% 25px / 54px 5px no-repeat,
+	      linear-gradient(105deg, transparent 0 35%, rgba(255,239,158,0.86) 48%, rgba(255,156,39,0.2) 55%, transparent 66%) 59% 25px / 54px 5px no-repeat,
+	      linear-gradient(105deg, transparent 0 35%, rgba(255,239,158,0.86) 48%, rgba(255,156,39,0.2) 55%, transparent 66%) 77% 25px / 54px 5px no-repeat !important;
+	    filter: drop-shadow(0 0 8px rgba(255,177,56,0.38)) !important;
+	    mix-blend-mode: screen !important;
+	    opacity: 0 !important;
+	    animation: homeDockFieldSweep 5.4s ease-in-out infinite !important;
+	  }
+	  @keyframes homeBottomUiAura {
+	    0%, 100% {
+	      transform: translateX(-50%) translateY(0) scale(1);
+	      filter:
+	        drop-shadow(0 16px 22px rgba(0,0,0,0.66))
+	        drop-shadow(0 0 8px rgba(245,153,48,0.12))
+	        brightness(1);
+	    }
+	    48% {
+	      transform: translateX(-50%) translateY(-2px) scale(1.003);
+	      filter:
+	        drop-shadow(0 18px 24px rgba(0,0,0,0.72))
+	        drop-shadow(0 0 16px rgba(255,177,63,0.22))
+	        brightness(1.045)
+	        saturate(1.03);
+	    }
+	  }
+	  @keyframes homeStartGoldSweep {
+	    0%, 42% {
+	      opacity: 0;
+	      transform: translateX(-128%) skewX(-10deg);
+	    }
+	    50% {
+	      opacity: 0.62;
+	    }
+	    62% {
+	      opacity: 0;
+	      transform: translateX(128%) skewX(-10deg);
+	    }
+	    100% {
+	      opacity: 0;
+	      transform: translateX(128%) skewX(-10deg);
+	    }
+	  }
+	  @keyframes homeStartEdgeGlow {
+	    0%, 100% { opacity: 0.16; transform: scaleX(0.88); }
+	    48% { opacity: 0.62; transform: scaleX(1); }
+	  }
+	  @keyframes homeDockDiamondGlow {
+	    0%, 100% {
+	      opacity: 0.2;
+	      transform: translateX(-50%) rotate(45deg) scale(0.91);
+	    }
+	    46% {
+	      opacity: 0.48;
+	      transform: translateX(-50%) rotate(45deg) scale(0.985);
+	    }
+	  }
+	  @keyframes homeDockGlint {
+	    0%, 58% {
+	      opacity: 0;
+	      transform: translateX(-118%) rotate(-16deg);
+	    }
+	    65% {
+	      opacity: 0.8;
+	    }
+	    75%, 100% {
+	      opacity: 0;
+	      transform: translateX(52%) rotate(-16deg);
+	    }
+	  }
+	  @keyframes homeDockFieldGlow {
+	    0%, 100% { opacity: 0.24; transform: translateY(0) scale(0.995); }
+	    46% { opacity: 0.48; transform: translateY(-1px) scale(1.01); }
+	  }
+	  @keyframes homeDockFieldSweep {
+	    0%, 56% { opacity: 0; transform: translateX(-5px); }
+	    63% { opacity: 0.72; }
+	    76%, 100% { opacity: 0; transform: translateX(8px); }
+	  }
+	  @media (prefers-reduced-motion: reduce) {
+	    #menu.menu-fresh > .main-bg::before,
+	    #menu.menu-fresh .start-btn::before,
+	    #menu.menu-fresh .start-btn::after,
+	    #menu.menu-fresh .side-rail::before,
+	    #menu.menu-fresh .side-rail::after,
+	    #menu.menu-fresh .side-rail-btn::before,
+	    #menu.menu-fresh .side-rail-btn::after {
+	      animation: none !important;
+	    }
+	  }
+
+	  /* Final lower UI motion: make 출정/dock visibly alive like the title sign. */
+	  #menu.menu-fresh > .main-bg::before {
+	    animation: homeLowerArtworkBreath 3.15s ease-in-out infinite !important;
+	    filter:
+	      drop-shadow(0 17px 23px rgba(0,0,0,0.7))
+	      drop-shadow(0 0 13px rgba(245,153,48,0.2)) !important;
+	  }
+	  #menu.menu-fresh .start-btn {
+	    animation: homeStartHitboxBreath 3.15s ease-in-out infinite !important;
+	    transform-origin: center center !important;
+	  }
+	  #menu.menu-fresh .start-btn::before {
+	    content: "" !important;
+	    display: block !important;
+	    position: absolute !important;
+	    inset: 5px 13px 7px !important;
+	    right: 13px !important;
+	    bottom: 7px !important;
+	    clip-path: polygon(9% 0, 91% 0, 100% 50%, 91% 100%, 9% 100%, 0 50%) !important;
+	    border-radius: 12px !important;
+	    background:
+	      linear-gradient(105deg,
+	        transparent 0 32%,
+	        rgba(255,249,191,0.12) 38%,
+	        rgba(255,244,168,0.82) 46%,
+	        rgba(255,166,48,0.28) 54%,
+	        transparent 64% 100%) !important;
+	    box-shadow:
+	      inset 0 0 18px rgba(255,205,88,0.18),
+	      0 0 18px rgba(255,151,38,0.28) !important;
+	    filter: blur(0.15px) !important;
+	    mix-blend-mode: screen !important;
+	    opacity: 0 !important;
+	    pointer-events: none !important;
+	    transform: translateX(-118%) skewX(-10deg) !important;
+	    animation: homeStartVisibleSweep 2.65s ease-in-out infinite !important;
+	    will-change: transform, opacity !important;
+	  }
+	  #menu.menu-fresh .start-btn::after {
+	    content: "" !important;
+	    display: block !important;
+	    position: absolute !important;
+	    left: 10% !important;
+	    right: 10% !important;
+	    top: 50% !important;
+	    bottom: auto !important;
+	    height: 58% !important;
+	    border-radius: 50% !important;
+	    background:
+	      radial-gradient(ellipse, rgba(255,196,72,0.42), rgba(255,118,26,0.13) 46%, transparent 72%) !important;
+	    box-shadow: 0 0 20px rgba(255,143,34,0.28) !important;
+	    mix-blend-mode: screen !important;
+	    opacity: 0.22 !important;
+	    pointer-events: none !important;
+	    transform: translateY(-50%) scaleX(0.92) !important;
+	    animation: homeStartVisibleGlow 3.15s ease-in-out infinite !important;
+	  }
+	  #menu.menu-fresh .side-rail {
+	    isolation: isolate !important;
+	  }
+	  #menu.menu-fresh .side-rail::before {
+	    opacity: 0.48 !important;
+	    animation: homeDockVisibleFieldGlow 3.15s ease-in-out infinite !important;
+	  }
+	  #menu.menu-fresh .side-rail::after {
+	    opacity: 0 !important;
+	    animation: homeDockVisibleFieldSweep 3.9s ease-in-out infinite !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn {
+	    opacity: 1 !important;
+	    background: transparent !important;
+	    box-shadow: none !important;
+	    border: 0 !important;
+	    filter: none !important;
+	    animation: homeDockHitboxLift 3.15s ease-in-out infinite !important;
+	    animation-delay: var(--dock-delay) !important;
+	    position: relative !important;
+	    overflow: visible !important;
+	    isolation: isolate !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::before {
+	    content: "" !important;
+	    display: block !important;
+	    position: absolute !important;
+	    inset: auto !important;
+	    left: 50% !important;
+	    right: auto !important;
+	    top: 7px !important;
+	    bottom: auto !important;
+	    width: 56px !important;
+	    height: 56px !important;
+	    border: 1px solid rgba(255,228,138,0.42) !important;
+	    border-radius: 4px !important;
+	    clip-path: none !important;
+	    background:
+	      radial-gradient(circle at 34% 24%, rgba(255,246,188,0.42), transparent 23%),
+	      linear-gradient(135deg, rgba(255,221,111,0.18), transparent 42%, rgba(255,123,31,0.12)) !important;
+	    box-shadow:
+	      0 0 14px rgba(255,176,58,0.32),
+	      0 0 26px rgba(255,106,22,0.12),
+	      inset 0 0 12px rgba(255,227,128,0.18) !important;
+	    mix-blend-mode: screen !important;
+	    opacity: 0.36 !important;
+	    pointer-events: none !important;
+	    transform: translateX(-50%) rotate(45deg) scale(0.92) !important;
+	    transform-origin: center !important;
+	    animation: homeDockVisiblePop 3.15s ease-in-out infinite !important;
+	    animation-delay: var(--dock-delay) !important;
+	    will-change: transform, opacity !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::after {
+	    content: "" !important;
+	    display: block !important;
+	    position: absolute !important;
+	    inset: auto !important;
+	    left: 50% !important;
+	    right: auto !important;
+	    top: 29px !important;
+	    bottom: auto !important;
+	    width: 34px !important;
+	    height: 4px !important;
+	    border-radius: 999px !important;
+	    background:
+	      linear-gradient(90deg, transparent, rgba(255,248,184,0.96), rgba(255,158,41,0.38), transparent) !important;
+	    box-shadow: 0 0 12px rgba(255,185,62,0.64) !important;
+	    mix-blend-mode: screen !important;
+	    opacity: 0 !important;
+	    pointer-events: none !important;
+	    transform: translateX(-120%) rotate(-16deg) !important;
+	    animation: homeDockVisibleGlint 3.9s ease-in-out infinite !important;
+	    animation-delay: var(--dock-glint-delay) !important;
+	    will-change: transform, opacity !important;
+	  }
+	  @keyframes homeLowerArtworkBreath {
+	    0%, 100% {
+	      transform: translateX(-50%) translateY(0) scale(1);
+	      filter:
+	        drop-shadow(0 17px 23px rgba(0,0,0,0.7))
+	        drop-shadow(0 0 10px rgba(245,153,48,0.16))
+	        brightness(1);
+	    }
+	    48% {
+	      transform: translateX(-50%) translateY(-4px) scale(1.008);
+	      filter:
+	        drop-shadow(0 20px 26px rgba(0,0,0,0.76))
+	        drop-shadow(0 0 22px rgba(255,178,61,0.34))
+	        brightness(1.085)
+	        saturate(1.05);
+	    }
+	  }
+	  @keyframes homeStartHitboxBreath {
+	    0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
+	    48% { transform: translateX(-50%) translateY(-2px) scale(1.012); }
+	  }
+	  @keyframes homeStartVisibleSweep {
+	    0%, 18% { opacity: 0; transform: translateX(-118%) skewX(-10deg); }
+	    30% { opacity: 0.85; }
+	    45%, 100% { opacity: 0; transform: translateX(118%) skewX(-10deg); }
+	  }
+	  @keyframes homeStartVisibleGlow {
+	    0%, 100% { opacity: 0.18; transform: translateY(-50%) scaleX(0.88); }
+	    48% { opacity: 0.48; transform: translateY(-50%) scaleX(1.08); }
+	  }
+	  @keyframes homeDockVisibleFieldGlow {
+	    0%, 100% { opacity: 0.3; transform: translateY(0) scale(0.99); }
+	    46% { opacity: 0.62; transform: translateY(-2px) scale(1.02); }
+	  }
+	  @keyframes homeDockVisibleFieldSweep {
+	    0%, 44% { opacity: 0; transform: translateX(-9px); }
+	    56% { opacity: 0.86; }
+	    72%, 100% { opacity: 0; transform: translateX(10px); }
+	  }
+	  @keyframes homeDockVisiblePop {
+	    0%, 100% {
+	      opacity: 0.24;
+	      transform: translateX(-50%) rotate(45deg) translateY(0) scale(0.88);
+	    }
+	    40% {
+	      opacity: 0.72;
+	      transform: translateX(-50%) rotate(45deg) translateY(-2px) scale(1.02);
+	    }
+	  }
+	  @keyframes homeDockHitboxLift {
+	    0%, 100% { transform: translateY(0) scale(1); }
+	    40% { transform: translateY(-3px) scale(1.025); }
+	  }
+	  @keyframes homeDockVisibleGlint {
+	    0%, 48% { opacity: 0; transform: translateX(-122%) rotate(-16deg); }
+	    58% { opacity: 0.94; }
+	    70%, 100% { opacity: 0; transform: translateX(52%) rotate(-16deg); }
+	  }
+	  @media (max-width: 390px), (max-height: 760px) {
+	    #menu.menu-fresh .side-rail-btn::before {
+	      top: 6px !important;
+	      width: 52px !important;
+	      height: 52px !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn::after {
+	      top: 26px !important;
+	      width: 30px !important;
+	    }
+	  }
+	  @media (prefers-reduced-motion: reduce) {
+	    #menu.menu-fresh > .main-bg::before,
+	    #menu.menu-fresh .start-btn,
+	    #menu.menu-fresh .start-btn::before,
+	    #menu.menu-fresh .start-btn::after,
+	    #menu.menu-fresh .side-rail::before,
+	    #menu.menu-fresh .side-rail::after,
+	    #menu.menu-fresh .side-rail-btn,
+	    #menu.menu-fresh .side-rail-btn::before,
+	    #menu.menu-fresh .side-rail-btn::after {
+	      animation: none !important;
+	    }
+	  }
+
+	  /* Real sliced-button motion: the artwork itself now wobbles, not just a glow layer. */
+	  #menu.menu-fresh > .main-bg::before {
+	    background: none !important;
+	    animation: none !important;
+	    filter: none !important;
+	    opacity: 0 !important;
+	  }
+	  #menu.menu-fresh .start-btn {
+	    left: 50% !important;
+	    bottom: min(37.8vw, 162px) !important;
+	    width: min(70vw, 301px) !important;
+	    height: min(20.93vw, 90px) !important;
+	    opacity: 0 !important;
+	    z-index: 14 !important;
+	    background: none !important;
+	    background-color: transparent !important;
+	    border: 0 !important;
+	    border-radius: 0 !important;
+	    box-shadow: none !important;
+	    clip-path: none !important;
+	    appearance: none !important;
+	    -webkit-appearance: none !important;
+	    color: transparent !important;
+	    font-size: 0 !important;
+	    transform: translateX(-50%) translateY(0) rotate(0deg) scale(1) !important;
+	    transform-origin: center center !important;
+	    isolation: isolate !important;
+	    filter:
+	      drop-shadow(0 11px 13px rgba(0,0,0,0.56))
+	      drop-shadow(0 0 15px rgba(255,142,35,0.24))
+	      brightness(1) !important;
+	    animation: none !important;
+	    overflow: visible !important;
+	    will-change: transform, filter !important;
+	  }
+	  #menu.menu-fresh .start-visual {
+	    left: 50% !important;
+	    bottom: min(37.8vw, 162px) !important;
+	    width: min(70vw, 301px) !important;
+	    height: min(20.93vw, 90px) !important;
+	    position: absolute !important;
+	    display: block !important;
+	    opacity: 1 !important;
+	    z-index: 13 !important;
+	    pointer-events: none !important;
+	    background: url('./assets/ui/home_start_breathe_v6.png') center / 100% 100% no-repeat !important;
+	    transform: translateX(-50%) translateY(0) rotate(0deg) scale(1);
+	    transform-origin: center center !important;
+	    isolation: isolate !important;
+	    filter:
+	      drop-shadow(0 11px 13px rgba(0,0,0,0.56))
+	      drop-shadow(0 0 15px rgba(255,142,35,0.24))
+	      brightness(1);
+	    animation: homeStartButtonForwardDepth 3.65s cubic-bezier(.34, 0, .18, 1) infinite !important;
+	    will-change: transform, filter !important;
+	  }
+	  #menu.menu-fresh .start-btn::before,
+	  #menu.menu-fresh .start-btn::after {
+	    content: none !important;
+	    display: none !important;
+	  }
+	  #menu.menu-fresh .start-visual::before {
+	    content: "" !important;
+	    display: block !important;
+	    position: absolute !important;
+	    inset: 10% 8% 15% !important;
+	    clip-path: polygon(8% 0, 92% 0, 100% 50%, 92% 100%, 8% 100%, 0 50%) !important;
+	    border-radius: 10px !important;
+	    pointer-events: none !important;
+	    background:
+	      linear-gradient(106deg, transparent 0 30%, rgba(255,245,177,0.0) 39%, rgba(255,248,188,0.54) 49%, rgba(255,152,36,0.18) 58%, transparent 73% 100%) !important;
+	    mix-blend-mode: screen !important;
+	    opacity: 0 !important;
+	    transform: translateX(-120%) skewX(-10deg) !important;
+	    filter: blur(0.2px) drop-shadow(0 0 7px rgba(255,184,59,0.24)) !important;
+	    animation: homeStartButtonSheen 3.65s ease-in-out infinite !important;
+	    z-index: 2 !important;
+	  }
+	  #menu.menu-fresh .start-visual::after {
+	    content: "" !important;
+	    display: block !important;
+	    position: absolute !important;
+	    left: -7% !important;
+	    right: -7% !important;
+	    top: -18% !important;
+	    bottom: -22% !important;
+	    height: auto !important;
+	    border-radius: 0 !important;
+	    clip-path: polygon(11% 18%, 89% 18%, 100% 50%, 89% 82%, 11% 82%, 0 50%) !important;
+	    pointer-events: none !important;
+	    background:
+	      radial-gradient(ellipse at 50% 52%, rgba(255,205,78,0.28), rgba(255,125,26,0.12) 42%, transparent 72%),
+	      linear-gradient(90deg, transparent 8%, rgba(255,218,101,0.34) 47%, rgba(255,248,178,0.44) 50%, rgba(255,143,33,0.2) 56%, transparent 92%) !important;
+	    box-shadow:
+	      0 0 16px rgba(255,151,38,0.2),
+	      0 0 28px rgba(255,97,21,0.08) !important;
+	    mix-blend-mode: screen !important;
+	    opacity: 0.14 !important;
+	    transform: scale(0.94) !important;
+	    animation: homeStartButtonHalo 3.65s ease-in-out infinite !important;
+	    z-index: 1 !important;
+	  }
+	  #menu.menu-fresh .side-rail {
+	    left: 50% !important;
+	    bottom: max(0px, env(safe-area-inset-bottom)) !important;
+	    width: min(100vw, 430px) !important;
+	    height: min(38.4vw, 165px) !important;
+	    padding: 0 !important;
+	    display: block !important;
+	    z-index: 13 !important;
+	    overflow: visible !important;
+	    transform: translateX(-50%) !important;
+	    filter: none !important;
+	    background: none !important;
+	    background-color: transparent !important;
+	    box-shadow: none !important;
+	    border: 0 !important;
+	    mix-blend-mode: normal !important;
+	    opacity: 1 !important;
+	  }
+	  #menu.menu-fresh .side-rail::before,
+	  #menu.menu-fresh .side-rail::after {
+	    content: none !important;
+	    display: none !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn {
+	    top: 0 !important;
+	    bottom: auto !important;
+	    width: min(17.68vw, 76px) !important;
+	    height: min(19.53vw, 84px) !important;
+	    padding: 0 !important;
+	    margin: 0 !important;
+	    opacity: 0 !important;
+	    position: absolute !important;
+	    display: block !important;
+	    background: none !important;
+	    background-image: none !important;
+	    background-color: transparent !important;
+	    background-position: center !important;
+	    background-size: 100% 100% !important;
+	    background-repeat: no-repeat !important;
+	    border: 0 !important;
+	    border-radius: 0 !important;
+	    box-shadow: none !important;
+	    appearance: none !important;
+	    -webkit-appearance: none !important;
+	    outline: 0 !important;
+	    text-decoration: none !important;
+	    -webkit-tap-highlight-color: transparent !important;
+	    mix-blend-mode: normal !important;
+	    isolation: isolate !important;
+	    color: transparent !important;
+	    font-size: 0 !important;
+	    filter: none !important;
+	    transform: translateY(0) rotate(0deg) scale(1) !important;
+	    transform-origin: center 42% !important;
+	    animation: none !important;
+	    overflow: visible !important;
+	    will-change: transform, filter !important;
+	  }
+	  #menu.menu-fresh .dock-visual {
+	    top: 0 !important;
+	    bottom: auto !important;
+	    width: min(17.68vw, 76px) !important;
+	    height: min(19.53vw, 84px) !important;
+	    position: absolute !important;
+	    display: block !important;
+	    z-index: 1 !important;
+	    pointer-events: none !important;
+	    background: transparent none center / 100% 100% no-repeat !important;
+	    border: 0 !important;
+	    box-shadow: none !important;
+	    filter:
+	      drop-shadow(0 5px 5px rgba(0,0,0,0.5))
+	      drop-shadow(0 0 5px rgba(255,163,48,0.16))
+	      brightness(1);
+	    transform: translateY(0) rotate(0deg) scale(1);
+	    transform-origin: center 42% !important;
+	    animation: homeDockPieceWobble 5.1s ease-in-out infinite !important;
+	    animation-delay: var(--dock-delay) !important;
+	    will-change: transform, filter !important;
+	  }
+	  #menu.menu-fresh .dock-visual::after {
+	    content: "" !important;
+	    display: block !important;
+	    position: absolute !important;
+	    left: 50% !important;
+	    top: 27% !important;
+	    width: 46% !important;
+	    height: 4% !important;
+	    border-radius: 999px !important;
+	    pointer-events: none !important;
+	    background: linear-gradient(90deg, transparent, rgba(255,247,184,0.5), rgba(255,156,39,0.18), transparent) !important;
+	    box-shadow: 0 0 6px rgba(255,184,62,0.28) !important;
+	    mix-blend-mode: screen !important;
+	    opacity: 0 !important;
+	    transform: translateX(-120%) rotate(-16deg) !important;
+	    animation: homeDockPieceSheen 5.6s ease-in-out infinite !important;
+	    animation-delay: var(--dock-glint-delay) !important;
+	  }
+	  #menu.menu-fresh #btnGeneralManage,
+	  #menu.menu-fresh .dock-visual-general {
+	    left: 1.63% !important;
+	    --dock-delay: 0s;
+	    --dock-glint-delay: 0.9s;
+	  }
+	  #menu.menu-fresh .dock-visual-general {
+	    background-image: url('./assets/ui/home_dock_general_cutout_motion_v6.png') !important;
+	  }
+	  #menu.menu-fresh #btnEnhance,
+	  #menu.menu-fresh .dock-visual-enhance {
+	    left: 19.88% !important;
+	    --dock-delay: 0.18s;
+	    --dock-glint-delay: 1.35s;
+	  }
+	  #menu.menu-fresh .dock-visual-enhance {
+	    background-image: url('./assets/ui/home_dock_enhance_cutout_motion_v6.png') !important;
+	  }
+	  #menu.menu-fresh #btnPowerManage,
+	  #menu.menu-fresh .dock-visual-strategy {
+	    left: 38.95% !important;
+	    --dock-delay: 0.36s;
+	    --dock-glint-delay: 1.8s;
+	  }
+	  #menu.menu-fresh .dock-visual-strategy {
+	    background-image: url('./assets/ui/home_dock_strategy_cutout_motion_v6.png') !important;
+	  }
+	  #menu.menu-fresh #btnMainExchange,
+	  #menu.menu-fresh .dock-visual-shop {
+	    left: 57.79% !important;
+	    --dock-delay: 0.54s;
+	    --dock-glint-delay: 2.25s;
+	  }
+	  #menu.menu-fresh .dock-visual-shop {
+	    background-image: url('./assets/ui/home_dock_shop_cutout_motion_v6.png') !important;
+	  }
+	  #menu.menu-fresh #btnMainSettings,
+	  #menu.menu-fresh .dock-visual-settings {
+	    left: 76.05% !important;
+	    --dock-delay: 0.72s;
+	    --dock-glint-delay: 2.7s;
+	  }
+	  #menu.menu-fresh .dock-visual-settings {
+	    background-image: url('./assets/ui/home_dock_settings_cutout_motion_v6.png') !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::before {
+	    content: none !important;
+	    display: none !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn::after {
+	    content: none !important;
+	    display: none !important;
+	  }
+	  #menu.menu-fresh .start-btn:active {
+	    transform: translateX(-50%) translateY(3px) rotate(0deg) scale(0.985) !important;
+	    filter: brightness(0.96) drop-shadow(0 7px 9px rgba(0,0,0,0.52)) !important;
+	  }
+	  #menu.menu-fresh .start-btn:active + .start-visual {
+	    transform: translateX(-50%) translateY(3px) rotate(0deg) scale(0.975) !important;
+	    filter:
+	      drop-shadow(0 7px 9px rgba(0,0,0,0.52))
+	      drop-shadow(0 0 12px rgba(255,126,30,0.22))
+	      brightness(0.96) !important;
+	    animation-play-state: paused !important;
+	  }
+	  #menu.menu-fresh .side-rail-btn:active {
+	    transform: translateY(2px) rotate(0deg) scale(0.97) !important;
+	    filter: brightness(0.94) drop-shadow(0 4px 5px rgba(0,0,0,0.5)) !important;
+	  }
+	  @keyframes homeLowerSparkBed {
+	    0%, 100% { opacity: 0.96; transform: translateX(-50%) translateY(0); filter: drop-shadow(0 12px 18px rgba(0,0,0,0.5)) brightness(1); }
+	    50% { opacity: 1; transform: translateX(-50%) translateY(-1px); filter: drop-shadow(0 13px 18px rgba(0,0,0,0.52)) brightness(1.05); }
+	  }
+	  @keyframes homeStartButtonWobble {
+	    0%, 100% {
+	      transform: translateX(-50%) translateY(0) rotate(0deg) scale(1);
+	      filter: drop-shadow(0 10px 12px rgba(0,0,0,0.54)) drop-shadow(0 0 12px rgba(255,142,35,0.18)) brightness(1);
+	    }
+	    28% {
+	      transform: translateX(-50%) translateY(-2px) rotate(-0.45deg) scale(1.006);
+	      filter: drop-shadow(0 12px 14px rgba(0,0,0,0.56)) drop-shadow(0 0 16px rgba(255,169,54,0.26)) brightness(1.04);
+	    }
+	    54% {
+	      transform: translateX(-50%) translateY(-5px) rotate(0.42deg) scale(1.02);
+	      filter: drop-shadow(0 15px 16px rgba(0,0,0,0.58)) drop-shadow(0 0 22px rgba(255,179,61,0.34)) brightness(1.09);
+	    }
+	    78% {
+	      transform: translateX(-50%) translateY(-1px) rotate(-0.2deg) scale(1.006);
+	      filter: drop-shadow(0 11px 13px rgba(0,0,0,0.55)) drop-shadow(0 0 14px rgba(255,151,39,0.22)) brightness(1.03);
+	    }
+	  }
+	  @keyframes homeStartButtonSheen {
+	    0%, 24% { opacity: 0; transform: translateX(-115%) skewX(-8deg); }
+	    42% { opacity: 0.38; }
+	    62%, 100% { opacity: 0; transform: translateX(112%) skewX(-8deg); }
+	  }
+	  @keyframes homeStartButtonEdge {
+	    0%, 100% { opacity: 0.24; transform: scaleX(0.86); }
+	    54% { opacity: 0.78; transform: scaleX(1.05); }
+	  }
+	  @keyframes homeStartButtonForwardDepth {
+	    0%, 100% {
+	      transform: translateX(-50%) translateY(0) rotate(0deg) scale(1);
+	      filter:
+	        drop-shadow(0 11px 13px rgba(0,0,0,0.56))
+	        drop-shadow(0 0 15px rgba(255,142,35,0.24))
+	        brightness(1);
+	    }
+	    14% {
+	      transform: translateX(-50%) translateY(0) rotate(0deg) scale(0.998);
+	      filter:
+	        drop-shadow(0 10px 12px rgba(0,0,0,0.55))
+	        drop-shadow(0 0 13px rgba(255,135,34,0.2))
+	        brightness(0.995);
+	    }
+	    44% {
+	      transform: translateX(-50%) translateY(0) rotate(0deg) scale(1.024);
+	      filter:
+	        drop-shadow(0 16px 20px rgba(0,0,0,0.62))
+	        drop-shadow(0 0 27px rgba(255,190,70,0.42))
+	        brightness(1.075)
+	        saturate(1.04);
+	    }
+	    66% {
+	      transform: translateX(-50%) translateY(0) rotate(0deg) scale(1.009);
+	      filter:
+	        drop-shadow(0 13px 16px rgba(0,0,0,0.58))
+	        drop-shadow(0 0 19px rgba(255,160,45,0.28))
+	        brightness(1.032)
+	        saturate(1.018);
+	    }
+	    84% {
+	      transform: translateX(-50%) translateY(0) rotate(0deg) scale(0.999);
+	      filter:
+	        drop-shadow(0 10px 13px rgba(0,0,0,0.55))
+	        drop-shadow(0 0 14px rgba(255,142,35,0.21))
+	        brightness(1);
+	    }
+	  }
+	  @keyframes homeStartButtonHalo {
+	    0%, 100% {
+	      opacity: 0.1;
+	      transform: scale(0.94);
+	    }
+	    14% {
+	      opacity: 0.08;
+	      transform: scale(0.91);
+	    }
+	    44% {
+	      opacity: 0.34;
+	      transform: scale(1.055);
+	    }
+	    66% {
+	      opacity: 0.18;
+	      transform: scale(1.012);
+	    }
+	  }
+	  @keyframes homeDockPieceWobble {
+	    0%, 100% {
+	      transform: translateY(0) rotate(0deg) scale(1);
+	      filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)) drop-shadow(0 0 5px rgba(255,163,48,0.16)) brightness(1);
+	    }
+	    34% {
+	      transform: translateY(-0.8px) rotate(-0.18deg) scale(1.004);
+	      filter: drop-shadow(0 5.5px 6px rgba(0,0,0,0.51)) drop-shadow(0 0 6px rgba(255,180,59,0.18)) brightness(1.018);
+	    }
+	    58% {
+	      transform: translateY(-0.35px) rotate(0.14deg) scale(1.002);
+	      filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)) drop-shadow(0 0 5.5px rgba(255,154,43,0.15)) brightness(1.01);
+	    }
+	  }
+	  @keyframes homeDockPieceAura {
+	    0%, 100% { opacity: 0.18; transform: translateX(-50%) rotate(45deg) scale(0.78); }
+	    34% { opacity: 0.58; transform: translateX(-50%) rotate(45deg) scale(1.02); }
+	  }
+	  @keyframes homeDockPieceSheen {
+	    0%, 54% { opacity: 0; transform: translateX(-112%) rotate(-16deg); }
+	    66% { opacity: 0.32; }
+	    82%, 100% { opacity: 0; transform: translateX(48%) rotate(-16deg); }
+	  }
+	  @media (max-width: 390px), (max-height: 760px) {
+	    #menu.menu-fresh .start-btn,
+	    #menu.menu-fresh .start-visual {
+	      bottom: min(37.8vw, 147px) !important;
+	      width: min(70vw, 273px) !important;
+	      height: min(20.93vw, 82px) !important;
+	    }
+	    #menu.menu-fresh .side-rail {
+	      width: min(100vw, 390px) !important;
+	      height: min(38.4vw, 150px) !important;
+	    }
+	    #menu.menu-fresh .side-rail-btn,
+	    #menu.menu-fresh .dock-visual {
+	      width: min(17.68vw, 69px) !important;
+	      height: min(19.53vw, 76px) !important;
+	    }
+	  }
+	  @media (prefers-reduced-motion: reduce) {
+	    #menu.menu-fresh > .main-bg::before,
+	    #menu.menu-fresh .start-btn,
+	    #menu.menu-fresh .start-visual,
+	    #menu.menu-fresh .start-visual::before,
+	    #menu.menu-fresh .start-visual::after,
+	    #menu.menu-fresh .start-btn::before,
+	    #menu.menu-fresh .start-btn::after,
+	    #menu.menu-fresh .dock-visual,
+	    #menu.menu-fresh .dock-visual::after,
+	    #menu.menu-fresh .side-rail-btn,
+	    #menu.menu-fresh .side-rail-btn::before,
+	    #menu.menu-fresh .side-rail-btn::after {
+	      animation: none !important;
+	    }
+	  }
+
+	  /* Tutorial entry: remove it from the home CTA stack and expose it as a stage-screen action. */
+	  #menu.menu-fresh .tutorial-btn {
+	    display: none !important;
+	    visibility: hidden !important;
     pointer-events: none !important;
   }
   #stageSelect .stage-quick-actions {
@@ -25731,6 +28446,281 @@ function closeTutorialOffer(accept) {
       min-height: 100px !important;
       padding: 15px 14px 17px !important;
       font-size: 16px !important;
+    }
+  }
+
+  /* Duel intro cinematic pass: battlefield key art + wider commander standoff. */
+  #introDialog {
+    --idg-bg-image: url('./assets/battle/intro_duel_bg.png');
+    --idg-left-glow: rgba(255, 45, 22, 0.34);
+    --idg-right-glow: rgba(35, 160, 255, 0.30);
+    background:
+      linear-gradient(180deg, rgba(3, 5, 9, 0.22) 0%, rgba(3, 5, 9, 0.10) 38%, rgba(3, 5, 9, 0.66) 100%),
+      radial-gradient(ellipse at 22% 74%, var(--idg-left-glow), transparent 34%),
+      radial-gradient(ellipse at 78% 72%, var(--idg-right-glow), transparent 34%),
+      var(--idg-bg-image) center center / cover no-repeat,
+      #05070c !important;
+    backdrop-filter: saturate(1.18) contrast(1.04) !important;
+  }
+  #introDialog.intro-duel-night {
+    --idg-bg-image: url('./assets/battle/intro_duel_bg.png');
+    --idg-left-glow: rgba(255, 45, 22, 0.34);
+    --idg-right-glow: rgba(35, 160, 255, 0.30);
+  }
+  #introDialog.intro-duel-day {
+    --idg-bg-image: url('./assets/battle/intro_duel_bg_day.png');
+    --idg-left-glow: rgba(255, 93, 25, 0.24);
+    --idg-right-glow: rgba(54, 143, 255, 0.20);
+  }
+  #introDialog.intro-duel-snow {
+    --idg-bg-image: url('./assets/battle/intro_duel_bg_snow.png');
+    --idg-left-glow: rgba(255, 74, 54, 0.27);
+    --idg-right-glow: rgba(132, 215, 255, 0.26);
+  }
+  #introDialog.intro-duel-storm {
+    --idg-bg-image: url('./assets/battle/intro_duel_bg_storm.png');
+    --idg-left-glow: rgba(255, 67, 24, 0.36);
+    --idg-right-glow: rgba(70, 176, 255, 0.32);
+  }
+  #introDialog::before {
+    background:
+      radial-gradient(circle at 48% 58%, rgba(255, 210, 84, 0.22), transparent 23%),
+      radial-gradient(circle at 18% 86%, rgba(255, 72, 30, 0.26), transparent 21%),
+      radial-gradient(circle at 81% 84%, rgba(69, 183, 255, 0.22), transparent 23%),
+      repeating-linear-gradient(106deg, rgba(255,255,255,0.08) 0 1px, transparent 1px 19px),
+      repeating-linear-gradient(78deg, rgba(255, 185, 76, 0.14) 0 1px, transparent 1px 73px) !important;
+    mix-blend-mode: screen !important;
+    opacity: 0.72 !important;
+    animation: idgStormSweep 3.8s linear infinite !important;
+  }
+  #introDialog::after {
+    top: 51% !important;
+    width: 98px !important;
+    height: 98px !important;
+    border-color: rgba(255, 215, 96, 0.78) !important;
+    background:
+      radial-gradient(circle at 50% 34%, rgba(255, 210, 94, 0.15), transparent 28%),
+      radial-gradient(circle, rgba(36, 11, 7, 0.90), rgba(4, 6, 10, 0.94)) !important;
+    box-shadow:
+      0 0 30px rgba(255, 76, 35, 0.44),
+      0 0 92px rgba(255, 191, 64, 0.22),
+      inset 0 0 22px rgba(255, 216, 99, 0.17) !important;
+  }
+  @keyframes idgStormSweep {
+    from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
+    to { background-position: 0 0, 0 0, 0 0, -70px 0, 56px 0; }
+  }
+  #introDialog .idg-stage {
+    width: min(1180px, 100%) !important;
+    max-width: min(1180px, calc(100vw - 28px)) !important;
+    isolation: isolate !important;
+  }
+  #introDialog .idg-stage::before {
+    top: 6% !important;
+    bottom: 5% !important;
+    width: clamp(58px, 8vw, 136px) !important;
+    transform: translateX(-50%) rotate(11deg) !important;
+    background:
+      linear-gradient(90deg, transparent, rgba(255, 98, 42, 0.20), rgba(255, 228, 118, 0.72), rgba(80, 199, 255, 0.25), transparent) !important;
+    filter: blur(0.2px) !important;
+    box-shadow:
+      0 0 34px rgba(255, 196, 67, 0.58),
+      0 0 84px rgba(255, 70, 28, 0.24) !important;
+    opacity: 0.96 !important;
+    z-index: 1 !important;
+  }
+  #introDialog .idg-stage::after {
+    top: 51% !important;
+    width: 172px !important;
+    height: 172px !important;
+    border-color: rgba(255, 218, 108, 0.58) !important;
+    box-shadow:
+      0 0 36px rgba(255, 88, 35, 0.34),
+      0 0 70px rgba(74, 185, 255, 0.20),
+      inset 0 0 24px rgba(255, 232, 146, 0.16) !important;
+  }
+  #introDialog.intro-duel-day .idg-stage::before {
+    width: clamp(26px, 4vw, 72px) !important;
+    background:
+      linear-gradient(180deg, transparent, rgba(255, 232, 155, 0.30), transparent) !important;
+    box-shadow:
+      0 0 28px rgba(255, 215, 104, 0.30),
+      0 0 64px rgba(255, 154, 38, 0.16) !important;
+    opacity: 0.42 !important;
+  }
+  #introDialog.intro-duel-snow .idg-stage::before {
+    width: clamp(22px, 3.4vw, 58px) !important;
+    background:
+      linear-gradient(180deg, transparent, rgba(204, 235, 255, 0.30), transparent) !important;
+    box-shadow:
+      0 0 26px rgba(146, 212, 255, 0.25),
+      0 0 62px rgba(255, 255, 255, 0.12) !important;
+    opacity: 0.36 !important;
+  }
+  #introDialog.intro-duel-storm .idg-stage::before {
+    width: clamp(30px, 4.6vw, 78px) !important;
+    background:
+      linear-gradient(180deg, transparent, rgba(255, 180, 86, 0.30), transparent) !important;
+    box-shadow:
+      0 0 30px rgba(255, 132, 54, 0.28),
+      0 0 74px rgba(70, 160, 255, 0.12) !important;
+    opacity: 0.44 !important;
+  }
+  #introDialog .idg-bubble {
+    left: 50% !important;
+    right: auto !important;
+    top: max(78px, calc(env(safe-area-inset-top) + 68px)) !important;
+    width: min(660px, calc(100vw - 36px)) !important;
+    min-height: 126px !important;
+    padding: 22px 28px 24px !important;
+    transform: translateX(-50%) !important;
+    border: 2px solid rgba(255, 217, 105, 0.92) !important;
+    border-radius: 8px !important;
+    background:
+      linear-gradient(90deg, rgba(255, 66, 37, 0.08), transparent 22%, transparent 78%, rgba(68, 185, 255, 0.10)),
+      linear-gradient(135deg, rgba(255,255,255,0.11), rgba(255,255,255,0.01)),
+      linear-gradient(180deg, rgba(48, 25, 14, 0.96), rgba(14, 10, 10, 0.98)) !important;
+    box-shadow:
+      0 0 0 2px rgba(4, 5, 9, 0.88),
+      0 0 34px rgba(255, 96, 38, 0.22),
+      0 16px 30px rgba(0,0,0,0.60),
+      inset 0 1px 0 rgba(255,255,255,0.16) !important;
+    font-size: 24px !important;
+    line-height: 1.46 !important;
+    letter-spacing: 0 !important;
+    z-index: 5 !important;
+  }
+  #introDialog .idg-line {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  #introDialog .idg-bubble::before,
+  #introDialog .idg-bubble::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    height: 1px !important;
+    border: 0 !important;
+    background: linear-gradient(90deg, transparent, rgba(255, 219, 113, 0.82), transparent) !important;
+    pointer-events: none !important;
+  }
+  #introDialog .idg-bubble::before { top: 8px !important; }
+  #introDialog .idg-bubble::after { bottom: 8px !important; }
+  #introDialog.enemy-speaking .idg-bubble {
+    border-color: rgba(255, 92, 58, 0.96) !important;
+    box-shadow:
+      0 0 0 2px rgba(4, 5, 9, 0.88),
+      0 0 42px rgba(255, 62, 34, 0.36),
+      0 16px 30px rgba(0,0,0,0.60),
+      inset 0 1px 0 rgba(255,255,255,0.16) !important;
+  }
+  #introDialog.player-speaking .idg-bubble {
+    border-color: rgba(77, 199, 255, 0.96) !important;
+    box-shadow:
+      0 0 0 2px rgba(4, 5, 9, 0.88),
+      0 0 42px rgba(70, 190, 255, 0.36),
+      0 16px 30px rgba(0,0,0,0.60),
+      inset 0 1px 0 rgba(255,255,255,0.16) !important;
+  }
+  #introDialog .idg-portrait {
+    bottom: calc(42px + env(safe-area-inset-bottom)) !important;
+    width: clamp(168px, 16vw, 258px) !important;
+    max-width: none !important;
+    aspect-ratio: 0.74 !important;
+    border-radius: 12px !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01)),
+      radial-gradient(circle at 50% 26%, rgba(255, 210, 96, 0.24), transparent 43%),
+      linear-gradient(180deg, rgba(31, 18, 12, 0.98), rgba(5, 6, 9, 0.98)) !important;
+  }
+  #introDialog .idg-portrait.idg-left {
+    left: clamp(16px, 5vw, 76px) !important;
+  }
+  #introDialog .idg-portrait.idg-right {
+    right: clamp(16px, 5vw, 76px) !important;
+  }
+  #introDialog .idg-portrait.idg-left.active {
+    box-shadow:
+      0 0 0 2px rgba(255, 82, 55, 0.95),
+      0 0 32px rgba(255, 62, 34, 0.58),
+      0 0 86px rgba(255, 39, 24, 0.24),
+      0 20px 36px rgba(0,0,0,0.74) !important;
+  }
+  #introDialog .idg-portrait.idg-right.active {
+    box-shadow:
+      0 0 0 2px rgba(71, 197, 255, 0.96),
+      0 0 32px rgba(71, 197, 255, 0.58),
+      0 0 86px rgba(56, 166, 255, 0.24),
+      0 20px 36px rgba(0,0,0,0.74) !important;
+  }
+  #introDialog .idg-name {
+    border-radius: 6px !important;
+    letter-spacing: 0 !important;
+  }
+  #introDialog .idg-skip {
+    border-color: rgba(255, 225, 126, 0.68) !important;
+    background:
+      linear-gradient(180deg, rgba(20, 16, 10, 0.88), rgba(4, 6, 10, 0.86)) !important;
+    color: #fff4c8 !important;
+  }
+  @media (min-width: 720px) and (orientation: landscape) {
+    #introDialog .idg-stage {
+      max-width: min(1240px, calc(100vw - 60px)) !important;
+      padding-top: max(58px, calc(env(safe-area-inset-top) + 48px)) !important;
+    }
+    #introDialog .idg-bubble {
+      top: max(70px, calc(env(safe-area-inset-top) + 62px)) !important;
+      width: min(680px, 48vw) !important;
+      min-height: 132px !important;
+      font-size: 24px !important;
+    }
+    #introDialog .idg-portrait {
+      bottom: clamp(44px, 7vh, 88px) !important;
+      width: clamp(190px, 15vw, 268px) !important;
+    }
+    #introDialog .idg-portrait.idg-left {
+      left: clamp(32px, 6vw, 96px) !important;
+    }
+    #introDialog .idg-portrait.idg-right {
+      right: clamp(32px, 6vw, 96px) !important;
+    }
+  }
+  @media (max-width: 520px), (max-height: 760px) {
+    #introDialog .idg-stage {
+      max-width: min(520px, calc(100vw - 18px)) !important;
+    }
+    #introDialog .idg-stage::before {
+      width: 54px !important;
+    }
+    #introDialog .idg-stage::after {
+      width: 136px !important;
+      height: 136px !important;
+    }
+    #introDialog::after {
+      width: 86px !important;
+      height: 86px !important;
+    }
+    #introDialog .idg-bubble {
+      left: 12px !important;
+      right: 12px !important;
+      width: auto !important;
+      min-height: 108px !important;
+      padding: 17px 16px 19px !important;
+      transform: none !important;
+      font-size: 18px !important;
+    }
+    #introDialog .idg-portrait {
+      width: min(42vw, 184px) !important;
+      bottom: calc(34px + env(safe-area-inset-bottom)) !important;
+    }
+    #introDialog .idg-portrait.idg-left {
+      left: 12px !important;
+    }
+    #introDialog .idg-portrait.idg-right {
+      right: 12px !important;
     }
   }
 

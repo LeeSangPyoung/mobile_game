@@ -37,3 +37,13 @@ assets/generals/battle_faces/
 
 # 로컬 자산 백업 스냅샷 (대용량, 추적 제외)
 asset_backups/
+
+# 작업용 대용량 장수 이미지 (게임 미참조 — 빌드/깃 제외)
+assets/generals/new_characters/
+assets/generals/mainstyle_fullbody/
+assets/generals/mainstyle_halfbody/
+assets/generals/generated_fullbody_mainstyle/
+assets/generals/halfbodies/
+assets/generals/style_refs/
+# pid/임시
+*.pid
