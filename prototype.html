@@ -1533,7 +1533,7 @@
     display: block; font-size: 9px; opacity: 0.75;
     font-family: 'Noto Serif KR', serif; font-weight: 500; letter-spacing: 0;
   }
-  /* 전쟁 캠페인 루트 — 배경 길 위에 군사 작전선처럼 얹음 */
+  /* 전쟁 캠페인 루트 — 배경 길 위에 행군 자국처럼 얹음 */
   #stageSelect .stage-map .map-path {
     display: block;
     position: absolute;
@@ -1542,7 +1542,6 @@
     height: 100%;
     pointer-events: none;
     z-index: 2;
-    filter: drop-shadow(0 2px 2px rgba(20, 8, 2, 0.55));
   }
   #stageSelect .region-labels { display: none; }
 
@@ -1556,19 +1555,50 @@
   }
   #stageSelect .stage-map .map-path .road {
     fill: none;
-    stroke: rgba(76, 35, 12, 0.66);
-    stroke-width: 4.5;
-    stroke-dasharray: 2 7;
     stroke-linecap: round;
     stroke-linejoin: round;
     vector-effect: non-scaling-stroke;
-    opacity: 0.9;
   }
-  #stageSelect .stage-map .map-path .road-done {
-    stroke: rgba(205, 28, 22, 0.86);
-    stroke-width: 5.5;
-    stroke-dasharray: 8 5;
-    filter: drop-shadow(0 0 5px rgba(255, 184, 76, 0.75));
+  #stageSelect .stage-map .map-path .route-shadow {
+    stroke: rgba(18, 11, 6, 0.72);
+    stroke-width: 9.5;
+    opacity: 0.42;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.65));
+  }
+  #stageSelect .stage-map .map-path .route-base {
+    stroke: rgba(124, 82, 42, 0.54);
+    stroke-width: 5.8;
+    opacity: 0.72;
+  }
+  #stageSelect .stage-map .map-path .route-rest.route-base {
+    stroke: rgba(82, 74, 58, 0.5);
+    stroke-width: 3.8;
+    stroke-dasharray: 18 18;
+    opacity: 0.42;
+  }
+  #stageSelect .stage-map .map-path .route-done.route-base {
+    stroke: rgba(178, 105, 42, 0.72);
+    stroke-width: 6.2;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45));
+  }
+  #stageSelect .stage-map .map-path .route-flow {
+    stroke: rgba(255, 214, 111, 0.92);
+    stroke-width: 2.8;
+    stroke-dasharray: 18 24;
+    animation: routeMarch 2.6s linear infinite, routeGlow 1.8s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 6px rgba(255, 180, 62, 0.72));
+  }
+  @keyframes routeMarch {
+    to { stroke-dashoffset: -84; }
+  }
+  @keyframes routeGlow {
+    from { opacity: 0.58; }
+    to { opacity: 0.98; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #stageSelect .stage-map .map-path .route-flow {
+      animation: none;
+    }
   }
 
   /* ===== 여정 지도 핀 — 컴팩트 동그라미 배지 (지도 일러스트 위) ===== */
@@ -6968,14 +6998,30 @@
     z-index: 3 !important;
   }
   #stageSelect .stage-map .map-path .road {
-    stroke: rgba(255,255,255,0.46) !important;
-    stroke-width: 4 !important;
-    stroke-dasharray: 1 8 !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
   }
-  #stageSelect .stage-map .map-path .road-done {
-    stroke: rgba(247,201,90,0.94) !important;
-    stroke-width: 5 !important;
-    filter: drop-shadow(0 0 8px rgba(247,201,90,0.62)) !important;
+  #stageSelect .stage-map .map-path .route-shadow {
+    stroke: rgba(12, 7, 4, 0.78) !important;
+    stroke-width: 9.5 !important;
+    opacity: 0.42 !important;
+  }
+  #stageSelect .stage-map .map-path .route-rest.route-base {
+    stroke: rgba(84, 76, 59, 0.5) !important;
+    stroke-width: 3.8 !important;
+    stroke-dasharray: 18 18 !important;
+    opacity: 0.42 !important;
+  }
+  #stageSelect .stage-map .map-path .route-done.route-base {
+    stroke: rgba(178, 105, 42, 0.72) !important;
+    stroke-width: 6.2 !important;
+    stroke-dasharray: none !important;
+  }
+  #stageSelect .stage-map .map-path .route-flow {
+    stroke: rgba(255, 214, 111, 0.92) !important;
+    stroke-width: 2.8 !important;
+    stroke-dasharray: 18 24 !important;
+    filter: drop-shadow(0 0 6px rgba(255,180,62,0.72)) !important;
   }
   #stageSelect .stage {
     z-index: 5 !important;
@@ -13935,30 +13981,56 @@ const CHAPTER_SYNOPSIS = {
   9: '용암과 화산재 사이로 최후의 길을 연다',
   10: '무너지는 황궁 앞에서 천하의 결말을 가른다',
 };
-/* 핀 좌표 — 배경 일러스트의 S자 길 중앙을 따라 배치.
+/* 핀 좌표 — 배경 일러스트의 실제 길 중앙선을 따라 배치.
    1번이 맨 아래, 20번이 맨 위. */
-const PIN_POSITIONS = [
+const PIN_POSITIONS_CH1 = [
   /* 1 */ { x: 50, y: 94 },
-  /* 2 */ { x: 54, y: 89 },
-  /* 3 */ { x: 45, y: 76 },
-  /* 4 */ { x: 43, y: 71 },
-  /* 5 */ { x: 49, y: 66 },
-  /* 6 */ { x: 58, y: 62 },
-  /* 7 */ { x: 52, y: 58 },
-  /* 8 */ { x: 44, y: 54 },
-  /* 9 */ { x: 43, y: 50 },
-  /* 10 */ { x: 54, y: 46 },
-  /* 11 */ { x: 52, y: 42 },
-  /* 12 */ { x: 55, y: 38 },
-  /* 13 */ { x: 57, y: 34 },
-  /* 14 */ { x: 48, y: 30 },
+  /* 2 */ { x: 57, y: 89 },
+  /* 3 */ { x: 42, y: 76 },
+  /* 4 */ { x: 49, y: 71 },
+  /* 5 */ { x: 57, y: 66 },
+  /* 6 */ { x: 56, y: 62 },
+  /* 7 */ { x: 45, y: 58 },
+  /* 8 */ { x: 24, y: 54 },
+  /* 9 */ { x: 30, y: 50 },
+  /* 10 */ { x: 48, y: 46 },
+  /* 11 */ { x: 65, y: 42 },
+  /* 12 */ { x: 58, y: 38 },
+  /* 13 */ { x: 47, y: 34 },
+  /* 14 */ { x: 54, y: 30 },
   /* 15 */ { x: 45, y: 27 },
-  /* 16 */ { x: 57, y: 24 },
-  /* 17 */ { x: 57, y: 21 },
-  /* 18 */ { x: 62, y: 18 },
+  /* 16 */ { x: 50, y: 24 },
+  /* 17 */ { x: 58, y: 21 },
+  /* 18 */ { x: 66, y: 18 },
   /* 19 */ { x: 64, y: 15 },
-  /* 20 */ { x: 50, y: 12 },
+  /* 20 */ { x: 54, y: 12 },
 ];
+const PIN_POSITIONS_MOUNTAIN = [
+  /* 1 */ { x: 15, y: 94 },
+  /* 2 */ { x: 55, y: 89 },
+  /* 3 */ { x: 42, y: 76 },
+  /* 4 */ { x: 49, y: 71 },
+  /* 5 */ { x: 57, y: 66 },
+  /* 6 */ { x: 56, y: 62 },
+  /* 7 */ { x: 45, y: 58 },
+  /* 8 */ { x: 24, y: 54 },
+  /* 9 */ { x: 30, y: 50 },
+  /* 10 */ { x: 48, y: 46 },
+  /* 11 */ { x: 65, y: 42 },
+  /* 12 */ { x: 58, y: 38 },
+  /* 13 */ { x: 47, y: 34 },
+  /* 14 */ { x: 54, y: 30 },
+  /* 15 */ { x: 45, y: 27 },
+  /* 16 */ { x: 50, y: 24 },
+  /* 17 */ { x: 58, y: 21 },
+  /* 18 */ { x: 66, y: 18 },
+  /* 19 */ { x: 64, y: 15 },
+  /* 20 */ { x: 54, y: 12 },
+];
+function stageMapPinPosition(ch, local) {
+  const route = ch === 1 ? PIN_POSITIONS_CH1 : PIN_POSITIONS_MOUNTAIN;
+  return route[local] || route[route.length - 1];
+}
 function getCurrentChapter() {
   return Math.max(1, SAVE.currentChapter || 1);
 }
@@ -14110,7 +14182,7 @@ function renderStageGrid() {
       for (let i = startIdx; i < endIdx; i++) {
         if (!isCampaignStageIndex(i)) continue;
         const local = i - startIdx;
-        const p = PIN_POSITIONS[local] || PIN_POSITIONS[PIN_POSITIONS.length-1];
+        const p = stageMapPinPosition(ch, local);
         pts.push({ x: p.x, y: p.y });
       }
       // 하나의 path 문자열 구성, 클리어 구간만 별도 색
@@ -14129,15 +14201,22 @@ function renderStageGrid() {
       const donePts = pts.slice(0, lastDoneIdx + 1);
       const restPts = pts.slice(lastDoneIdx);
       const ns = 'http://www.w3.org/2000/svg';
-      const restEl = document.createElementNS(ns, 'path');
-      restEl.setAttribute('d', buildPath(restPts));
-      restEl.setAttribute('class', 'road');
-      svg.appendChild(restEl);
+      const appendRoutePath = (d, className) => {
+        if (!d || !/[QLC]/.test(d)) return null;
+        const el = document.createElementNS(ns, 'path');
+        el.setAttribute('d', d);
+        el.setAttribute('class', className);
+        svg.appendChild(el);
+        return el;
+      };
+      const restD = buildPath(restPts);
+      appendRoutePath(restD, 'road route-shadow route-rest');
+      appendRoutePath(restD, 'road route-base route-rest');
       if (donePts.length > 1) {
-        const doneEl = document.createElementNS(ns, 'path');
-        doneEl.setAttribute('d', buildPath(donePts));
-        doneEl.setAttribute('class', 'road road-done');
-        svg.appendChild(doneEl);
+        const doneD = buildPath(donePts);
+        appendRoutePath(doneD, 'road route-shadow route-done');
+        appendRoutePath(doneD, 'road route-base route-done');
+        appendRoutePath(doneD, 'road route-flow route-done');
       }
     }
 
@@ -14170,7 +14249,7 @@ function renderStageGrid() {
 
       // 핀 위치
       const local = i - startIdx;
-      const p = PIN_POSITIONS[local] || PIN_POSITIONS[PIN_POSITIONS.length-1];
+      const p = stageMapPinPosition(ch, local);
       cell.style.left = p.x + '%';
       cell.style.top  = p.y + '%';   // PIN_POSITIONS.y는 0(위)~100(아래)
 
@@ -14381,7 +14460,11 @@ function resetStage() {
     c.wallMax = Math.floor(base);
     c.wallHP = c.wallMax;
     c._fireSeeds = null;
+    c._smokeSeeds = null;
     c._captureFlash = null;
+    c._captureSmokeOnly = false;
+    c._captureSmokeStarted = 0;
+    c._reigniteAt = 0;
   });
   EDGES_DEF = st.edges;
   armies.length = 0;
@@ -15499,6 +15582,13 @@ let castles = [];
 let EDGES_DEF = [];
 
 function totalTroops(c) { return c.troops.spear + c.troops.cavalry + c.troops.archer; }
+const CASTLE_AUTO_GROW_CAP = 99;
+function addTroopsToCastle(c, unit, count) {
+  if (!c || !unit || count <= 0) return 0;
+  const added = Math.floor(count);
+  c.troops[unit] = (c.troops[unit] || 0) + added;
+  return added;
+}
 function majorityUnit(c) {
   let best = 'spear', n = -1;
   for (const k of UNIT_KEYS) if (c.troops[k] > n) { n = c.troops[k]; best = k; }
@@ -15951,85 +16041,74 @@ function spawnCastleExplosionPulse(cwx, cwy, r, winnerFaction, opts = {}) {
   const scale = opts.scale || 1;
   const ex = cwx + (opts.ox || 0) * r;
   const ey = cwy - r * 0.18 + (opts.oy || 0) * r;
-  const label = opts.label || '펑!';
-  spawnShockRing(ex, cwy + r * (0.34 + (opts.oy || 0) * 0.22), '#fff0a8', { rx: 150 * scale, ry: 50 * scale, line: 7.4 * scale, life: 0.82 });
-  spawnShockRing(ex, cwy + r * (0.48 + (opts.oy || 0) * 0.18), '#5b3a28', { rx: 180 * scale, ry: 42 * scale, line: 5.8 * scale, life: 1.02 });
+  spawnShockRing(ex, cwy + r * (0.34 + (opts.oy || 0) * 0.22), '#c9bca8', { rx: 138 * scale, ry: 44 * scale, line: 5.8 * scale, life: 0.78 });
+  spawnShockRing(ex, cwy + r * (0.48 + (opts.oy || 0) * 0.18), '#5b5046', { rx: 164 * scale, ry: 38 * scale, line: 4.8 * scale, life: 1.0 });
   pushBattleFx({
     kind: 'breachFlash',
     x: ex,
     y: ey - r * 0.04,
-    rx: r * 1.5 * scale,
-    ry: r * 1.12 * scale,
-    color: '#ffb84a',
-    life: 0.34,
-    maxLife: 0.34,
+    rx: r * 1.12 * scale,
+    ry: r * 0.82 * scale,
+    color: '#d8c7a6',
+    life: 0.2,
+    maxLife: 0.2,
   });
-  pushBattleFx({
-    kind: 'castleExplosion',
-    x: ex,
-    y: ey,
-    radius: r * 1.58 * scale,
-    color: winnerFaction.light || '#ffd35f',
-    life: 0.92,
-    maxLife: 0.92,
-  });
-  spawnImpactText(ex, ey - r * (0.72 + scale * 0.12), label, '#fff2a8', { size: 25 + 7 * scale, life: 0.82, vy: -38 });
 
-  for (let k = 0; k < Math.round(50 * scale); k++) {
+  for (let k = 0; k < Math.round(42 * scale); k++) {
     const ang = Math.random() * Math.PI * 2;
-    const sp = (70 + Math.random() * 230) * DPR() / zoom * scale;
+    const sp = (52 + Math.random() * 170) * DPR() / zoom * scale;
     particles.push({
       kind: 'debris',
       x: ex + (Math.random() - 0.5) * r * 0.9 * scale,
       y: ey + (Math.random() - 0.5) * r * 0.5 * scale,
       vx: Math.cos(ang) * sp,
-      vy: Math.sin(ang) * sp * 0.55 - (68 + Math.random() * 130) * DPR() / zoom,
+      vy: Math.sin(ang) * sp * 0.48 - (46 + Math.random() * 92) * DPR() / zoom,
       life: 0.9 + Math.random() * 0.7,
       maxLife: 1.6,
-      size: (3.2 + Math.random() * 8.4) * DPR() / zoom * scale,
-      color: Math.random() < 0.58 ? '#8b6a46' : '#342315',
-      gravity: 210 * DPR() / zoom,
+      size: (2.8 + Math.random() * 7.2) * DPR() / zoom * scale,
+      color: Math.random() < 0.58 ? '#8b765f' : '#3f352d',
+      gravity: 180 * DPR() / zoom,
       rot: Math.random() * Math.PI,
-      spin: (Math.random() - 0.5) * 12,
+      spin: (Math.random() - 0.5) * 9,
     });
   }
-  for (let k = 0; k < Math.round(52 * scale); k++) {
+  for (let k = 0; k < Math.round(38 * scale); k++) {
     const ang = -Math.PI / 2 + (Math.random() - 0.5) * 2.3;
-    const sp = (36 + Math.random() * 165) * DPR() / zoom * scale;
+    const sp = (26 + Math.random() * 120) * DPR() / zoom * scale;
     particles.push({
-      kind: Math.random() < 0.62 ? 'ember' : 'spark',
+      kind: 'siegeDust',
       x: ex + (Math.random() - 0.5) * r * 1.05 * scale,
       y: ey + (Math.random() - 0.5) * r * 0.48 * scale,
       vx: Math.cos(ang) * sp,
-      vy: Math.sin(ang) * sp - (34 + Math.random() * 90) * DPR() / zoom,
-      life: 0.55 + Math.random() * 0.8,
-      maxLife: 1.35,
-      size: (1.6 + Math.random() * 4.2) * DPR() / zoom * scale,
-      color: Math.random() < 0.5 ? '#ffe066' : '#ff7a32',
-      gravity: 62 * DPR() / zoom,
-      spin: (Math.random() - 0.5) * 6,
+      vy: Math.sin(ang) * sp - (24 + Math.random() * 64) * DPR() / zoom,
+      life: 0.9 + Math.random() * 0.75,
+      maxLife: 1.65,
+      size: (5 + Math.random() * 13) * DPR() / zoom * scale,
+      color: Math.random() < 0.5 ? '#716250' : '#4a4036',
+      flat: 0.48 + Math.random() * 0.2,
+      rot: Math.random() * Math.PI,
+      spin: (Math.random() - 0.5) * 1.2,
     });
   }
-  for (let k = 0; k < Math.round(32 * scale); k++) {
+  for (let k = 0; k < Math.round(44 * scale); k++) {
     const ang = -Math.PI / 2 + (Math.random() - 0.5) * 1.7;
-    const sp = (22 + Math.random() * 88) * DPR() / zoom * scale;
+    const sp = (18 + Math.random() * 74) * DPR() / zoom * scale;
     particles.push({
       kind: 'breachSmoke',
       x: ex + (Math.random() - 0.5) * r * 1.18 * scale,
       y: ey + r * 0.1 + (Math.random() - 0.5) * r * 0.48 * scale,
       vx: Math.cos(ang) * sp,
-      vy: Math.sin(ang) * sp - (20 + Math.random() * 58) * DPR() / zoom,
-      life: 1.6 + Math.random() * 1.55,
-      maxLife: 3.15,
-      size: (20 + Math.random() * 40) * DPR() / zoom * scale,
+      vy: Math.sin(ang) * sp - (18 + Math.random() * 50) * DPR() / zoom,
+      life: 1.8 + Math.random() * 1.75,
+      maxLife: 3.55,
+      size: (24 + Math.random() * 48) * DPR() / zoom * scale,
       color: Math.random() < 0.5 ? '#27221d' : '#4a3d31',
       flat: 0.56 + Math.random() * 0.28,
       rot: Math.random() * Math.PI,
     });
   }
-  spawnBurst(ex, ey, winnerFaction.light, { gold: true, big: true, count: Math.round(44 * scale), life: 1.4 });
-  battlePulse = Math.max(battlePulse, 0.32 * scale);
-  triggerShake((4.6 + 5.4 * scale) * DPR(), 0.34 + 0.2 * scale);
+  battlePulse = Math.max(battlePulse, 0.18 * scale);
+  triggerShake((3.2 + 3.8 * scale) * DPR(), 0.28 + 0.14 * scale);
   playBattleClashSfx(190);
 }
 
@@ -16041,18 +16120,18 @@ function spawnCastleCaptureExplosion(castle, winnerOwner, opts = {}) {
   const winnerFaction = FACTION[winnerOwner] || FACTION[1];
   const lostOwner = opts.prevOwner;
 
-  spawnCastleExplosionPulse(cwx, cwy, r, winnerFaction, { scale: 1.18, label: '펑!' });
+  spawnCastleExplosionPulse(cwx, cwy, r, winnerFaction, { scale: 1.04 });
   setTimeout(() => {
     if (!document.body.classList.contains('in-game')) return;
-    spawnCastleExplosionPulse(cwx, cwy, r, winnerFaction, { scale: 0.82, ox: -0.34, oy: 0.02, label: '퍼펑!' });
+    spawnCastleExplosionPulse(cwx, cwy, r, winnerFaction, { scale: 0.72, ox: -0.34, oy: 0.02 });
   }, 120);
   setTimeout(() => {
     if (!document.body.classList.contains('in-game')) return;
-    spawnCastleExplosionPulse(cwx, cwy, r, winnerFaction, { scale: 0.92, ox: 0.34, oy: -0.03, label: '퍼퍼펑!' });
+    spawnCastleExplosionPulse(cwx, cwy, r, winnerFaction, { scale: 0.78, ox: 0.34, oy: -0.03 });
   }, 245);
 
-  battlePulse = Math.max(battlePulse, 0.38);
-  triggerShake(12 * DPR(), 0.68);
+  battlePulse = Math.max(battlePulse, 0.22);
+  triggerShake(8 * DPR(), 0.48);
   if (winnerOwner === 1) vibrate([42, 48, 52, 72, 112]);
   else if (lostOwner === 1) vibrate([88, 64, 88, 70, 140]);
   else vibrate([34, 42, 80]);
@@ -16879,7 +16958,7 @@ function growth(dt) {
       if (c.owner === 1) rate /= commanderCastleMult(c, 'prodRate');
       while (c._grow >= rate) {
         c._grow -= rate;
-        if (totalTroops(c) < 99) c.troops[c.primary]++;
+        if (totalTroops(c) < CASTLE_AUTO_GROW_CAP) c.troops[c.primary]++;
       }
     }
   }
@@ -17087,7 +17166,14 @@ function resolveSieges(dt) {
         // 성벽 깎음
         const before = castle.wallHP;
         castle.wallHP = Math.max(0, castle.wallHP - aPow * 0.22 * dt);
-        if (before > castle.wallHP) pingMinimapAttack(castle);
+        if (before > castle.wallHP) {
+          pingMinimapAttack(castle);
+          if (castle._captureSmokeOnly) {
+            castle._captureSmokeOnly = false;
+            castle._reigniteAt = performance.now();
+            castle._fireSeeds = null;
+          }
+        }
         // 공성 중 작은 화염 점 (드물게)
         if (Math.random() < 0.18) {
           const cwx0 = castle.x * worldPxW(), cwy0 = castle.y * worldPxH();
@@ -17136,7 +17222,7 @@ function resolveSieges(dt) {
                 }
               });
             }
-            // 함락: 성벽 0 + 불타는 상태 유지. 전투가 끝날 때까지 아무도 차지 못함.
+            // 함락: 성벽 0 + 연기만 유지. 전투가 끝날 때까지 아무도 차지 못함.
             castle.wallHP = 0;
             castle._tdmg = 0;
             // 분쟁 상태: 출진 수비대가 전멸하기 전까지는 아무도 점령 못 함
@@ -17199,13 +17285,18 @@ function resolveSieges(dt) {
         for (let i = armies.length - 1; i >= 0; i--) {
           const ar = armies[i];
           if (aliveAtks.includes(ar)) {
-            castle.troops[ar.unit] = Math.min(99, (castle.troops[ar.unit] || 0) + ar.troops);
+            addTroopsToCastle(castle, ar.unit, ar.troops);
             armies.splice(i, 1);
           }
         }
-        // 점령 시 성벽은 절반 + 불타는 상태 → 이후 자연 회복으로 점점 보수
+        // 점령 직후에는 불꽃 없이 연기만 남기고, 재공격을 받으면 다시 서서히 발화
         castle.wallHP = Math.floor(castle.wallMax * 0.5);
         castle._captureFlash = performance.now();
+        castle._captureSmokeOnly = true;
+        castle._captureSmokeStarted = performance.now();
+        castle._reigniteAt = 0;
+        castle._fireSeeds = null;
+        castle._smokeSeeds = null;
         pingMinimapCapture(castle, prevOwner, winner.owner);
         spawnCastleCaptureExplosion(castle, winner.owner, { prevOwner });
         // 말풍선
@@ -17236,7 +17327,10 @@ function wallRegenAndFire(dt) {
         if (c.wallHP < c.wallMax) c.wallHP++;
       }
     }
-    // 화염은 drawCastleFire에서 매 프레임 그려짐 (파티클 X)
+    if (c._captureSmokeOnly && castleWallRatio(c) >= 0.56) {
+      c._captureSmokeOnly = false;
+    }
+    // 성 손상 연출은 drawCastleFire에서 매 프레임 그려짐 (파티클 X)
   }
 }
 
@@ -17390,7 +17484,7 @@ function update(dt) {
 
     // 아군 성에 합류 (행군 복귀 도착 포함)
     if (!a.pursuingArmy && a.target.owner === a.owner && d < 10 * DPR() / zoom) {
-      a.target.troops[a.unit] = Math.min(99, (a.target.troops[a.unit] || 0) + a.troops);
+      addTroopsToCastle(a.target, a.unit, a.troops);
       // 출진 수비대가 복귀해 재수성 → 분쟁 해제 + 성벽 절반 복구
       if (a._defendCastle === a.target) {
         a.target._contested = false;
@@ -17524,7 +17618,7 @@ function update(dt) {
 function arrive(a) {
   const c = a.target;
   if (c.owner === a.owner) {
-    c.troops[a.unit] = Math.min(99, c.troops[a.unit] + a.troops);
+    addTroopsToCastle(c, a.unit, a.troops);
   } else {
     // 백병전 충돌음
     try { BGM.sfxClash(); } catch(_) {}
@@ -17572,6 +17666,11 @@ function arrive(a) {
       c.troops[a.unit] = remain;
       c.wallHP = Math.floor(c.wallMax * 0.5);
       c._captureFlash = performance.now();
+      c._captureSmokeOnly = true;
+      c._captureSmokeStarted = performance.now();
+      c._reigniteAt = 0;
+      c._fireSeeds = null;
+      c._smokeSeeds = null;
       pingMinimapCapture(c, prevOwner, a.owner);
       spawnCastleCaptureExplosion(c, a.owner, { prevOwner });
     } else {
@@ -21452,38 +21551,51 @@ function castleWallRatio(c) {
 }
 
 function castleFireIntensity(c) {
+  if (!c || c.owner === 0 || c._contested || c._captureSmokeOnly) return 0;
   const ratio = castleWallRatio(c);
-  if (ratio >= 0.55) return 0;
-  // 절반(0.5) 부근에서도 또렷이 불타도록 최소 강도 보장
-  return Math.max(0.25, Math.min(1, (0.55 - ratio) / 0.45));
+  if (ratio <= 0 || ratio >= 0.5) return 0;
+  const raw = (0.5 - ratio) / 0.5;
+  return Math.max(0, Math.min(1, Math.pow(raw, 0.9)));
 }
 
-// 성에 직접 그리는 화염. HP 50% 이하부터 작게 시작해 성벽이 무너질수록 커진다.
+function castleSmokeIntensity(c) {
+  if (!c || !c.wallMax) return 0;
+  const ratio = castleWallRatio(c);
+  if (c._contested || ratio <= 0) return 1;
+  if (c._captureSmokeOnly) {
+    return Math.max(0.54, Math.min(0.82, 0.56 + (0.56 - ratio) * 1.35));
+  }
+  if (ratio < 0.36) return Math.min(0.45, (0.36 - ratio) / 0.36 * 0.45);
+  return 0;
+}
+
+// 성 손상 연출. 함락/점령 직후에는 연기만, 재공격으로 HP가 닳을 때만 작은 불꽃이 커진다.
 function drawCastleFire(c, x, y, r) {
+  const smokeIntensity = castleSmokeIntensity(c);
+  if (smokeIntensity > 0) drawCastleSmoke(c, x, y, r, smokeIntensity);
+
   const intensity = castleFireIntensity(c);
   if (intensity <= 0) return;
 
   const anchors = [
-    { x: -0.46, y: -1.12, s: 0.72 },
-    { x: 0.42, y: -1.08, s: 0.68 },
-    { x: 0.02, y: -1.35, s: 0.76 },
-    { x: -0.66, y: -0.35, s: 0.56 },
-    { x: 0.62, y: -0.28, s: 0.56 },
-    { x: -0.22, y: 0.16, s: 0.5 },
-    { x: 0.28, y: 0.12, s: 0.5 },
+    { x: -0.42, y: -1.08, s: 0.62 },
+    { x: 0.38, y: -1.02, s: 0.58 },
+    { x: 0.0, y: -1.24, s: 0.64 },
+    { x: -0.58, y: -0.24, s: 0.46 },
+    { x: 0.56, y: -0.2, s: 0.46 },
   ];
   if (!Array.isArray(c._fireSeeds) || c._fireSeeds.length < anchors.length) {
     c._fireSeeds = anchors.map(() => Math.random() * 100);
   }
 
   const t = performance.now() * 0.001;
-  const plumeCount = Math.max(2, Math.min(anchors.length, Math.ceil(2 + intensity * (anchors.length - 1))));
-  const glowR = r * (0.9 + intensity * 1.08);
+  const plumeCount = Math.max(1, Math.min(anchors.length, Math.ceil(1 + intensity * (anchors.length - 1))));
+  const glowR = r * (0.52 + intensity * 0.7);
   ctx.save();
   ctx.globalCompositeOperation = 'screen';
-  const glow = ctx.createRadialGradient(x, y - r * 0.55, 0, x, y - r * 0.55, glowR);
-  glow.addColorStop(0, `rgba(255,190,54,${0.22 + intensity * 0.38})`);
-  glow.addColorStop(0.38, `rgba(232,74,18,${0.17 + intensity * 0.28})`);
+  const glow = ctx.createRadialGradient(x, y - r * 0.7, 0, x, y - r * 0.7, glowR);
+  glow.addColorStop(0, `rgba(255,190,54,${0.08 + intensity * 0.18})`);
+  glow.addColorStop(0.44, `rgba(232,74,18,${0.06 + intensity * 0.13})`);
   glow.addColorStop(1, 'rgba(150,28,0,0)');
   ctx.fillStyle = glow;
   ctx.beginPath();
@@ -21499,18 +21611,54 @@ function drawCastleFire(c, x, y, r) {
     const fx = x + a.x * r + wave;
     const fy = y + a.y * r + lift;
     const flicker = 0.84 + Math.sin(t * 9.5 + seed) * 0.16 + Math.sin(t * 16 + seed * 1.9) * 0.08;
-    const h = r * (0.28 + intensity * 0.64) * a.s * flicker;
-    const alpha = Math.min(0.97, 0.56 + intensity * 0.42);
-    if (intensity > 0.22 || i < 2) {
-      drawSmokePuff(fx + Math.sin(seed) * r * 0.08, fy - h * 1.55, h * (1.28 + intensity * 1.08), 0.22 + intensity * 0.34, seed + t);
-    }
+    const h = r * (0.1 + intensity * 0.32) * a.s * flicker;
+    const alpha = Math.min(0.82, 0.28 + intensity * 0.48);
+    drawSmokePuff(fx + Math.sin(seed) * r * 0.08, fy - h * 1.35, h * (1.55 + intensity * 1.18), 0.12 + intensity * 0.22, seed + t);
     drawFlame(fx, fy, h, { alpha, lean: Math.sin(t * 3.2 + seed) * 0.35 });
   }
 
-  if (intensity > 0.36 || c.wallHP <= 0) {
+  if (intensity > 0.62) {
     const flicker = 0.9 + Math.sin(t * 8.5) * 0.12;
-    drawSmokePuff(x, y - r * 1.35, r * (0.84 + intensity * 0.72), 0.34 + intensity * 0.24, t);
-    drawFlame(x, y - r * 0.28, r * (0.5 + intensity * 0.58) * flicker, { alpha: 0.92, lean: Math.sin(t * 2.7) * 0.25 });
+    drawSmokePuff(x, y - r * 1.28, r * (0.72 + intensity * 0.58), 0.24 + intensity * 0.18, t);
+    drawFlame(x, y - r * 0.34, r * (0.22 + intensity * 0.3) * flicker, { alpha: 0.72, lean: Math.sin(t * 2.7) * 0.25 });
+  }
+}
+
+function drawCastleSmoke(c, x, y, r, intensity) {
+  const anchors = [
+    { x: -0.34, y: -1.12, s: 0.74 },
+    { x: 0.32, y: -1.08, s: 0.7 },
+    { x: 0.02, y: -1.32, s: 0.84 },
+    { x: -0.58, y: -0.36, s: 0.62 },
+    { x: 0.54, y: -0.32, s: 0.62 },
+    { x: -0.08, y: -0.58, s: 0.56 },
+  ];
+  if (!Array.isArray(c._smokeSeeds) || c._smokeSeeds.length < anchors.length) {
+    c._smokeSeeds = anchors.map(() => Math.random() * 100);
+  }
+
+  const t = performance.now() * 0.001;
+  const count = Math.max(2, Math.min(anchors.length, Math.ceil(2 + intensity * (anchors.length - 1))));
+
+  ctx.save();
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.globalAlpha = Math.min(0.42, 0.16 + intensity * 0.24);
+  ctx.fillStyle = '#4b4036';
+  ctx.beginPath();
+  ctx.ellipse(x, y - r * 0.5, r * (0.78 + intensity * 0.36), r * (0.46 + intensity * 0.2), Math.sin(t * 0.8) * 0.08, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  for (let i = 0; i < count; i++) {
+    const a = anchors[i];
+    const seed = c._smokeSeeds[i];
+    const drift = t * (0.32 + (seed % 7) * 0.01);
+    const sway = Math.sin(t * 0.95 + seed) * r * (0.05 + intensity * 0.04);
+    const lift = (Math.sin(drift + seed) * 0.5 + 0.5) * r * (0.16 + intensity * 0.14);
+    const sx = x + a.x * r + sway;
+    const sy = y + a.y * r - lift;
+    const size = r * (0.48 + intensity * 0.58) * a.s * (0.88 + Math.sin(t * 1.6 + seed) * 0.12);
+    drawSmokePuff(sx, sy, size, 0.22 + intensity * 0.22, seed + t);
   }
 }
 
