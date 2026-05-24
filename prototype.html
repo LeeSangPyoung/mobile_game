@@ -13649,6 +13649,12 @@ const INTRO_DUEL_BG_VARIANTS = [
   { cls: 'intro-duel-day', src: './assets/battle/intro_duel_bg_day.png' },
   { cls: 'intro-duel-snow', src: './assets/battle/intro_duel_bg_snow.png' },
   { cls: 'intro-duel-storm', src: './assets/battle/intro_duel_bg_storm.png' },
+  { cls: 'intro-duel-bridge', src: './assets/battle/intro_duel_bg_bridge.png' },
+  { cls: 'intro-duel-cityfire', src: './assets/battle/intro_duel_bg_cityfire.png' },
+  { cls: 'intro-duel-bamboo', src: './assets/battle/intro_duel_bg_bamboo.png' },
+  { cls: 'intro-duel-fleet', src: './assets/battle/intro_duel_bg_fleet.png' },
+  { cls: 'intro-duel-desert', src: './assets/battle/intro_duel_bg_desert.png' },
+  { cls: 'intro-duel-tomb', src: './assets/battle/intro_duel_bg_tomb.png' },
 ];
 let _lastIntroDuelBgClass = '';
 function preloadIntroDuelBackgrounds() {
@@ -17677,11 +17683,13 @@ function checkWin() {
       const floor = STAGES[currentStage]._floor;
       SAVE.infiniteBest = Math.max(SAVE.infiniteBest || 0, floor);
       const goldGain = 200 + floor * 120;
+      const starGain = 1 + Math.floor(floor / 3);  // 엔드게임 별 파밍 루프(장수 강화·수집)
       SAVE.gold = (SAVE.gold || 0) + goldGain;
+      SAVE.starsAvailable = (SAVE.starsAvailable || 0) + starGain;
       saveProgress();
       vibrate([90, 70, 90, 70, 140]);
       showVictoryFlash(() => {
-        showMsg(`무한 ${floor}층 돌파! (최고 ${SAVE.infiniteBest}층) +${goldGain}G`, 3, [
+        showMsg(`무한 ${floor}층 돌파! (최고 ${SAVE.infiniteBest}층) +${goldGain}G ★${starGain}`, 3, [
           { text: '다음 층', variant: 'primary', action: () => { window._infiniteFloor = floor + 1; startInfiniteMode(); } },
           { text: '그만두기', variant: 'tertiary', action: () => goToStageSelectAt(campaignOffset()) },
         ], undefined, 'victory');
@@ -17705,6 +17713,30 @@ function checkWin() {
     const isReclear = prevStars > 0;
     const goldGain = Math.floor(baseGain * (isReclear ? 0.25 : 1));
     SAVE.gold = (SAVE.gold || 0) + goldGain;
+    // 재클리어 별 — 후반 스테이지일수록 많이(파밍 가치↑). 1 + 전역idx/40 → ch1≈1, ch10≈5~6
+    let bonusStar = 0;
+    if (isReclear) {
+      bonusStar = 1 + Math.floor(currentStage / 40);
+      SAVE.starsAvailable = (SAVE.starsAvailable || 0) + bonusStar;
+    }
+    // 챕터 클리어 보너스 — 보스(각 챕터 20장) 최초 클리어 시 묶음 보상
+    if (!isReclear && !(STAGES[currentStage] && STAGES[currentStage].isTutorial)) {
+      const _ch = campaignChapterForIndex(currentStage);
+      const _local = ((currentStage - campaignOffset()) % STAGES_PER_CHAPTER) + 1;
+      if (_local === STAGES_PER_CHAPTER) { // 보스
+        const chBonusGold = 800 + _ch * 500;
+        SAVE.gold = (SAVE.gold || 0) + chBonusGold;
+        SAVE.starsAvailable = (SAVE.starsAvailable || 0) + 5;
+        bonusStar += 5;
+        // 확정 장수 1명 지급(랜덤 로스터, ★ 랜덤 롤)
+        try {
+          const pool = GENERAL_ROSTER.filter(Boolean);
+          const pick = pool[Math.floor(Math.random() * pool.length)];
+          if (pick) addOwnedGeneral(pick.id, 1);
+        } catch (_) {}
+        window._chapterBonus = { gold: chBonusGold, stars: 5, ch: _ch };
+      }
+    }
     saveProgress();
     vibrate([90, 70, 90, 70, 140]);
     const nextIdx = Math.min(currentStage + 1, STAGES.length - 1);
@@ -17725,7 +17757,13 @@ function checkWin() {
           showStarterPick(() => goToStageSelectAt(nextIdx));
           return;
         } else {
-          showMsg(`${STAGES[currentStage].name} 승리!`, stars, [
+          const _cb = window._chapterBonus; window._chapterBonus = null;
+          const _winTitle = _cb
+            ? `${_cb.ch}챕터 클리어! 보너스 +${_cb.gold.toLocaleString()}G ★${_cb.stars} +장수`
+            : (isReclear
+                ? `${STAGES[currentStage].name} 재클리어! +${goldGain.toLocaleString()}G ★${bonusStar}`
+                : `${STAGES[currentStage].name} 승리!`);
+          showMsg(_winTitle, stars, [
             { text: '다음 장', variant: 'primary', action: () => {
               if (currentStage + 1 < STAGES.length) {
                 selectedStage = currentStage + 1;
@@ -25242,7 +25280,7 @@ function closeTutorialOffer(accept) {
 	      drop-shadow(0 11px 13px rgba(0,0,0,0.56))
 	      drop-shadow(0 0 15px rgba(255,142,35,0.24))
 	      brightness(1);
-	    animation: homeStartButtonForwardDepth 3.65s cubic-bezier(.34, 0, .18, 1) infinite !important;
+	    animation: homeStartButtonForwardDepth 3.15s ease-in-out infinite !important;
 	    will-change: transform, filter !important;
 	  }
 	  #menu.menu-fresh .start-btn::before,
@@ -25262,9 +25300,9 @@ function closeTutorialOffer(accept) {
 	      linear-gradient(106deg, transparent 0 30%, rgba(255,245,177,0.0) 39%, rgba(255,248,188,0.54) 49%, rgba(255,152,36,0.18) 58%, transparent 73% 100%) !important;
 	    mix-blend-mode: screen !important;
 	    opacity: 0 !important;
-	    transform: translateX(-120%) skewX(-10deg) !important;
+	    transform: translateX(0) skewX(-8deg) scaleX(0.92) !important;
 	    filter: blur(0.2px) drop-shadow(0 0 7px rgba(255,184,59,0.24)) !important;
-	    animation: homeStartButtonSheen 3.65s ease-in-out infinite !important;
+	    animation: homeStartButtonSheen 3.15s ease-in-out infinite !important;
 	    z-index: 2 !important;
 	  }
 	  #menu.menu-fresh .start-visual::after {
@@ -25288,7 +25326,7 @@ function closeTutorialOffer(accept) {
 	    mix-blend-mode: screen !important;
 	    opacity: 0.14 !important;
 	    transform: scale(0.94) !important;
-	    animation: homeStartButtonHalo 3.65s ease-in-out infinite !important;
+	    animation: homeStartButtonHalo 3.15s ease-in-out infinite !important;
 	    z-index: 1 !important;
 	  }
 	  #menu.menu-fresh .side-rail {
@@ -25481,9 +25519,14 @@ function closeTutorialOffer(accept) {
 	    }
 	  }
 	  @keyframes homeStartButtonSheen {
-	    0%, 24% { opacity: 0; transform: translateX(-115%) skewX(-8deg); }
-	    42% { opacity: 0.38; }
-	    62%, 100% { opacity: 0; transform: translateX(112%) skewX(-8deg); }
+	    0%, 100% {
+	      opacity: 0.05;
+	      transform: translateX(0) skewX(-8deg) scaleX(0.9);
+	    }
+	    50% {
+	      opacity: 0.28;
+	      transform: translateX(0) skewX(-8deg) scaleX(1.08);
+	    }
 	  }
 	  @keyframes homeStartButtonEdge {
 	    0%, 100% { opacity: 0.24; transform: scaleX(0.86); }
@@ -25491,59 +25534,30 @@ function closeTutorialOffer(accept) {
 	  }
 	  @keyframes homeStartButtonForwardDepth {
 	    0%, 100% {
-	      transform: translateX(-50%) translateY(0) rotate(0deg) scale(1);
+	      transform: translateX(-50%) translateY(0) rotate(0deg) scale(0.994);
 	      filter:
-	        drop-shadow(0 11px 13px rgba(0,0,0,0.56))
-	        drop-shadow(0 0 15px rgba(255,142,35,0.24))
-	        brightness(1);
+	        drop-shadow(0 9px 11px rgba(0,0,0,0.54))
+	        drop-shadow(0 0 12px rgba(255,134,33,0.18))
+	        brightness(0.99)
+	        saturate(0.995);
 	    }
-	    14% {
-	      transform: translateX(-50%) translateY(0) rotate(0deg) scale(0.998);
-	      filter:
-	        drop-shadow(0 10px 12px rgba(0,0,0,0.55))
-	        drop-shadow(0 0 13px rgba(255,135,34,0.2))
-	        brightness(0.995);
-	    }
-	    44% {
-	      transform: translateX(-50%) translateY(0) rotate(0deg) scale(1.024);
+	    50% {
+	      transform: translateX(-50%) translateY(0) rotate(0deg) scale(1.026);
 	      filter:
 	        drop-shadow(0 16px 20px rgba(0,0,0,0.62))
 	        drop-shadow(0 0 27px rgba(255,190,70,0.42))
 	        brightness(1.075)
 	        saturate(1.04);
 	    }
-	    66% {
-	      transform: translateX(-50%) translateY(0) rotate(0deg) scale(1.009);
-	      filter:
-	        drop-shadow(0 13px 16px rgba(0,0,0,0.58))
-	        drop-shadow(0 0 19px rgba(255,160,45,0.28))
-	        brightness(1.032)
-	        saturate(1.018);
-	    }
-	    84% {
-	      transform: translateX(-50%) translateY(0) rotate(0deg) scale(0.999);
-	      filter:
-	        drop-shadow(0 10px 13px rgba(0,0,0,0.55))
-	        drop-shadow(0 0 14px rgba(255,142,35,0.21))
-	        brightness(1);
-	    }
 	  }
 	  @keyframes homeStartButtonHalo {
 	    0%, 100% {
-	      opacity: 0.1;
-	      transform: scale(0.94);
-	    }
-	    14% {
 	      opacity: 0.08;
-	      transform: scale(0.91);
+	      transform: scale(0.92);
 	    }
-	    44% {
-	      opacity: 0.34;
-	      transform: scale(1.055);
-	    }
-	    66% {
-	      opacity: 0.18;
-	      transform: scale(1.012);
+	    50% {
+	      opacity: 0.32;
+	      transform: scale(1.07);
 	    }
 	  }
 	  @keyframes homeDockPieceWobble {
@@ -28482,6 +28496,36 @@ function closeTutorialOffer(accept) {
     --idg-left-glow: rgba(255, 67, 24, 0.36);
     --idg-right-glow: rgba(70, 176, 255, 0.32);
   }
+  #introDialog.intro-duel-bridge {
+    --idg-bg-image: url('./assets/battle/intro_duel_bg_bridge.png');
+    --idg-left-glow: rgba(255, 178, 84, 0.18);
+    --idg-right-glow: rgba(96, 198, 255, 0.20);
+  }
+  #introDialog.intro-duel-cityfire {
+    --idg-bg-image: url('./assets/battle/intro_duel_bg_cityfire.png');
+    --idg-left-glow: rgba(255, 82, 25, 0.32);
+    --idg-right-glow: rgba(255, 180, 76, 0.16);
+  }
+  #introDialog.intro-duel-bamboo {
+    --idg-bg-image: url('./assets/battle/intro_duel_bg_bamboo.png');
+    --idg-left-glow: rgba(82, 180, 92, 0.20);
+    --idg-right-glow: rgba(255, 202, 96, 0.16);
+  }
+  #introDialog.intro-duel-fleet {
+    --idg-bg-image: url('./assets/battle/intro_duel_bg_fleet.png');
+    --idg-left-glow: rgba(255, 93, 30, 0.30);
+    --idg-right-glow: rgba(65, 145, 215, 0.20);
+  }
+  #introDialog.intro-duel-desert {
+    --idg-bg-image: url('./assets/battle/intro_duel_bg_desert.png');
+    --idg-left-glow: rgba(255, 178, 70, 0.24);
+    --idg-right-glow: rgba(122, 84, 190, 0.16);
+  }
+  #introDialog.intro-duel-tomb {
+    --idg-bg-image: url('./assets/battle/intro_duel_bg_tomb.png');
+    --idg-left-glow: rgba(116, 172, 255, 0.18);
+    --idg-right-glow: rgba(255, 180, 84, 0.14);
+  }
   #introDialog::before {
     background:
       radial-gradient(circle at 48% 58%, rgba(255, 210, 84, 0.22), transparent 23%),
@@ -28565,6 +28609,34 @@ function closeTutorialOffer(accept) {
       0 0 30px rgba(255, 132, 54, 0.28),
       0 0 74px rgba(70, 160, 255, 0.12) !important;
     opacity: 0.44 !important;
+  }
+  #introDialog.intro-duel-bridge .idg-stage::before,
+  #introDialog.intro-duel-cityfire .idg-stage::before,
+  #introDialog.intro-duel-bamboo .idg-stage::before,
+  #introDialog.intro-duel-fleet .idg-stage::before,
+  #introDialog.intro-duel-desert .idg-stage::before,
+  #introDialog.intro-duel-tomb .idg-stage::before {
+    width: clamp(20px, 3.6vw, 64px) !important;
+    background:
+      linear-gradient(180deg, transparent, rgba(255, 218, 128, 0.22), transparent) !important;
+    box-shadow:
+      0 0 26px rgba(255, 195, 82, 0.22),
+      0 0 60px rgba(75, 175, 255, 0.10) !important;
+    opacity: 0.34 !important;
+  }
+  #introDialog.intro-duel-bamboo .idg-stage::before {
+    background:
+      linear-gradient(180deg, transparent, rgba(136, 220, 132, 0.20), transparent) !important;
+    box-shadow:
+      0 0 24px rgba(95, 198, 98, 0.20),
+      0 0 54px rgba(255, 212, 110, 0.08) !important;
+  }
+  #introDialog.intro-duel-tomb .idg-stage::before {
+    background:
+      linear-gradient(180deg, transparent, rgba(142, 190, 255, 0.20), transparent) !important;
+    box-shadow:
+      0 0 24px rgba(116, 172, 255, 0.22),
+      0 0 54px rgba(255, 230, 164, 0.08) !important;
   }
   #introDialog .idg-bubble {
     left: 50% !important;

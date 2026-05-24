@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chapter Stage Capture Preview</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #15110d;
+      color: #f4dfb4;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      padding: 14px 18px;
+      background: rgba(21, 17, 13, 0.94);
+      border-bottom: 1px solid rgba(244, 223, 180, 0.18);
+    }
+    h1 { margin: 0; font-size: 18px; }
+    p { margin: 5px 0 0; color: #cdb98f; font-size: 12px; }
+    main {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 16px;
+      padding: 16px;
+      align-items: start;
+    }
+    article {
+      overflow: hidden;
+      border: 1px solid rgba(244, 223, 180, 0.16);
+      border-radius: 8px;
+      background: #211913;
+    }
+    h2 {
+      margin: 0;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+    .pair {
+      display: grid;
+      grid-template-columns: 0.75fr 1fr;
+      gap: 8px;
+      padding: 0 10px 10px;
+    }
+    .label {
+      padding: 0 2px 6px;
+      color: #cdb98f;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #0d0a07;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>챕터 PNG / 실제 게임 적용 화면 캡처</h1>
+    <p>왼쪽: 적용 PNG · 오른쪽: prototype 실제 스테이지 선택 화면</p>
+  </header>
+  <main>
+    <article><h2>Chapter 1 - 맑은 출정</h2><div class="pair"><div><div class="label">PNG</div><img src="./assets/maps_escalation/chapter1.png" alt=""></div><div><div class="label">게임 화면</div><img src="./tmp/chapter_stage_captures/game_chapter1.png" alt=""></div></div></article>
+    <article><h2>Chapter 2 - 먹구름 산길</h2><div class="pair"><div><div class="label">PNG</div><img src="./assets/maps_escalation/chapter2.png" alt=""></div><div><div class="label">게임 화면</div><img src="./tmp/chapter_stage_captures/game_chapter2.png" alt=""></div></div></article>
+    <article><h2>Chapter 3 - 설원의 관문</h2><div class="pair"><div><div class="label">PNG</div><img src="./assets/maps_escalation/chapter3.png" alt=""></div><div><div class="label">게임 화면</div><img src="./tmp/chapter_stage_captures/game_chapter3.png" alt=""></div></div></article>
+    <article><h2>Chapter 4 - 폭우의 전선</h2><div class="pair"><div><div class="label">PNG</div><img src="./assets/maps_escalation/chapter4.png" alt=""></div><div><div class="label">게임 화면</div><img src="./tmp/chapter_stage_captures/game_chapter4.png" alt=""></div></div></article>
+    <article><h2>Chapter 5 - 대홍수</h2><div class="pair"><div><div class="label">PNG</div><img src="./assets/maps_escalation/chapter5.png" alt=""></div><div><div class="label">게임 화면</div><img src="./tmp/chapter_stage_captures/game_chapter5.png" alt=""></div></div></article>
+    <article><h2>Chapter 6 - 사막의 관문</h2><div class="pair"><div><div class="label">PNG</div><img src="./assets/maps_escalation/chapter6.png" alt=""></div><div><div class="label">게임 화면</div><img src="./tmp/chapter_stage_captures/game_chapter6.png" alt=""></div></div></article>
+    <article><h2>Chapter 7 - 태풍 해안</h2><div class="pair"><div><div class="label">PNG</div><img src="./assets/maps_escalation/chapter7.png" alt=""></div><div><div class="label">게임 화면</div><img src="./tmp/chapter_stage_captures/game_chapter7.png" alt=""></div></div></article>
+    <article><h2>Chapter 8 - 불타는 중원</h2><div class="pair"><div><div class="label">PNG</div><img src="./assets/maps_escalation/chapter8.png" alt=""></div><div><div class="label">게임 화면</div><img src="./tmp/chapter_stage_captures/game_chapter8.png" alt=""></div></div></article>
+    <article><h2>Chapter 9 - 화산의 길</h2><div class="pair"><div><div class="label">PNG</div><img src="./assets/maps_escalation/chapter9.png" alt=""></div><div><div class="label">게임 화면</div><img src="./tmp/chapter_stage_captures/game_chapter9.png" alt=""></div></div></article>
+    <article><h2>Chapter 10 - 최후의 황궁</h2><div class="pair"><div><div class="label">PNG</div><img src="./assets/maps_escalation/chapter10.png" alt=""></div><div><div class="label">게임 화면</div><img src="./tmp/chapter_stage_captures/game_chapter10.png" alt=""></div></div></article>
+  </main>
+</body>
+</html>
