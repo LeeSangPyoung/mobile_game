@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>상반신 신규 작화 200명 v1</title>
+<style>
+* { box-sizing:border-box; }
+:root { color-scheme:dark; --bg:#130f0b; --panel:#211913; --line:rgba(244,223,184,.18); --gold:#ffd36a; --text:#f4dfb8; --muted:#bfa986; --bad:#ff766d; --ok:#8fe08f; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif; }
+header { position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:14px; padding:16px 20px 13px; background:rgba(20,16,12,.95); border-bottom:1px solid var(--line); backdrop-filter:blur(10px); }
+h1 { margin:0; font-size:22px; font-weight:850; white-space:nowrap; }
+.note { color:#cbb894; font-size:13px; line-height:1.45; }
+.stat { margin-left:auto; color:var(--gold); font-size:13px; font-weight:800; white-space:nowrap; }
+main { padding:18px 20px 24px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:16px; }
+article { overflow:hidden; border:1px solid rgba(244,223,184,.17); border-radius:8px; background:var(--panel); box-shadow:0 10px 22px rgba(0,0,0,.22); }
+.pair { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(244,223,184,.16); }
+.art { position:relative; aspect-ratio:4/5; background:#0f0c09; overflow:hidden; }
+.art img { display:block; width:100%; height:100%; object-fit:cover; }
+.missing { height:100%; display:flex; align-items:center; justify-content:center; padding:16px; color:var(--bad); text-align:center; font-size:13px; font-weight:800; background:#120d0a; }
+.badge { position:absolute; top:8px; left:8px; z-index:1; padding:3px 7px 4px; border-radius:6px; background:rgba(13,9,6,.74); border:1px solid rgba(255,211,106,.32); color:var(--gold); font-size:11px; font-weight:800; }
+.meta { padding:10px 11px 12px; }
+.name { display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin:0 0 7px; font-size:15px; font-weight:800; }
+.name small { color:#9e8a67; font-size:11px; font-weight:700; }
+.done { color:var(--ok); }
+.todo { color:var(--bad); }
+a { display:block; overflow-wrap:anywhere; color:var(--gold); font-size:11px; line-height:1.35; text-decoration:none; }
+@media(max-width:720px) { header { flex-wrap:wrap; align-items:stretch; } h1,.note,.stat { width:100%; margin-left:0; white-space:normal; } main { padding:12px; } .grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>상반신 신규 작화 200명 v1</h1>
+  <div class="note">실제 새로 생성한 이미지 파일만 표시합니다. 잘라낸 상반신은 이 페이지에 넣지 않습니다.</div>
+  <div class="stat" id="stat"></div>
+</header>
+<main><section id="grid" class="grid"></section></main>
+<script>
+const roster = [{"no": 1, "id": "cao_cao", "ko": "조조"}, {"no": 2, "id": "cao_xing", "ko": "조흥"}, {"no": 3, "id": "dian_wei", "ko": "전위"}, {"no": 4, "id": "dong_zhuo", "ko": "동탁"}, {"no": 5, "id": "gan_ning", "ko": "감녕"}, {"no": 6, "id": "guan_yu", "ko": "관우"}, {"no": 7, "id": "guo_jia", "ko": "곽가"}, {"no": 8, "id": "huang_gai", "ko": "황개"}, {"no": 9, "id": "huang_zhong", "ko": "황충"}, {"no": 10, "id": "liu_bei", "ko": "유비"}, {"no": 11, "id": "lu_bu", "ko": "여포"}, {"no": 12, "id": "lu_xun", "ko": "육손"}, {"no": 13, "id": "ma_chao", "ko": "마초"}, {"no": 14, "id": "meng_huo", "ko": "맹획"}, {"no": 15, "id": "pang_tong", "ko": "방통"}, {"no": 16, "id": "sima_yi", "ko": "사마의"}, {"no": 17, "id": "sun_ce", "ko": "손책"}, {"no": 18, "id": "sun_quan", "ko": "손권"}, {"no": 19, "id": "taishi_ci", "ko": "태사자"}, {"no": 20, "id": "wen_chou", "ko": "문추"}, {"no": 21, "id": "xiahou_dun", "ko": "하후돈"}, {"no": 22, "id": "xu_chu", "ko": "허저"}, {"no": 23, "id": "xu_huang", "ko": "서황"}, {"no": 24, "id": "yan_liang", "ko": "안량"}, {"no": 25, "id": "yuan_shao", "ko": "원소"}, {"no": 26, "id": "zhang_fei", "ko": "장비"}, {"no": 27, "id": "zhang_liao", "ko": "장료"}, {"no": 28, "id": "zhao_yun", "ko": "조운"}, {"no": 29, "id": "zhou_yu", "ko": "주유"}, {"no": 30, "id": "zhuge_liang", "ko": "제갈량"}, {"no": 31, "id": "zhang_he", "ko": "장합"}, {"no": 32, "id": "yu_jin", "ko": "우금"}, {"no": 33, "id": "yue_jin", "ko": "악진"}, {"no": 34, "id": "li_dian", "ko": "이전"}, {"no": 35, "id": "cao_ren", "ko": "조인"}, {"no": 36, "id": "cao_hong", "ko": "조홍"}, {"no": 37, "id": "cao_pi", "ko": "조비"}, {"no": 38, "id": "cao_zhi", "ko": "조식"}, {"no": 39, "id": "cao_zhang", "ko": "조창"}, {"no": 40, "id": "cao_ang", "ko": "조앙"}, {"no": 41, "id": "cao_rui", "ko": "조예"}, {"no": 42, "id": "cao_shuang", "ko": "조상"}, {"no": 43, "id": "cao_zhen", "ko": "조진"}, {"no": 44, "id": "cao_xiu", "ko": "조휴"}, {"no": 45, "id": "xiahou_yuan", "ko": "하후연"}, {"no": 46, "id": "xiahou_ba", "ko": "하후패"}, {"no": 47, "id": "cheng_yu", "ko": "정욱"}, {"no": 48, "id": "xun_yu", "ko": "순욱"}, {"no": 49, "id": "xun_you", "ko": "순유"}, {"no": 50, "id": "jia_xu", "ko": "가후"}, {"no": 51, "id": "man_chong", "ko": "만총"}, {"no": 52, "id": "zhong_yao", "ko": "종요"}, {"no": 53, "id": "deng_ai", "ko": "등애"}, {"no": 54, "id": "zhong_hui", "ko": "종회"}, {"no": 55, "id": "guo_huai", "ko": "곽회"}, {"no": 56, "id": "wang_ping", "ko": "왕평"}, {"no": 57, "id": "wen_pin", "ko": "문빙"}, {"no": 58, "id": "zang_ba", "ko": "장패"}, {"no": 59, "id": "li_tong", "ko": "이통"}, {"no": 60, "id": "han_hao", "ko": "한호"}, {"no": 61, "id": "lu_qian", "ko": "여건"}, {"no": 62, "id": "mao_jie", "ko": "모개"}, {"no": 63, "id": "liu_ye", "ko": "유엽"}, {"no": 64, "id": "kuai_yue", "ko": "괴월"}, {"no": 65, "id": "kuai_liang", "ko": "괴량"}, {"no": 66, "id": "cai_mao", "ko": "채모"}, {"no": 67, "id": "zhang_yun", "ko": "장윤"}, {"no": 68, "id": "xu_sheng", "ko": "서성"}, {"no": 69, "id": "ding_feng", "ko": "정봉"}, {"no": 70, "id": "han_dang", "ko": "한당"}, {"no": 71, "id": "cheng_pu", "ko": "정보"}, {"no": 72, "id": "zhou_tai", "ko": "주태"}, {"no": 73, "id": "jiang_qin", "ko": "장흠"}, {"no": 74, "id": "ling_tong", "ko": "능통"}, {"no": 75, "id": "lu_su", "ko": "노숙"}, {"no": 76, "id": "zhang_zhao", "ko": "장소"}, {"no": 77, "id": "zhang_hong", "ko": "장굉"}, {"no": 78, "id": "zhu_zhi", "ko": "주치"}, {"no": 79, "id": "zhu_huan", "ko": "주환"}, {"no": 80, "id": "zhu_ran", "ko": "주연"}, {"no": 81, "id": "bu_zhi", "ko": "보즐"}, {"no": 82, "id": "kan_ze", "ko": "감택"}, {"no": 83, "id": "yu_fan", "ko": "우번"}, {"no": 84, "id": "he_qi", "ko": "하제"}, {"no": 85, "id": "pan_zhang", "ko": "반장"}, {"no": 86, "id": "ma_zhong_wu", "ko": "마충"}, {"no": 87, "id": "quan_cong", "ko": "전종"}, {"no": 88, "id": "sun_jian", "ko": "손견"}, {"no": 89, "id": "sun_shao", "ko": "손소"}, {"no": 90, "id": "sun_huan", "ko": "손환"}, {"no": 91, "id": "sun_luban", "ko": "손노반"}, {"no": 92, "id": "sun_luyu", "ko": "손노육"}, {"no": 93, "id": "daqiao", "ko": "대교"}, {"no": 94, "id": "xiaoqiao", "ko": "소교"}, {"no": 95, "id": "lian_shi", "ko": "연사"}, {"no": 96, "id": "guan_ping", "ko": "관평"}, {"no": 97, "id": "guan_xing", "ko": "관흥"}, {"no": 98, "id": "guan_suo", "ko": "관색"}, {"no": 99, "id": "guan_yinping", "ko": "관은병"}, {"no": 100, "id": "zhang_bao", "ko": "장포"}, {"no": 101, "id": "liu_shan", "ko": "유선"}, {"no": 102, "id": "liu_feng", "ko": "유봉"}, {"no": 103, "id": "ma_su", "ko": "마속"}, {"no": 104, "id": "ma_liang", "ko": "마량"}, {"no": 105, "id": "jiang_wei", "ko": "강유"}, {"no": 106, "id": "wei_yan", "ko": "위연"}, {"no": 107, "id": "fa_zheng", "ko": "법정"}, {"no": 108, "id": "jian_yong", "ko": "간옹"}, {"no": 109, "id": "mi_zhu", "ko": "미축"}, {"no": 110, "id": "mi_fang", "ko": "미방"}, {"no": 111, "id": "sun_qian", "ko": "손건"}, {"no": 112, "id": "liao_hua", "ko": "요화"}, {"no": 113, "id": "zhou_cang", "ko": "주창"}, {"no": 114, "id": "ma_dai", "ko": "마대"}, {"no": 115, "id": "yan_yan", "ko": "엄안"}, {"no": 116, "id": "li_yan", "ko": "이엄"}, {"no": 117, "id": "fei_yi", "ko": "비의"}, {"no": 118, "id": "dong_yun", "ko": "동윤"}, {"no": 119, "id": "jiang_wan", "ko": "장완"}, {"no": 120, "id": "huang_quan", "ko": "황권"}, {"no": 121, "id": "chen_dao", "ko": "진도"}, {"no": 122, "id": "fu_shi_ren", "ko": "부사인"}, {"no": 123, "id": "meng_da", "ko": "맹달"}, {"no": 124, "id": "zhang_song", "ko": "장송"}, {"no": 125, "id": "li_hui", "ko": "이회"}, {"no": 126, "id": "huo_jun", "ko": "곽준"}, {"no": 127, "id": "sha_moke", "ko": "사마가"}, {"no": 128, "id": "zhuge_zhan", "ko": "제갈첨"}, {"no": 129, "id": "zhuge_jin", "ko": "제갈근"}, {"no": 130, "id": "zhuge_dan", "ko": "제갈탄"}, {"no": 131, "id": "zhang_yi_shu", "ko": "장익"}, {"no": 132, "id": "dong_jue", "ko": "동궐"}, {"no": 133, "id": "yuan_tan", "ko": "원담"}, {"no": 134, "id": "yuan_xi", "ko": "원희"}, {"no": 135, "id": "yuan_shang", "ko": "원상"}, {"no": 136, "id": "tian_feng", "ko": "전풍"}, {"no": 137, "id": "ju_shou", "ko": "저수"}, {"no": 138, "id": "shen_pei", "ko": "심배"}, {"no": 139, "id": "feng_ji", "ko": "봉기"}, {"no": 140, "id": "guo_tu", "ko": "곽도"}, {"no": 141, "id": "xin_ping", "ko": "신평"}, {"no": 142, "id": "xin_pi", "ko": "신비"}, {"no": 143, "id": "gao_lan", "ko": "고람"}, {"no": 144, "id": "zhang_bu", "ko": "장무"}, {"no": 145, "id": "gongsun_zan", "ko": "공손찬"}, {"no": 146, "id": "gongsun_du", "ko": "공손도"}, {"no": 147, "id": "gongsun_kang", "ko": "공손강"}, {"no": 148, "id": "gongsun_yuan", "ko": "공손연"}, {"no": 149, "id": "liu_biao", "ko": "유표"}, {"no": 150, "id": "liu_zhang", "ko": "유장"}, {"no": 151, "id": "liu_yao", "ko": "유요"}, {"no": 152, "id": "liu_yu", "ko": "유우"}, {"no": 153, "id": "tao_qian", "ko": "도겸"}, {"no": 154, "id": "kong_rong", "ko": "공융"}, {"no": 155, "id": "zhang_lu", "ko": "장로"}, {"no": 156, "id": "zhang_ren", "ko": "장임"}, {"no": 157, "id": "yan_pu", "ko": "염포"}, {"no": 158, "id": "ma_teng", "ko": "마등"}, {"no": 159, "id": "han_sui", "ko": "한수"}, {"no": 160, "id": "cheng_yin", "ko": "성의"}, {"no": 161, "id": "liang_xing", "ko": "양흥"}, {"no": 162, "id": "hou_xuan", "ko": "후선"}, {"no": 163, "id": "cheng_gongying", "ko": "성공영"}, {"no": 164, "id": "dong_cheng", "ko": "동승"}, {"no": 165, "id": "he_jin", "ko": "하진"}, {"no": 166, "id": "zhang_rang", "ko": "장양"}, {"no": 167, "id": "emperor_xian", "ko": "헌제"}, {"no": 168, "id": "wang_yun", "ko": "왕윤"}, {"no": 169, "id": "diao_chan", "ko": "초선"}, {"no": 170, "id": "li_jue", "ko": "이각"}, {"no": 171, "id": "guo_si", "ko": "곽사"}, {"no": 172, "id": "fan_chou", "ko": "번조"}, {"no": 173, "id": "zhang_ji", "ko": "장제"}, {"no": 174, "id": "zhang_xiu", "ko": "장수"}, {"no": 175, "id": "hu_che_er", "ko": "호거아"}, {"no": 176, "id": "zou_shi", "ko": "추씨"}, {"no": 177, "id": "hua_xiong", "ko": "화웅"}, {"no": 178, "id": "li_ru", "ko": "이유"}, {"no": 179, "id": "yuan_shu", "ko": "원술"}, {"no": 180, "id": "ji_ling", "ko": "기령"}, {"no": 181, "id": "liu_xun", "ko": "유훈"}, {"no": 182, "id": "chen_lan", "ko": "진란"}, {"no": 183, "id": "lei_bo", "ko": "뇌박"}, {"no": 184, "id": "zhang_xun", "ko": "장훈"}, {"no": 185, "id": "qiao_rui", "ko": "교유"}, {"no": 186, "id": "han_xian", "ko": "한섬"}, {"no": 187, "id": "yang_feng", "ko": "양봉"}, {"no": 188, "id": "hua_tuo", "ko": "화타"}, {"no": 189, "id": "zuo_ci", "ko": "좌자"}, {"no": 190, "id": "yu_ji", "ko": "우길"}, {"no": 191, "id": "zhang_jiao", "ko": "장각"}, {"no": 192, "id": "zhang_bao_yellow", "ko": "장보"}, {"no": 193, "id": "zhang_liang_yellow", "ko": "장량"}, {"no": 194, "id": "bo_cai", "ko": "파재"}, {"no": 195, "id": "cheng_yuanzhi", "ko": "정원지"}, {"no": 196, "id": "deng_mao", "ko": "등무"}, {"no": 197, "id": "guan_hai", "ko": "관해"}, {"no": 198, "id": "pei_yuanshao", "ko": "배원소"}, {"no": 199, "id": "zhang_man_cheng", "ko": "장만성"}, {"no": 200, "id": "han_zhong", "ko": "한충"}];
+const version = "1779606963";
+const grid = document.getElementById('grid');
+let done = 0;
+function card(item) {
+  const no = String(item.no).padStart(3, '0');
+  const full = `./assets/generals/new_characters/front_gaze_200_v9_height_balance/${item.id}_front_gaze_v1.png?v=${version}`;
+  const redraw = `./assets/generals/new_characters/upper_body_200_redraw_v1/${item.id}_upper_body_redraw_v1.png?v=${version}`;
+  const el = document.createElement('article');
+  el.innerHTML = `
+    <div class="pair">
+      <div class="art"><span class="badge">전신 참조</span><img loading="lazy" src="${full}" alt="${item.ko} 전신"></div>
+      <div class="art"><span class="badge">신규 상반신</span><img loading="lazy" src="${redraw}" alt="${item.ko} 신규 상반신" onload="this.dataset.ok='1'; window.markDone()" onerror="this.remove(); this.parentElement.insertAdjacentHTML('beforeend','<div class=missing>신규 작화 대기</div>')"></div>
+    </div>
+    <div class="meta">
+      <p class="name"><span>${item.ko}</span><small>${no} · ${item.id}</small></p>
+      <a href="${redraw}">${redraw}</a>
+    </div>`;
+  return el;
+}
+window.markDone = () => {
+  done += 1;
+  document.getElementById('stat').textContent = `생성 완료 ${done} / ${roster.length}`;
+};
+document.getElementById('stat').textContent = `생성 완료 0 / ${roster.length}`;
+roster.map(card).forEach(el => grid.appendChild(el));
+</script>
+</body>
+</html>

@@ -13938,25 +13938,25 @@ const CHAPTER_SYNOPSIS = {
 /* 핀 좌표 — 배경 일러스트의 S자 길 중앙을 따라 배치.
    1번이 맨 아래, 20번이 맨 위. */
 const PIN_POSITIONS = [
-  /* 1 */ { x: 48, y: 94 },
-  /* 2 */ { x: 61, y: 89 },
-  /* 3 */ { x: 58, y: 84 },
-  /* 4 */ { x: 54, y: 79 },
-  /* 5 */ { x: 45, y: 74 },
-  /* 6 */ { x: 49, y: 69 },
-  /* 7 */ { x: 63, y: 64 },
-  /* 8 */ { x: 46, y: 59 },
-  /* 9 */ { x: 58, y: 54 },
-  /* 10 */ { x: 40, y: 49 },
-  /* 11 */ { x: 51, y: 44 },
-  /* 12 */ { x: 35, y: 39 },
-  /* 13 */ { x: 48, y: 34 },
-  /* 14 */ { x: 63, y: 30 },
+  /* 1 */ { x: 50, y: 94 },
+  /* 2 */ { x: 54, y: 89 },
+  /* 3 */ { x: 45, y: 76 },
+  /* 4 */ { x: 43, y: 71 },
+  /* 5 */ { x: 49, y: 66 },
+  /* 6 */ { x: 58, y: 62 },
+  /* 7 */ { x: 52, y: 58 },
+  /* 8 */ { x: 44, y: 54 },
+  /* 9 */ { x: 43, y: 50 },
+  /* 10 */ { x: 54, y: 46 },
+  /* 11 */ { x: 52, y: 42 },
+  /* 12 */ { x: 55, y: 38 },
+  /* 13 */ { x: 57, y: 34 },
+  /* 14 */ { x: 48, y: 30 },
   /* 15 */ { x: 45, y: 27 },
-  /* 16 */ { x: 55, y: 24 },
-  /* 17 */ { x: 37, y: 21 },
-  /* 18 */ { x: 49, y: 18 },
-  /* 19 */ { x: 59, y: 15 },
+  /* 16 */ { x: 57, y: 24 },
+  /* 17 */ { x: 57, y: 21 },
+  /* 18 */ { x: 62, y: 18 },
+  /* 19 */ { x: 64, y: 15 },
   /* 20 */ { x: 50, y: 12 },
 ];
 function getCurrentChapter() {
@@ -13978,7 +13978,10 @@ function renderStageGrid() {
   // === 새 spec 그리드 (#stageGrid) — div 카드, 상태 class 기반 ===
   const newGrid = document.getElementById('stageGrid');
   if (newGrid) {
-    newGrid.innerHTML = '';
+    newGrid.innerHTML = `
+      <svg class="map-path" id="mapPath" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+      <div class="region-labels" id="regionLabels"></div>
+    `;
     let chCleared = 0, chStars = 0;
     for (let i = startIdx; i < endIdx; i++) {
       if (!isCampaignStageIndex(i)) continue;
@@ -14099,7 +14102,7 @@ function renderStageGrid() {
 	      const cap = Math.min(10, Math.max(1, ch));
 	      mapEl.dataset.chapter = String(cap);
     }
-    /* SVG 경로 ‒ 이미지에 길이 그려져 있어 비활성 (CSS display:none) */
+    /* SVG 경로 — 핀 사이의 진행 흐름을 실제 길 위에 은은하게 얹는다. */
     const svg = document.getElementById('mapPath');
     if (svg) {
       svg.innerHTML = '';
