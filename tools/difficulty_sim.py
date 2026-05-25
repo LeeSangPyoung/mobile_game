@@ -18,7 +18,7 @@ def enemy_count(ch, local, variant, scaling):
     mx = ENEMY_MAX['boss'] if local==20 else ENEMY_MAX[variant]
     n  = ENEMY_N['boss']  if local==20 else ENEMY_N[variant]
     em = scaling['enemyMult'](ch, local)
-    if local==20: em += 0.26  # 보스 성 추가 보정
+    if local==20: em += 0.12  # 보스 성 추가 보정
     # 순차 점령: 최강 성 기준 + 성 수만큼 누적 부담(완만)
     return mx * em * (1 + 0.16*(n-1))
 
@@ -138,5 +138,6 @@ curve(cur, "현재 (CURRENT)")
 
 for P in [
   dict(eBase=0.78, ePer=0.19, eLocal=0.034, pPer=0.018, egBase=0.0),
+  dict(eBase=0.74, ePer=0.16, eLocal=0.028, pPer=0.018, egBase=0.0),
 ]:
     curve(scaling_proposed(P), f"제안 {P}")
