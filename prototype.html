@@ -4630,7 +4630,7 @@
   .er-target img {
     image-rendering: auto !important;
     image-rendering: -webkit-optimize-contrast !important;
-    transform: translateY(2px) scale(1.055) !important;
+    transform: translateY(2px) scale(1) !important;
     filter:
       contrast(1.1)
       saturate(1.08)
@@ -4661,8 +4661,8 @@
     animation: er-sharp-card-enter 0.62s cubic-bezier(.16,1.16,.26,1) both !important;
   }
   @keyframes er-sharp-card-enter {
-    0% { opacity: 0; transform: translate(-50%, -40%) scale(0.72) rotateY(-12deg) rotate(-2deg); filter: brightness(0.6) contrast(1.02); }
-    56% { opacity: 1; transform: translate(-50%, -50%) scale(1.045) rotateY(3deg) rotate(0.4deg); filter: brightness(1.08) contrast(1.08); }
+    0% { opacity: 0; transform: translate(-50%, -40%) scale(0.72) rotateY(-6deg) rotate(-1deg); filter: brightness(0.6) contrast(1.02); }
+    56% { opacity: 1; transform: translate(-50%, -50%) scale(1.045) rotateY(1.5deg) rotate(0.2deg); filter: brightness(1.08) contrast(1.08); }
     100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotateY(0) rotate(0); filter: contrast(1.05) saturate(1.04); }
   }
   .er-target.charging {
@@ -4839,7 +4839,7 @@
   }
   .er-target img,
   .er-target.success-pop img {
-    transform: translateY(2px) scale(1.055) !important;
+    transform: translateY(2px) scale(1) !important;
     filter:
       contrast(1.12)
       saturate(1.1)
@@ -12930,32 +12930,16 @@ function resolveGeneralFullbodySources(g) {
   if (g && g.face) sources.push(g.face);
   return [...new Set(sources)];
 }
-const GENERAL_DETAIL_BACKGROUNDS = [
-  './assets/battle/intro_duel_bg_cityfire.png',
-  './assets/battle/intro_duel_bg_storm.png',
-  './assets/battle/intro_duel_bg_tomb.png',
-  './assets/battle/intro_duel_bg_bridge.png',
-  './assets/battle/intro_duel_bg.png',
-  './assets/battle/intro_duel_bg_fleet.png',
-  './assets/battle/intro_duel_bg_desert.png',
-  './assets/battle/intro_duel_bg_bamboo.png',
-  './assets/battle/intro_duel_bg_snow.png',
-  './assets/battle/intro_duel_bg_cityfire.png',
-  './assets/battle/intro_duel_bg_cityfire.png',
-  './assets/battle/intro_duel_bg_storm.png',
-  './assets/battle/intro_duel_bg_tomb.png',
-  './assets/battle/intro_duel_bg_bridge.png',
-  './assets/battle/intro_duel_bg.png',
-  './assets/battle/intro_duel_bg_fleet.png',
-  './assets/battle/intro_duel_bg_desert.png',
-  './assets/battle/intro_duel_bg_bamboo.png',
-  './assets/battle/intro_duel_bg_snow.png',
-  './assets/battle/intro_duel_bg_cityfire.png',
-];
+const GENERAL_DETAIL_BACKGROUNDS_BY_STAR = {
+  1: './assets/battle/intro_duel_bg_day.png',
+  2: './assets/battle/intro_duel_bg_bamboo.png',
+  3: './assets/battle/intro_duel_bg_fleet.png',
+  4: './assets/battle/intro_duel_bg_storm.png',
+  5: './assets/battle/intro_duel_bg_cityfire.png',
+};
 function getGeneralDetailBackground(g) {
-  const key = `${(g && g.id) || ''}:${(g && g.uid) || ''}:${(g && g.name) || ''}`;
-  const i = hashGeneralId(key) % GENERAL_DETAIL_BACKGROUNDS.length;
-  return GENERAL_DETAIL_BACKGROUNDS[i];
+  const stars = clampStars((g && g.stars) || 1);
+  return GENERAL_DETAIL_BACKGROUNDS_BY_STAR[stars] || GENERAL_DETAIL_BACKGROUNDS_BY_STAR[1];
 }
 function setImageFallback(img, sources) {
   if (!img) return;
@@ -29230,7 +29214,7 @@ function closeTutorialOffer(accept) {
     top: -8% !important;
     width: clamp(190px, 22vw, 380px) !important;
     height: auto !important;
-    opacity: 0 !important;
+    opacity: 0;
     mix-blend-mode: screen !important;
     pointer-events: none !important;
     filter:
@@ -29249,7 +29233,7 @@ function closeTutorialOffer(accept) {
   }
   #introDialog .idg-thunder-flash {
     inset: 0 !important;
-    opacity: 0 !important;
+    opacity: 0;
     background:
       radial-gradient(circle at 20% 16%, rgba(190, 228, 255, 0.86), transparent 23%),
       radial-gradient(circle at 78% 18%, rgba(255, 242, 188, 0.54), transparent 28%),
@@ -33126,6 +33110,568 @@ function closeTutorialOffer(accept) {
     }
   }
 
+  /* 장수 프로필 카드: 스포츠 카드풍 각진 메탈 프레임 */
+  #generalDetailModal {
+    --profile-top: #13243c;
+    --profile-mid: #0d1727;
+    --profile-bottom: #170a06;
+    --profile-flare: rgba(88, 190, 255, 0.28);
+    --profile-line: rgba(255, 226, 126, 0.78);
+  }
+  #generalDetailModal[data-tier="star1"] {
+    --profile-top: #243040;
+    --profile-mid: #111925;
+    --profile-bottom: #15110d;
+    --profile-flare: rgba(210, 220, 235, 0.20);
+  }
+  #generalDetailModal[data-tier="star2"] {
+    --profile-top: #123528;
+    --profile-mid: #081e19;
+    --profile-bottom: #101309;
+    --profile-flare: rgba(80, 230, 150, 0.24);
+  }
+  #generalDetailModal[data-tier="star3"] {
+    --profile-top: #12365d;
+    --profile-mid: #07182b;
+    --profile-bottom: #130b08;
+    --profile-flare: rgba(64, 180, 255, 0.30);
+  }
+  #generalDetailModal[data-tier="star4"] {
+    --profile-top: #37205d;
+    --profile-mid: #160b2b;
+    --profile-bottom: #16090d;
+    --profile-flare: rgba(205, 132, 255, 0.30);
+  }
+  #generalDetailModal[data-tier="star5"] {
+    --profile-top: #1a1710;
+    --profile-mid: #090806;
+    --profile-bottom: #1d0b04;
+    --profile-flare: rgba(255, 194, 65, 0.34);
+  }
+  #generalDetailModal .general-detail-card {
+    width: min(288px, calc(100vw - 68px)) !important;
+    max-height: min(604px, calc(100dvh - 46px)) !important;
+    grid-template-rows: minmax(306px, 340px) auto !important;
+    padding: 8px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    clip-path: polygon(9% 0, 91% 0, 100% 8%, 100% 92%, 91% 100%, 9% 100%, 0 92%, 0 8%) !important;
+    background:
+      linear-gradient(136deg, rgba(255,255,255,0.28), transparent 17% 76%, rgba(0,0,0,0.46)),
+      linear-gradient(180deg, var(--card-edge-soft) 0%, var(--card-edge) 6%, var(--card-edge-dark) 60%, #06070a 100%) !important;
+    box-shadow:
+      0 28px 78px rgba(0,0,0,0.80),
+      0 0 0 1px rgba(255,255,255,0.18),
+      0 0 34px var(--card-glow),
+      inset 0 2px 0 rgba(255,255,255,0.36) !important;
+  }
+  #generalDetailModal .general-detail-card::before {
+    inset: 8px !important;
+    border-radius: 0 !important;
+    clip-path: polygon(8% 0, 92% 0, 100% 7%, 100% 93%, 92% 100%, 8% 100%, 0 93%, 0 7%) !important;
+    background:
+      linear-gradient(122deg, rgba(255,255,255,0.24), transparent 20% 72%, rgba(0,0,0,0.24)),
+      radial-gradient(circle at 78% 12%, var(--profile-flare), transparent 28%) !important;
+    opacity: 0.78 !important;
+  }
+  #generalDetailModal .general-detail-card::after {
+    inset: 13px !important;
+    border-radius: 0 !important;
+    clip-path: polygon(7% 0, 93% 0, 100% 6%, 100% 94%, 93% 100%, 7% 100%, 0 94%, 0 6%) !important;
+    border: 1px solid var(--profile-line) !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(0,0,0,0.56),
+      inset 0 0 22px rgba(0,0,0,0.22) !important;
+  }
+  #generalDetailModal .general-detail-close {
+    top: 16px !important;
+    right: 16px !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-width: 2px !important;
+    font-size: 26px !important;
+    line-height: 29px !important;
+    box-shadow:
+      0 0 0 3px rgba(255,240,170,0.26),
+      0 8px 14px rgba(0,0,0,0.38),
+      inset 0 1px 0 rgba(255,255,255,0.16) !important;
+  }
+  #generalDetailModal .general-detail-portrait {
+    min-height: clamp(300px, 47dvh, 336px) !important;
+    overflow: hidden !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    clip-path: polygon(6% 0, 94% 0, 100% 5%, 100% 100%, 0 100%, 0 5%) !important;
+    background:
+      linear-gradient(180deg, var(--profile-top), var(--profile-mid) 58%, rgba(2,3,7,0.98) 100%) !important;
+  }
+  #generalDetailModal .general-detail-portrait::before {
+    content: "" !important;
+    position: absolute !important;
+    left: 10px !important;
+    right: 10px !important;
+    top: 10px !important;
+    bottom: 0 !important;
+    z-index: 4 !important;
+    border: 1px solid rgba(255, 225, 126, 0.72) !important;
+    clip-path: polygon(5% 0, 95% 0, 100% 5%, 100% 100%, 0 100%, 0 5%) !important;
+    pointer-events: none !important;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.42) !important;
+  }
+  #generalDetailModal .general-detail-backdrop {
+    inset: 0 !important;
+    background:
+      radial-gradient(ellipse at 58% 33%, var(--profile-flare), transparent 31%),
+      linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.24) 58%, rgba(0,0,0,0.68)),
+      linear-gradient(90deg, rgba(0,0,0,0.42), transparent 20% 80%, rgba(0,0,0,0.42)),
+      var(--detail-bg) center / cover no-repeat !important;
+    filter: saturate(1.22) contrast(1.08) brightness(0.92) !important;
+  }
+  #generalDetailModal .general-detail-backdrop::after {
+    background:
+      radial-gradient(ellipse at 50% 44%, transparent 0 40%, rgba(0,0,0,0.18) 68%, rgba(0,0,0,0.46) 100%),
+      linear-gradient(180deg, transparent, rgba(0,0,0,0.22)) !important;
+  }
+  #generalDetailModal .general-detail-aura {
+    inset: 50px 4px 32px !important;
+    opacity: 0.76 !important;
+    background:
+      radial-gradient(ellipse at 58% 44%, var(--profile-flare), transparent 46%),
+      radial-gradient(ellipse at 50% 82%, rgba(255, 186, 72, 0.22), transparent 38%) !important;
+    filter: blur(8px) saturate(1.18) !important;
+  }
+  #generalDetailModal .general-detail-art {
+    left: 52% !important;
+    bottom: 1px !important;
+    width: calc(100% - 48px) !important;
+    height: 84% !important;
+    object-fit: contain !important;
+    object-position: center bottom !important;
+    z-index: 3 !important;
+  }
+  #generalDetailModal .general-detail-rating {
+    left: 22px !important;
+    top: 21px !important;
+    width: 60px !important;
+    min-height: 66px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  #generalDetailModal .general-detail-rating b {
+    font-size: 34px !important;
+    color: #fff36e !important;
+  }
+  #generalDetailModal .general-detail-rating span {
+    min-width: 42px !important;
+    padding: 3px 7px 4px !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    background: rgba(5,8,14,0.68) !important;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.28) !important;
+  }
+  #generalDetailModal .general-detail-grade {
+    top: 92px !important;
+    left: 24px !important;
+    border-radius: 0 !important;
+    min-width: 62px !important;
+    max-width: 68px !important;
+    background: rgba(5,8,14,0.72) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+  }
+  #generalDetailModal .general-detail-info {
+    margin-top: -1px !important;
+    padding: 9px 12px 13px !important;
+    border: 0 !important;
+    border-top: 2px solid var(--profile-line) !important;
+    border-radius: 0 !important;
+    clip-path: polygon(0 0, 100% 0, 100% 91%, 92% 100%, 8% 100%, 0 91%) !important;
+    background:
+      radial-gradient(ellipse at 50% 0%, var(--profile-flare), transparent 48%),
+      linear-gradient(180deg, rgba(44,18,9,0.94), var(--profile-bottom) 58%, rgba(3,5,10,0.99)) !important;
+  }
+  #generalDetailModal .general-detail-kicker {
+    gap: 8px !important;
+  }
+  #generalDetailModal .general-detail-kicker span {
+    border-radius: 999px !important;
+    min-width: 50px !important;
+  }
+  #generalDetailModal .general-detail-name {
+    margin-top: 5px !important;
+    font-size: clamp(25px, 6.2vw, 31px) !important;
+  }
+  #generalDetailModal .general-detail-power {
+    margin-top: 5px !important;
+    border-radius: 999px !important;
+  }
+  #generalDetailModal .profile-stat-grid {
+    gap: 6px !important;
+  }
+  #generalDetailModal .profile-stat {
+    min-height: 30px !important;
+    border-radius: 4px !important;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.08), transparent 24%),
+      linear-gradient(180deg, rgba(20,32,50,0.96), rgba(5,10,18,0.98)) !important;
+  }
+  @media (max-height: 720px) {
+    #generalDetailModal .general-detail-card {
+      width: min(276px, calc(100vw - 58px)) !important;
+      max-height: min(566px, calc(100dvh - 34px)) !important;
+      grid-template-rows: minmax(276px, 312px) auto !important;
+    }
+    #generalDetailModal .general-detail-portrait {
+      min-height: clamp(274px, 45dvh, 310px) !important;
+    }
+    #generalDetailModal .general-detail-art {
+      width: calc(100% - 50px) !important;
+      height: 81% !important;
+    }
+    #generalDetailModal .general-detail-rating {
+      left: 20px !important;
+      top: 19px !important;
+    }
+    #generalDetailModal .general-detail-rating b {
+      font-size: 31px !important;
+    }
+    #generalDetailModal .general-detail-grade {
+      top: 84px !important;
+      left: 22px !important;
+    }
+    #generalDetailModal .general-detail-info {
+      padding: 7px 11px 11px !important;
+    }
+    #generalDetailModal .profile-stat {
+      min-height: 28px !important;
+    }
+  }
+
+  /* 장수 프로필 카드: 배경 이미지를 살린 수집형 카드 HUD */
+  #generalDetailModal {
+    --profile-edge: #69e8ff;
+    --profile-edge-dark: #101a36;
+    --profile-accent: #5ceaff;
+    --profile-accent-2: #ffe66d;
+    --profile-glow: rgba(92, 234, 255, 0.34);
+    --profile-glow-strong: rgba(255, 230, 109, 0.28);
+    --profile-panel: rgba(4, 13, 28, 0.82);
+    --profile-panel-2: rgba(8, 28, 44, 0.74);
+    --card-edge: var(--profile-edge);
+    --card-edge-dark: var(--profile-edge-dark);
+    --card-edge-soft: var(--profile-accent-2);
+    --card-chip-edge: var(--profile-edge);
+    --card-glow: var(--profile-glow);
+    --card-name-bg: var(--profile-panel);
+  }
+  #generalDetailModal[data-tier="star1"] {
+    --profile-edge: #d9edf8;
+    --profile-edge-dark: #273344;
+    --profile-accent: #e9f7ff;
+    --profile-accent-2: #ffe8a4;
+    --profile-glow: rgba(210, 235, 248, 0.24);
+    --profile-glow-strong: rgba(255, 232, 164, 0.18);
+    --profile-panel: rgba(10, 17, 28, 0.84);
+    --profile-panel-2: rgba(20, 30, 43, 0.70);
+  }
+  #generalDetailModal[data-tier="star2"] {
+    --profile-edge: #57f0a5;
+    --profile-edge-dark: #0b332b;
+    --profile-accent: #6fffc0;
+    --profile-accent-2: #ffe46a;
+    --profile-glow: rgba(89, 245, 172, 0.30);
+    --profile-glow-strong: rgba(255, 228, 106, 0.20);
+    --profile-panel: rgba(3, 23, 25, 0.83);
+    --profile-panel-2: rgba(7, 45, 43, 0.70);
+  }
+  #generalDetailModal[data-tier="star3"] {
+    --profile-edge: #5fe1ff;
+    --profile-edge-dark: #0c2145;
+    --profile-accent: #66ecff;
+    --profile-accent-2: #ffdf5e;
+    --profile-glow: rgba(78, 219, 255, 0.34);
+    --profile-glow-strong: rgba(255, 223, 94, 0.26);
+    --profile-panel: rgba(4, 14, 34, 0.83);
+    --profile-panel-2: rgba(6, 35, 56, 0.70);
+  }
+  #generalDetailModal[data-tier="star4"] {
+    --profile-edge: #d692ff;
+    --profile-edge-dark: #271448;
+    --profile-accent: #f26cff;
+    --profile-accent-2: #7cf2ff;
+    --profile-glow: rgba(230, 112, 255, 0.36);
+    --profile-glow-strong: rgba(124, 242, 255, 0.22);
+    --profile-panel: rgba(21, 9, 36, 0.84);
+    --profile-panel-2: rgba(43, 15, 58, 0.70);
+  }
+  #generalDetailModal[data-tier="star5"] {
+    --profile-edge: #ffe05d;
+    --profile-edge-dark: #3d1020;
+    --profile-accent: #ff4c7d;
+    --profile-accent-2: #ffe76c;
+    --profile-glow: rgba(255, 78, 124, 0.34);
+    --profile-glow-strong: rgba(255, 231, 108, 0.32);
+    --profile-panel: rgba(25, 8, 28, 0.84);
+    --profile-panel-2: rgba(58, 15, 45, 0.70);
+  }
+  #generalDetailModal .general-detail-scrim {
+    background:
+      radial-gradient(ellipse at 50% 33%, var(--profile-glow), transparent 30%),
+      radial-gradient(ellipse at 50% 88%, var(--profile-glow-strong), transparent 34%),
+      linear-gradient(180deg, rgba(0, 4, 12, 0.34), rgba(0, 2, 7, 0.88)),
+      var(--detail-bg) center / cover no-repeat !important;
+    backdrop-filter: blur(10px) saturate(1.24) contrast(1.08) !important;
+  }
+  #generalDetailModal .general-detail-card {
+    background:
+      linear-gradient(143deg, rgba(255,255,255,0.30), transparent 16% 74%, rgba(0,0,0,0.50)),
+      radial-gradient(ellipse at 56% -10%, var(--profile-glow-strong), transparent 42%),
+      linear-gradient(180deg, var(--profile-accent-2) 0%, var(--profile-edge) 4%, #071426 18%, #030711 100%) !important;
+    box-shadow:
+      0 24px 70px rgba(0,0,0,0.80),
+      0 0 0 1px rgba(255,255,255,0.20),
+      0 0 34px var(--profile-glow),
+      0 0 64px rgba(255, 230, 109, 0.10),
+      inset 0 2px 0 rgba(255,255,255,0.38) !important;
+  }
+  #generalDetailModal .general-detail-card::before {
+    background:
+      linear-gradient(116deg, transparent 0 28%, rgba(255,255,255,0.20) 37%, transparent 46% 100%),
+      linear-gradient(90deg, rgba(255,255,255,0.12), transparent 18% 82%, rgba(0,0,0,0.22)) !important;
+    opacity: 0.62 !important;
+  }
+  #generalDetailModal .general-detail-card::after {
+    border-color: rgba(255, 246, 178, 0.54) !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(0,0,0,0.48),
+      inset 0 0 18px var(--profile-glow) !important;
+  }
+  #generalDetailModal .general-detail-close {
+    background:
+      radial-gradient(circle at 32% 24%, rgba(255,255,255,0.34), transparent 38%),
+      linear-gradient(180deg, rgba(13, 26, 44, 0.88), rgba(2, 5, 13, 0.94)) !important;
+    border-color: rgba(255, 242, 171, 0.92) !important;
+    color: #fff4be !important;
+    box-shadow:
+      0 0 0 3px rgba(255,240,170,0.22),
+      0 0 16px var(--profile-glow),
+      0 8px 14px rgba(0,0,0,0.42),
+      inset 0 1px 0 rgba(255,255,255,0.18) !important;
+  }
+  #generalDetailModal .general-detail-close::before,
+  #generalDetailModal .general-detail-close::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    width: 19px !important;
+    height: 3px !important;
+    border-radius: 999px !important;
+    background: #fff5bd !important;
+    box-shadow: 0 0 8px rgba(255, 245, 189, 0.62) !important;
+    transform-origin: center !important;
+  }
+  #generalDetailModal .general-detail-close::before {
+    transform: translate(-50%, -50%) rotate(45deg) !important;
+  }
+  #generalDetailModal .general-detail-close::after {
+    transform: translate(-50%, -50%) rotate(-45deg) !important;
+  }
+  #generalDetailModal .general-detail-portrait {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.16) 45%, rgba(0,0,0,0.50)),
+      var(--detail-bg) center / cover no-repeat !important;
+  }
+  #generalDetailModal .general-detail-portrait::before {
+    border-color: rgba(255, 238, 132, 0.68) !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(0,0,0,0.46),
+      inset 0 0 24px rgba(0,0,0,0.28),
+      0 0 16px var(--profile-glow) !important;
+  }
+  #generalDetailModal .general-detail-backdrop {
+    background:
+      radial-gradient(circle at 62% 43%, var(--profile-glow), transparent 25%),
+      radial-gradient(ellipse at 48% 84%, var(--profile-glow-strong), transparent 38%),
+      linear-gradient(180deg, rgba(3, 8, 18, 0.02), rgba(2, 6, 14, 0.24) 52%, rgba(1, 3, 8, 0.66)),
+      linear-gradient(90deg, rgba(0,0,0,0.42), transparent 22% 78%, rgba(0,0,0,0.44)),
+      var(--detail-bg) center / cover no-repeat !important;
+    filter: saturate(1.32) contrast(1.08) brightness(0.98) !important;
+  }
+  #generalDetailModal .general-detail-backdrop::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 18% -8% 4% !important;
+    background:
+      radial-gradient(circle at 18% 12%, var(--profile-accent-2) 0 1.5px, transparent 2.5px),
+      radial-gradient(circle at 82% 32%, var(--profile-accent) 0 1.5px, transparent 2.5px),
+      radial-gradient(circle at 62% 8%, rgba(255,255,255,0.75) 0 1px, transparent 2px),
+      radial-gradient(circle at 34% 47%, var(--profile-accent-2) 0 1px, transparent 2px),
+      radial-gradient(circle at 76% 72%, var(--profile-accent) 0 1px, transparent 2px) !important;
+    filter: drop-shadow(0 0 7px var(--profile-glow)) !important;
+    opacity: 0.78 !important;
+    animation: detailEmbers 4s linear infinite !important;
+  }
+  #generalDetailModal .general-detail-backdrop::after {
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.12), transparent 22% 68%, rgba(255,255,255,0.05)),
+      radial-gradient(ellipse at 50% 50%, transparent 0 46%, rgba(0,0,0,0.40) 78%),
+      linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.34)) !important;
+  }
+  #generalDetailModal .general-detail-aura {
+    opacity: 0.88 !important;
+    background:
+      radial-gradient(ellipse at 58% 46%, var(--profile-glow), transparent 46%),
+      radial-gradient(ellipse at 48% 86%, var(--profile-glow-strong), transparent 38%) !important;
+    filter: blur(7px) saturate(1.24) !important;
+  }
+  #generalDetailModal .general-detail-floor {
+    background:
+      radial-gradient(ellipse at 50% 52%, var(--profile-glow-strong), transparent 28%),
+      radial-gradient(ellipse at 50% 68%, rgba(0,0,0,0.72), transparent 62%) !important;
+  }
+  #generalDetailModal .general-detail-rating b {
+    color: var(--profile-accent-2) !important;
+    text-shadow:
+      0 3px 0 rgba(0,0,0,0.78),
+      0 0 15px var(--profile-glow-strong) !important;
+  }
+  #generalDetailModal .general-detail-rating span,
+  #generalDetailModal .general-detail-grade,
+  #generalDetailModal .general-detail-kicker span,
+  #generalDetailModal .general-detail-power {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.13), rgba(4,10,20,0.62)) !important;
+    border-color: rgba(255, 239, 143, 0.56) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.14),
+      0 0 13px var(--profile-glow) !important;
+  }
+  #generalDetailModal .general-detail-info {
+    isolation: isolate !important;
+    overflow: hidden !important;
+    border-top: 1px solid rgba(255, 237, 128, 0.70) !important;
+    background:
+      linear-gradient(180deg, rgba(4, 12, 26, 0.50), var(--profile-panel) 44%, rgba(1, 5, 13, 0.96)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.10),
+      inset 0 18px 36px rgba(255,255,255,0.03) !important;
+  }
+  #generalDetailModal .general-detail-info::before,
+  #generalDetailModal .general-detail-info::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
+  }
+  #generalDetailModal .general-detail-info::before {
+    inset: -18px !important;
+    background: var(--detail-bg) center bottom / cover no-repeat !important;
+    filter: blur(7px) saturate(1.34) brightness(0.72) !important;
+    opacity: 0.42 !important;
+  }
+  #generalDetailModal .general-detail-info::after {
+    background:
+      radial-gradient(ellipse at 50% 0%, var(--profile-glow), transparent 42%),
+      linear-gradient(120deg, transparent 0 16%, rgba(255,255,255,0.08) 22%, transparent 31% 100%),
+      linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.20)) !important;
+  }
+  #generalDetailModal .general-detail-info > * {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  #generalDetailModal .general-detail-name {
+    color: #fff6c8 !important;
+    text-shadow:
+      0 3px 0 rgba(0,0,0,0.82),
+      0 0 18px var(--profile-glow-strong),
+      0 0 26px var(--profile-glow) !important;
+  }
+  #generalDetailModal .profile-stat {
+    position: relative !important;
+    overflow: hidden !important;
+    border-color: rgba(255, 239, 143, 0.36) !important;
+    background:
+      radial-gradient(circle at 96% 22%, var(--profile-glow), transparent 42%),
+      linear-gradient(180deg, rgba(15, 34, 56, 0.78), rgba(4, 10, 22, 0.88)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      0 0 12px rgba(0,0,0,0.24) !important;
+  }
+  #generalDetailModal .profile-stat::before {
+    content: "" !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 4px !important;
+    background: linear-gradient(180deg, var(--profile-accent-2), var(--profile-accent)) !important;
+    box-shadow: 0 0 12px var(--profile-glow) !important;
+  }
+  #generalDetailModal .profile-stat b {
+    color: rgba(239, 248, 255, 0.90) !important;
+  }
+  #generalDetailModal .profile-stat i {
+    color: var(--profile-accent-2) !important;
+    text-shadow:
+      0 2px 0 rgba(0,0,0,0.70),
+      0 0 10px var(--profile-glow-strong) !important;
+  }
+
+  /* 장수 프로필 카드: 자연스러운 라운드 카드 외곽 */
+  #generalDetailModal .general-detail-card,
+  #generalDetailModal .general-detail-card::before,
+  #generalDetailModal .general-detail-card::after,
+  #generalDetailModal .general-detail-portrait,
+  #generalDetailModal .general-detail-portrait::before,
+  #generalDetailModal .general-detail-info {
+    clip-path: none !important;
+  }
+  #generalDetailModal .general-detail-card {
+    padding: 7px !important;
+    border: 1px solid rgba(255, 241, 159, 0.72) !important;
+    border-radius: 16px !important;
+    background:
+      radial-gradient(ellipse at 50% -8%, rgba(255, 239, 146, 0.30), transparent 38%),
+      linear-gradient(142deg, rgba(255,255,255,0.22), transparent 18% 76%, rgba(0,0,0,0.42)),
+      linear-gradient(180deg, rgba(255, 240, 151, 0.92) 0 3px, rgba(103, 231, 255, 0.52) 4px, rgba(6, 19, 38, 0.98) 22px, rgba(2, 5, 13, 0.99) 100%) !important;
+    box-shadow:
+      0 24px 68px rgba(0,0,0,0.80),
+      0 0 0 1px rgba(255,255,255,0.12),
+      0 0 26px var(--profile-glow),
+      inset 0 1px 0 rgba(255,255,255,0.32) !important;
+  }
+  #generalDetailModal .general-detail-card::before {
+    inset: 7px !important;
+    border-radius: 12px !important;
+    background:
+      linear-gradient(118deg, transparent 0 30%, rgba(255,255,255,0.17) 39%, transparent 48% 100%),
+      linear-gradient(90deg, rgba(255,255,255,0.08), transparent 18% 82%, rgba(0,0,0,0.18)) !important;
+    opacity: 0.55 !important;
+  }
+  #generalDetailModal .general-detail-card::after {
+    inset: 9px !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(255, 243, 171, 0.52) !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(0,0,0,0.38),
+      inset 0 0 18px rgba(92, 234, 255, 0.14) !important;
+  }
+  #generalDetailModal .general-detail-portrait {
+    border-radius: 11px 11px 0 0 !important;
+  }
+  #generalDetailModal .general-detail-portrait::before {
+    left: 9px !important;
+    right: 9px !important;
+    top: 9px !important;
+    bottom: 0 !important;
+    border-radius: 9px 9px 0 0 !important;
+  }
+  #generalDetailModal .general-detail-info {
+    border-radius: 0 0 11px 11px !important;
+  }
+
   /* Enhance ritual: harder impact mood + in-card stat delta preview. */
   .enh-ritual {
     background:
@@ -33189,11 +33735,11 @@ function closeTutorialOffer(accept) {
     box-shadow: 0 0 18px rgba(255, 74, 34, 0.32) !important;
   }
   .er-target {
-    width: min(302px, 72vw) !important;
-    height: min(448px, 57dvh) !important;
-    padding: 32px 30px 28px !important;
-    grid-template-rows: minmax(118px, 1fr) 24px 33px auto !important;
-    gap: 4px !important;
+    width: min(330px, 77vw) !important;
+    height: min(486px, 61dvh) !important;
+    padding: 31px 26px 28px !important;
+    grid-template-rows: minmax(120px, 1fr) 25px 34px auto !important;
+    gap: 5px !important;
     filter: drop-shadow(0 0 18px rgba(255, 64, 34, 0.20)) !important;
     transition: top 0.36s cubic-bezier(.18,1.1,.28,1) !important;
   }
@@ -33203,7 +33749,7 @@ function closeTutorialOffer(accept) {
   }
   .er-target img,
   .er-target.success-pop img {
-    transform: translateY(1px) scale(1.02) !important;
+    transform: translateY(1px) scale(0.97) !important;
   }
   .er-rarity-label {
     height: 24px !important;
@@ -33218,17 +33764,19 @@ function closeTutorialOffer(accept) {
     position: relative !important;
     z-index: 4 !important;
     width: 100% !important;
-    min-height: 0 !important;
-    padding: 7px 7px 8px !important;
+    min-height: 150px !important;
+    padding: 10px 9px 11px !important;
     display: grid !important;
-    gap: 4px !important;
+    gap: 6px !important;
     border-radius: 12px !important;
-    border: 1px solid rgba(255, 219, 98, 0.45) !important;
+    border: 1px solid rgba(255, 219, 98, 0.55) !important;
     background:
-      radial-gradient(circle at 50% 0%, rgba(255, 216, 86, 0.20), transparent 62%),
-      linear-gradient(180deg, rgba(28, 11, 5, 0.88), rgba(4, 7, 14, 0.92)) !important;
+      radial-gradient(circle at 50% 0%, rgba(255, 216, 86, 0.14), transparent 56%),
+      linear-gradient(180deg, rgba(10, 10, 12, 0.96), rgba(3, 7, 13, 0.98)) !important;
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.58),
+      0 0 0 1px rgba(0, 0, 0, 0.42),
       0 0 18px rgba(255, 70, 34, 0.12) !important;
     overflow: hidden !important;
   }
@@ -33243,7 +33791,7 @@ function closeTutorialOffer(accept) {
   }
   @keyframes er-card-stat-sheen {
     0%, 35% { opacity: 0; transform: translateX(-62%); }
-    48% { opacity: 0.85; }
+    48% { opacity: 0.28; }
     72%, 100% { opacity: 0; transform: translateX(62%); }
   }
   .er-card-stats-head {
@@ -33254,11 +33802,16 @@ function closeTutorialOffer(accept) {
     align-items: center !important;
     color: #ffdc59 !important;
     font-family: 'Noto Sans KR', system-ui, sans-serif !important;
-    font-size: 10px !important;
+    font-size: 13px !important;
     font-weight: 900 !important;
     line-height: 1 !important;
     letter-spacing: 0 !important;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.62) !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.86), 0 0 8px rgba(255, 220, 88, 0.28) !important;
+  }
+  .er-card-stats-head,
+  .er-card-stat-list {
+    position: relative !important;
+    z-index: 1 !important;
   }
   .er-card-stats-head span {
     min-width: 0 !important;
@@ -33267,11 +33820,11 @@ function closeTutorialOffer(accept) {
     white-space: nowrap !important;
   }
   .er-card-stats-head b {
-    padding: 3px 6px !important;
+    padding: 4px 7px !important;
     border-radius: 999px !important;
     background: rgba(255, 216, 86, 0.16) !important;
     color: #fff4c8 !important;
-    font-size: 10px !important;
+    font-size: 12px !important;
     line-height: 1 !important;
     white-space: nowrap !important;
   }
@@ -33279,59 +33832,66 @@ function closeTutorialOffer(accept) {
     width: 100% !important;
     min-width: 0 !important;
     display: grid !important;
-    gap: 3px !important;
+    gap: 5px !important;
   }
   .er-card-stat-row {
     min-width: 0 !important;
-    height: 19px !important;
+    height: 28px !important;
     display: grid !important;
-    grid-template-columns: 34px minmax(0, 1fr) 10px minmax(0, 1fr) 36px !important;
-    gap: 3px !important;
+    grid-template-columns: 44px minmax(0, 1fr) 12px minmax(0, 1fr) 48px !important;
+    gap: 5px !important;
     align-items: center !important;
-    padding: 0 5px !important;
-    border-radius: 7px !important;
-    background: rgba(255, 255, 255, 0.055) !important;
+    padding: 0 7px !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(255,255,255,0.055) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.035)),
+      rgba(5, 10, 18, 0.72) !important;
     color: #f8eac9 !important;
     font-family: 'Noto Sans KR', system-ui, sans-serif !important;
-    font-size: 10px !important;
+    font-size: 14.5px !important;
     font-weight: 900 !important;
     line-height: 1 !important;
   }
   .er-card-stat-row span {
-    color: rgba(216, 230, 245, 0.82) !important;
+    color: rgba(245, 250, 255, 0.96) !important;
     text-align: left !important;
     white-space: nowrap !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.82) !important;
   }
   .er-card-stat-row b,
   .er-card-stat-row strong {
     min-width: 0 !important;
-    color: #dce9f5 !important;
-    font-size: 10px !important;
+    color: #f1f7ff !important;
+    font-size: 14.5px !important;
     line-height: 1 !important;
     text-align: center !important;
     white-space: nowrap !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.72), 0 0 8px rgba(214, 234, 255, 0.18) !important;
   }
   .er-card-stat-row i {
-    color: rgba(255, 255, 255, 0.48) !important;
+    color: rgba(255, 255, 255, 0.70) !important;
     font-style: normal !important;
     text-align: center !important;
   }
   .er-card-stat-row strong {
-    color: #ffdf5e !important;
+    color: #ffe45f !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.76), 0 0 10px rgba(255, 222, 94, 0.30) !important;
   }
   .er-card-stat-row em {
     min-width: 0 !important;
-    padding: 3px 4px !important;
+    padding: 4px 5px !important;
     border-radius: 999px !important;
-    background: rgba(51, 255, 133, 0.14) !important;
-    border: 1px solid rgba(116, 255, 154, 0.22) !important;
-    color: #82ffa5 !important;
-    font-size: 9px !important;
+    background: rgba(51, 255, 133, 0.20) !important;
+    border: 1px solid rgba(116, 255, 154, 0.35) !important;
+    color: #93ffae !important;
+    font-size: 13.5px !important;
     font-style: normal !important;
     line-height: 1 !important;
     text-align: center !important;
     white-space: nowrap !important;
-    box-shadow: 0 0 10px rgba(69, 255, 130, 0.10) !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.82) !important;
+    box-shadow: 0 0 12px rgba(69, 255, 130, 0.16) !important;
   }
   .er-target.success-pop .er-card-stats {
     border-color: rgba(130, 255, 165, 0.78) !important;
@@ -33375,41 +33935,42 @@ function closeTutorialOffer(accept) {
   }
   @media (max-width: 390px), (max-height: 760px) {
     .er-target {
-      width: min(284px, 72vw) !important;
-      height: min(408px, 57dvh) !important;
-      padding: 28px 27px 25px !important;
-      grid-template-rows: minmax(100px, 1fr) 22px 30px auto !important;
-      gap: 3px !important;
+      width: min(330px, 82vw) !important;
+      height: min(478px, 64dvh) !important;
+      padding: 29px 25px 26px !important;
+      grid-template-rows: minmax(104px, 1fr) 23px 31px auto !important;
+      gap: 4px !important;
     }
     .er-rarity-label {
-      height: 22px !important;
+      height: 23px !important;
       font-size: 13px !important;
     }
     .er-target-name {
-      height: 30px !important;
+      height: 31px !important;
       font-size: 15px !important;
     }
     .er-card-stats {
-      padding: 6px !important;
-      gap: 3px !important;
+      min-height: 142px !important;
+      padding: 9px 8px 10px !important;
+      gap: 5px !important;
     }
     .er-card-stats-head,
     .er-card-stats-head b {
-      font-size: 9px !important;
+      font-size: 12px !important;
     }
     .er-card-stat-row {
-      height: 17px !important;
-      grid-template-columns: 31px minmax(0, 1fr) 9px minmax(0, 1fr) 32px !important;
-      padding: 0 4px !important;
-      font-size: 9px !important;
+      height: 26px !important;
+      grid-template-columns: 42px minmax(0, 1fr) 11px minmax(0, 1fr) 46px !important;
+      padding: 0 6px !important;
+      font-size: 13.5px !important;
     }
     .er-card-stat-row b,
     .er-card-stat-row strong {
-      font-size: 9px !important;
+      font-size: 13.5px !important;
     }
     .er-card-stat-row em {
-      padding: 2px 3px !important;
-      font-size: 8px !important;
+      padding: 3px 4px !important;
+      font-size: 12.5px !important;
     }
   }
 </style>
