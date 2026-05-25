@@ -5206,7 +5206,9 @@
     display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
     align-content: start; gap: 7px; padding: 4px 2px 10px;
     -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+    touch-action: pan-y;
   }
+  #starterPickScreen .sp-roster * { touch-action: pan-y; }
   #starterPickScreen .deploy-card { min-height: 138px; padding: 8px 6px 10px; gap: 6px; cursor: pointer; }
   #starterPickScreen .deploy-card.sp-selected {
     outline: 2px solid #ffd23f; outline-offset: -2px;
@@ -12053,7 +12055,8 @@ function formatGeneralBuffs(buffs = {}, uidOrLv) {
     .join(' · ') || '지휘 보정 +2%';
 }
 // 카드용 — 칩(chip) 그리드 HTML 반환. 줄바꿈 깔끔, 가독성 ↑
-function formatGeneralBuffsChips(buffs = {}, uidOrLv) {
+function formatGeneralBuffsChips(g) {
+  // 별 배수·강화·플랫까지 반영된 실효 버프로 표시 (전투력·실제 전투와 일치)
   const labels = [
     ['unitAtk', '병공'],
     ['unitDef', '병방'],
@@ -12061,23 +12064,17 @@ function formatGeneralBuffsChips(buffs = {}, uidOrLv) {
     ['castleDef', '성방'],
     ['prodRate', '생산'],
   ];
-  let mult = 1;
-  if (typeof uidOrLv === 'number') {
-    if (uidOrLv >= 1 && uidOrLv <= ENHANCE_MAX_LV) mult = ENHANCE_MULT[uidOrLv] || 1;
-    else mult = getGeneralLevelMult(uidOrLv);
-  }
   const items = labels
-    .filter(([k]) => buffs[k])
-    .map(([k, label]) => `<span class="buff-chip"><b>${label}</b><i>+${Math.round(buffs[k] * mult * 100)}%</i></span>`);
+    .map(([k, label]) => [label, Math.round(generalBuff(g, k) * 100)])
+    .filter(([, v]) => v > 0)
+    .map(([label, v]) => `<span class="buff-chip"><b>${label}</b><i>+${v}%</i></span>`);
   if (!items.length) return '<span class="buff-chip muted"><b>지휘</b><i>+2%</i></span>';
   return `<div class="buff-chips">${items.join('')}</div>`;
 }
 function generalProfileRating(g) {
   const stars = clampStars((g && g.stars) || 1);
   const lv = Math.max(1, Math.min(ENHANCE_MAX_LV, (g && g.lv) || 1));
-  const starMult = STAR_MULT[stars] || 1;
-  const lvMult = ENHANCE_MULT[lv] || 1;
-  const score = 86 + generalScoreOf(g) * 105 * starMult * lvMult + stars * 2 + (lv - 1) * 2;
+  const score = 86 + effectiveScoreOf(g) * 105 + stars * 2 + (lv - 1) * 2;
   return Math.max(88, Math.min(139, Math.round(score)));
 }
 function generalProfileRole(g) {
@@ -12110,9 +12107,9 @@ function formatGeneralProfileStats(g = {}, lv = 1) {
     ['castleDef', '수성'],
     ['prodRate', '생산'],
   ];
-  const mult = ENHANCE_MULT[Math.max(1, Math.min(ENHANCE_MAX_LV, lv || 1))] || 1;
   const rows = labels.map(([key, label]) => {
-    const value = Math.round(((g.buffs && g.buffs[key]) || 0) * mult * 100);
+    // 별 배수·강화·플랫 모두 반영 (전투력·실제 전투와 일치)
+    const value = Math.round(generalBuff(g, key) * 100);
     const cls = value ? 'profile-stat' : 'profile-stat is-empty';
     return `<span class="${cls}"><b>${label}</b><i>${value}</i></span>`;
   }).join('');
@@ -12516,6 +12513,9 @@ function getGeneralById(id) {
 // === 장수 별 등급 시스템 (등용 시 랜덤 결정, per-instance) ===
 const STAR_MAX = 5;
 const STAR_MULT = [1.0, 1.0, 1.2, 1.4, 1.7, 2.0];          // index = stars(1~5): 버프 배수
+// 별 플랫 바닥값(C안) — 약한 장수도 고등급이면 핵심 전투(병공/병방)에 기본 기여.
+// 명장은 base가 커서 여전히 우위. unitAtk에 더하고 unitDef엔 60%.
+const STAR_FLAT = [0, 0, 0.012, 0.025, 0.045, 0.075];      // index = stars
 const STAR_ODDS = [0, 0.45, 0.33, 0.15, 0.05, 0.02];        // index = stars: 등용 시 등장 확률 (합 1.0)
 const STAR_META = {
   1: { label: '일반', color: '#b8c0cc' },
@@ -12566,6 +12566,12 @@ function enhanceFodderBonusPct(lv, fodders) {
 function generalScoreOf(g) {
   if (!g || !g.buffs) return 0;
   return Object.values(g.buffs).reduce((s, v) => s + (v || 0), 0);
+}
+// 실효 버프합 — 별 배수·강화·플랫 바닥값까지 반영(전투력/스탯 표시에 사용)
+const _BUFF_KEYS = ['unitAtk', 'unitDef', 'castleAtk', 'castleDef', 'prodRate'];
+function effectiveScoreOf(g) {
+  if (!g) return 0;
+  return _BUFF_KEYS.reduce((s, k) => s + generalBuff(g, k), 0);
 }
 function getGeneralRarity(g) {
   // 별 등급은 per-instance(g.stars). 없으면 ★1.
@@ -12787,7 +12793,7 @@ function renderGeneralSelect() {
       ${badgeHTML}
       <div class="deploy-face"><img src="${g.face}" alt=""></div>
       <div class="deploy-name">${g.name}${g.lv > 1 ? ` <span class="lv-pill">+${g.lv-1}</span>` : ''}</div>
-      <div class="deploy-stat">${formatGeneralBuffsChips(g.buffs, g.lv)}</div>
+      <div class="deploy-stat">${formatGeneralBuffsChips(g)}</div>
     `;
     bindTap(card, () => {
       if (g.uid == null) { showSelectToast('테스트 모드: 보유 안 한 카드', '#c1121f'); return; }
@@ -12955,9 +12961,8 @@ function setImageFallback(img, sources) {
 function generalDetailPower(g) {
   const stars = clampStars((g && g.stars) || 1);
   const lv = Math.max(1, Math.min(ENHANCE_MAX_LV, (g && g.lv) || 1));
-  const starMult = STAR_MULT[stars] || 1;
-  const lvMult = ENHANCE_MULT[lv] || 1;
-  return Math.round(100 + generalScoreOf(g) * 1000 * starMult * lvMult + (stars * 18) + ((lv - 1) * 42));
+  // 실효버프(별배수·강화·플랫 포함)로 산정 → 표시와 실제 전투 일치
+  return Math.round(100 + effectiveScoreOf(g) * 1000 + (stars * 18) + ((lv - 1) * 42));
 }
 let generalDetailEventsBound = false;
 let generalDetailCloseTimer = 0;
@@ -13148,7 +13153,7 @@ function renderGeneralManage() {
       <button type="button" class="general-detail-btn" title="상세보기" aria-label="${htmlSafe(g.name)} 상세보기"></button>
       <div class="deploy-face"><img src="${g.face}" alt=""></div>
       <div class="deploy-name">${g.name}${g.lv > 1 ? ` <span class="lv-pill">+${g.lv-1}</span>` : ''}</div>
-      <div class="deploy-stat">${formatGeneralBuffsChips(g.buffs, g.lv)}</div>
+      <div class="deploy-stat">${formatGeneralBuffsChips(g)}</div>
     `;
     const detailBtn = card.querySelector('.general-detail-btn');
     if (detailBtn) {
@@ -13286,8 +13291,13 @@ function generalBuff(g, key) {
   const lvMult = (g.lv && g.lv > 1) ? (ENHANCE_MULT[g.lv] || 1.0)
               : (g.uid != null ? getGeneralLevelMult(g.uid) : 1.0);
   // 별 등급 배수 — 강화 레벨과 별개 축
-  const starMult = STAR_MULT[clampStars(g.stars || 1)] || 1.0;
-  return base * lvMult * starMult;
+  const st = clampStars(g.stars || 1);
+  const starMult = STAR_MULT[st] || 1.0;
+  let v = base * lvMult * starMult;
+  // 별 플랫 바닥값 — 핵심 전투 스탯에 등급 비례 가산 (약캐 고등급 구제)
+  if (key === 'unitAtk') v += (STAR_FLAT[st] || 0);
+  else if (key === 'unitDef') v += (STAR_FLAT[st] || 0) * 0.6;
+  return v;
 }
 function commanderArmyMult(a, key) {
   if (!a || a.owner !== 1) return 1;
@@ -13860,36 +13870,65 @@ const CINEMATIC_LABEL_ASSETS = {
   '공 성': { src: './assets/battle/cinematic_label_siege.png', alt: '공성', start: false },
   'START!': { src: './assets/battle/cinematic_label_start.png', alt: 'START!', start: true },
 };
+function preloadCinematicLabelAssets() {
+  if (typeof Image !== 'function') return;
+  Object.values(CINEMATIC_LABEL_ASSETS).forEach(asset => {
+    if (!asset || asset._preload) return;
+    const img = new Image();
+    img.decoding = 'async';
+    img.onload = () => { asset._ready = true; };
+    img.onerror = () => { asset._failed = true; };
+    img.src = asset.src;
+    if (img.complete && img.naturalWidth) asset._ready = true;
+    if (typeof img.decode === 'function') {
+      img.decode().then(() => { asset._ready = true; }).catch(() => {});
+    }
+    asset._preload = img;
+  });
+}
+preloadCinematicLabelAssets();
+
 function drawCinematicLabel(text, big) {
   let el = document.getElementById('cinematicLabel');
   if (!el) {
     el = document.createElement('div');
     el.id = 'cinematicLabel';
     el.style.cssText = 'position:fixed; left:50%; top:38%; transform:translate(-50%,-50%) scale(.96); pointer-events:none; z-index:5000; transition:opacity .18s ease, transform .18s ease; white-space:nowrap; opacity:0; filter:drop-shadow(0 18px 22px rgba(0,0,0,.48));';
-    el.innerHTML = '<img alt="" style="display:block;width:100%;height:auto;object-fit:contain;"><span style="display:none;"></span>';
     document.body.appendChild(el);
+  }
+  if (!el.querySelector('img') || !el.querySelector('span')) {
+    el.innerHTML = '<img alt="" decoding="async" style="display:block;width:100%;height:auto;object-fit:contain;visibility:hidden;"><span style="display:none;"></span>';
   }
   const img = el.querySelector('img');
   const fallback = el.querySelector('span');
   if (!text) {
+    el.dataset.labelText = '';
+    el.dataset.labelBig = '';
+    el.dataset.labelSrc = '';
     el.style.opacity = '0';
     el.style.transform = 'translate(-50%,-50%) scale(.96)';
-    if (img) img.removeAttribute('src');
+    if (img) {
+      img.onload = null;
+      img.onerror = null;
+      img.style.visibility = 'hidden';
+      img.removeAttribute('src');
+    }
     if (fallback) fallback.textContent = '';
     return;
   }
-  const asset = CINEMATIC_LABEL_ASSETS[text];
-  if (asset && img) {
-    img.src = asset.src;
-    img.alt = asset.alt;
-    img.style.display = 'block';
-    if (fallback) {
-      fallback.style.display = 'none';
-      fallback.textContent = '';
+  const sameLabel = el.dataset.labelText === text && el.dataset.labelBig === String(!!big);
+  if (sameLabel && el.style.opacity === '1') return;
+  el.dataset.labelText = text;
+  el.dataset.labelBig = String(!!big);
+
+  const showFallbackText = () => {
+    if (el.dataset.labelText !== text) return;
+    if (img) {
+      img.onload = null;
+      img.onerror = null;
+      img.style.display = 'none';
+      img.style.visibility = 'hidden';
     }
-    el.style.width = asset.start || big ? 'clamp(300px, 48vw, 760px)' : 'clamp(220px, 34vw, 470px)';
-  } else {
-    if (img) img.style.display = 'none';
     if (fallback) {
       fallback.style.cssText = 'display:block;font-weight:900;color:#fff;-webkit-text-stroke:5px #2a1810;paint-order:stroke fill;letter-spacing:8px;font-family:inherit;text-shadow:0 0 24px rgba(255,210,80,.6);';
       fallback.textContent = text;
@@ -13898,9 +13937,47 @@ function drawCinematicLabel(text, big) {
       fallback.style.letterSpacing = big ? '12px' : '8px';
     }
     el.style.width = 'auto';
+    el.style.transform = 'translate(-50%,-50%) scale(1)';
+    el.style.opacity = '1';
+  };
+
+  const asset = CINEMATIC_LABEL_ASSETS[text];
+  if (asset && img) {
+    el.dataset.labelSrc = asset.src;
+    img.alt = asset.alt;
+    img.style.display = 'block';
+    img.style.visibility = 'hidden';
+    if (fallback) {
+      fallback.style.display = 'none';
+      fallback.textContent = '';
+    }
+    el.style.width = asset.start || big ? 'clamp(300px, 48vw, 760px)' : 'clamp(220px, 34vw, 470px)';
+    const revealImage = () => {
+      if (el.dataset.labelText !== text || el.dataset.labelSrc !== asset.src) return;
+      if (!img.complete || !img.naturalWidth) {
+        showFallbackText();
+        return;
+      }
+      img.style.visibility = 'visible';
+      el.style.transform = 'translate(-50%,-50%) scale(1)';
+      el.style.opacity = '1';
+    };
+    const revealAfterDecode = () => {
+      if (typeof img.decode === 'function') {
+        img.decode().then(revealImage).catch(revealImage);
+      } else {
+        revealImage();
+      }
+    };
+    img.onload = revealAfterDecode;
+    img.onerror = showFallbackText;
+    if (img.getAttribute('src') !== asset.src) img.src = asset.src;
+    if ((asset._ready || img.complete) && img.naturalWidth) revealAfterDecode();
+    else if (asset._failed) showFallbackText();
+    else el.style.opacity = '0';
+  } else {
+    showFallbackText();
   }
-  el.style.transform = 'translate(-50%,-50%) scale(1)';
-  el.style.opacity = '1';
 }
 function updateCinematic(dt) {
   if (!cinematic) return false;
@@ -18445,7 +18522,7 @@ function showStarterPick(onDone) {
       ${rarityBadgeHTML(g)}
       <div class="deploy-face"><img src="${def.face}" alt=""></div>
       <div class="deploy-name">${def.name}</div>
-      <div class="deploy-stat">${formatGeneralBuffsChips(def.buffs, 1)}</div>
+      <div class="deploy-stat">${formatGeneralBuffsChips({ ...def, lv: 1, stars: 3 })}</div>
     `;
     bindTap(card, () => {
       chosenId = def.id;
@@ -34122,7 +34199,7 @@ function getOwnedRoster() {
   const owned = Array.isArray(SAVE.generals) ? SAVE.generals : [];
   const list = owned.map(inst => {
     const def = getGeneralById(inst.id);
-    return def ? { ...def, uid: inst.uid, lv: inst.lv || 1 } : null;
+    return def ? { ...def, uid: inst.uid, lv: inst.lv || 1, stars: instanceStars(inst) } : null;
   }).filter(Boolean);
   return sortGeneralsByRarityDesc(list);
 }

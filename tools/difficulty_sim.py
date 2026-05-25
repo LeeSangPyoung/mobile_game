@@ -18,7 +18,7 @@ def enemy_count(ch, local, variant, scaling):
     mx = ENEMY_MAX['boss'] if local==20 else ENEMY_MAX[variant]
     n  = ENEMY_N['boss']  if local==20 else ENEMY_N[variant]
     em = scaling['enemyMult'](ch, local)
-    if local==20: em += 0.35  # 보스 성 추가 보정
+    if local==20: em += 0.26  # 보스 성 추가 보정
     # 순차 점령: 최강 성 기준 + 성 수만큼 누적 부담(완만)
     return mx * em * (1 + 0.16*(n-1))
 
@@ -39,11 +39,13 @@ INVEST = {
     4: dict(uAtk=20,uDef=20,gStars=5, gEnh=6, gCount=6, label='거의 만렙'),
 }
 # 장수 기본 버프(공격형 대표 ~0.10 unitAtk). 별×강화 배수 적용. 편성 장수 일부만 전투 기여.
+STAR_FLAT = [0, 0, 0.012, 0.025, 0.045, 0.075]  # C안: 별 플랫 바닥값(unitAtk)
 def player_mult(inv):
     iv = INVEST[inv]
     uAtk = 1 + UPG['unitAtk']*iv['uAtk']
-    # 장수 버프: 0.10 * star * enh, 편성 인원 비례(선봉 위주라 0.6 가중)
-    gbuff = 1 + 0.10 * STAR_MULT[iv['gStars']] * ENH_MULT[iv['gEnh']] * (0.5 + 0.08*iv['gCount'])
+    # 장수 병공 실효버프 = base*star*enh + 별플랫, 편성 인원 비례(선봉 위주 0.6 가중)
+    gAtk = 0.10 * STAR_MULT[iv['gStars']] * ENH_MULT[iv['gEnh']] + STAR_FLAT[iv['gStars']]
+    gbuff = 1 + gAtk * (0.5 + 0.08*iv['gCount'])
     return uAtk * gbuff
 def player_def_mult(inv):
     iv = INVEST[inv]
@@ -135,9 +137,6 @@ cur = scaling_current()
 curve(cur, "현재 (CURRENT)")
 
 for P in [
-  dict(eBase=0.70, ePer=0.17, eLocal=0.022, pPer=0.025, egBase=0.05),
-  # 적장수버프 없이(egBase=0) 병력 스케일링만으로 — 안전 구현용
-  dict(eBase=0.72, ePer=0.205, eLocal=0.024, pPer=0.02, egBase=0.0),
-  dict(eBase=0.70, ePer=0.21, eLocal=0.024, pPer=0.018, egBase=0.0),
+  dict(eBase=0.78, ePer=0.19, eLocal=0.034, pPer=0.018, egBase=0.0),
 ]:
     curve(scaling_proposed(P), f"제안 {P}")
