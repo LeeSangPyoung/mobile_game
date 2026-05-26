@@ -3636,10 +3636,11 @@
   }
 
   /* 천둥번개 플래시 — 격렬한 멀티 스트라이크 */
-  .er-flash {
-    position: absolute; inset: 0; background: white; opacity: 0;
-    pointer-events: none; z-index: 7;
-  }
+	  .er-flash {
+	    position: absolute; inset: 0; background: white; opacity: 0;
+	    pointer-events: none; z-index: 7;
+	    mix-blend-mode: normal !important;
+	  }
   .er-flash.flash { animation: er-thunder 1.4s steps(1,end); }
   @keyframes er-thunder {
     0%, 2%    { opacity: 0; }
@@ -11374,6 +11375,12 @@
 <!-- ===== 강화 의식(ritual) 오버레이 ===== -->
 <div class="enh-ritual" id="enhRitual">
   <div class="er-title">강 화 의 식</div>
+  <div class="er-storm" aria-hidden="true">
+    <img class="er-storm-branch er-storm-branch-a" src="./assets/battle/intro_lightning_branch.png" alt="">
+    <img class="er-storm-branch er-storm-branch-b" src="./assets/battle/intro_lightning_branch.png" alt="">
+    <i class="er-storm-flash er-storm-flash-a"></i>
+    <i class="er-storm-flash er-storm-flash-b"></i>
+  </div>
   <div class="er-rays" id="erRays"></div>
   <div class="er-rings" id="erRings">
     <div class="er-ring r1"></div>
@@ -31810,6 +31817,8 @@ function closeTutorialOffer(accept) {
   .general-detail-scrim {
     position: absolute;
     inset: 0;
+    margin: 0;
+    padding: 0;
     border: 0;
     border-radius: 0;
     background:
@@ -33748,39 +33757,9 @@ function closeTutorialOffer(accept) {
   #generalDetailModal .general-detail-info {
     border-radius: 0 0 11px 11px !important;
   }
-  #generalDetailModal .general-detail-card {
-    padding-top: 0 !important;
-    border-top-color: transparent !important;
-    border-top-left-radius: 0 !important;
-    border-top-right-radius: 0 !important;
-    background:
-      radial-gradient(ellipse at 50% 0%, rgba(255, 239, 146, 0.10), transparent 40%),
-      linear-gradient(142deg, rgba(255,255,255,0.18), transparent 18% 76%, rgba(0,0,0,0.42)),
-      linear-gradient(180deg, rgba(6, 19, 38, 0.98) 0%, rgba(2, 5, 13, 0.99) 100%) !important;
-    box-shadow:
-      0 24px 68px rgba(0,0,0,0.80),
-      0 0 26px var(--profile-glow) !important;
-  }
-  #generalDetailModal .general-detail-card::before,
-  #generalDetailModal .general-detail-card::after,
-  #generalDetailModal .general-detail-portrait,
-  #generalDetailModal .general-detail-portrait::before {
-    border-top-left-radius: 0 !important;
-    border-top-right-radius: 0 !important;
-  }
-  #generalDetailModal .general-detail-card::after {
-    border-top-color: transparent !important;
-    box-shadow:
-      inset 1px 0 0 rgba(0,0,0,0.38),
-      inset -1px 0 0 rgba(0,0,0,0.38),
-      inset 0 -1px 0 rgba(0,0,0,0.38),
-      inset 0 0 18px rgba(92, 234, 255, 0.14) !important;
-  }
-  #generalDetailModal .general-detail-portrait::before {
-    border-top-color: transparent !important;
-    box-shadow:
-      inset 1px 0 0 rgba(0,0,0,0.42),
-      inset -1px 0 0 rgba(0,0,0,0.42) !important;
+  #generalDetailModal .general-detail-scrim {
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   /* Enhance ritual: harder impact mood + in-card stat delta preview. */
@@ -33788,10 +33767,11 @@ function closeTutorialOffer(accept) {
     background:
       radial-gradient(circle at 50% 39%, rgba(255, 232, 112, 0.28), transparent 20%),
       radial-gradient(circle at 50% 62%, rgba(84, 225, 255, 0.14), transparent 25%),
-      radial-gradient(circle at 18% 24%, rgba(255, 48, 34, 0.24), transparent 25%),
-      radial-gradient(circle at 84% 70%, rgba(255, 148, 34, 0.18), transparent 28%),
-      linear-gradient(180deg, rgba(17, 5, 2, 0.74), rgba(58, 9, 4, 0.90) 42%, rgba(4, 1, 0, 0.99)),
-      url('./assets/recruit/palace_captive_bg.png') center top / cover no-repeat !important;
+	      radial-gradient(circle at 18% 24%, rgba(255, 48, 34, 0.24), transparent 25%),
+	      radial-gradient(circle at 84% 70%, rgba(255, 148, 34, 0.18), transparent 28%),
+	      linear-gradient(180deg, rgba(17, 5, 2, 0.74), rgba(58, 9, 4, 0.90) 42%, rgba(4, 1, 0, 0.99)),
+	      url('./assets/recruit/palace_captive_bg.png') center top / cover no-repeat,
+	      #050205 !important;
   }
   .enh-ritual::before {
     background:
@@ -34044,10 +34024,10 @@ function closeTutorialOffer(accept) {
     80% { transform: translate(calc(-50% - 10px), calc(-50% + 4px)) scale(1.16) rotate(-2.5deg); }
     100% { transform: translate(calc(-50% + 9px), calc(-50% - 8px)) scale(1.18) rotate(3.2deg); }
   }
-  @media (max-width: 390px), (max-height: 760px) {
-    .er-target {
-      width: min(330px, 82vw) !important;
-      height: min(478px, 64dvh) !important;
+	  @media (max-width: 390px), (max-height: 760px) {
+	    .er-target {
+	      width: min(330px, 82vw) !important;
+	      height: min(478px, 64dvh) !important;
       padding: 29px 25px 26px !important;
       grid-template-rows: minmax(104px, 1fr) 23px 31px auto !important;
       gap: 4px !important;
@@ -34081,10 +34061,365 @@ function closeTutorialOffer(accept) {
     }
     .er-card-stat-row em {
       padding: 3px 4px !important;
-      font-size: 12.5px !important;
-    }
-  }
-</style>
+	      font-size: 12.5px !important;
+	    }
+	  }
+
+	  /* Enhance ritual thunderstorm: pressure builds from 준비 -> 차징 -> 결과. */
+		  .enh-ritual {
+		    --er-cloud-opacity: 0.16;
+		    --er-storm-lightning-opacity: 0.42;
+		    --er-storm-flash-opacity: 0.08;
+		    --er-branch-speed: 8.4s;
+		    background-color: #050205 !important;
+		    isolation: isolate !important;
+		  }
+		  body.enh-ritual-active::after {
+		    content: "" !important;
+		    position: fixed !important;
+		    inset: 0 !important;
+		    z-index: 8999 !important;
+		    background: #050205 !important;
+		    pointer-events: none !important;
+		  }
+		  .enh-ritual.show {
+		    display: block !important;
+		    visibility: visible !important;
+		    opacity: 1 !important;
+		  }
+	  .enh-ritual.preparing {
+	    --er-cloud-opacity: 0.20;
+	    --er-storm-lightning-opacity: 0.50;
+	    --er-storm-flash-opacity: 0.10;
+	  }
+	  .enh-ritual.armed {
+	    --er-cloud-opacity: 0.26;
+	    --er-storm-lightning-opacity: 0.66;
+	    --er-storm-flash-opacity: 0.14;
+	    --er-branch-speed: 6.2s;
+	  }
+	  .enh-ritual.charging {
+	    --er-cloud-opacity: 0.34;
+	    --er-storm-lightning-opacity: 0.92;
+	    --er-storm-flash-opacity: 0.22;
+	    --er-branch-speed: 3.8s;
+	  }
+	  .enh-ritual.near-max {
+	    --er-cloud-opacity: 0.44;
+	    --er-storm-lightning-opacity: 1;
+	    --er-storm-flash-opacity: 0.34;
+	    --er-branch-speed: 2.45s;
+	  }
+	  .enh-ritual.success {
+	    --er-cloud-opacity: 0.30;
+	    --er-storm-lightning-opacity: 1;
+	    --er-storm-flash-opacity: 0.28;
+	    --er-branch-speed: 4.8s;
+	  }
+	  .enh-ritual.fail {
+	    --er-cloud-opacity: 0.48;
+	    --er-storm-lightning-opacity: 0.84;
+	    --er-storm-flash-opacity: 0.18;
+	    --er-branch-speed: 5.4s;
+	  }
+	  .er-storm {
+	    position: absolute !important;
+	    inset: 0 !important;
+	    z-index: 6 !important;
+	    overflow: hidden !important;
+	    pointer-events: none !important;
+	    opacity: 0 !important;
+	    transition: opacity 0.35s ease, filter 0.35s ease !important;
+	  }
+	  .enh-ritual.charging .er-storm,
+	  .enh-ritual.near-max .er-storm,
+	  .enh-ritual.success .er-storm,
+	  .enh-ritual.fail .er-storm {
+	    opacity: 1 !important;
+	  }
+	  .er-storm::before {
+	    content: "" !important;
+	    position: absolute !important;
+	    inset: -6% !important;
+	    z-index: 0 !important;
+	    pointer-events: none !important;
+	    opacity: var(--er-cloud-opacity) !important;
+	    background:
+	      radial-gradient(ellipse at 18% 7%, rgba(110, 164, 220, 0.70), transparent 28%),
+	      radial-gradient(ellipse at 76% 10%, rgba(16, 34, 64, 0.88), transparent 38%),
+	      radial-gradient(ellipse at 50% 0%, rgba(0, 0, 0, 0.90), transparent 58%),
+	      linear-gradient(180deg, rgba(3, 8, 18, 0.92), transparent 52%) !important;
+	    mix-blend-mode: multiply !important;
+	    animation: er-storm-clouds 3.6s ease-in-out infinite alternate !important;
+	  }
+	  .er-storm-branch,
+	  .er-storm-flash {
+	    position: absolute !important;
+	    pointer-events: none !important;
+	    mix-blend-mode: screen !important;
+	  }
+	  .er-storm-branch {
+	    top: -10% !important;
+	    z-index: 3 !important;
+	    width: clamp(190px, 24vw, 390px) !important;
+	    height: auto !important;
+	    opacity: 0 !important;
+	    filter:
+	      drop-shadow(0 0 15px rgba(196, 232, 255, 0.78))
+	      drop-shadow(0 0 46px rgba(52, 148, 255, 0.38))
+	      drop-shadow(0 0 66px rgba(255, 229, 118, 0.18)) !important;
+	    will-change: opacity, transform !important;
+	  }
+	  .er-storm-branch-a {
+	    left: clamp(12px, 6vw, 130px) !important;
+	    transform: rotate(-4deg) !important;
+	    animation: er-ritual-branch var(--er-branch-speed) steps(1, end) infinite !important;
+	  }
+	  .er-storm-branch-b {
+	    right: clamp(4px, 5vw, 110px) !important;
+	    transform: scaleX(-1) rotate(5deg) !important;
+	    animation: er-ritual-branch calc(var(--er-branch-speed) * 1.13) steps(1, end) infinite 2.1s !important;
+	  }
+	  .er-storm-flash {
+	    inset: 0 !important;
+	    z-index: 4 !important;
+	    opacity: 0 !important;
+	    background:
+	      radial-gradient(circle at 19% 12%, rgba(206, 235, 255, 0.84), transparent 24%),
+	      radial-gradient(circle at 78% 15%, rgba(255, 242, 185, 0.54), transparent 30%),
+	      linear-gradient(180deg, rgba(172, 214, 255, 0.22), transparent 54%) !important;
+	  }
+	  .er-storm-flash-a {
+	    animation: er-ritual-sky-flash var(--er-branch-speed) steps(1, end) infinite !important;
+	  }
+	  .er-storm-flash-b {
+	    animation: er-ritual-sky-flash calc(var(--er-branch-speed) * 1.13) steps(1, end) infinite 2.1s !important;
+	  }
+	  .enh-ritual.fail .er-storm-flash {
+	    background:
+	      radial-gradient(circle at 22% 13%, rgba(255, 245, 230, 0.58), transparent 25%),
+	      radial-gradient(circle at 78% 18%, rgba(255, 54, 38, 0.38), transparent 31%),
+	      linear-gradient(180deg, rgba(255, 82, 48, 0.18), transparent 56%) !important;
+	  }
+	  .enh-ritual.charging .er-storm {
+	    filter: saturate(1.2) contrast(1.08) !important;
+	  }
+	  .enh-ritual.near-max .er-storm {
+	    filter: saturate(1.42) contrast(1.16) brightness(1.06) !important;
+	  }
+	  .enh-ritual.storm-hit {
+	    animation: er-storm-hit 0.34s steps(1, end) !important;
+	    transform: none !important;
+	  }
+	  .enh-ritual.storm-hit-wild {
+	    animation: er-storm-hit-wild 0.52s steps(1, end) !important;
+	    transform: none !important;
+	  }
+	  .enh-ritual.quake {
+	    animation: er-safe-quake 1.4s steps(1, end) !important;
+	    transform: none !important;
+	  }
+		  .er-flash.warning {
+		    mix-blend-mode: normal !important;
+		    animation: er-warning-flash 0.34s steps(1, end) !important;
+		  }
+		  .er-flash.warning-red {
+		    mix-blend-mode: normal !important;
+		    animation: er-warning-flash-red 0.42s steps(1, end) !important;
+		  }
+	  .er-omen-branch,
+	  .er-burst-branch {
+	    position: absolute !important;
+	    z-index: 12 !important;
+	    opacity: 0 !important;
+	    pointer-events: none !important;
+	    mix-blend-mode: screen !important;
+	    width: var(--w) !important;
+	    height: auto !important;
+	    filter:
+	      drop-shadow(0 0 14px rgba(196, 232, 255, 0.82))
+	      drop-shadow(0 0 44px rgba(52, 148, 255, 0.44))
+	      drop-shadow(0 0 70px rgba(255, 229, 118, 0.18)) !important;
+	    transform: rotate(var(--rot)) scaleX(var(--sx)) !important;
+	  }
+	  .er-omen-branch {
+	    left: var(--x) !important;
+	    top: var(--top) !important;
+	  }
+	  .er-burst-branch {
+	    left: calc(50% + var(--x)) !important;
+	    top: var(--top) !important;
+	  }
+	  .er-omen-branch.fail,
+	  .er-burst-branch.fail {
+	    filter:
+	      drop-shadow(0 0 12px rgba(255,245,228,0.72))
+	      drop-shadow(0 0 34px rgba(255,82,54,0.62))
+	      drop-shadow(0 0 58px rgba(96,0,0,0.32)) !important;
+	  }
+	  .er-omen-branch.play,
+	  .er-burst-branch.play {
+	    animation: er-branch-burst 0.86s var(--delay) steps(1, end) forwards !important;
+	  }
+	  .er-lightning.fail {
+	    background: linear-gradient(180deg, #fffdf4 0%, #ff9272 44%, #97120b 100%) !important;
+	    filter:
+	      drop-shadow(0 0 7px rgba(255,255,255,0.92))
+	      drop-shadow(0 0 20px rgba(255,88,54,0.82))
+	      drop-shadow(0 0 38px rgba(95,0,0,0.46)) !important;
+	  }
+	  @keyframes er-storm-clouds {
+	    from { transform: translateX(-1.2%) scale(1.02); filter: brightness(0.92); }
+	    to { transform: translateX(1.2%) scale(1.05); filter: brightness(1.08); }
+	  }
+	  @keyframes er-ritual-branch {
+	    0%, 5.6%, 6.22%, 6.78%, 47.4%, 48.06%, 48.62%, 100% { opacity: 0; }
+	    5.72% { opacity: calc(var(--er-storm-lightning-opacity) * 0.98); }
+	    6.34% { opacity: calc(var(--er-storm-lightning-opacity) * 0.48); }
+	    47.58% { opacity: calc(var(--er-storm-lightning-opacity) * 0.72); }
+	    48.18% { opacity: calc(var(--er-storm-lightning-opacity) * 0.34); }
+	  }
+	  @keyframes er-ritual-sky-flash {
+	    0%, 5.52%, 6.28%, 6.88%, 47.35%, 48.12%, 48.7%, 100% { opacity: 0; }
+	    5.78% { opacity: calc(var(--er-storm-flash-opacity) * 1); }
+	    6.38% { opacity: calc(var(--er-storm-flash-opacity) * 0.48); }
+	    47.62% { opacity: calc(var(--er-storm-flash-opacity) * 0.72); }
+	    48.22% { opacity: calc(var(--er-storm-flash-opacity) * 0.32); }
+	  }
+	  @keyframes er-storm-hit {
+	    0%, 100% { filter: none; }
+	    18% { filter: brightness(1.18) contrast(1.05); }
+	    36% { filter: brightness(0.96) contrast(1.08); }
+	    54% { filter: brightness(1.12) contrast(1.06); }
+	    72% { filter: brightness(1.02) contrast(1.04); }
+	  }
+	  @keyframes er-storm-hit-wild {
+	    0%, 100% { filter: none; }
+	    12% { filter: brightness(1.30) contrast(1.10); }
+	    24% { filter: brightness(0.92) contrast(1.12); }
+	    38% { filter: brightness(1.24) contrast(1.10); }
+	    52% { filter: brightness(0.98) contrast(1.12); }
+	    68% { filter: brightness(1.14) contrast(1.08); }
+	    82% { filter: brightness(1.02) contrast(1.05); }
+	  }
+	  @keyframes er-safe-quake {
+	    0%, 2%, 7%, 11%, 21%, 28%, 43%, 50%, 65%, 100% { filter: none; }
+	    3%, 6%, 12%, 14%, 18%, 20%, 29%, 36%, 51%, 54%, 61%, 64% { filter: brightness(1.12) contrast(1.08); }
+	  }
+	  @keyframes er-warning-flash {
+	    0%, 12%, 43%, 100% { opacity: 0; background: transparent; }
+	    13%, 21% { opacity: 0.34; background: #effbff; }
+	    44%, 51% { opacity: 0.22; background: #fff6cf; }
+	  }
+	  @keyframes er-warning-flash-red {
+	    0%, 10%, 35%, 100% { opacity: 0; background: transparent; }
+	    11%, 18% { opacity: 0.28; background: #fff5e2; }
+	    36%, 49% { opacity: 0.30; background: #ff4b30; }
+	  }
+	  @keyframes er-branch-burst {
+	    0%, 8% { opacity: 0; transform: rotate(var(--rot)) scaleX(var(--sx)) scaleY(0.92); }
+	    9%, 15% { opacity: 0.98; transform: rotate(var(--rot)) scaleX(var(--sx)) scaleY(1.02); }
+	    16%, 21% { opacity: 0.12; }
+	    22%, 31% { opacity: 0.86; transform: rotate(calc(var(--rot) + 2deg)) scaleX(var(--sx)) scaleY(1.06); }
+	    32%, 47% { opacity: 0.20; }
+	    48%, 57% { opacity: 0.72; }
+	    58%, 100% { opacity: 0; }
+	  }
+
+	  /* Enhance ritual lightning should match the duel intro: top sky flash only. */
+	  .enh-ritual {
+	    --idg-lightning-opacity: 0.92;
+	    --idg-flash-opacity: 0.16;
+	  }
+	  .enh-ritual.near-max,
+	  .enh-ritual.success {
+	    --idg-lightning-opacity: 1;
+	    --idg-flash-opacity: 0.22;
+	  }
+	  .enh-ritual.fail {
+	    --idg-lightning-opacity: 0.84;
+	    --idg-flash-opacity: 0.14;
+	  }
+	  .enh-ritual.preparing .er-storm,
+	  .enh-ritual.armed .er-storm {
+	    opacity: 0 !important;
+	  }
+	  .enh-ritual.charging .er-storm,
+	  .enh-ritual.near-max .er-storm,
+	  .enh-ritual.success .er-storm,
+	  .enh-ritual.fail .er-storm {
+	    opacity: 1 !important;
+	    filter: none !important;
+	  }
+	  .er-storm::before {
+	    content: none !important;
+	    display: none !important;
+	  }
+	  .er-storm-branch {
+	    top: -8% !important;
+	    width: clamp(190px, 22vw, 380px) !important;
+	    filter:
+	      drop-shadow(0 0 16px rgba(164, 220, 255, 0.72))
+	      drop-shadow(0 0 42px rgba(64, 148, 255, 0.30)) !important;
+	  }
+	  .er-storm-branch-a {
+	    left: clamp(18px, 8vw, 150px) !important;
+	    transform: none !important;
+	  }
+	  .er-storm-branch-b {
+	    right: clamp(10px, 7vw, 128px) !important;
+	    transform: scaleX(-1) rotate(4deg) !important;
+	  }
+	  .er-storm-flash {
+	    background:
+	      radial-gradient(circle at 20% 16%, rgba(190, 228, 255, 0.86), transparent 23%),
+	      radial-gradient(circle at 78% 18%, rgba(255, 242, 188, 0.54), transparent 28%),
+	      linear-gradient(180deg, rgba(190, 222, 255, 0.24), transparent 48%) !important;
+	  }
+	  .er-storm-flash-a {
+	  }
+	  .er-storm-flash-b {
+	  }
+	  .er-storm-branch-a,
+	  .er-storm-branch-b,
+	  .er-storm-flash-a,
+	  .er-storm-flash-b {
+	    animation: none !important;
+	  }
+	  .enh-ritual.charging .er-storm-branch-a,
+	  .enh-ritual.near-max .er-storm-branch-a,
+	  .enh-ritual.success .er-storm-branch-a,
+	  .enh-ritual.fail .er-storm-branch-a {
+	    animation: idgLightningStrike 6.8s steps(1, end) infinite !important;
+	  }
+	  .enh-ritual.charging .er-storm-branch-b,
+	  .enh-ritual.near-max .er-storm-branch-b,
+	  .enh-ritual.success .er-storm-branch-b,
+	  .enh-ritual.fail .er-storm-branch-b {
+	    animation: idgLightningStrike 7.9s steps(1, end) infinite 3.4s !important;
+	  }
+	  .enh-ritual.charging .er-storm-flash-a,
+	  .enh-ritual.near-max .er-storm-flash-a,
+	  .enh-ritual.success .er-storm-flash-a,
+	  .enh-ritual.fail .er-storm-flash-a {
+	    animation: idgThunderFlash 6.8s steps(1, end) infinite !important;
+	  }
+	  .enh-ritual.charging .er-storm-flash-b,
+	  .enh-ritual.near-max .er-storm-flash-b,
+	  .enh-ritual.success .er-storm-flash-b,
+	  .enh-ritual.fail .er-storm-flash-b {
+	    animation: idgThunderFlash 7.9s steps(1, end) infinite 3.4s !important;
+	  }
+	  .er-omen-branch,
+	  .er-burst-branch {
+	    display: none !important;
+	  }
+	  .er-flash.warning,
+	  .er-flash.warning-red {
+	    opacity: 0 !important;
+	    animation: none !important;
+	  }
+	</style>
 <script>
 function showStarExchange() {
   const avail = SAVE.starsAvailable || 0;
@@ -34982,7 +35317,11 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
 
 function clearEnhanceRitualFx(root) {
   if (!root) return;
-  root.querySelectorAll('.er-confetti, .er-shard, .er-lightning').forEach(el => el.remove());
+  root.querySelectorAll('.er-confetti, .er-shard, .er-lightning, .er-omen-branch, .er-burst-branch').forEach(el => el.remove());
+}
+
+function spawnEnhanceStormBolt(root, danger = false, power = 1) {
+  return;
 }
 
 function spawnEnhanceRitualFx(root, success) {
@@ -35009,20 +35348,6 @@ function spawnEnhanceRitualFx(root, success) {
     }
     root.appendChild(el);
     requestAnimationFrame(() => el.classList.add('play'));
-  }
-  if (success) {
-    for (let i = 0; i < 7; i++) {
-      const bolt = document.createElement('i');
-      bolt.className = 'er-lightning';
-      bolt.style.setProperty('--x', `${Math.round(-170 + Math.random() * 340)}px`);
-      bolt.style.setProperty('--top', `${Math.round(12 + Math.random() * 22)}%`);
-      bolt.style.setProperty('--w', `${Math.round(18 + Math.random() * 18)}px`);
-      bolt.style.setProperty('--h', `${Math.round(160 + Math.random() * 170)}px`);
-      bolt.style.setProperty('--rot', `${Math.round(-16 + Math.random() * 32)}deg`);
-      bolt.style.setProperty('--delay', `${(Math.random() * 0.34).toFixed(2)}s`);
-      root.appendChild(bolt);
-      requestAnimationFrame(() => bolt.classList.add('play'));
-    }
   }
 }
 
@@ -35059,7 +35384,8 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
   const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
 
   clearEnhanceRitualFx(root);
-  root.className = 'enh-ritual show preparing';
+  document.body.classList.add('enh-ritual-active');
+  root.className = 'enh-ritual show storm-mode preparing';
   if (title) title.textContent = '강 화 의 식';
   targetEl.className = 'er-target';
   targetEl.removeAttribute('style');
@@ -35179,6 +35505,10 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
     `;
   }
 
+  function pulseStorm(kind = 'blue') {
+    return;
+  }
+
   function setCharge(pct, opt) {
     opt = opt || {};
     chargeFill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
@@ -35191,20 +35521,22 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
       targetEl.classList.add('spike');
       sched(260, () => targetEl.classList.remove('spike'));
       sched(300, () => chargeFill.classList.remove('spike'));
+      pulseStorm(pct >= 98 ? 'wild' : 'blue');
       try { BGM && BGM.sfxEnhanceFlash && BGM.sfxEnhanceFlash(); } catch(_) {}
     }
     if (opt.dip) {
       targetEl.classList.remove('spike');
       targetEl.classList.add('dip');
+      pulseStorm('red');
       sched(360, () => targetEl.classList.remove('dip'));
     }
   }
 
   function reveal() {
     targetEl.classList.remove('charging', 'spike', 'dip', 'slow-shake', 'fast-shake', 'frantic-shake');
-    root.classList.remove('charging', 'near-max', 'armed', 'preparing');
+    root.classList.remove('charging', 'near-max', 'armed', 'preparing', 'storm-hit', 'storm-hit-wild');
     charge.classList.add('fade');
-    flash.classList.remove('flash', 'flash-fail');
+    flash.classList.remove('flash', 'flash-fail', 'warning', 'warning-red');
     root.classList.remove('quake');
     void root.offsetWidth;
     root.classList.add(success ? 'success' : 'fail', 'quake');
@@ -35244,6 +35576,7 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
     closed = true;
     clearTimers();
     root.className = 'enh-ritual';
+    document.body.classList.remove('enh-ritual-active');
     if (cancelBtn) cancelBtn.className = 'er-cancel';
     clearEnhanceRitualFx(root);
     onDone && onDone();
@@ -35253,6 +35586,7 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
     closed = true;
     clearTimers();
     root.className = 'enh-ritual';
+    document.body.classList.remove('enh-ritual-active');
     if (cancelBtn) cancelBtn.className = 'er-cancel';
     clearEnhanceRitualFx(root);
     if (opts && typeof opts.onCancel === 'function') opts.onCancel();
@@ -35292,12 +35626,13 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
     trigger.classList.add('fade');
     if (cancelBtn) cancelBtn.classList.remove('show');
 
-    sched(180, () => {
-      charge.classList.add('show');
-      targetEl.classList.add('charging', 'slow-shake');
-      setCharge(14);
-      try { BGM && BGM.sfxEnhanceCharge && BGM.sfxEnhanceCharge(); } catch(_) {}
-    });
+	    sched(180, () => {
+	      charge.classList.add('show');
+	      targetEl.classList.add('charging', 'slow-shake');
+	      setCharge(14);
+	      pulseStorm('blue');
+	      try { BGM && BGM.sfxEnhanceCharge && BGM.sfxEnhanceCharge(); } catch(_) {}
+	    });
     sched(740, () => setCharge(36));
     sched(1220, () => setCharge(63, { spike: true }));
     sched(1720, () => setCharge(79));
@@ -35311,11 +35646,12 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
       setCharge(99);
     });
     sched(4320, () => setCharge(100, { spike: true }));
-    sched(4500, () => {
-      targetEl.classList.remove('fast-shake');
-      targetEl.classList.add('frantic-shake');
-      try { BGM && BGM.sfxEnhanceFlash && BGM.sfxEnhanceFlash(); } catch(_) {}
-    });
+	    sched(4500, () => {
+	      targetEl.classList.remove('fast-shake');
+	      targetEl.classList.add('frantic-shake');
+	      pulseStorm('wild');
+	      try { BGM && BGM.sfxEnhanceFlash && BGM.sfxEnhanceFlash(); } catch(_) {}
+	    });
     sched(5160, reveal);
   }
   trigger.onclick = (e) => {
