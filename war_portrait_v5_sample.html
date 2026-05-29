@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>유비 전쟁 얼굴샷 v5 샘플</title>
+<style>
+* { box-sizing: border-box; }
+:root {
+  color-scheme: dark;
+  --bg: #120f0b;
+  --panel: #211913;
+  --line: rgba(244,223,184,.18);
+  --gold: #ffd36a;
+  --text: #f4dfb8;
+  --muted: #bfa986;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+}
+header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 16px 20px 13px;
+  background: rgba(18,15,11,.94);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+}
+h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 850;
+  letter-spacing: 0;
+}
+.note {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+main {
+  padding: 18px 20px 30px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(280px, 1fr);
+  gap: 16px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+article {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+.art {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  background: #120d09;
+}
+.art.ref {
+  aspect-ratio: 4 / 5;
+}
+.art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.art.sample img {
+  object-fit: cover;
+}
+.meta {
+  padding: 10px 12px 13px;
+}
+.name {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 850;
+}
+.name small {
+  color: #9e8a67;
+  font-size: 11px;
+  font-weight: 750;
+}
+a {
+  color: var(--gold);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+@media (max-width: 780px) {
+  main { padding: 12px; }
+  header { padding: 14px 12px 12px; }
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>유비 전쟁 얼굴샷 v5 샘플</h1>
+  <div class="note">반신샷 기준으로 얼굴/어깨를 당긴 형태의 샘플.</div>
+</header>
+<main>
+  <section class="grid">
+    <article>
+      <div class="art ref">
+        <img src="./assets/generals/new_characters/upper_body_200_redraw_v6_above_navel/liu_bei_halfbody_redraw_v6.png" alt="유비 반신 기준">
+      </div>
+      <div class="meta">
+        <p class="name"><span>반신 기준</span><small>liu_bei_halfbody_redraw_v6</small></p>
+      </div>
+    </article>
+    <article>
+      <div class="art sample">
+        <img src="./assets/generals/face_icons/war_v5_halfbody_crop_style/liu_bei_war_portrait_v5_battle_expr.png" alt="유비 전쟁 얼굴샷 v5 전투 표정">
+      </div>
+      <div class="meta">
+        <p class="name"><span>얼굴샷 v5 전투 표정</span><small>battle expr</small></p>
+      </div>
+    </article>
+  </section>
+</main>
+</body>
+</html>

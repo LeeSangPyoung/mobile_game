@@ -1,0 +1,1431 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>손가락삼국지 플레이스토어 크리에이티브</title>
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --bg: #070a10;
+    --panel: #111925;
+    --panel2: #172334;
+    --gold: #ffd66d;
+    --gold2: #d6a243;
+    --cream: #fff1c2;
+    --red: #eb3328;
+    --red2: #a41510;
+    --blue: #1f64c8;
+    --green: #2e9d55;
+    --ink: #140807;
+    --safe-x: 64px;
+    --font: "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+    --display: "Arial Black", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+  }
+
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: #101010;
+    color: var(--cream);
+    font-family: var(--font);
+  }
+  body.gallery {
+    padding: 28px;
+    display: grid;
+    justify-content: center;
+    gap: 32px;
+  }
+  body.single {
+    width: max-content;
+    height: max-content;
+    overflow: hidden;
+    background: transparent;
+  }
+  .board {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--bg);
+  }
+  body.gallery .board { box-shadow: 0 22px 80px rgba(0,0,0,.6); }
+  body.single .board { display: none; }
+  body.single .board.is-selected { display: block; }
+  .shot { width: 1080px; height: 1920px; }
+  .feature { width: 1024px; height: 500px; }
+  .icon { width: 512px; height: 512px; border-radius: 110px; }
+
+  .bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: saturate(1.06) contrast(1.04);
+    z-index: -4;
+  }
+  .bg.blur {
+    filter: blur(9px) saturate(1.04) contrast(1.02);
+    transform: scale(1.08);
+  }
+  .shade {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 72% 20%, rgba(255,214,109,.16), transparent 32%),
+      linear-gradient(180deg, rgba(5,8,13,.24), rgba(5,8,13,.82) 70%, rgba(5,8,13,.98));
+    z-index: -3;
+  }
+  .texture {
+    position: absolute;
+    inset: 0;
+    opacity: .16;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px) 0 0 / 36px 36px,
+      linear-gradient(0deg, rgba(255,255,255,.04) 1px, transparent 1px) 0 0 / 36px 36px;
+    mix-blend-mode: overlay;
+    z-index: -2;
+  }
+  .safe-frame {
+    position: absolute;
+    left: 36px;
+    right: 36px;
+    top: 36px;
+    bottom: 36px;
+    border: 2px solid rgba(214,162,67,.24);
+    border-radius: 36px;
+    pointer-events: none;
+    z-index: 30;
+  }
+
+  .copy {
+    position: absolute;
+    left: var(--safe-x);
+    right: var(--safe-x);
+    top: 72px;
+    z-index: 12;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    padding: 0 18px;
+    border: 2px solid rgba(255,214,109,.72);
+    border-radius: 999px;
+    background: rgba(12,17,25,.75);
+    color: var(--gold);
+    font-size: 20px;
+    font-weight: 1000;
+    letter-spacing: 0;
+  }
+  h1, h2, p { margin: 0; }
+  .headline {
+    margin-top: 18px;
+    max-width: 930px;
+    color: var(--cream);
+    font-family: var(--display);
+    font-size: 78px;
+    line-height: 1.04;
+    font-weight: 1000;
+    letter-spacing: 0;
+    -webkit-text-stroke: 2px rgba(51,16,8,.82);
+    paint-order: stroke fill;
+    text-shadow: 0 5px 0 rgba(47,12,7,.95), 0 18px 34px rgba(0,0,0,.56);
+  }
+  .headline .red { color: var(--red); }
+  .sub {
+    margin-top: 20px;
+    max-width: 900px;
+    color: #fff4cf;
+    font-size: 29px;
+    line-height: 1.34;
+    font-weight: 900;
+    text-shadow: 0 4px 12px rgba(0,0,0,.7);
+  }
+
+  .visual {
+    position: absolute;
+    left: 64px;
+    right: 64px;
+    top: 500px;
+    bottom: 70px;
+    border: 4px solid rgba(255,214,109,.72);
+    border-radius: 34px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,214,109,.12), transparent 34%),
+      linear-gradient(180deg, rgba(18,27,40,.94), rgba(6,9,14,.98));
+    box-shadow: 0 24px 0 rgba(0,0,0,.34), 0 36px 72px rgba(0,0,0,.5);
+    overflow: hidden;
+    z-index: 8;
+  }
+  .visual-title {
+    position: absolute;
+    left: 36px;
+    top: 32px;
+    color: #fff4c7;
+    font-size: 36px;
+    font-weight: 1000;
+    text-shadow: 0 4px 0 rgba(0,0,0,.4);
+    z-index: 3;
+  }
+  .gold-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 136px;
+    height: 52px;
+    padding: 0 20px;
+    border: 2px solid rgba(255,214,109,.72);
+    border-radius: 999px;
+    background: rgba(8,12,18,.82);
+    color: #ffe7a0;
+    font-size: 23px;
+    font-weight: 1000;
+    box-shadow: 0 10px 20px rgba(0,0,0,.3);
+  }
+  .red-button {
+    display: grid;
+    place-items: center;
+    height: 72px;
+    border: 3px solid rgba(255,214,109,.78);
+    border-radius: 18px;
+    background: linear-gradient(180deg, #f03a2f, #9b1510);
+    color: #fff3c5;
+    font-size: 30px;
+    font-weight: 1000;
+    text-shadow: 0 3px 0 rgba(64,11,7,.78);
+    box-shadow: 0 12px 0 rgba(0,0,0,.34);
+  }
+  .blue-button {
+    display: grid;
+    place-items: center;
+    height: 72px;
+    border: 3px solid rgba(255,214,109,.62);
+    border-radius: 18px;
+    background: linear-gradient(180deg, #21314a, #111b2a);
+    color: #fff3c5;
+    font-size: 30px;
+    font-weight: 1000;
+    box-shadow: 0 12px 0 rgba(0,0,0,.32);
+  }
+
+  .icon-art {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .feature .bg { background-image: url("../assets/battle/intro_duel_bg_cityfire.png"); }
+  .feature .shade {
+    background:
+      linear-gradient(90deg, rgba(5,8,13,.94) 0 43%, rgba(5,8,13,.42) 72%, rgba(5,8,13,.72)),
+      radial-gradient(circle at 78% 46%, rgba(255,214,109,.22), transparent 30%);
+  }
+  .feature-logo {
+    position: absolute;
+    left: 50px;
+    top: 44px;
+    width: 260px;
+    z-index: 5;
+    filter: drop-shadow(0 12px 22px rgba(0,0,0,.65));
+  }
+  .feature h1 {
+    position: absolute;
+    left: 54px;
+    top: 138px;
+    width: 560px;
+    color: var(--cream);
+    font-family: var(--display);
+    font-size: 62px;
+    line-height: 1;
+    font-weight: 1000;
+    letter-spacing: 0;
+    -webkit-text-stroke: 2px rgba(51,16,8,.82);
+    paint-order: stroke fill;
+    text-shadow: 0 5px 0 rgba(47,12,7,.95), 0 16px 30px rgba(0,0,0,.55);
+    z-index: 5;
+  }
+  .feature-tags {
+    position: absolute;
+    left: 54px;
+    bottom: 42px;
+    display: flex;
+    gap: 10px;
+    z-index: 6;
+  }
+  .feature-tags span {
+    height: 48px;
+    display: grid;
+    place-items: center;
+    padding: 0 18px;
+    border: 2px solid rgba(255,214,109,.76);
+    border-radius: 999px;
+    background: rgba(7,10,15,.78);
+    color: #ffe8a0;
+    font-size: 22px;
+    font-weight: 1000;
+  }
+  .feature-general {
+    position: absolute;
+    bottom: 0;
+    width: 214px;
+    height: 250px;
+    object-fit: contain;
+    object-position: center bottom;
+    z-index: 4;
+    filter: drop-shadow(0 22px 22px rgba(0,0,0,.52));
+  }
+  .feature-general.g1 { right: 300px; }
+  .feature-general.g2 { right: 148px; width: 240px; height: 282px; z-index: 5; }
+  .feature-general.g3 { right: 16px; }
+
+  /* Shot 1: drag siege, fully redrawn. */
+  #shot1 .bg,
+  #shot7 .bg { background-image: url("../assets/battle/bg_battle_01_grass.jpg"); }
+  .battle-board {
+    position: absolute;
+    left: 46px;
+    right: 46px;
+    top: 116px;
+    bottom: 46px;
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 50% 48%, rgba(255,214,109,.18), transparent 34%),
+      linear-gradient(180deg, #83a93c, #5f8a31 52%, #355d28);
+    overflow: hidden;
+  }
+  .battle-board::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 28% 22%, rgba(255,255,255,.18), transparent 12%),
+      radial-gradient(circle at 70% 76%, rgba(255,255,255,.14), transparent 14%),
+      linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px) 0 0 / 42px 42px;
+    opacity: .34;
+  }
+  .castle-node {
+    position: absolute;
+    width: 210px;
+    text-align: center;
+    z-index: 4;
+  }
+  .castle-node.enemy { left: 50%; top: 96px; transform: translateX(-50%); }
+  .castle-node.ally { left: 50%; bottom: 98px; transform: translateX(-50%); }
+  .castle-node img {
+    display: block;
+    width: 186px;
+    margin: 0 auto;
+    filter: drop-shadow(0 16px 12px rgba(0,0,0,.38));
+  }
+  .castle-label {
+    display: inline-grid;
+    place-items: center;
+    min-width: 170px;
+    height: 52px;
+    margin-bottom: 8px;
+    border-radius: 14px;
+    border: 2px solid rgba(255,214,109,.75);
+    background: rgba(15,20,28,.86);
+    color: #fff0bd;
+    font-size: 25px;
+    font-weight: 1000;
+  }
+  .castle-label b {
+    display: inline-grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    margin-left: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    color: #fff;
+  }
+  .route-line {
+    position: absolute;
+    left: 50%;
+    top: 330px;
+    width: 38px;
+    height: 540px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255,214,109,.18), #ffd66d 44%, rgba(255,214,109,.18));
+    box-shadow: 0 0 30px rgba(255,214,109,.46);
+    z-index: 2;
+  }
+  .troop-dot {
+    position: absolute;
+    left: 50%;
+    width: 78px;
+    height: 78px;
+    display: grid;
+    place-items: center;
+    transform: translateX(-50%);
+    border: 4px solid rgba(255,214,109,.85);
+    border-radius: 50%;
+    background: linear-gradient(145deg, #18263b, #8d1210);
+    color: #fff1c2;
+    font-size: 34px;
+    font-weight: 1000;
+    box-shadow: 0 12px 0 rgba(0,0,0,.34);
+    z-index: 5;
+  }
+  .troop-dot.d1 { top: 420px; }
+  .troop-dot.d2 { top: 570px; }
+  .troop-dot.d3 { top: 720px; }
+  .command-card {
+    position: absolute;
+    left: 74px;
+    bottom: 94px;
+    width: 356px;
+    padding: 24px;
+    border: 3px solid rgba(255,214,109,.72);
+    border-radius: 24px;
+    background: rgba(9,14,21,.9);
+    z-index: 6;
+  }
+  #shot1 .castle-node.enemy,
+  #shot1 .castle-node.ally,
+  #shot1 .route-line,
+  #shot1 .troop-dot,
+  #shot1 .touch-ring {
+    left: 62%;
+  }
+  #shot1 .command-card {
+    left: 58px;
+    width: 318px;
+  }
+  .command-card b {
+    display: block;
+    color: #fff2bd;
+    font-size: 32px;
+    line-height: 1.2;
+    font-weight: 1000;
+  }
+  .command-card ol {
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 10px;
+  }
+  .command-card li {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(235,51,40,.86), rgba(27,36,52,.78));
+    color: #fff2bd;
+    font-size: 21px;
+    font-weight: 1000;
+  }
+  .touch-ring {
+    position: absolute;
+    left: 50%;
+    bottom: 188px;
+    width: 130px;
+    height: 130px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    border: 6px solid rgba(255,214,109,.82);
+    box-shadow: 0 0 0 18px rgba(255,214,109,.18), 0 0 44px rgba(255,214,109,.56);
+    z-index: 7;
+  }
+
+  /* Shot 2: counter system. */
+  #shot2 .bg { background-image: url("../assets/battle/intro_duel_bg_bridge.png"); }
+  .counter-arena {
+    position: absolute;
+    left: 46px;
+    right: 46px;
+    top: 116px;
+    height: 590px;
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 50% 46%, rgba(255,214,109,.2), transparent 34%),
+      linear-gradient(180deg, rgba(18,27,40,.88), rgba(8,12,18,.94));
+    border: 2px solid rgba(255,214,109,.24);
+  }
+  .unit-big {
+    position: absolute;
+    width: 224px;
+    height: 224px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 6px solid rgba(255,214,109,.82);
+    background: linear-gradient(145deg, #17253a, #8d1210);
+    color: #fff2bd;
+    font-size: 82px;
+    font-weight: 1000;
+    box-shadow: 0 18px 0 rgba(0,0,0,.36);
+  }
+  .unit-big span {
+    position: absolute;
+    bottom: 34px;
+    font-size: 26px;
+  }
+  .unit-big.spear { left: 92px; top: 236px; }
+  .unit-big.horse { right: 92px; top: 236px; }
+  .versus {
+    position: absolute;
+    left: 50%;
+    top: 300px;
+    width: 160px;
+    height: 110px;
+    display: grid;
+    place-items: center;
+    transform: translateX(-50%);
+    color: var(--red);
+    font-family: var(--display);
+    font-size: 64px;
+    font-weight: 1000;
+    text-shadow: 0 5px 0 rgba(48,8,5,.92);
+  }
+  .counter-rule {
+    position: absolute;
+    left: 110px;
+    right: 110px;
+    top: 744px;
+    height: 76px;
+    display: grid;
+    place-items: center;
+    border: 3px solid rgba(255,214,109,.78);
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ef3a2f, #981410);
+    color: #fff3c5;
+    font-size: 34px;
+    font-weight: 1000;
+    box-shadow: 0 12px 0 rgba(0,0,0,.34);
+  }
+  .counter-grid {
+    position: absolute;
+    left: 54px;
+    right: 54px;
+    bottom: 54px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .counter-card {
+    min-height: 304px;
+    padding: 26px 20px;
+    border: 3px solid rgba(255,214,109,.7);
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(22,33,49,.92), rgba(8,11,16,.96));
+    text-align: center;
+    box-shadow: 0 14px 0 rgba(0,0,0,.34);
+  }
+  .counter-card b {
+    display: block;
+    color: #fff2bd;
+    font-size: 58px;
+    line-height: 1;
+    font-weight: 1000;
+  }
+  .counter-card span {
+    display: block;
+    margin-top: 16px;
+    color: #ffd66d;
+    font-size: 25px;
+    font-weight: 1000;
+  }
+  .counter-card em {
+    display: block;
+    margin-top: 24px;
+    color: var(--red);
+    font-style: normal;
+    font-family: var(--display);
+    font-size: 54px;
+    font-weight: 1000;
+    text-shadow: 0 4px 0 rgba(48,8,5,.92);
+  }
+
+  /* Shot 3: prisoner choice, fully redrawn. */
+  #shot3 .bg { background-image: url("../assets/recruit/palace_captive_bg.png"); background-position: center top; }
+  #shot3 .shade {
+    background:
+      linear-gradient(180deg, rgba(5,8,13,.2), rgba(5,8,13,.86)),
+      radial-gradient(circle at 50% 20%, rgba(255,214,109,.14), transparent 34%);
+  }
+  .judgment {
+    position: absolute;
+    left: 54px;
+    right: 54px;
+    top: 114px;
+    bottom: 54px;
+    border-radius: 28px;
+    background:
+      linear-gradient(180deg, rgba(12,18,28,.62), rgba(7,10,15,.96)),
+      url("../assets/recruit/palace_captive_bg.png") center top / cover no-repeat;
+    overflow: hidden;
+  }
+  .court-title {
+    position: absolute;
+    left: 50%;
+    top: 28px;
+    width: 360px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    transform: translateX(-50%);
+    border: 2px solid rgba(255,214,109,.66);
+    border-radius: 14px;
+    background: linear-gradient(180deg, #1b2a3e, #0e1724);
+    color: #fff2bd;
+    font-size: 27px;
+    font-weight: 1000;
+  }
+  .prisoner-hero {
+    position: absolute;
+    left: 50%;
+    top: 390px;
+    width: 360px;
+    height: 420px;
+    transform: translateX(-50%);
+    object-fit: contain;
+    object-position: center bottom;
+    filter: drop-shadow(0 24px 24px rgba(0,0,0,.56));
+  }
+  .prisoner-dialog {
+    position: absolute;
+    left: 60px;
+    right: 60px;
+    bottom: 260px;
+    min-height: 250px;
+    padding: 28px 28px 26px;
+    border: 3px solid rgba(255,214,109,.72);
+    border-radius: 26px;
+    background: linear-gradient(180deg, #f4d487, #d99a3f);
+    color: #2b1408;
+    box-shadow: 0 18px 0 rgba(0,0,0,.34);
+  }
+  .prisoner-dialog b {
+    display: block;
+    color: #9f1511;
+    font-size: 35px;
+    line-height: 1.1;
+    font-weight: 1000;
+  }
+  .prisoner-dialog p {
+    margin-top: 16px;
+    max-width: 790px;
+    color: #3a1c0d;
+    font-size: 27px;
+    line-height: 1.28;
+    font-weight: 900;
+  }
+  .prisoner-tags {
+    margin-top: 18px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .prisoner-tags span {
+    height: 42px;
+    display: grid;
+    place-items: center;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 2px solid rgba(116,64,18,.45);
+    background: #ffe4a0;
+    color: #411b08;
+    font-size: 20px;
+    font-weight: 1000;
+  }
+  .choice-row {
+    position: absolute;
+    left: 60px;
+    right: 60px;
+    bottom: 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  /* Shot 4: roster. */
+  #shot4 .bg { background-image: url("../assets/battle/intro_duel_bg_storm.png"); }
+  .hero-band {
+    position: absolute;
+    left: 44px;
+    right: 44px;
+    top: 300px;
+    height: 470px;
+  }
+  .hero-band img {
+    position: absolute;
+    bottom: 0;
+    width: 210px;
+    height: 310px;
+    object-fit: contain;
+    object-position: center bottom;
+    filter: drop-shadow(0 20px 22px rgba(0,0,0,.55));
+  }
+  .hero-band .h1 { left: 0; }
+  .hero-band .h2 { left: 205px; width: 250px; height: 350px; }
+  .hero-band .h3 { left: 50%; width: 270px; height: 370px; transform: translateX(-50%); z-index: 4; }
+  .hero-band .h4 { right: 205px; width: 250px; height: 350px; }
+  .hero-band .h5 { right: 0; }
+  .count-box {
+    position: absolute;
+    right: 46px;
+    top: 28px;
+    width: 280px;
+    height: 154px;
+    display: grid;
+    place-items: center;
+    border: 3px solid rgba(255,214,109,.76);
+    border-radius: 24px;
+    background: linear-gradient(180deg, #ef3a2f, #981410);
+    color: #fff2bd;
+    box-shadow: 0 14px 0 rgba(0,0,0,.34);
+  }
+  .count-box b {
+    display: block;
+    font-family: var(--display);
+    font-size: 78px;
+    line-height: .8;
+  }
+  .count-box span {
+    display: block;
+    margin-top: 8px;
+    font-size: 25px;
+    font-weight: 1000;
+  }
+  .faction-row {
+    position: absolute;
+    left: 62px;
+    right: 62px;
+    top: 776px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  .faction-row span {
+    height: 68px;
+    display: grid;
+    place-items: center;
+    border: 3px solid rgba(255,214,109,.68);
+    border-radius: 18px;
+    background: rgba(9,14,21,.9);
+    color: #fff2bd;
+    font-size: 28px;
+    font-weight: 1000;
+  }
+  .faction-row span:nth-child(2) {
+    background: linear-gradient(180deg, #ef3a2f, #981410);
+  }
+  .roster-grid {
+    position: absolute;
+    left: 38px;
+    right: 38px;
+    bottom: 42px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+  }
+  .roster-card {
+    height: 210px;
+    display: grid;
+    grid-template-rows: 158px 52px;
+    border: 3px solid rgba(255,214,109,.72);
+    border-radius: 18px;
+    background: linear-gradient(180deg, #111b2a, #06090e);
+    overflow: hidden;
+  }
+  .roster-card img {
+    width: 100%;
+    height: 158px;
+    object-fit: contain;
+    object-position: center bottom;
+  }
+  .roster-card span {
+    display: grid;
+    place-items: center;
+    color: #fff2bd;
+    font-size: 22px;
+    font-weight: 1000;
+    background: rgba(5,7,11,.72);
+  }
+
+  /* Shot 5: upgrade screen. */
+  #shot5 .bg { background-image: url("../assets/battle/bg_battle_06_wasteland.jpg"); }
+  .upgrade-layout {
+    position: absolute;
+    left: 44px;
+    right: 44px;
+    top: 108px;
+    bottom: 44px;
+    display: grid;
+    grid-template-columns: 330px 1fr;
+    gap: 26px;
+    align-items: end;
+  }
+  .upgrade-summary {
+    display: grid;
+    gap: 14px;
+    padding-bottom: 90px;
+  }
+  .summary-card {
+    min-height: 116px;
+    padding: 18px;
+    border: 3px solid rgba(255,214,109,.72);
+    border-radius: 22px;
+    background: rgba(15,23,34,.92);
+  }
+  .summary-card b {
+    display: block;
+    color: #fff2bd;
+    font-size: 27px;
+    font-weight: 1000;
+  }
+  .summary-card span {
+    display: block;
+    height: 9px;
+    margin-top: 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.12);
+    overflow: hidden;
+  }
+  .summary-card i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #ffd66d, #eb3328);
+  }
+  .summary-card small {
+    display: block;
+    margin-top: 9px;
+    color: #ffd66d;
+    font-size: 20px;
+    font-weight: 900;
+  }
+  .upgrade-phone {
+    height: 1130px;
+    padding: 22px;
+    border: 7px solid #05070b;
+    border-radius: 42px;
+    background: #05070b;
+    box-shadow:
+      0 0 0 5px rgba(255,214,109,.82),
+      0 0 0 12px rgba(8,12,18,.92),
+      0 34px 64px rgba(0,0,0,.5);
+  }
+  .upgrade-screen {
+    height: 100%;
+    padding: 18px;
+    border-radius: 28px;
+    background: linear-gradient(180deg, #121d2c, #070b12 70%);
+    overflow: hidden;
+  }
+  .upgrade-top {
+    height: 58px;
+    display: grid;
+    grid-template-columns: 54px 1fr 84px;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .upgrade-top span,
+  .upgrade-top b,
+  .upgrade-top em {
+    display: grid;
+    place-items: center;
+    border: 2px solid rgba(255,214,109,.65);
+    border-radius: 14px;
+    background: linear-gradient(180deg, #1b2a3e, #0d1724);
+    color: #fff2bd;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 1000;
+  }
+  .upgrade-list {
+    display: grid;
+    gap: 14px;
+  }
+  .upgrade-row {
+    min-height: 150px;
+    display: grid;
+    grid-template-columns: 64px 1fr 78px;
+    gap: 14px;
+    align-items: center;
+    padding: 16px 14px;
+    border: 2px solid rgba(214,162,67,.7);
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(27,41,60,.94), rgba(15,24,37,.96));
+  }
+  .upgrade-row img {
+    width: 62px;
+    height: 62px;
+    object-fit: contain;
+  }
+  .upgrade-copy b {
+    display: block;
+    color: #fff2bd;
+    font-size: 24px;
+    line-height: 1.08;
+    font-weight: 1000;
+  }
+  .upgrade-copy small {
+    display: inline-grid;
+    place-items: center;
+    min-width: 46px;
+    height: 24px;
+    margin-left: 8px;
+    border-radius: 999px;
+    background: #04070c;
+    color: #ffd66d;
+    font-size: 15px;
+  }
+  .upgrade-copy p {
+    margin-top: 8px;
+    color: #fff1c2;
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 800;
+  }
+  .meter {
+    display: block;
+    height: 9px;
+    margin-top: 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.12);
+    overflow: hidden;
+  }
+  .meter i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #ffd66d, #eb3328);
+  }
+  .upgrade-copy em {
+    display: block;
+    margin-top: 7px;
+    color: #ffd66d;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 1000;
+  }
+  .buy {
+    height: 72px;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ffdf82, #d4871c);
+    color: #321306;
+    font-size: 21px;
+    font-weight: 1000;
+    box-shadow: 0 8px 0 rgba(0,0,0,.34);
+  }
+
+  /* Shot 6: chapter route. */
+  #shot6 .bg { background-image: url("../assets/stage.png"); background-position: center; }
+  .chapter-map {
+    position: absolute;
+    left: 46px;
+    right: 46px;
+    top: 120px;
+    bottom: 46px;
+    border-radius: 28px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.1), rgba(0,0,0,.18)),
+      url("../assets/maps/chapter1.png") center / cover no-repeat;
+    overflow: hidden;
+  }
+  .chapter-map::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.3));
+  }
+  .stage-grid {
+    position: absolute;
+    left: 64px;
+    right: 64px;
+    top: 80px;
+    bottom: 110px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    z-index: 2;
+  }
+  .stage-card {
+    min-height: 230px;
+    padding: 18px 16px;
+    border: 4px solid rgba(255,214,109,.78);
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(23,34,50,.93), rgba(7,10,15,.96));
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    color: #fff2bd;
+    box-shadow: 0 12px 0 rgba(0,0,0,.32);
+  }
+  .stage-card.active {
+    background: linear-gradient(180deg, #ffcf5c, #bf6516);
+    color: #401305;
+  }
+  .stage-card b {
+    display: grid;
+    place-items: center;
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: rgba(7,10,15,.88);
+    color: #fff2bd;
+    font-size: 38px;
+    font-weight: 1000;
+  }
+  .stage-card.active b { background: #d8241c; }
+  .stage-card span {
+    margin-top: 14px;
+    font-size: 25px;
+    font-weight: 1000;
+  }
+  .chapter-stats {
+    position: absolute;
+    left: 70px;
+    right: 70px;
+    bottom: 34px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    z-index: 3;
+  }
+  .chapter-stats div {
+    height: 76px;
+    display: grid;
+    place-items: center;
+    border: 3px solid rgba(255,214,109,.72);
+    border-radius: 18px;
+    background: rgba(8,12,18,.86);
+    color: #fff2bd;
+    font-size: 26px;
+    font-weight: 1000;
+  }
+
+  /* Shot 7: timer battle. */
+  .timer-card {
+    position: absolute;
+    right: 60px;
+    top: 124px;
+    width: 330px;
+    padding: 28px;
+    border: 3px solid rgba(255,214,109,.72);
+    border-radius: 26px;
+    background: rgba(8,12,18,.88);
+    z-index: 4;
+  }
+  .timer-card b {
+    display: block;
+    color: var(--red);
+    font-family: var(--display);
+    font-size: 76px;
+    line-height: .9;
+    font-weight: 1000;
+    text-shadow: 0 4px 0 rgba(48,8,5,.92);
+  }
+  .timer-card span {
+    display: block;
+    margin-top: 14px;
+    color: #fff2bd;
+    font-size: 25px;
+    line-height: 1.28;
+    font-weight: 1000;
+  }
+  .mission-panel {
+    position: absolute;
+    right: 60px;
+    bottom: 90px;
+    width: 330px;
+    display: grid;
+    gap: 14px;
+    z-index: 4;
+  }
+  .mission-panel div {
+    height: 66px;
+    display: flex;
+    align-items: center;
+    padding: 0 22px;
+    border: 3px solid rgba(255,214,109,.64);
+    border-radius: 18px;
+    background: linear-gradient(90deg, #e43126, rgba(22,30,45,.92));
+    color: #fff2bd;
+    font-size: 23px;
+    font-weight: 1000;
+  }
+  #shot7 .battle-board {
+    left: 46px;
+    right: 420px;
+    top: 116px;
+    bottom: 46px;
+  }
+  #shot7 .castle-node { width: 170px; }
+  #shot7 .castle-node img { width: 150px; }
+  #shot7 .castle-label { min-width: 136px; font-size: 22px; }
+  #shot7 .route-line { height: 430px; top: 300px; }
+  #shot7 .troop-dot { width: 64px; height: 64px; font-size: 28px; }
+  #shot7 .troop-dot.d1 { top: 388px; }
+  #shot7 .troop-dot.d2 { top: 518px; }
+  #shot7 .troop-dot.d3 { top: 648px; }
+
+  /* Shot 8: rewards. */
+  #shot8 .bg { background-image: url("../assets/battle/intro_duel_bg_cityfire.png"); }
+  .reward-board {
+    position: absolute;
+    left: 54px;
+    right: 54px;
+    top: 130px;
+    bottom: 58px;
+    border-radius: 30px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,214,109,.14), transparent 34%),
+      linear-gradient(180deg, rgba(18,27,40,.95), rgba(7,10,15,.98));
+  }
+  .reward-head {
+    position: absolute;
+    left: 50px;
+    right: 50px;
+    top: 50px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #fff2bd;
+    font-size: 36px;
+    font-weight: 1000;
+  }
+  .reward-head .stars { color: var(--gold); font-size: 46px; letter-spacing: 4px; }
+  .reward-grid {
+    position: absolute;
+    left: 50px;
+    right: 50px;
+    top: 210px;
+    display: grid;
+    grid-template-columns: .9fr 1.15fr .9fr;
+    gap: 20px;
+    align-items: end;
+  }
+  .reward-card {
+    min-height: 350px;
+    padding: 28px 18px 24px;
+    border: 4px solid rgba(255,214,109,.76);
+    border-radius: 28px;
+    background: linear-gradient(180deg, rgba(22,33,49,.94), rgba(9,8,12,.96));
+    text-align: center;
+    box-shadow: 0 16px 0 rgba(0,0,0,.34);
+  }
+  .reward-card.main {
+    min-height: 440px;
+    background: linear-gradient(180deg, rgba(48,24,14,.94), rgba(9,8,12,.96));
+  }
+  .reward-icon {
+    width: 132px;
+    height: 132px;
+    margin: 0 auto 24px;
+    display: grid;
+    place-items: center;
+    border: 4px solid rgba(255,214,109,.76);
+    border-radius: 28px;
+    background: radial-gradient(circle, #ffe992, #c47618 58%, #3b0c06);
+    overflow: hidden;
+  }
+  .reward-card.main .reward-icon {
+    width: 166px;
+    height: 166px;
+  }
+  .reward-icon img {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+  }
+  .reward-card.main .reward-icon img {
+    width: 166px;
+    height: 166px;
+    object-fit: cover;
+  }
+  .reward-card b {
+    display: block;
+    color: var(--red);
+    font-family: var(--display);
+    font-size: 58px;
+    line-height: .95;
+    font-weight: 1000;
+    text-shadow: 0 4px 0 rgba(48,8,5,.92);
+  }
+  .reward-card.main b { font-size: 72px; }
+  .reward-card span {
+    display: block;
+    margin-top: 14px;
+    color: #fff2bd;
+    font-size: 25px;
+    font-weight: 1000;
+  }
+  .reward-flow {
+    position: absolute;
+    left: 80px;
+    right: 80px;
+    bottom: 220px;
+    display: grid;
+    grid-template-columns: 1fr 54px 1fr 54px 1fr;
+    gap: 10px;
+    align-items: center;
+  }
+  .flow-step {
+    height: 76px;
+    display: grid;
+    place-items: center;
+    border: 3px solid rgba(255,214,109,.72);
+    border-radius: 18px;
+    background: rgba(9,14,21,.88);
+    color: #fff2bd;
+    font-size: 28px;
+    font-weight: 1000;
+  }
+  .flow-arrow {
+    color: var(--gold);
+    font-size: 48px;
+    font-weight: 1000;
+    text-align: center;
+  }
+  .reward-cta {
+    position: absolute;
+    left: 140px;
+    right: 140px;
+    bottom: 92px;
+    height: 78px;
+    display: grid;
+    place-items: center;
+    border: 4px solid rgba(255,214,109,.8);
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ef3a2f, #981410);
+    color: #fff3c5;
+    font-size: 32px;
+    font-weight: 1000;
+    text-shadow: 0 3px 0 rgba(64,11,7,.78);
+    box-shadow: 0 14px 0 rgba(0,0,0,.34);
+  }
+</style>
+</head>
+<body class="gallery">
+  <section class="board icon" id="icon" data-name="앱 아이콘">
+    <img class="icon-art" src="../assets/icons/android_launcher_icon_1024.png" alt="">
+  </section>
+
+  <section class="board feature" id="feature" data-name="Feature Graphic">
+    <div class="bg blur"></div><div class="shade"></div><div class="texture"></div>
+    <img class="feature-logo" src="../assets/ui/home_logo_samguk.png" alt="">
+    <h1>전장을 잡고<br>손끝으로 지휘하라</h1>
+    <div class="feature-tags"><span>드래그 공성</span><span>포로 등용</span><span>200장수 수집</span></div>
+    <img class="feature-general g1" src="../assets/generals/mainstyle_halfbody/guan_yu.png" alt="">
+    <img class="feature-general g2" src="../assets/generals/mainstyle_halfbody/cao_cao.png" alt="">
+    <img class="feature-general g3" src="../assets/generals/mainstyle_halfbody/zhuge_liang.png" alt="">
+  </section>
+
+  <section class="board shot" id="shot1" data-name="01 드래그 공성">
+    <div class="bg blur"></div><div class="shade"></div><div class="texture"></div><div class="safe-frame"></div>
+    <div class="copy">
+      <span class="eyebrow">전투 조작</span>
+      <h2 class="headline">성에서 성으로<br><span class="red">끌어 보내는 전쟁</span></h2>
+      <p class="sub">목표 성을 정하고 병력을 흘려보내는 직관적인 공성 플레이.</p>
+    </div>
+    <div class="visual">
+      <div class="visual-title">드래그 공성</div>
+      <div class="battle-board">
+        <div class="castle-node enemy"><div class="castle-label">낙양 <b>15</b></div><img src="../assets/castles/castle_enemy.png" alt=""></div>
+        <div class="route-line"></div>
+        <div class="troop-dot d1">兵</div><div class="troop-dot d2">兵</div><div class="troop-dot d3">兵</div>
+        <div class="castle-node ally"><div class="castle-label">성도 <b>45</b></div><img src="../assets/castles/castle_ally.png" alt=""></div>
+        <div class="touch-ring"></div>
+        <div class="command-card">
+          <b>복잡한 명령 없이<br>손끝으로 진군</b>
+          <ol><li>1. 아군 성 선택</li><li>2. 목표 성으로 드래그</li><li>3. 즉시 출병</li></ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="board shot" id="shot2" data-name="02 병종 상성">
+    <div class="bg blur"></div><div class="shade"></div><div class="texture"></div><div class="safe-frame"></div>
+    <div class="copy">
+      <span class="eyebrow">전략 선택</span>
+      <h2 class="headline">상성을 읽으면<br><span class="red">약한 병력도 이긴다</span></h2>
+      <p class="sub">창병, 기병, 궁병의 관계를 보고 공격 루트를 바꾸세요.</p>
+    </div>
+    <div class="visual">
+      <div class="visual-title">병종 상성</div>
+      <div class="counter-arena">
+        <div class="unit-big spear">槍<span>창병</span></div>
+        <div class="versus">VS</div>
+        <div class="unit-big horse">騎<span>기병</span></div>
+      </div>
+      <div class="counter-rule">창 &gt; 기 &gt; 궁 &gt; 창</div>
+      <div class="counter-grid">
+        <div class="counter-card"><b>槍</b><span>기병 돌파</span><em>+35%</em></div>
+        <div class="counter-card"><b>騎</b><span>궁병 압박</span><em>+25%</em></div>
+        <div class="counter-card"><b>弓</b><span>창병 견제</span><em>+20%</em></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="board shot" id="shot3" data-name="03 포로 등용">
+    <div class="bg"></div><div class="shade"></div><div class="texture"></div><div class="safe-frame"></div>
+    <div class="copy">
+      <span class="eyebrow">승리 이후</span>
+      <h2 class="headline">적장도 설득해<br><span class="red">내 군단으로</span></h2>
+      <p class="sub">처단할지, 등용할지. 전투 이후의 선택이 군단을 바꿉니다.</p>
+    </div>
+    <div class="visual">
+      <div class="judgment">
+        <div class="court-title">포로 심문</div>
+        <img class="prisoner-hero" src="../assets/generals/mainstyle_halfbody/lu_bu.png" alt="">
+        <div class="prisoner-dialog">
+          <b>여포(포로)</b>
+          <p>내 무예를 살릴 그릇이라면, 칼끝을 돌려줄 수도 있다.</p>
+          <div class="prisoner-tags"><span>병공 +10%</span><span>병방 +2%</span><span>성공 +10%</span><span>성공 확률 92%</span></div>
+        </div>
+        <div class="choice-row"><div class="red-button">등용한다</div><div class="blue-button">처단한다</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="board shot" id="shot4" data-name="04 장수 수집">
+    <div class="bg blur"></div><div class="shade"></div><div class="texture"></div><div class="safe-frame"></div>
+    <div class="copy">
+      <span class="eyebrow">군단 편성</span>
+      <h2 class="headline"><span class="red">200장수</span>를 모아<br>나만의 진영 완성</h2>
+      <p class="sub">명장부터 숨은 장수까지 수집하고 전장에 맞춰 편성하세요.</p>
+    </div>
+    <div class="visual">
+      <div class="visual-title">장수 도감</div>
+      <div class="count-box"><div><b>200</b><span>삼국 장수</span></div></div>
+      <div class="hero-band">
+        <img class="h1" src="../assets/generals/mainstyle_halfbody/guan_yu.png" alt="">
+        <img class="h2" src="../assets/generals/mainstyle_halfbody/zhao_yun.png" alt="">
+        <img class="h3" src="../assets/generals/mainstyle_halfbody/cao_cao.png" alt="">
+        <img class="h4" src="../assets/generals/mainstyle_halfbody/ma_chao.png" alt="">
+        <img class="h5" src="../assets/generals/mainstyle_halfbody/zhuge_liang.png" alt="">
+      </div>
+      <div class="faction-row"><span>위</span><span>촉</span><span>오</span><span>군웅</span></div>
+      <div class="roster-grid">
+        <div class="roster-card"><img src="../assets/generals/busts/liu_bei.png" alt=""><span>유비</span></div>
+        <div class="roster-card"><img src="../assets/generals/busts/zhang_fei.png" alt=""><span>장비</span></div>
+        <div class="roster-card"><img src="../assets/generals/busts/lu_bu.png" alt=""><span>여포</span></div>
+        <div class="roster-card"><img src="../assets/generals/busts/ma_chao.png" alt=""><span>마초</span></div>
+        <div class="roster-card"><img src="../assets/generals/busts/sima_yi.png" alt=""><span>사마의</span></div>
+        <div class="roster-card"><img src="../assets/generals/busts/zhou_yu.png" alt=""><span>주유</span></div>
+        <div class="roster-card"><img src="../assets/generals/busts/sun_ce.png" alt=""><span>손책</span></div>
+        <div class="roster-card"><img src="../assets/generals/busts/guo_jia.png" alt=""><span>곽가</span></div>
+        <div class="roster-card"><img src="../assets/generals/busts/xiahou_dun.png" alt=""><span>하후돈</span></div>
+        <div class="roster-card"><img src="../assets/generals/busts/huang_zhong.png" alt=""><span>황충</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="board shot" id="shot5" data-name="05 전투력 성장">
+    <div class="bg blur"></div><div class="shade"></div><div class="texture"></div><div class="safe-frame"></div>
+    <div class="copy">
+      <span class="eyebrow">성장 루프</span>
+      <h2 class="headline">골드를 투자해<br><span class="red">전투력을 키운다</span></h2>
+      <p class="sub">성 공격력, 방어력, 생산력을 올려 다음 전장을 준비하세요.</p>
+    </div>
+    <div class="visual">
+      <div class="upgrade-layout">
+        <div class="upgrade-summary">
+          <div class="summary-card"><b>성 공격력</b><span><i style="width:62%"></i></span><small>공성 반격 피해 상승</small></div>
+          <div class="summary-card"><b>병력 생산력</b><span><i style="width:74%"></i></span><small>병력 충원 속도 상승</small></div>
+          <div class="summary-card"><b>병력 방어력</b><span><i style="width:52%"></i></span><small>받는 피해 감소</small></div>
+        </div>
+        <div class="upgrade-phone">
+          <div class="upgrade-screen">
+            <div class="upgrade-top"><span>&lt;</span><b>전투력 관리</b><em>151만</em></div>
+            <div class="upgrade-list">
+              <div class="upgrade-row"><img src="../assets/ui/upg_icon_castle_atk.png" alt=""><div class="upgrade-copy"><b>성 공격력 <small>Lv.0</small></b><p>공성 중인 적 부대에 반격 피해</p><span class="meter"><i style="width:46%"></i></span><em>현재 +0% → +8%</em></div><div class="buy">강화</div></div>
+              <div class="upgrade-row"><img src="../assets/ui/upg_icon_castle_def.png" alt=""><div class="upgrade-copy"><b>성 방어력 <small>Lv.0</small></b><p>공성 시 성벽이 받는 피해 감소</p><span class="meter"><i style="width:40%"></i></span><em>현재 +0% → +10%</em></div><div class="buy">강화</div></div>
+              <div class="upgrade-row"><img src="../assets/ui/upg_icon_prod_rate.png" alt=""><div class="upgrade-copy"><b>병력 생산력 <small>Lv.0</small></b><p>병력 충원 속도 상승</p><span class="meter"><i style="width:58%"></i></span><em>현재 +0% → +10%</em></div><div class="buy">강화</div></div>
+              <div class="upgrade-row"><img src="../assets/ui/upg_icon_unit_atk.png" alt=""><div class="upgrade-copy"><b>병력 공격력 <small>Lv.0</small></b><p>아군 부대 전투 시 공격력 상승</p><span class="meter"><i style="width:44%"></i></span><em>현재 +0% → +6%</em></div><div class="buy">강화</div></div>
+              <div class="upgrade-row"><img src="../assets/ui/upg_icon_unit_def.png" alt=""><div class="upgrade-copy"><b>병력 방어력 <small>Lv.0</small></b><p>아군 부대가 받는 피해 감소</p><span class="meter"><i style="width:50%"></i></span><em>현재 +0% → +5%</em></div><div class="buy">강화</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="board shot" id="shot6" data-name="06 챕터 지도">
+    <div class="bg blur"></div><div class="shade"></div><div class="texture"></div><div class="safe-frame"></div>
+    <div class="copy">
+      <span class="eyebrow">정복 루트</span>
+      <h2 class="headline">10챕터<br><span class="red">200전장</span></h2>
+      <p class="sub">별을 모아 다음 전장을 열고, 더 큰 전투로 진입하세요.</p>
+    </div>
+    <div class="visual">
+      <div class="chapter-map">
+        <div class="stage-grid">
+          <div class="stage-card active"><b>1</b><span>도전 가능</span></div>
+          <div class="stage-card"><b>2</b><span>별 10개</span></div>
+          <div class="stage-card"><b>3</b><span>별 20개</span></div>
+          <div class="stage-card"><b>4</b><span>별 30개</span></div>
+          <div class="stage-card"><b>5</b><span>별 40개</span></div>
+          <div class="stage-card"><b>6</b><span>별 50개</span></div>
+          <div class="stage-card"><b>7</b><span>별 60개</span></div>
+          <div class="stage-card"><b>8</b><span>별 70개</span></div>
+          <div class="stage-card"><b>9</b><span>별 80개</span></div>
+        </div>
+        <div class="chapter-stats"><div>10개 챕터</div><div>200개 전장</div><div>별 수집 해금</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="board shot" id="shot7" data-name="07 빠른 전투">
+    <div class="bg blur"></div><div class="shade"></div><div class="texture"></div><div class="safe-frame"></div>
+    <div class="copy">
+      <span class="eyebrow">짧고 강한 한 판</span>
+      <h2 class="headline">90초 안에<br><span class="red">성을 무너뜨려라</span></h2>
+      <p class="sub">전투 목표가 명확해서 바로 판단하고 바로 움직입니다.</p>
+    </div>
+    <div class="visual">
+      <div class="battle-board">
+        <div class="castle-node enemy"><div class="castle-label">목표 성</div><img src="../assets/castles/castle_enemy.png" alt=""></div>
+        <div class="route-line"></div>
+        <div class="troop-dot d1">槍</div><div class="troop-dot d2">騎</div><div class="troop-dot d3">弓</div>
+        <div class="castle-node ally"><div class="castle-label">아군 성</div><img src="../assets/castles/castle_ally.png" alt=""></div>
+      </div>
+      <div class="timer-card"><b>90초</b><span>클리어 목표가 전투의 긴장감을 만듭니다.</span></div>
+      <div class="mission-panel"><div>목표 성 점령</div><div>병종 선택</div><div>전세 확인</div></div>
+    </div>
+  </section>
+
+  <section class="board shot" id="shot8" data-name="08 보상 성장">
+    <div class="bg blur"></div><div class="shade"></div><div class="texture"></div><div class="safe-frame"></div>
+    <div class="copy">
+      <span class="eyebrow">보상 순환</span>
+      <h2 class="headline">승리할수록<br><span class="red">군단이 강해진다</span></h2>
+      <p class="sub">별, 골드, 장수를 얻고 다음 전장을 더 유리하게 시작하세요.</p>
+    </div>
+    <div class="visual">
+      <div class="reward-board">
+        <div class="reward-head"><span>승리 보상</span><span class="stars">★ ★ ★</span></div>
+        <div class="reward-grid">
+          <div class="reward-card"><div class="reward-icon"><img src="../assets/ui/result_star_on.png" alt=""></div><b>별</b><span>전장 평가</span></div>
+          <div class="reward-card main"><div class="reward-icon"><img src="../assets/generals/faces/zhao_yun.png" alt=""></div><b>장수</b><span>군단 합류</span></div>
+          <div class="reward-card"><div class="reward-icon"><img src="../assets/ui/stat_icon_gold.png" alt=""></div><b>골드</b><span>강화 재화</span></div>
+        </div>
+        <div class="reward-flow"><div class="flow-step">승리</div><div class="flow-arrow">›</div><div class="flow-step">보상</div><div class="flow-arrow">›</div><div class="flow-step">성장</div></div>
+        <div class="reward-cta">획득 즉시 전력 상승</div>
+      </div>
+    </div>
+  </section>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const board = params.get("board");
+  if (board) {
+    document.body.className = "single";
+    const el = document.getElementById(board);
+    if (el) el.classList.add("is-selected");
+  }
+</script>
+</body>
+</html>

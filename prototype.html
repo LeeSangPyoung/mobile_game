@@ -11922,7 +11922,12 @@ function generalPlaceholderImage(name, id) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${bg1}"/><stop offset="1" stop-color="${bg2}"/></linearGradient></defs><rect width="160" height="160" fill="url(#g)"/><circle cx="80" cy="68" r="34" fill="rgba(255,226,150,.18)"/><path d="M24 148c8-34 28-52 56-52s48 18 56 52" fill="rgba(255,226,150,.22)"/><text x="80" y="95" text-anchor="middle" font-family="serif" font-size="58" font-weight="900" fill="#ffe6a0">${safeMark}</text></svg>`;
   return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
 }
+// 신규 v6 전신/반신(200세트, WebP) 보유 id — roster 전체 커버
+const GENERAL_V6_IDS = new Set(
+  Array.isArray(window.GENERALS_200) ? window.GENERALS_200.map(p => String(p && p[0] || '')).filter(Boolean) : []
+);
 function resolveGeneralBust(id, name) {
+  if (GENERAL_V6_IDS.has(id)) return `./assets/generals/halfbody_v6/${id}.webp`;
   const alias = GENERAL_BUST_ALIASES[id];
   if (alias) return `./assets/generals/busts/${alias}.png`;
   if (GENERAL_FACE_IDS.has(id)) return `./assets/generals/busts/${id}.png`;
@@ -13003,6 +13008,11 @@ function resolveGeneralFullbodySources(g) {
     './assets/generals/busts',
   ];
   const sources = [];
+  // 신규 v6 전신(WebP)을 최우선, 그다음 v6 반신 → 기존 폴더 순 폴백
+  if (GENERAL_V6_IDS.has(id)) {
+    sources.push(`./assets/generals/fullbody_v6/${id}.webp`);
+    sources.push(`./assets/generals/halfbody_v6/${id}.webp`);
+  }
   dirs.forEach(dir => uniqueIds.forEach(fileId => sources.push(`${dir}/${fileId}.png`)));
   if (g && g.bust) sources.push(g.bust);
   if (g && g.face) sources.push(g.face);
@@ -13383,6 +13393,27 @@ function generalBuff(g, key) {
 function commanderArmyMult(a, key) {
   if (!a || a.owner !== 1) return 1;
   return 1 + generalBuff(getArmyCommander(a), key);
+}
+// === 지력(intelligence) — 책사 높음, 맹장/일반 낮음(0 아님). 회유 능력에 사용 ===
+const GENERAL_INT = {
+  zhuge_liang: 98, pang_tong: 96, sima_yi: 94, guo_jia: 92, jia_xu: 90,
+  xun_yu: 89, xun_you: 87, zhou_yu: 86, lu_xun: 85, fa_zheng: 83, chen_gong: 82,
+  zhuge_jin: 80, jiang_wan: 79, li_ru: 80, cheng_yu: 81, kan_ze: 76, lu_su: 78,
+  huang_quan: 74, dong_yun: 72, fei_yi: 73, ma_su: 70, jian_yong: 68, mi_zhu: 66,
+  cao_cao: 75, liu_bei: 60, sun_quan: 64, yuan_shao: 58, dong_zhuo: 50,
+};
+function generalIntel(g) {
+  if (!g || !g.id) return 28;
+  const base = GENERAL_INT[g.id];
+  return (typeof base === 'number') ? base : 30; // 기본(맹장/일반) 30 — 운 좋으면 회유 가능
+}
+function armyLeaderGeneral(a) {
+  const uid = getArmyCommanderUid(a);
+  return uid != null ? getOwnedGeneral(uid) : null;
+}
+function armyLeaderIntel(a) {
+  const g = armyLeaderGeneral(a);
+  return g ? generalIntel(g) : 24; // 장수 없는 부대도 아주 미미한 확률
 }
 // 장수 크리티컬: 등급 + 레벨에 따른 확률/배율 (양 진영 모두). 장수 없으면 0%.
 function commanderCritStats(g) {
@@ -14916,9 +14947,9 @@ function resetStage() {
       if (isBoss) {
         desired = enemyCastles.length;
       } else {
-        // 분포: 0(15%), 1(25%), 2(25%), 3(20%), 4(10%), 5(5%)
+        // 포로 +50% 상향 분포(평균 ~2.0→~3.0): 0(5%) 1(10%) 2(20%) 3(27%) 4(22%) 5(16%)
         const r = Math.random();
-        desired = r < 0.15 ? 0 : r < 0.40 ? 1 : r < 0.65 ? 2 : r < 0.85 ? 3 : r < 0.95 ? 4 : 5;
+        desired = r < 0.05 ? 0 : r < 0.15 ? 1 : r < 0.35 ? 2 : r < 0.62 ? 3 : r < 0.84 ? 4 : 5;
         desired = Math.min(desired, enemyCastles.length);
       }
     }
@@ -14972,6 +15003,11 @@ function resetStage() {
   buildEdges();
   stageStartTime = performance.now();
   window._winHandled = false; // 스테이지 시작 시 승리 처리 가드 초기화
+  window._huoyuUsedStage = false; // 회유 스테이지당 1회 가드 초기화
+  window._huoyuAttemptMap = new Map();
+  window._huoyuLastFailFx = 0;
+  window._huoyuFlash = null;
+  window._huoyuBanner = null;
   resize();
   initCamera();
   updateMinimap();
@@ -16685,6 +16721,27 @@ function drawBattleFx() {
       ctx.ellipse(sx, sy, fx.rx * zoom * (0.35 + p * 0.7), fx.ry * zoom * (0.35 + p * 0.7), 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
+    } else if (fx.kind === 'huoyuTrail') {
+      const ex = w2sx(fx.x2), ey = w2sy(fx.y2);
+      const mx = (sx + ex) / 2;
+      const my = (sy + ey) / 2 - 28 * DPR() * (1 - p);
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      ctx.globalAlpha = alpha * 0.82;
+      ctx.strokeStyle = 'rgba(255,224,102,0.95)';
+      ctx.lineWidth = Math.max(2 * DPR(), (fx.width || 5 * DPR() / zoom) * zoom * (1 - p * 0.25));
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.quadraticCurveTo(mx, my, ex, ey);
+      ctx.stroke();
+      ctx.globalAlpha = alpha * 0.5;
+      ctx.strokeStyle = fx.color || '#7ec8ff';
+      ctx.lineWidth = Math.max(1.5 * DPR(), ctx.lineWidth * 0.45);
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.quadraticCurveTo(mx, my, ex, ey);
+      ctx.stroke();
+      ctx.restore();
     } else if (fx.kind === 'slash') {
       const len = fx.len * zoom;
       const curve = fx.curve * zoom;
@@ -17531,6 +17588,186 @@ const ENGAGE_DIST = () => 35 * DPR();
 const DMG_RATE = 0.18; // 초당 데미지 계수 (저글링 정도 교전 시간)
 const ENGAGE_WARMUP = 1.2; // 첫 접촉 후 데미지 시작까지 (초)
 
+// === 회유(내응) — 지력 높은 아군 선봉이 격돌 시 적 부대를 흔들거나 귀순시킴 (플레이어 전용) ===
+const HUOYU_FULL_CONVERT_MAX = 55;
+const HUOYU_PARTIAL_MIN = 16;
+const HUOYU_PARTIAL_MAX = 35;
+
+function huoyuChanceForIntel(intel) {
+  const v = Math.max(0, Math.min(100, Number(intel) || 0));
+  if (v >= 90) return Math.min(0.04, 0.032 + (v - 90) * 0.0008);
+  if (v >= 75) return 0.015 + (v - 75) * (0.017 / 15);
+  if (v >= 60) return 0.006 + (v - 60) * (0.009 / 15);
+  return Math.max(0.0003, Math.pow(v / 100, 2) * 0.006);
+}
+function huoyuAttemptKey(a) {
+  const uid = getArmyCommanderUid(a);
+  if (uid != null) return `cmd:${uid}`;
+  if (a && a.groupId != null) return `group:${a.groupId}`;
+  return `army:${armyFxId(a)}`;
+}
+function huoyuAttemptLimit(leader, intel) {
+  if (!leader) return 1;
+  return intel >= 75 ? 2 : 1;
+}
+function consumeHuoyuAttempt(playerArmy, leader, intel) {
+  if (!(window._huoyuAttemptMap instanceof Map)) window._huoyuAttemptMap = new Map();
+  const key = huoyuAttemptKey(playerArmy);
+  const used = window._huoyuAttemptMap.get(key) || 0;
+  if (used >= huoyuAttemptLimit(leader, intel)) return false;
+  window._huoyuAttemptMap.set(key, used + 1);
+  return true;
+}
+function maybeShowHuoyuFailFx(playerArmy, enemyArmy, leader, intel) {
+  if (!leader || intel < 60 || !enemyArmy) return;
+  const now = performance.now();
+  if (window._huoyuLastFailFx && now - window._huoyuLastFailFx < 3500) return;
+  const chance = intel >= 85 ? 0.35 : 0.18;
+  if (Math.random() >= chance) return;
+  window._huoyuLastFailFx = now;
+  spawnImpactText(enemyArmy.x, enemyArmy.y - 18, '동요...', '#b7e3ff', { size: 16, life: 0.75, vy: -24 });
+  if (Math.random() < 0.45) {
+    showSpeech(playerArmy, `${leader.name}: 아직 흔들리지 않는다.`, { life: 1.35, side: 'ally', kind: 'army' });
+  }
+}
+function nearestCastleByOwner(owner, x, y) {
+  let best = null, bd = Infinity;
+  for (const c of castles) {
+    if (c.owner !== owner) continue;
+    const dx = c.x * worldPxW() - x, dy = c.y * worldPxH() - y;
+    const dd = dx * dx + dy * dy;
+    if (dd < bd) { bd = dd; best = c; }
+  }
+  return best;
+}
+function retargetHuoyuArmy(a) {
+  if (!a) return;
+  const target = nearestCastleByOwner(2, a.x, a.y)
+    || nearestCastleByOwner(0, a.x, a.y)
+    || nearestCastleByOwner(1, a.x, a.y);
+  if (target) {
+    a.target = target;
+    a.homeCastle = target;
+  }
+}
+function clearHuoyuCombatState(a) {
+  if (!a) return;
+  a.pursuingArmy = null;
+  a._defendCastle = null;
+  a._engaged = false;
+  a._engagedFlash = false;
+  a._engagedOnce = false;
+  a._sieging = false;
+  delete a._engageT;
+  delete a._dmg;
+  delete a._cdmg;
+  delete a._shootCD;
+}
+function huoyuSplitCount(troops, intel) {
+  const rate = intel >= 90 ? 0.34 : (intel >= 75 ? 0.29 : 0.22);
+  return Math.max(HUOYU_PARTIAL_MIN, Math.min(HUOYU_PARTIAL_MAX, Math.floor(troops * rate), troops - 1));
+}
+function tryHuoyu(playerArmy, enemyArmy) {
+  if (!playerArmy || !enemyArmy) return false;
+  if (playerArmy.owner !== 1 || enemyArmy.owner !== 2) return false;
+  if (window._huoyuUsedStage) return false;          // 스테이지당 1회
+  const leader = armyLeaderGeneral(playerArmy);
+  const intel = leader ? generalIntel(leader) : 24;
+  if (!consumeHuoyuAttempt(playerArmy, leader, intel)) return false;
+  const chance = huoyuChanceForIntel(intel);
+  if (Math.random() >= chance) {
+    maybeShowHuoyuFailFx(playerArmy, enemyArmy, leader, intel);
+    return false;
+  }
+  window._huoyuUsedStage = true;
+  if (enemyArmy.troops > HUOYU_FULL_CONVERT_MAX && enemyArmy.troops > 1) {
+    splitEnemyArmyByHuoyu(enemyArmy, playerArmy, leader, huoyuSplitCount(enemyArmy.troops, intel));
+  } else {
+    convertEnemyArmy(enemyArmy, playerArmy, leader);
+  }
+  return true;
+}
+function convertEnemyArmy(ea, byArmy, leader) {
+  ea.owner = 1;
+  delete ea.commanderUid; delete ea.commanderRank;
+  delete ea.groupCommanderUid; delete ea.groupCommanderRank;
+  ea.groupId = null;
+  clearHuoyuCombatState(ea);
+  ea.atkBonus = ea.atkBonus || 1;
+  retargetHuoyuArmy(ea);
+  spawnHuoyuFx(ea, leader, { partial: false, count: ea.troops });
+  if (leader) showSpeech(byArmy, `${leader.name}: 적의 마음을 얻었다!`, { life: 1.7, side: 'ally', kind: 'army' });
+}
+function splitEnemyArmyByHuoyu(ea, byArmy, leader, count) {
+  const turn = Math.max(1, Math.min(count | 0, ea.troops - 1));
+  ea.troops -= turn;
+  const splitAng = Math.random() * Math.PI * 2;
+  const splitDist = (26 + Math.random() * 18) * DPR() / zoom;
+  const ox = Math.cos(splitAng) * splitDist;
+  const oy = Math.sin(splitAng) * splitDist * 0.72;
+  const ally = {
+    owner: 1, troops: turn, unit: ea.unit, atkBonus: ea.atkBonus || 1,
+    _start: turn,
+    x: ea.x + ox, y: ea.y + oy,
+    _sx: ea.x, _sy: ea.y,
+    target: null, pursuingArmy: null, homeCastle: null,
+    commanderOriginCastle: null,
+    commanderOriginX: ea.x, commanderOriginY: ea.y,
+    path: null, seed: Math.random() * 1000,
+    shooting: false, shootTimer: 0, isArmy: true,
+    groupId: null,
+  };
+  clearHuoyuCombatState(ally);
+  retargetHuoyuArmy(ally);
+  armies.push(ally);
+  spawnHuoyuTrail(ea, ally);
+  spawnImpactText(ea.x, ea.y - 8, `-${turn}`, '#7ec8ff', { size: 18, life: 0.8, vy: -28 });
+  showSpeech(ea, '대열이 흔들린다!', { life: 1.4, side: 'enemy', kind: 'army' });
+  spawnHuoyuFx(ally, leader, { partial: true, count: turn });
+  if (leader) showSpeech(byArmy, `${leader.name}: 저들이 갈라졌다!`, { life: 1.7, side: 'ally', kind: 'army' });
+}
+function spawnHuoyuTrail(from, to) {
+  if (!from || !to) return;
+  pushBattleFx({
+    kind: 'huoyuTrail',
+    x: from.x,
+    y: from.y,
+    x2: to.x,
+    y2: to.y,
+    color: '#7ec8ff',
+    life: 0.95,
+    maxLife: 0.95,
+    width: 7 * DPR() / zoom,
+  });
+}
+function showHuoyuBanner(text) {
+  window._huoyuBanner = {
+    text,
+    t: performance.now(),
+    life: 2.35,
+  };
+}
+function spawnHuoyuFx(a, leader, opts = {}) {
+  const sx = w2sx(a.x), sy = w2sy(a.y);
+  // 빛 폭발 + 링 + 텍스트 + 셰이크 + 햅틱
+  try { spawnBurst(a.x, a.y, '#7ec8ff', { gold: true, big: true, count: 60, life: 1.6 }); } catch (_) {}
+  const label = leader
+    ? (opts.partial ? `${leader.name}의 계책! ${opts.count || 0}명 귀순!` : `${leader.name}의 계책! 회유 성공!`)
+    : (opts.partial ? `${opts.count || 0}명 귀순!` : '회유 성공!');
+  spawnImpactText(a.x, a.y - 26, label, '#ffe066', { size: 26, life: 1.6, vy: -34 });
+  showHuoyuBanner(label);
+  showSpeech(a, pickRandom(['귀순하겠습니다!', '대인의 뜻을 따르겠소!', '이제 한편이오!']), { life: 2.0, side: 'ally', kind: 'army' });
+  try { BGM.sfxCapture(); } catch (_) {}
+  a._huoyuAuraUntil = performance.now() + 2400;
+  a._huoyuAuraSeed = Math.random() * Math.PI * 2;
+  battlePulse = Math.max(battlePulse, 0.35);
+  window._hitstop = Math.max(window._hitstop || 0, 0.24);
+  triggerShake(7 * DPR(), 0.4);
+  try { vibrate([30, 40, 30, 40, 60]); } catch (_) {}
+  // 화면 번쩍 (회유 하이라이트)
+  window._huoyuFlash = { t: performance.now(), x: a.x, y: a.y };
+}
+
 function resolveEngagements(dt) {
   const engaged = new Set();
   const damage = new Map();
@@ -17554,6 +17791,10 @@ function resolveEngagements(dt) {
         window._hitstop = Math.max(window._hitstop || 0, 0.08);
         spawnMeleeClash(midX, midY, a, b, { first: true });
         battleHitCooldown.set(fxKey, performance.now());
+        // 회유 시도(극저 확률) — 성공 시 적 부대가 아군으로 전향, 이 교전 무효화
+        const pa = a.owner === 1 ? a : (b.owner === 1 ? b : null);
+        const ea = a.owner === 2 ? a : (b.owner === 2 ? b : null);
+        if (pa && ea && tryHuoyu(pa, ea)) { engaged.delete(a); engaged.delete(b); continue; }
       } else { a._engagedFlash = b._engagedFlash = true; }
       if (!firstContact && battleFxReady(fxKey, 190)) {
         spawnMeleeClash(midX, midY, a, b);
@@ -19144,28 +19385,22 @@ const BGM = (() => {
   function scheduler() {}
   // === 파일 기반 BGM 재생 ===
   const PREP_FILES = [
-    'assets/audio/calm1.ogg',
-    'assets/audio/calm2.ogg',
-    'assets/audio/calm3.ogg',
-    'assets/audio/calm4.wav',
-    'assets/audio/calm5.wav',
+    'assets/audio/main_prepare_your_swords.ogg',
+    'assets/audio/main_up_in_the_sky.ogg',
   ];
   const BATTLE_FILES = [
-    'assets/audio/battle.ogg',
-    'assets/audio/battle1.wav',
-    'assets/audio/battle2.wav',
-    'assets/audio/battle3.wav',
-    'assets/audio/battle4.wav',
-    'assets/audio/battle5.wav',
+    'assets/audio/battle_qazijamjam.mp3',
   ];
   const FADE_IN_MS = 700;
   const FADE_OUT_MS = 500;
-  const PREP_ROTATE_MS = 90 * 1000;
-  const BATTLE_ROTATE_MS = 70 * 1000;
+  const PREP_ROTATE_MS = 180 * 1000;
+  const BATTLE_ROTATE_MS = 240 * 1000;
   let bgmAudio = null;
   let bgmRotateTimer = 0;
-  let prepFileIdx = 0;
-  let battleFileIdx = 0;
+  let prepQueue = [];
+  let battleQueue = [];
+  let lastPrepFile = null;
+  let lastBattleFile = null;
   let unlockAttempted = false;
   function _targetBgmVolume(forMode = mode) {
     const s = SAVE.audioSettings || {};
@@ -19197,15 +19432,29 @@ const BGM = (() => {
       try { a.pause(); a.src = ''; a.load && a.load(); } catch (_) {}
     });
   }
-  function _pickNextPrepFile() {
-    if (PREP_FILES.length <= 1) { prepFileIdx = 0; return; }
-    let i; do { i = Math.floor(Math.random() * PREP_FILES.length); } while (i === prepFileIdx);
-    prepFileIdx = i;
+  function _shuffleFiles(files, avoidFirst) {
+    const q = files.slice();
+    for (let i = q.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [q[i], q[j]] = [q[j], q[i]];
+    }
+    if (q.length > 1 && q[0] === avoidFirst) {
+      const swapIdx = q.findIndex((url, idx) => idx > 0 && url !== avoidFirst);
+      if (swapIdx > 0) [q[0], q[swapIdx]] = [q[swapIdx], q[0]];
+    }
+    return q;
   }
-  function _pickNextBattleFile() {
-    if (BATTLE_FILES.length <= 1) { battleFileIdx = 0; return; }
-    let i; do { i = Math.floor(Math.random() * BATTLE_FILES.length); } while (i === battleFileIdx);
-    battleFileIdx = i;
+  function _nextPrepFile() {
+    if (!prepQueue.length) prepQueue = _shuffleFiles(PREP_FILES, lastPrepFile);
+    const url = prepQueue.shift() || PREP_FILES[0];
+    lastPrepFile = url;
+    return url;
+  }
+  function _nextBattleFile() {
+    if (!battleQueue.length) battleQueue = _shuffleFiles(BATTLE_FILES, lastBattleFile);
+    const url = battleQueue.shift() || BATTLE_FILES[0];
+    lastBattleFile = url;
+    return url;
   }
   function _playBgmFile(url) {
     _stopCurrentBgm();
@@ -19241,22 +19490,21 @@ const BGM = (() => {
       return;
     }
     if (mode === 'battle') {
-      _pickNextBattleFile();
-      _playBgmFile(BATTLE_FILES[battleFileIdx]);
-      bgmRotateTimer = setInterval(() => {
-        if (mode !== 'battle') return;
-        _pickNextBattleFile();
-        _playBgmFile(BATTLE_FILES[battleFileIdx]);
-      }, BATTLE_ROTATE_MS);
+      _playBgmFile(_nextBattleFile());
+      if (BATTLE_FILES.length > 1) {
+        bgmRotateTimer = setInterval(() => {
+          if (mode !== 'battle') return;
+          _playBgmFile(_nextBattleFile());
+        }, BATTLE_ROTATE_MS);
+      }
     } else { // prep
-      _pickNextPrepFile();
-      _playBgmFile(PREP_FILES[prepFileIdx]);
-      // 90초마다 다음 트랙으로 크로스페이드
-      bgmRotateTimer = setInterval(() => {
-        if (mode !== 'prep') return;
-        _pickNextPrepFile();
-        _playBgmFile(PREP_FILES[prepFileIdx]);
-      }, PREP_ROTATE_MS);
+      _playBgmFile(_nextPrepFile());
+      if (PREP_FILES.length > 1) {
+        bgmRotateTimer = setInterval(() => {
+          if (mode !== 'prep') return;
+          _playBgmFile(_nextPrepFile());
+        }, PREP_ROTATE_MS);
+      }
     }
   }
   function unlock() {
@@ -22885,6 +23133,32 @@ function render(dt) {
       ctx.restore();
     } else {
       const sx = w2sx(a.x), sy = w2sy(a.y);
+      if (a._huoyuAuraUntil && performance.now() < a._huoyuAuraUntil) {
+        const left = Math.max(0, (a._huoyuAuraUntil - performance.now()) / 2400);
+        const pulse = 0.72 + 0.28 * Math.sin(performance.now() * 0.012 + (a._huoyuAuraSeed || 0));
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        ctx.globalAlpha = left * 0.78;
+        const auraR = (24 + 6 * pulse) * DPR() * zoom;
+        const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, auraR);
+        g.addColorStop(0, 'rgba(255,244,176,0.62)');
+        g.addColorStop(0.42, 'rgba(126,200,255,0.32)');
+        g.addColorStop(1, 'rgba(126,200,255,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(sx, sy, auraR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = left * 0.92;
+        ctx.strokeStyle = '#ffe066';
+        ctx.lineWidth = Math.max(1.5 * DPR(), 2.2 * DPR() * zoom);
+        ctx.beginPath();
+        ctx.arc(sx, sy, auraR * (0.62 + 0.1 * pulse), 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      } else if (a._huoyuAuraUntil) {
+        delete a._huoyuAuraUntil;
+        delete a._huoyuAuraSeed;
+      }
       const attacking = (a._engaged || a._sieging) && !a.dying;
       drawSoldierGroup(sx, sy, a.troops, a.unit, f.flag, 14 * DPR() * zoom, a.seed, marchAngle, attacking);
       drawCommanderBadge(a, sx, sy, marchAngle);
@@ -23058,6 +23332,39 @@ function render(dt) {
   }
   drawBattleFx();
 
+  // 회유 하이라이트 — 귀순 지점에 확장 링 + 화면 골드 글로우
+  if (window._huoyuFlash) {
+    const el = (performance.now() - window._huoyuFlash.t) / 1000;
+    if (el > 1.6) { window._huoyuFlash = null; }
+    else {
+      const k = el / 1.6;            // 0~1 진행
+      const sx = w2sx(window._huoyuFlash.x), sy = w2sy(window._huoyuFlash.y);
+      ctx.save();
+      // 확장 링 2겹
+      for (let ri = 0; ri < 2; ri++) {
+        const rk = Math.min(1, k * 1.4 - ri * 0.18);
+        if (rk <= 0) continue;
+        ctx.globalAlpha = (1 - rk) * 0.9;
+        ctx.lineWidth = (6 - ri * 2) * DPR();
+        ctx.strokeStyle = ri ? '#7ec8ff' : '#ffe066';
+        ctx.beginPath();
+        ctx.arc(sx, sy, rk * 120 * DPR(), 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      // 화면 전체 골드 글로우(짧게 번쩍)
+      const g = Math.max(0, 1 - k * 2.2) * 0.22;
+      if (g > 0) {
+        const rg = ctx.createRadialGradient(sx, sy, 0, sx, sy, Math.max(W, H) * 0.7);
+        rg.addColorStop(0, 'rgba(255,224,102,' + g + ')');
+        rg.addColorStop(1, 'rgba(255,224,102,0)');
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = rg;
+        ctx.fillRect(0, 0, W, H);
+      }
+      ctx.restore();
+    }
+  }
+
   // 말풍선 갱신 + 그리기
   for (let i = speeches.length - 1; i >= 0; i--) {
     speeches[i].age += dt;
@@ -23097,6 +23404,7 @@ function render(dt) {
   } else if (_warnEl) {
     _warnEl.style.display = 'none';
   }
+  drawHuoyuBanner();
 
   const _myT = castles.filter(c=>c.owner===1).reduce((s,c)=>s+totalTroops(c),0)
     + armies.filter(a=>a.owner===1).reduce((s,a)=>s+a.troops,0);
@@ -23214,6 +23522,58 @@ function drawSpeeches() {
     ctx.restore();
   }
   ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
+}
+
+function drawHuoyuBanner() {
+  const banner = window._huoyuBanner;
+  if (!banner) return;
+  const elapsed = (performance.now() - banner.t) / 1000;
+  const life = banner.life || 2.2;
+  if (elapsed > life) {
+    window._huoyuBanner = null;
+    return;
+  }
+  const inK = Math.min(1, elapsed / 0.18);
+  const outK = Math.min(1, (life - elapsed) / 0.35);
+  const alpha = Math.max(0, Math.min(inK, outK));
+  const text = String(banner.text || '회유 성공!');
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = alpha;
+  const fontSize = Math.max(16 * DPR(), Math.min(24 * DPR(), Math.floor(canvas.width / 24)));
+  ctx.font = `900 ${fontSize}px 'Noto Serif KR', serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const maxW = canvas.width - 34 * DPR();
+  const tw = Math.min(maxW, ctx.measureText(text).width);
+  const bw = Math.min(maxW, tw + 58 * DPR());
+  const bh = 43 * DPR();
+  const x = (canvas.width - bw) / 2;
+  const y = 54 * DPR();
+  ctx.translate(0, (1 - inK) * -18 * DPR());
+  ctx.shadowColor = 'rgba(0,0,0,0.42)';
+  ctx.shadowBlur = 12 * DPR();
+  ctx.fillStyle = 'rgba(28,16,8,0.78)';
+  roundRect(x, y, bw, bh, 13 * DPR());
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  const g = ctx.createLinearGradient(x, y, x + bw, y);
+  g.addColorStop(0, 'rgba(126,200,255,0.16)');
+  g.addColorStop(0.5, 'rgba(255,224,102,0.52)');
+  g.addColorStop(1, 'rgba(126,200,255,0.16)');
+  ctx.fillStyle = g;
+  roundRect(x + 2 * DPR(), y + 2 * DPR(), bw - 4 * DPR(), bh - 4 * DPR(), 11 * DPR());
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,224,102,0.88)';
+  ctx.lineWidth = 2 * DPR();
+  roundRect(x, y, bw, bh, 13 * DPR());
+  ctx.stroke();
+  ctx.fillStyle = '#fff2a8';
+  ctx.strokeStyle = 'rgba(42,18,6,0.92)';
+  ctx.lineWidth = 4 * DPR();
+  ctx.strokeText(text, canvas.width / 2, y + bh / 2 + 1 * DPR(), bw - 28 * DPR());
+  ctx.fillText(text, canvas.width / 2, y + bh / 2 + 1 * DPR(), bw - 28 * DPR());
+  ctx.restore();
 }
 
 function drawMinimap() {

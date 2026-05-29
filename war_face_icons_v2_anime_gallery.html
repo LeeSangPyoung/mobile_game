@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>전쟁 얼굴 아이콘 v2 애니풍</title>
+<style>
+* { box-sizing: border-box; }
+:root {
+  color-scheme: dark;
+  --bg: #120f0b;
+  --panel: #211913;
+  --line: rgba(244,223,184,.18);
+  --gold: #ffd36a;
+  --text: #f4dfb8;
+  --muted: #bfa986;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+}
+header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 16px 20px 13px;
+  background: rgba(18,15,11,.94);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+}
+h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 850;
+  letter-spacing: 0;
+}
+.note {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+main { padding: 18px 20px 28px; }
+.sheet {
+  display: block;
+  width: min(100%, 1300px);
+  margin: 0 auto 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #18120d;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+}
+article {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+.art {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  background:
+    linear-gradient(45deg, rgba(255,255,255,.035) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,.035) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,.035) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.035) 75%),
+    #15100c;
+  background-size: 28px 28px;
+  background-position: 0 0, 0 14px, 14px -14px, -14px 0;
+}
+.art img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.meta { padding: 10px 11px 12px; }
+.name {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 850;
+}
+.name small {
+  color: #9e8a67;
+  font-size: 11px;
+  font-weight: 750;
+}
+.expr {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+@media (max-width: 720px) {
+  main { padding: 12px; }
+  header { padding: 14px 12px 12px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>전쟁 얼굴 아이콘 v2 애니풍</h1>
+  <div class="note">전신샷 기준으로 다시 만든 애니/모바일 RPG 톤 얼굴샷 10종. 모두 투명 PNG.</div>
+</header>
+<main>
+  <img class="sheet" src="./assets/generals/face_icons/war_v2_anime/war_face_icons_v2_anime_contact_sheet.png" alt="전쟁 얼굴 아이콘 v2 애니풍 컨택트시트">
+  <section id="grid" class="grid"></section>
+</main>
+<script>
+const items = [
+  ["liu_bei", "유비", "온화한 결의"],
+  ["guan_yu", "관우", "위엄 있는 분노"],
+  ["zhang_fei", "장비", "호탕한 전투 웃음"],
+  ["zhao_yun", "조운", "긴장감 있는 결의"],
+  ["lu_bu", "여포", "격렬한 분노"],
+  ["cao_cao", "조조", "야심 어린 웃음"],
+  ["zhuge_liang", "제갈량", "압도적 자신감"],
+  ["sima_yi", "사마의", "차가운 계산"],
+  ["sun_quan", "손권", "압박 속 긴장"],
+  ["zhou_yu", "주유", "여유 있는 승부사"]
+];
+const grid = document.getElementById("grid");
+items.forEach(([id, ko, expr]) => {
+  const article = document.createElement("article");
+  article.innerHTML = `
+    <div class="art"><img src="./assets/generals/face_icons/war_v2_anime/${id}_war_face_icon_v2_anime.png" alt="${ko} 애니풍 얼굴 아이콘"></div>
+    <div class="meta">
+      <p class="name"><span>${ko}</span><small>${id}</small></p>
+      <p class="expr">${expr}</p>
+    </div>
+  `;
+  grid.appendChild(article);
+});
+</script>
+</body>
+</html>

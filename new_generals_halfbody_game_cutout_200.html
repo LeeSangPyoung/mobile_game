@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>신규 반신 200명 게임용 투명 컷아웃</title>
+<style>
+* { box-sizing: border-box; }
+:root {
+  color-scheme: dark;
+  --bg:#120f0b;
+  --panel:#211913;
+  --line:rgba(244,223,184,.18);
+  --gold:#ffd36a;
+  --text:#f4dfb8;
+  --muted:#bfa986;
+}
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+}
+header {
+  position:sticky;
+  top:0;
+  z-index:5;
+  padding:16px 20px 13px;
+  background:rgba(18,15,11,.95);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(10px);
+}
+.top {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+h1 {
+  margin:0;
+  font-size:22px;
+  font-weight:850;
+  letter-spacing:0;
+}
+.note {
+  margin-top:6px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.45;
+}
+.controls {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+button {
+  border:1px solid rgba(255,211,106,.3);
+  border-radius:7px;
+  background:#2a2118;
+  color:var(--text);
+  padding:7px 10px 8px;
+  font:inherit;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+button.active {
+  background:#6b4c18;
+  border-color:rgba(255,211,106,.72);
+  color:#fff4cf;
+}
+main { padding:18px 20px 30px; }
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:14px;
+}
+article {
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel);
+}
+.art {
+  display:grid;
+  place-items:end center;
+  aspect-ratio:4 / 3;
+  overflow:hidden;
+  background-image:var(--battle-bg);
+  background-position:center;
+  background-size:cover;
+}
+.art.checker {
+  background:
+    linear-gradient(45deg, rgba(255,255,255,.055) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,.055) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,.055) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.055) 75%),
+    #15100c;
+  background-size:28px 28px;
+  background-position:0 0, 0 14px, 14px -14px, -14px 0;
+}
+.art img {
+  display:block;
+  width:108%;
+  max-width:none;
+  max-height:122%;
+  object-fit:contain;
+  object-position:center bottom;
+}
+.meta { padding:10px 11px 12px; }
+.name {
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:8px;
+  margin:0 0 7px;
+  font-size:16px;
+  font-weight:850;
+}
+.name small {
+  color:#9e8a67;
+  font-size:11px;
+  font-weight:750;
+}
+a {
+  display:block;
+  overflow-wrap:anywhere;
+  color:var(--gold);
+  font-size:11px;
+  line-height:1.35;
+  text-decoration:none;
+}
+a:hover { text-decoration:underline; }
+@media (max-width:720px) {
+  main { padding:12px; }
+  header { padding:14px 12px 12px; }
+  .grid { grid-template-columns:1fr 1fr; gap:10px; }
+  .name { font-size:14px; }
+}
+</style>
+</head>
+<body style="--battle-bg:url('./assets/battle/bg_battle_01_grass.jpg')">
+<header>
+  <div class="top">
+    <h1>신규 반신 200명 게임용 투명 컷아웃</h1>
+    <div class="note" id="count">0/200</div>
+  </div>
+  <div class="note">기준: 새 파이널 반신 v6. 배경/불꽃 제거 후 실제 전투 배경 위 합성 검수.</div>
+  <div class="controls">
+    <button class="active" data-bg="./assets/battle/bg_battle_01_grass.jpg">초원</button>
+    <button data-bg="./assets/battle/bg_battle_08_rain_mud.jpg">진흙</button>
+    <button data-bg="./assets/battle/bg_battle_03_mountain.jpg">산악</button>
+    <button data-bg="./assets/battle/bg_battle_07_desert.jpg">사막</button>
+    <button data-bg="./assets/battle/intro_duel_bg_cityfire.png">성화</button>
+    <button data-bg="checker">체커</button>
+  </div>
+</header>
+<main><section id="grid" class="grid"></section></main>
+<script src="./assets/generals/roster_200.js"></script>
+<script>
+const version = "game-cutout-v1-20260529";
+const grid = document.getElementById("grid");
+const count = document.getElementById("count");
+
+window.GENERALS_200.forEach(([id, ko], index) => {
+  const no = String(index + 1).padStart(3, "0");
+  const src = `./assets/generals/new_characters/upper_body_200_redraw_v6_game_cutout/${id}_halfbody_game_cutout_v1.png?v=${version}`;
+  const article = document.createElement("article");
+  article.innerHTML = `
+    <div class="art"><img loading="lazy" src="${src}" alt="${ko} 게임용 컷아웃"></div>
+    <div class="meta">
+      <p class="name"><span>${ko}</span><small>${no} · ${id}</small></p>
+      <a href="${src}">${src}</a>
+    </div>
+  `;
+  grid.appendChild(article);
+});
+count.textContent = `${window.GENERALS_200.length}/200`;
+
+document.querySelectorAll("button[data-bg]").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll("button[data-bg]").forEach((item) => item.classList.remove("active"));
+    button.classList.add("active");
+    const value = button.dataset.bg;
+    document.querySelectorAll(".art").forEach((art) => {
+      art.classList.toggle("checker", value === "checker");
+    });
+    if (value !== "checker") {
+      document.body.style.setProperty("--battle-bg", `url('${value}')`);
+    }
+  });
+});
+</script>
+</body>
+</html>

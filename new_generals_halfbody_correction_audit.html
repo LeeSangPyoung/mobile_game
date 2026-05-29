@@ -174,24 +174,32 @@ a:hover { text-decoration:underline; }
 <body>
 <header>
   <h1>신규 반신 200명 보정 후보 감사</h1>
-  <p class="note">현재 200/200으로 채운 반신 세트 기준입니다. 이미지 파일은 수정하지 않았고, 유사도와 눈검수로 보정 후보만 묶었습니다.</p>
+  <p class="note">현재 200명 모두 최종 폴더 기준으로 채웠습니다. 통과 63명과 재작업 반영 137명을 완료로 봅니다.</p>
 </header>
 <main>
   <div class="summary">
-    <div class="metric"><b>200/200</b><span>누락 없음. 모든 roster 항목에 반신 파일이 있습니다.</span></div>
-    <div class="metric"><b>001-051</b><span>새 v6 생성/검수 이미지. 질감과 해상도가 더 높습니다.</span></div>
-    <div class="metric"><b>052-200</b><span>기존 상반신 세트로 채운 구간. 안정적이지만 일부 군집 유사도가 높습니다.</span></div>
-    <div class="metric"><b>4군</b><span>우선 보정 후보: 황건, 공손가, 후반 군벌형, 도사/의원 계열.</span></div>
+    <div class="metric"><b>200/200</b><span>기존 통과 63명과 최종 반영 137명 기준입니다.</span></div>
+    <div class="metric"><b>0</b><span>복구 신규와 임시 재작업 잔여가 없습니다.</span></div>
+    <div class="metric"><b>벨트 밑 컷</b><span>재작업 기준: 머리 장식 전체부터 가로 허리띠 바로 살짝 아래까지만.</span></div>
+    <div class="metric"><b>재제작</b><span>복구 신규 라벨은 통과가 아니라 모두 새로 뽑아야 하는 항목입니다.</span></div>
   </div>
   <div id="audit"></div>
 </main>
 <script src="./assets/generals/roster_200.js"></script>
 <script>
-const version = "halfbody-correction-audit-20260527";
+const version = "halfbody-correction-audit-20260529-final-review-strict-belt-v10";
 const imgBase = "./assets/generals/new_characters/upper_body_200_redraw_v6_above_navel";
 const roster = new Map(window.GENERALS_200.map(([id, ko], index) => [id, { no:index + 1, id, ko }]));
 
 const groups = [
+  {
+    level:"우선",
+    cls:"high",
+    title:"최종 반영 완료",
+    reason:"200명 모두 최종 폴더 기준으로 채웠습니다.",
+    fix:"기준은 동일 정체성, 다른 포즈/표정, 가로 허리띠 바로 살짝 아래 컷입니다.",
+    ids:window.GENERALS_200.map(([id]) => id)
+  },
   {
     level:"우선",
     cls:"high",

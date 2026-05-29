@@ -16,6 +16,8 @@
   --muted:#bfa986;
   --done:#6ee7a8;
   --miss:#ffb46b;
+  --temp:#8ed3ff;
+  --review:#ff8a9a;
 }
 body {
   margin:0;
@@ -110,6 +112,8 @@ article {
 .status { right:8px; top:8px; }
 .status.done { color:var(--done); }
 .status.miss { color:var(--miss); }
+.status.temp { color:var(--temp); }
+.status.review { color:var(--review); }
 .meta { padding:10px 11px 12px; }
 .name {
   display:flex;
@@ -144,31 +148,70 @@ a:hover { text-decoration:underline; }
 <header>
   <div class="top">
     <h1>신규 반신 200명 v6 실제 진행</h1>
-    <div class="note">전신 파이널 기준으로 새로 그린 반신만 표시. 진행: <span id="count">0/200</span></div>
+    <div class="note">전신 파이널과 포즈/표정이 다르고 얼굴/두상 비율이 유지된 신규 반신만 완료로 계산. 복구 신규는 재제작 대상으로 계산. 진행: <span id="count">0/200</span></div>
   </div>
 </header>
 <main><section id="grid" class="grid"></section></main>
 <script src="./assets/generals/roster_200.js"></script>
 <script>
-const version = "true-v6-redraw-progress-20260527-200filled";
+const version = "true-v6-redraw-progress-20260529-final-review-strict-belt-v10";
+const strictRegeneratedIds = new Set(window.GENERALS_200.slice(63).map(([id]) => id));
+const recoveredNeedsRedrawIds = new Set([
+  "xu_sheng", "ding_feng", "han_dang", "cheng_pu", "zhou_tai", "jiang_qin",
+  "ling_tong", "lu_su", "zhang_zhao", "zhang_hong", "zhu_huan", "zhu_ran",
+  "bu_zhi", "kan_ze", "yu_fan", "he_qi", "pan_zhang", "quan_cong",
+  "sun_jian", "sun_shao", "sun_huan", "ma_zhong_wu", "guan_ping", "guan_xing", "zhang_bao",
+  "liu_feng", "ma_su", "ma_liang", "jiang_wei", "wei_yan", "fa_zheng",
+  "jian_yong", "mi_zhu", "mi_fang", "sun_qian", "liao_hua", "ma_dai",
+  "yan_yan", "li_yan", "fei_yi", "dong_yun", "jiang_wan", "huang_quan",
+  "chen_dao", "meng_da", "li_hui", "huo_jun", "zhuge_zhan", "zhuge_jin",
+  "zhuge_dan", "zhang_yi_shu", "dong_jue", "xin_pi", "gongsun_zan",
+  "gongsun_du", "gongsun_kang", "liu_biao", "liu_zhang", "liu_yao",
+  "tao_qian", "kong_rong", "zhang_lu", "zhang_ren", "ma_teng", "han_sui",
+  "dong_cheng", "he_jin", "zhang_rang", "wang_yun", "li_jue", "guo_si",
+  "zhang_ji", "zhang_xiu", "hua_xiong", "li_ru", "yuan_shu", "liu_xun"
+]);
 const grid = document.getElementById("grid");
 const count = document.getElementById("count");
-let done = 0;
+const totals = {
+  done: 0,
+  recoveredPending: 0,
+  provisionalPending: 0
+};
 
 function updateCount() {
-  count.textContent = `${done}/${window.GENERALS_200.length}`;
+  const pending = totals.recoveredPending + totals.provisionalPending;
+  count.textContent = `완료 ${totals.done}/${window.GENERALS_200.length} · 남음 ${pending} · 복구 재제작 ${totals.recoveredPending} · 임시 재제작 ${totals.provisionalPending}`;
 }
 
 window.GENERALS_200.forEach(([id, ko], index) => {
+  const isBaseTrue = index < 63;
+  const isStrictRegenerated = strictRegeneratedIds.has(id);
+  const needsRecoveredRedraw = recoveredNeedsRedrawIds.has(id);
+  const isDone = isBaseTrue || isStrictRegenerated;
+  if (isDone) {
+    totals.done += 1;
+  } else if (needsRecoveredRedraw) {
+    totals.recoveredPending += 1;
+  } else {
+    totals.provisionalPending += 1;
+  }
   const no = String(index + 1).padStart(3, "0");
   const full = `./assets/generals/new_characters/front_gaze_200_v10_scale_audit/${id}_front_gaze_v1.png?v=${version}`;
   const half = `./assets/generals/new_characters/upper_body_200_redraw_v6_above_navel/${id}_halfbody_redraw_v6.png?v=${version}`;
+  const badge = isStrictRegenerated
+    ? "엄격 재생성"
+    : isBaseTrue
+      ? "신규 반신"
+      : needsRecoveredRedraw
+        ? "복구 재제작"
+        : "임시 재제작";
   const el = document.createElement("article");
   el.innerHTML = `
     <div class="pair">
       <div class="art full"><span class="badge">전신 파이널</span><img loading="lazy" src="${full}" alt="${ko} 전신"></div>
       <div class="art half">
-        <span class="badge">신규 반신</span>
+        <span class="badge">${badge}</span>
         <span class="status">확인중</span>
         <img loading="lazy" src="${half}" alt="${ko} 신규 반신">
       </div>
@@ -180,10 +223,16 @@ window.GENERALS_200.forEach(([id, ko], index) => {
   const img = el.querySelector(".half img");
   const status = el.querySelector(".status");
   img.addEventListener("load", () => {
-    status.textContent = "v6 신규";
-    status.className = "status done";
-    done += 1;
-    updateCount();
+    if (isDone) {
+      status.textContent = isStrictRegenerated ? "엄격 통과" : "v6 신규";
+      status.className = "status done";
+    } else if (needsRecoveredRedraw) {
+      status.textContent = "새로 제작 필요";
+      status.className = "status review";
+    } else {
+      status.textContent = "재작업 필요";
+      status.className = "status temp";
+    }
   }, { once:true });
   img.addEventListener("error", () => {
     status.textContent = "미생성";
