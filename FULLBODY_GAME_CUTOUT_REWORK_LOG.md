@@ -1,0 +1,2170 @@
+# Fullbody Game Cutout Rework Log
+
+This is the working memo for the fullbody game cutout rebuild. Record decisions, generated samples, and review outcomes here so another agent can continue without guessing.
+
+## 2026-05-30
+
+- Created shared standard: `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md`.
+- Baseline page confirmed: `new_generals_halfbody_recovered_200_v6_progress.html`.
+- First completed sample: `kan_ze` / 감택.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/kan_ze_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/kan_ze_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/kan_ze_fullbody_game_cutout_v1.png`
+  - Review page: `new_generals_fullbody_game_cutout_v1_review.html`
+  - Result: usable direction; clean transparent fullbody, no fire/particles/background glow.
+- Updated baseline progress page to show completed cutout samples on a white background.
+- Added user requirement: existing references sometimes have weapons, sleeves, cape edges, or costume parts clipped by the card frame. New cutouts must correct this by fitting the item inside the canvas, scaling it down, or redrawing the complete item.
+- Added user requirement: many generals read as the same dull gold outfit in-game. New cutouts should keep identity colors and add richer distinguishable accents instead of defaulting to muddy dark-gold dominance.
+- Completed requested sample: `cao_cao` / 조조.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cao_cao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cao_cao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cao_cao_fullbody_game_cutout_v1.png`
+  - Review page: `new_generals_fullbody_game_cutout_v1_review.html`
+  - Prompt changes applied: complete crown, outstretched hand, cape corners, sword hilt, sword sheath, tassel, robe hems, and boots inside the canvas; reduce or angle sword/cape/sleeves rather than clipping.
+  - Palette changes applied: black lacquer armor, imperial purple cloth panels, wine-red cape lining, crisp gold dragon ornaments, small silver/steel highlights.
+  - Validation: 1024 x 1536, alpha channel present, four transparent corners, no fire/particles/background glow, visible full sword/tassel/cape/boots.
+- Updated baseline progress page so `cao_cao` and `kan_ze` show `전신 컷아웃 v1` on white backgrounds.
+- User rejected `cao_cao` v1 style match.
+  - Problem: v1 preserved costume identity but ignored the original set's compact SD-like game proportions.
+  - Problem details: too tall, too realistic, too close to detailed fantasy armor illustration; lacks the reference's short sturdy body, large head, rounded hands, chunky boots, and toy-like painted/3D game feel.
+  - Decision: treat style fidelity as a hard pass/fail criterion, not a soft preference.
+  - Action: regenerated `cao_cao` as v2 with the reference image's body scale, head ratio, rounded forms, and original roster style prioritized above ornament detail.
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cao_cao_fullbody_game_cutout_v2_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cao_cao_fullbody_game_cutout_v2.png`
+  - Validation: 1024 x 1536, alpha channel present, four transparent corners, full body visible, much closer compact SD-like proportions.
+  - Updated baseline progress page and review page to use `cao_cao` v2 instead of v1.
+- User rejected `cao_cao` v2 style match.
+  - Problem: v2 overcorrected the proportions and made Cao Cao look babyish/childlike.
+  - Correct target: the reference is not a baby/chibi mascot. It is an adult Cao Cao with stylized compact game proportions: mature face, beard, broad torso, short weighty stance, large boots, and commanding adult presence.
+  - Guide correction: replaced "SD-like" and overly strong "large head" wording with "adult compact heroic proportions"; added explicit rejection criteria for babyish, cute, toddler-like, mascot-like, or too-young faces.
+  - Action: regenerated `cao_cao` v3 by treating the original image as a style-preservation/edit target, not a free redesign.
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cao_cao_fullbody_game_cutout_v3_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cao_cao_fullbody_game_cutout_v3.png`
+  - User selected v3 as the correct direction.
+  - Updated baseline progress page and review page to use `cao_cao` v3.
+- User requested that the MD files be read before creating each character. Added this to the guide workflow.
+- Completed next sample: `cao_xing` / 조흥.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cao_xing_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cao_xing_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cao_xing_fullbody_game_cutout_v1.png`
+  - Prompt focus: preserve adult compact archer-warrior style; keep dark blue/navy armor, black leather, blue scarf/cape, gold trim, quiver, bow, and spear/arrow.
+  - Framing focus: entire bow, bowstring, spear/arrow tip, feather end, quiver arrows, cape corners, hands, boots, and robe hems must remain inside the canvas.
+  - Validation: 1024 x 1536, alpha channel present, four transparent corners, full weapon/cape/boots visible.
+  - Updated baseline progress page and review page to include `cao_xing` v1.
+- Completed 10-character continuation batch after `cao_xing`.
+  - Batch IDs: `dian_wei`, `dong_zhuo`, `gan_ning`, `guan_yu`, `guo_jia`, `huang_gai`, `huang_zhong`, `liu_bei`, `lu_bu`, `lu_xun`.
+  - Output pattern: `assets/generals/new_characters/fullbody_game_cutout_v1/{id}_fullbody_game_cutout_v1.png`
+  - Chroma-key source pattern: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/{id}_fullbody_game_cutout_v1_chromakey.png`
+  - Green-heavy subjects used magenta chroma key: `guan_yu`, `huang_gai`, `huang_zhong`, `liu_bei`, `lu_xun`.
+  - `gan_ning` was regenerated once because the first curved blade ran too close to/outside the left edge.
+  - Validation: all 10 outputs are 1024 x 1536, have alpha channels, have transparent corners, and include complete visible weapons/capes/boots.
+  - Updated baseline progress page to show these 10 new cutouts on white backgrounds.
+  - Refactored `new_generals_fullbody_game_cutout_v1_review.html` to render completed samples from a JS list and include all 13 current cutouts.
+- User flagged `dong_zhuo` v1 weapon handling.
+  - Problem: the saber was complete and inside the frame, but the grip/orientation read as an unnatural reversed hold.
+  - Guide correction: added weapon handling rules. A weapon must be both complete and naturally held; do not invert or reverse a blade just to solve framing.
+  - Action: regenerated `dong_zhuo` v2 with a natural saber grip.
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/dong_zhuo_fullbody_game_cutout_v2_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/dong_zhuo_fullbody_game_cutout_v2.png`
+  - Validation: 1024 x 1536, alpha channel present, four transparent corners, saber fully visible and held in a natural forward grip.
+  - Updated baseline progress page and review page to use `dong_zhuo` v2.
+- Restarted one-character workflow from `ma_chao` / 마초 after broad batch generation produced unrelated images.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/ma_chao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/ma_chao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/ma_chao_fullbody_game_cutout_v1.png`
+  - Extraction: standard auto-key chroma removal plus `--edge-contract 1` to reduce thin green edge residue around hair and armor.
+  - Prompt focus: preserve adult compact heroic Ma Chao style; white swept-back hair, mature face, bright silver armor, blue scarf, deep blue cape, gold as trim only.
+  - Framing and weapon focus: spear/halberd shaft, ornament, tassel, and blade tip fully inside the canvas; natural left-hand grip with upward usable blade orientation; cape corners, hair tips, boots, and tassels inside frame.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `ma_chao` v1.
+- Continued one-character workflow with `meng_huo` / 맹획.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/meng_huo_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/meng_huo_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/meng_huo_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve green waist cloth and jade bead details.
+  - Prompt focus: preserve adult compact heroic Nanman warlord style; horned gold headpiece, red feathers, wild black hair, thick beard, bare tattooed arms, fur armor/cape, jade beads, red tassels, green waist cloth, beast-mask belt.
+  - Framing and weapon focus: redraw full heavy battle axe inside the frame, including handle bottom, shaft, ornaments, tassels, and blade edge; keep the grip natural and usable rather than reversed or clipped.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full axe/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `meng_huo` v1.
+- Continued one-character workflow with `pang_tong` / 방통.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/pang_tong_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/pang_tong_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/pang_tong_fullbody_game_cutout_v1.png`
+  - First generated attempt was rejected because the face/hand had dark artifact-like marks after review.
+  - Chroma key: `#ff00ff` magenta, chosen to preserve the green robe and jade details.
+  - Extraction note: magenta `--despill` and soft-matte extraction distorted colors or made the character semi-transparent; final extraction used hard key removal with `--tolerance 100`, no despill, to preserve opaque colors.
+  - Prompt focus: preserve adult compact heroic strategist style; clean mature face, tall green official hat, deep green scholar-warrior robes, black body armor panels, jade beads, red tassels, ornate golden staff, and bamboo scroll.
+  - Framing focus: complete staff top, shaft, bottom end, dangling bead/tassel, bamboo scroll, wide sleeves, robe hems, hat ornaments, hands, and boots inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full staff/scroll/robes/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `pang_tong` v1.
+
+## 2026-05-31
+
+- Continued one-character workflow with `sima_yi` / 사마의.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/sima_yi_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/sima_yi_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/sima_yi_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green, because the character is primarily black, purple, silver, and white.
+  - Prompt focus: preserve adult compact heroic strategist style; stern mature face, long dark hair, tall black-purple crown, black lacquer robes, deep purple lining, silver armor trim, white feather fan, purple tassels and beads.
+  - Framing focus: complete feather fan, feather tips, handle, center ornament, tassels, wide sleeves, cape corners, robe hems, crown ornaments, hands, and boots inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full fan/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `sima_yi` v1.
+- Continued one-character workflow with `sun_ce` / 손책.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/sun_ce_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/sun_ce_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/sun_ce_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green, because the character is primarily red, black, gold, and dark hair.
+  - Prompt focus: preserve adult compact heroic young warrior style; clenched grin, high black ponytail, red lacquer armor, black under-armor, gold beast ornaments, red cape, forward right fist, and long polearm/halberd.
+  - Framing and weapon focus: complete polearm blade, side blades, dragon ornament, shaft, grip, bottom end, red tassel, ponytail tips, cape corners, armor tassels, forward fist, hands, and boots inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full halberd/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `sun_ce` v1.
+- Continued one-character workflow with `sun_quan` / 손권.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/sun_quan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/sun_quan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/sun_quan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal/jade-green armor, cloth, and cape.
+  - Extraction note: used hard key removal with `--tolerance 100`, no despill, to preserve opaque teal and gold colors.
+  - Prompt focus: preserve adult compact heroic ruler-warrior style; calm mature face, short beard, tall gold-teal crown, teal robe armor, gold dragon shoulders, black lacquer armor panels, teal cape, red tassels, and long sword.
+  - Framing and weapon focus: complete sword hilt, guard, full blade and tip, cape corners, sleeve edges, crown ornaments, tassels, hands, boots, and robe hems inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full sword/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `sun_quan` v1.
+- Continued one-character workflow with `taishi_ci` / 태사자.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/taishi_ci_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/taishi_ci_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/taishi_ci_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used hard key removal with `--tolerance 100` to preserve blue/teal armor opacity and remove thin green edge residue.
+  - Prompt focus: preserve adult compact heroic blue-armored warrior style; clenched grin, high black ponytail, blue-gold headband, deep blue/teal armor, gold beast ornaments, teal-blue cape, blue tassels, and long double-ended spear/halberd.
+  - Framing and weapon focus: complete two-ended weapon with both blade tips, shaft, grips, metal fittings, ornaments, ponytail tips, cape corners, armor tassels, hands, boots, and robe hems inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full double-ended weapon/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `taishi_ci` v1.
+- Continued one-character workflow with `wen_chou` / 문추.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/wen_chou_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/wen_chou_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/wen_chou_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 1`; the subject is red, black, and gold, so green did not conflict with costume colors.
+  - Prompt focus: preserve adult compact heroic red-armored warlord style; roaring mature face, thick black beard and eyebrows, wild black hair, red-gold headband, heavy red lacquer armor, gold spikes, black under-armor, gold beast ornaments, red tassels, and right clenched fist.
+  - Framing and weapon focus: redraw the original cropped polearm completely inside the canvas, including blade, side hooks, shaft, grip, tassel, butt end, and tip; keep the left-hand shaft grip natural and usable.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full polearm/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `wen_chou` v1.
+- Continued one-character workflow with `xiahou_dun` / 하후돈.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/xiahou_dun_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/xiahou_dun_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/xiahou_dun_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 1`.
+  - Prompt focus: preserve adult compact heroic one-eyed warrior style; stern mature face, black beard and moustache, high topknot, gold-blue crown ornament, eyepatch, black lacquer and deep blue armor, gold beast ornaments, dark navy cape, and purple-blue tassels.
+  - Framing and weapon focus: complete shoulder-resting curved saber/dao inside the canvas, including hilt, pommel, guard, tassel, blade, and tip; keep the hand grip natural and the blade direction usable.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full saber/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `xiahou_dun` v1.
+- Continued one-character workflow with `xu_chu` / 허저.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/xu_chu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/xu_chu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/xu_chu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 1`.
+  - Prompt focus: preserve adult compact heroic hulking guardian style; angry clenched-teeth face, thick black beard and eyebrows, small topknot, massive bare arms, black lacquer and dark navy armor, gold beast ornaments, spiked shoulder plates, purple-blue tassels, and chunky boots.
+  - Framing and weapon focus: redraw the original cropped spiked mace completely inside the canvas, including full mace head, spikes, shaft, hand grip, metal rings, butt end, and lower tip; keep the left-hand shaft grip natural and the weapon heavy.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full mace/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `xu_chu` v1.
+- Continued one-character workflow with `xu_huang` / 서황.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/xu_huang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/xu_huang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/xu_huang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - First generated attempt was rejected because the right cape touched/crossed the canvas edge after alpha validation.
+  - Extraction note: regenerated with explicit right-side padding, then used standard soft matte/despill with `--edge-contract 1` and `--force` to replace the failed local candidate.
+  - Prompt focus: preserve adult compact heroic blue-black armored warrior style; stern mature face, black moustache and beard, small blue-gold headpiece, black lacquer and dark blue armor, gold beast belt ornament, dark blue cape, and purple-blue tassels.
+  - Framing and weapon focus: complete crescent-bladed poleaxe/halberd inside the canvas, including crescent blade, dragon ornament, rear spike, shaft, grip, lower shaft end, tassel/fittings, and every tip; keep cape tucked inward with no right-edge contact.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full poleaxe/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `xu_huang` v1.
+- Continued one-character workflow with `yan_liang` / 안량.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/yan_liang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/yan_liang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/yan_liang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 1`.
+  - Prompt focus: preserve adult compact heroic red-armored warrior style; stern mature face, black moustache and beard, red plume/crest, gold head ornament, red lacquer and black armor, gold beast ornaments, red cape, and red tassels.
+  - Framing and weapon focus: redraw the original left-cropped polearm completely inside the canvas, including full blade, side hooks, gold ornament, shaft, left-hand grip, red tassel, lower end, and every tip; keep cape corners complete with edge padding.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full polearm/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `yan_liang` v1.
+- Continued one-character workflow with `yuan_shao` / 원소.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/yuan_shao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/yuan_shao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/yuan_shao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 1`.
+  - Prompt focus: preserve adult compact heroic noble warlord style; stern mature face, black moustache and beard, ornate gold official crown with bead curtain, ivory-white armor/robes, deep imperial purple accents, dark under-armor, gold beast ornament, red tassels, and commanding pointing gesture.
+  - Framing and prop focus: keep crown beads, pointing finger, pale cape, purple lining, sword hilt/sheathed handle, sleeves, robe hems, and boots complete inside the canvas; do not add a new large blade not visible in the reference.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full crown/hand/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `yuan_shao` v1.
+- Continued one-character workflow with `zhang_fei` / 장비.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_fei_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_fei_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_fei_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 1`.
+  - Prompt focus: preserve adult compact heroic roaring warrior style; open-mouth fierce face, wild black hair, huge black beard, red plume/crest, black lacquer and deep red armor, gold beast ornaments, red cape, red tassels, and heavy stance.
+  - Framing and weapon focus: keep the long serpent-spear/halberd complete inside the canvas, including crescent blade, blade details, dragon ornament, shaft, visible grip, spear butt, red tassel, and every tip; keep cape corners complete with edge padding.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full spear/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhang_fei` v1.
+- Continued one-character workflow with `zhang_liao` / 장료.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_liao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_liao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_liao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 1`; blue costume did not conflict with the green key.
+  - Prompt focus: preserve adult compact heroic disciplined warrior style; stern face, black moustache and beard, high topknot with blue ribbon, blue-gold headband, black lacquer and deep blue armor, gold beast ornaments, blue cape, and blue tassels.
+  - Framing and weapon focus: keep the upright crescent halberd complete inside the canvas, including blade, hook, gold ornament, shaft, left-hand grip, blue tassel, lower shaft end, and every tip; keep cape corners complete with edge padding.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full halberd/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhang_liao` v1.
+- Continued one-character workflow with `zhao_yun` / 조운.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhao_yun_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhao_yun_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhao_yun_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 1`.
+  - Prompt focus: preserve mature young-adult compact heroic warrior style; stern focused face, black hair with white plume, blue-gold headband, bright silver scale armor, gold beast ornaments, blue accents, white cape, and blue tassels.
+  - Framing and weapon focus: keep the upright spear complete inside the canvas, including spear blade, gold-blue ornament, shaft, left-hand grip, white tassel/horsehair tuft, spear butt, lower tip, and every point; keep white cape corners complete with edge padding.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full spear/plume/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhao_yun` v1.
+- Continued one-character workflow with `zhou_yu` / 주유.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhou_yu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhou_yu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhou_yu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve the dark teal-green sleeves and cape interior.
+  - First two generated attempts were rejected because the curved sword extended too close to the lower-left canvas edge.
+  - Extraction note: used hard key removal with `--tolerance 140`, no despill, to preserve red and teal colors while removing magenta edge residue.
+  - Prompt focus: preserve mature young-adult compact heroic elegant commander style; long brown hair, confident smile, red plume, red lacquer armor, dark teal-green cloth/cape interior, gold dragon ornaments, teal accents, and gold tassels.
+  - Framing and weapon focus: shorten and tuck the curved sword inward so the full hilt, guard, blade curve, and tip remain inside the canvas; keep the left-hand hilt grip natural and the red/teal cape complete with edge padding.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full sword/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhou_yu` v1.
+- Continued one-character workflow with `zhuge_liang` / 제갈량.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhuge_liang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhuge_liang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhuge_liang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal-green robes and jade accents.
+  - Extraction note: initial hard key at `--tolerance 140` created transparent speckle holes in white robes and fan; final extraction used `--tolerance 100`, no despill, to preserve opaque white fabric and feathers.
+  - Prompt focus: preserve adult compact heroic strategist style; calm stern face, black moustache and pointed beard, tall white-and-teal official hat, white/ivory robes, deep teal-green panels, black inner robe, gold trim, jade-green ornaments, and tassels.
+  - Framing and prop focus: keep full feather fan, feather tips, yin-yang center ornament, handle, tassels/beads, wide sleeves, robe hems, hat ornaments, hands, and boots complete inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full fan/hat/robes/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhuge_liang` v1.
+- Continued one-character workflow with `zhang_he` / 장합.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_he_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_he_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_he_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - First generated attempt was rejected because the left sword tip had only about 11px edge padding.
+  - Extraction note: used hard key removal with `--tolerance 100`, no despill, to preserve blue armor opacity and avoid green matte residue.
+  - Prompt focus: preserve mature young-adult compact heroic agile warrior style; long black hair, confident smile, blue-gold crown ornament, blue ribbon, deep blue armor and robes, black under-armor, gold beast ornaments, blue cape strips, and blue tassels.
+  - Framing and weapon focus: shorten and angle both paired curved swords inward so each full hilt, guard, grip, curved blade, and tip remains inside the canvas with edge padding; keep both grips natural and usable.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full paired swords/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhang_he` v1.
+- Continued one-character workflow with `yu_jin` / 우금.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/yu_jin_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/yu_jin_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/yu_jin_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - First generated attempt was rejected because the sword and cape left only very tight side padding.
+  - Extraction note: final used standard soft matte/despill with `--edge-contract 2`; a hard-key tolerance test removed green residue but made the silhouette too jagged.
+  - Prompt focus: preserve adult compact heroic dark-navy armored warrior style; stern mature face, black topknot, short moustache and squared goatee, gold crown with blue jewel, black/navy lacquer armor, gold beast ornaments, dark blue cape, and blue tassels.
+  - Framing and weapon focus: redraw the reference's lower-left cropped saber completely inside the canvas, shortening and angling it inward while keeping the hilt, guard, grip, blade, and tip complete; keep the right cape corner tucked inside with padding.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full saber/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `yu_jin` v1.
+- Continued one-character workflow with `yue_jin` / 악진.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/yue_jin_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/yue_jin_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/yue_jin_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - First generated attempt was rejected because the spearhead was complete but still too close to the left canvas edge.
+  - Extraction note: final used standard soft matte/despill with `--edge-contract 2`, preserving the blue scarf, plume, tassels, shield detail, and armor while removing green residue.
+  - Prompt focus: preserve adult compact heroic shield-warrior style; shouting mature face, gold-banded helmet with blue jewel, blue plume, dark navy/black armor, blue scarf, large round shield with gold beast head, and blue tassels.
+  - Framing and weapon focus: redraw the reference's left-cropped spear/halberd as a shorter, more upright weapon close to the body, with full spearhead, shaft, grip, and butt end inside the frame; keep the round shield and hanging tassel tucked inside the right edge.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full spear/shield/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `yue_jin` v1.
+- Continued one-character workflow with `li_dian` / 이전.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/li_dian_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/li_dian_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/li_dian_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving blue/black armor and silver polearm edges while removing green residue.
+  - Prompt focus: preserve adult compact heroic polearm-warrior style; stern mature face, black topknot, short moustache and pointed goatee, gold/blue helmet ornaments, dark navy-black armor, blue tassels, gold beast belt ornament, and dark blue cape.
+  - Framing and weapon focus: redraw the reference's near-edge guandao/crescent halberd complete inside the frame, slightly reducing blade size and setting the polearm more vertical/closer to the body; keep full blade, rear hook, ornament, shaft, grip, butt end, cape, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full polearm/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `li_dian` v1.
+- Continued one-character workflow with `cao_ren` / 조인.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cao_ren_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cao_ren_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cao_ren_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - First generated attempt was rejected because the left saber tip was still too close to the canvas edge.
+  - Extraction note: final used standard soft matte/despill with `--edge-contract 2`, preserving the dark-blue armor, blue plume, shield detail, and gold beast emblems while removing green residue.
+  - Prompt focus: preserve adult compact heroic heavy-shield style; stern bearded face, helmet with blue jewel and plume, massive navy/black armor, blue tassels, huge rectangular tower shield, and short curved saber.
+  - Framing and weapon focus: shorten and angle the saber inward so the full hilt, grip, blade, and tip remain visible; tuck the large tower shield inward while keeping the full shield rim, corners, studs, and central beast emblem intact.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full saber/shield/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `cao_ren` v1.
+- Continued one-character workflow with `cao_hong` / 조홍.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cao_hong_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cao_hong_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cao_hong_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving red plume/cape/tassels, dark-blue armor, gold beast ornaments, and saber details while removing green residue.
+  - Prompt focus: preserve adult compact heroic saber-warrior style; confident mature grin, black swept-back hair, gold head ornament with blue jewel, red plume, navy/black armor, vivid red straps/tassels, and red cape.
+  - Framing and weapon focus: redraw the reference's lower-left cropped saber complete inside the frame, shortening and angling it inward while keeping the ornate hilt, guard, blade, and tip visible; keep the wide red cape and embroidered corner fully inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full saber/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `cao_hong` v1.
+- Continued one-character workflow with `cao_pi` / 조비.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cao_pi_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cao_pi_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cao_pi_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving black/navy robes, purple tassels, blue scroll, crown ornaments, and sword scabbard while removing green residue.
+  - Prompt focus: preserve adult compact heroic noble-ruler style; calm stern young-adult face, high black hair, gold crown with blue jewel, black embroidered robes, purple accents, gold beast belt ornament, scroll cylinder, and sheathed sword.
+  - Framing and prop focus: keep the scroll cylinder and tassel, long sleeves, cape corners, robe hems, sword hilt/scabbard/tip, boots, and crown ornaments fully inside the canvas; do not add an unsheathed blade.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full scroll/cape/scabbard/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `cao_pi` v1.
+- Continued one-character workflow with `cao_zhi` / 조식.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cao_zhi_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cao_zhi_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cao_zhi_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve white sleeves/feather fan and teal-blue tassels.
+  - Extraction note: hard key `--tolerance 100` left a thin magenta edge; `--tolerance 140` removed the edge but damaged white robe/fan areas; final extraction used hard key `--tolerance 130` to remove magenta residue while preserving white fabric and feather detail.
+  - Prompt focus: preserve adult compact heroic noble-scholar style; calm serious young-adult face, long black hair, gold crown with blue jewel, white and deep-blue robes, teal-blue tassels, shoulder armor, and ornate white feather fan.
+  - Framing and prop focus: keep every feather tip, fan handle, tassels, wide sleeves, robe hems, cape corners, hair tips, crown ornaments, boots, and hands fully inside the canvas; do not add a weapon not present in the reference.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full fan/sleeves/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `cao_zhi` v1.
+- Continued one-character workflow with `cao_zhang` / 조창.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cao_zhang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cao_zhang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cao_zhang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving golden blond hair/beard, gold-brown cape, dark armor, blue cloth accents, orange weapon tassel, and silver blade while removing green residue.
+  - Prompt focus: preserve adult compact heroic fierce polearm-warrior style; roaring mature face, distinctive golden hair and beard, gold head ornament with blue jewel, heavy black/navy armor, golden cape, and long halberd.
+  - Framing and weapon focus: redraw the reference's left-cropped halberd complete inside the frame, making it slightly shorter/upright while keeping full blade, rear hook, tassel, shaft, grip, butt end, cape, hair tips, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full halberd/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `cao_zhang` v1.
+- Continued one-character workflow with `cao_ang` / 조앙.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cao_ang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cao_ang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cao_ang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving blue armor/cape, black under-armor, gold dragon shoulders, and silver sword blade while removing green residue.
+  - Prompt focus: preserve adult compact heroic young swordsman style; stern youthful-adult face, black topknot with front lock, gold crown with blue jewel, blue-black armor, blue cape, and two-handed straight sword.
+  - Framing and weapon focus: keep the long diagonal sword complete inside the frame with full hilt, guard, both grip positions, blade, tip, and pommel visible; keep both cape corners, boots, and crown ornaments inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full sword/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `cao_ang` v1.
+- Continued one-character workflow with `cao_rui` / 조예.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cao_rui_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cao_rui_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cao_rui_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - First generated attempt was rejected because the wooden command tablet included readable-looking characters.
+  - Extraction note: final used standard soft matte/despill with `--edge-contract 2`, preserving black/purple robes, magenta tassels, gold crown beads, wood tablet, and cape embroidery while removing green residue.
+  - Prompt focus: preserve adult compact heroic emperor/noble style; stern bearded mature face, tall imperial crown with bead curtain and side tassels, black/deep-purple robes, gold dragon shoulder, command tablet, and wide embroidered cape.
+  - Framing and prop focus: keep all crown beads, side tassels, blank/decorative tablet, sleeves, robe hems, purple tassels, cape corners, hands, boots, and hair tips fully inside the canvas; no readable text on the prop.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full crown/tablet/cape/boots visible, no fire/particles/background glow, no readable text.
+  - Updated baseline progress page and review page to include `cao_rui` v1.
+- Continued one-character workflow with `cao_shuang` / 조상.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cao_shuang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cao_shuang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cao_shuang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving purple armor, fur collar, gold beast shoulders, red tassels, black cape folds, and saber detail while removing green residue.
+  - Prompt focus: preserve adult compact heroic heavy-noble style; mature grinning bearded face, black topknot, gold crown with purple jewel, broad purple-and-black armor, fur collar, ornate gold beast ornaments, and wide purple cape.
+  - Framing and weapon focus: keep the downward curved saber fully inside the canvas with hilt, guard, grip, blade, and tip visible; keep cape corners, tassels, boots, crown ornaments, and hands inside the frame.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full saber/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `cao_shuang` v1.
+- Continued one-character workflow with `cao_zhen` / 조진.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cao_zhen_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cao_zhen_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cao_zhen_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving black lacquer armor, dark navy cape, blue tassels, silver blade, gold beast ornaments, and beard detail while removing green residue.
+  - Prompt focus: preserve adult compact heroic stern commander style; mature face, thick black eyebrows, long black beard, high black hair with gold crown and blue jewel, heavy black/gold armor, dark navy cape, and clenched right fist.
+  - Framing and weapon focus: redraw the reference's left-cropped polearm completely inside the frame, including full spear/halberd blade, side hooks, gold ornament, shaft, left-hand grip, blue tassel, lower shaft end, cape corners, boots, and every tip.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full polearm/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `cao_zhen` v1.
+- Continued one-character workflow with `cao_xiu` / 조휴.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cao_xiu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cao_xiu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cao_xiu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving black/navy armor, vivid blue scarf/cape/tassels, gold beast ornaments, and steel saber edges while removing green residue.
+  - Prompt focus: preserve compact heroic young-adult warrior style without making him childlike; stern clean-shaven face, thick eyebrows, high black topknot, small gold crown with blue jewel, dark armor, blue scarf, blue tassels, and clenched right fist.
+  - Framing and weapon focus: redraw the reference's left-cropped saber completely inside the frame, keeping full hilt, guard, grip, curved blade, tip, pommel/tassel, cape corners, boots, and crown ornaments visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full saber/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `cao_xiu` v1.
+- Continued one-character workflow with `xiahou_yuan` / 하후연.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/xiahou_yuan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/xiahou_yuan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/xiahou_yuan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving eyepatch, blue scarf, silver armor, white arrow feathers, bow limbs, bowstring, and cape embroidery while removing green residue.
+  - Prompt focus: preserve adult compact heroic archer style; stern mature face, black eyepatch, moustache and beard, high topknot, blue-gold headband, heavy black/navy armor, silver shoulder plates, dark blue cape, and arrow quiver.
+  - Framing and weapon focus: redraw the wide bow complete inside the frame with full upper/lower limbs, both curved tips, grip, gold fittings, bowstring, visible arrow/shaft, hands, quiver feathers, cape corners, and boots visible; accepted with tight but non-contact right cape padding.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full bow/string/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `xiahou_yuan` v1.
+- Continued one-character workflow with `xiahou_ba` / 하후패.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/xiahou_ba_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/xiahou_ba_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/xiahou_ba_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving bright silver/white fabric, blue armor, dark blue cape, silver beast ornaments, blue tassels, hair tips, and polearm edges while removing green residue.
+  - Prompt focus: preserve compact heroic young-adult warrior style without making him childlike; stern clean-shaven face, thick eyebrows, high black ponytail/topknot, blue-gold hair ornament, blue/silver armor, white sleeves/trousers, and clenched right fist.
+  - Framing and weapon focus: redraw the reference's left-cropped spear/halberd complete inside the frame, including full blade, side hooks, ornament, shaft, hand grip, blue tassel, lower shaft end, cape corners, hair tips, boots, and every tip.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full polearm/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `xiahou_ba` v1.
+- Continued one-character workflow with `cheng_yu` / 정욱.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cheng_yu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cheng_yu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cheng_yu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving white beard/hair, blue official hat, ivory robe panels, dark navy robes/cape, dragon-head staff, blue tassels, and scroll edges while removing green residue.
+  - Prompt focus: preserve adult compact heroic elderly strategist style; stern old face, white eyebrows, long white moustache and beard, tall blue-gold official hat, dark navy/ivory robes, blue tassels, ornate belt ornament, staff, and rolled scroll.
+  - Framing and prop focus: keep full dragon-head staff, shaft, tassels, lower end, blank/decorative scroll with no readable text, wide sleeves, robe hems, cape corners, beard tips, boots, and hat ornaments complete inside the frame.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full staff/scroll/cape/boots visible, no fire/particles/background glow, no readable text.
+  - Updated baseline progress page and review page to include `cheng_yu` v1.
+- Continued one-character workflow with `xun_yu` / 순욱.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/xun_yu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/xun_yu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/xun_yu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve the green jade tablet and teal beads/tassel.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`; validation showed no visible magenta residue, and the remaining green pixels were intentional jade/tablet/bead colors.
+  - Prompt focus: preserve mature young-adult compact strategist style without making him childlike; calm confident face, thick eyebrows, small pointed goatee, long black hair, tall blue-gold official hat with teal jewel, white/blue robes, gold belt beast, and pale cape.
+  - Framing and prop focus: keep raised sleeve, green jade command tablet, tassel, wide robe hems, cape corners, hat ornaments, hands, and boots complete inside the frame; tablet has decorative abstract carving only and no readable text.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full tablet/cape/boots visible, no fire/particles/background glow, no readable text.
+  - Updated baseline progress page and review page to include `xun_yu` v1.
+- Continued one-character workflow with `xun_you` / 순유.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/xun_you_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/xun_you_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/xun_you_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark teal-green robes, jade jewel, beads, and tassels.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`; validation showed no visible magenta residue and preserved the teal/green costume colors.
+  - Prompt focus: preserve adult compact heroic strategist style; stern mature face, thick eyebrows, short moustache and pointed goatee, long black hair, black official hat with green jewel, dark teal-green robes/armor, black under-robe, and silver beast belt ornament.
+  - Framing and prop focus: keep blank/decorative bamboo scroll, raised sleeve, wide robe hems, cape corners, tassels, hat ornaments, hands, hair tips, and boots complete inside the frame; no readable text on the scroll.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full scroll/cape/boots visible, no fire/particles/background glow, no readable text.
+  - Updated baseline progress page and review page to include `xun_you` v1.
+- Continued one-character workflow with `jia_xu` / 가후.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/jia_xu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/jia_xu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/jia_xu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - First generated attempt was rejected after alpha validation because the left staff/cape and right sleeve/cape had too little side padding.
+  - Extraction note: regenerated with explicit wider side padding, then used standard soft matte/despill with `--edge-contract 2`, preserving black/charcoal armor, deep purple lining/tassels, staff details, extended hand, and gold beast ornaments while removing green residue.
+  - Prompt focus: preserve adult compact heroic sly strategist style; mature grinning face, thick eyebrows, moustache and pointed beard, long black hair, tall black-gold official hat with purple jewel, dark robes/armor, purple accents, and extended right hand.
+  - Framing and prop focus: keep full dragon-head staff, ornaments, purple tassels, shaft, lower end, extended right hand/fingers, sleeves, robe hems, cape corners, hat ornaments, tassels, and boots complete inside the frame with comfortable padding.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full staff/hand/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `jia_xu` v1.
+- Continued one-character workflow with `man_chong` / 만총.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/man_chong_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/man_chong_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/man_chong_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving dark navy/black armor, blue tassels, steel saber, warm bamboo/wood tablet, cape embroidery, and beard detail while removing green residue.
+  - Prompt focus: preserve adult compact heroic warrior-official style; stern bearded mature face, high black hair and small crown with blue jewel, heavy dark armor, gold beast shoulder/belt ornaments, command tablet, and left-hand sword.
+  - Framing and prop focus: redraw the reference's left-cropped sword complete inside the frame with full hilt, guard, blade, tip, and pommel visible; keep the blank/decorative command tablet, sleeves, hands, cape corners, robe hems, tassels, crown ornaments, and boots complete.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full sword/tablet/cape/boots visible, no fire/particles/background glow, no readable text.
+  - Updated baseline progress page and review page to include `man_chong` v1.
+- Continued one-character workflow with `zhong_yao` / 종요.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhong_yao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhong_yao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhong_yao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving grey hair/beard, black official hat, white/navy robes, blue beads, gold beast belt ornament, brush bristles, and scroll edges while removing green residue.
+  - Prompt focus: preserve adult compact heroic elderly strategist/calligrapher style; stern mature face, grey moustache and long beard, tall black-gold official hat with blue jewel, layered white and navy robes, ornate gold trim, large calligraphy brush, and rolled scroll.
+  - Framing and prop focus: keep complete brush bristle, ferrule, shaft, grip, lower end, blank/decorative scroll, end caps, tassel, hat rods, wide sleeves, robe hems, cape corners, beads, beard tips, hands, and boots fully inside the canvas; no readable text on the scroll or robes.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full brush/scroll/cape/boots visible, no fire/particles/background glow, no readable text.
+  - Updated baseline progress page and review page to include `zhong_yao` v1.
+- Continued one-character workflow with `deng_ai` / 등애.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/deng_ai_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/deng_ai_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/deng_ai_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving black hair/topknot, blue headband, fur collar, blue-steel armor, map scroll, polearm blade/jewel/tassel, cape, and boots while removing green residue.
+  - Prompt focus: preserve adult compact heroic frontier commander style; stern mature bearded face, high black topknot, blue headband with jewel, fur-collared dark blue armor, silver beast belt ornament, halberd/polearm, and campaign map scroll.
+  - Framing and weapon focus: redraw the reference's left-cropped polearm complete inside the canvas, keeping full spear tip, side hook, blade edges, jewel, tassel, shaft, lower end, natural grip, complete map scroll, cape corners, hair tips, hands, and boots visible; map markings are abstract/non-readable only.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full polearm/map/cape/boots visible, no fire/particles/background glow, no readable text.
+  - Updated baseline progress page and review page to include `deng_ai` v1.
+- Continued one-character workflow with `zhong_hui` / 종회.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhong_hui_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhong_hui_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhong_hui_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving black topknot, gold crown with blue jewel, white feather fan, blue/purple armor accents, gold dragon shoulder, straight sword, wide cape, and boots while removing green residue.
+  - Prompt focus: preserve adult compact heroic young noble commander style without making him childlike; sharp confident smirk, black hair/topknot, blue-gold armor, white sleeves, feather fan, and short straight sword.
+  - Framing and weapon focus: keep every feather tip, fan edge, gold fan handle, sword hilt, natural sword grip, blade, tip, cape corners, tassels, hair ornaments, hands, and boots visible; right cape is close but has no edge contact.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full fan/sword/cape/boots visible, no fire/particles/background glow, no readable text.
+  - Updated baseline progress page and review page to include `zhong_hui` v1.
+- Continued one-character workflow with `guo_huai` / 곽회.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/guo_huai_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/guo_huai_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/guo_huai_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving black official/warrior hat, blue jewels, silver armor, silver beast ornaments, blue scarf/tassels, crescent halberd, dark blue cape, and boots while removing green residue.
+  - Prompt focus: preserve adult compact heroic heavy commander style; stern mature bearded face, tall dark hat, blue scarf, heavy silver/navy armor, clenched fist, and large crescent halberd.
+  - Framing and weapon focus: redraw the reference's left-cropped halberd complete inside the frame, keeping full crescent blade, spear point, inner hook, blue jewels, gold fittings, tassel, shaft, lower end, natural hand grip, cape corners, shoulder spikes, fist, and boots visible; right cape is close but has no edge contact.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full halberd/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `guo_huai` v1.
+- Continued one-character workflow with `wang_ping` / 왕평.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/wang_ping_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/wang_ping_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/wang_ping_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve emerald green armor, cap, cloak, shield, and tassels.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`; validation showed no visible magenta residue and preserved intentional green costume/shield colors.
+  - Prompt focus: preserve adult compact heroic shield commander style; stern mature bearded face, green cap, emerald armor and cape, gold beast ornaments, upright spear/halberd, and large green beast shield.
+  - Framing and weapon focus: keep full spear tip, side hook, gold ornament, green tassel, shaft, lower end, natural grip, complete shield outline, shield beast ornament, cap rods, cape corners, tassels, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full spear/shield/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `wang_ping` v1.
+- Continued one-character workflow with `wen_pin` / 문빙.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/wen_pin_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/wen_pin_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/wen_pin_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - First generated attempt was rejected because the large left battle blade was cropped by the canvas edge.
+  - Second generated attempt kept the full blade visible but still had thin left padding, so the chroma-key source was uniformly scaled to 93% and centered before alpha extraction.
+  - Extraction note: used soft matte/despill with `--edge-contract 2` and `--transparent-threshold 24` to remove both the new flat green border and the scaled source's green field while preserving black armor, gold beast ornaments, purple accents, blade edge, cape, and boots.
+  - Prompt focus: preserve adult compact heroic heavy armored warrior style; stern mature bearded face, high topknot, dark headband with jewel, heavy black/gold armor, clenched fist, and massive curved battle blade.
+  - Framing and weapon focus: keep the full blade curve, cutting edge, tip, spine ornament, gold hilt/guard, handle, pommel, natural grip, topknot, shoulder armor, cape corners, tassels, fist, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full battle blade/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `wen_pin` v1.
+- Continued one-character workflow with `zang_ba` / 장패.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zang_ba_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zang_ba_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zang_ba_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve the green headband/scarf and avoid removing costume accents.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`; validation showed no visible magenta residue and preserved the green cloth, red tassels, black armor, tattered cape, and steel blade.
+  - Prompt focus: preserve adult compact heroic rugged raider commander style; fierce grin, wild high ponytail, green headband/scarf, black-bronze armor, red tassels, ragged cape, and large curved pole weapon.
+  - Framing and weapon focus: keep full crescent blade, upper tip, lower hook, cutting edge, gold fitting, red tassel, shaft, hand grip, lower shaft, wild hair tips, headband tails, every ragged cape point, fist, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full weapon/tassel/tattered cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zang_ba` v1.
+- Continued one-character workflow with `li_tong` / 이통.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/li_tong_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/li_tong_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/li_tong_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving blue helmet plume, navy armor, gold beast ornaments, blue tassels, spear blade, cape embroidery, and boots while removing green residue.
+  - Prompt focus: preserve adult compact heroic young armored commander style without making him childlike; stern adult face, blue-plumed helmet, dark navy/gold armor, upright spear/halberd, clenched fist, and dark blue cape.
+  - Framing and weapon focus: keep full spear tip, side hook, gold ornament, blue tassel, shaft, lower end, natural grip, helmet plume, cape corners, armor skirt, tassels, hands, and boots visible; right cape is close but has no edge contact.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full spear/plume/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `li_tong` v1.
+- Continued one-character workflow with `han_hao` / 한호.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/han_hao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/han_hao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/han_hao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving topknot crown, dark navy armor, gold beast ornaments, command baton, blue tassels/beads, sword hilt/scabbard, cape, and boots while removing green residue.
+  - Prompt focus: preserve adult compact heroic armored officer style; stern mature bearded face, high topknot, small gold crown with blue jewel, heavy navy/black armor, short command baton, hip sword, and dark blue cape.
+  - Framing and prop focus: keep baton top knob, chain, blue tassel, shaft, lower cap, natural hand grip, sword hilt/guard/scabbard, crown rods, cape corners, beads, tassels, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full baton/tassel/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `han_hao` v1.
+- Continued one-character workflow with `lu_qian` / 여건.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/lu_qian_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/lu_qian_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/lu_qian_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving blue topknot plume, blue scarf, navy armor, gold beast ornaments, polearm blade, blue tassels, cape embroidery, and boots while removing green residue.
+  - Prompt focus: preserve adult compact heroic blue-armored commander style; stern mature bearded face, blue-gold crown, blue scarf, deep navy/gold armor, upright polearm, clenched fist, and dark blue cape.
+  - Framing and weapon focus: keep full crescent blade, upper tip, lower hook, cutting edge, gold fitting, blue tassel, shaft, lower end, natural grip, plume, cape corners, tassels, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full polearm/plume/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `lu_qian` v1.
+- Continued one-character workflow with `mao_jie` / 모개.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/mao_jie_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/mao_jie_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/mao_jie_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving black/charcoal robes, gold trim, blue jewel/tassels, bamboo scroll, cape, and boots while removing green residue.
+  - Prompt focus: preserve adult compact heroic Wei official/strategist style; stern mature face, black hair with grey temples, moustache and pointed goatee, tall black official hat with gold side rods and blue jewel, dark official robes, gold beast belt ornament, and bamboo scroll.
+  - Framing and prop focus: keep the full hat top and side rods, complete bamboo scroll top/bottom, natural scroll grip, wide sleeve edges, robe hems, cape corners, blue bead tassels, belt ornament, hands, and boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full scroll/cape/boots visible, no fire/particles/background glow, no readable text on scroll.
+  - Updated baseline progress page and review page to include `mao_jie` v1.
+- Continued one-character workflow with `liu_ye` / 유엽.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/liu_ye_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/liu_ye_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/liu_ye_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, then uniformly reframed the transparent result to 96% so the crossbow and cape have safer side padding.
+  - Prompt focus: preserve adult compact heroic tactical engineer style; confident smirk, black hair and goatee, black-gold crown with blue jewel, deep blue armor/robes, gold beast ornaments, pointing hand, dark blue cape, and ornate repeating crossbow.
+  - Framing and weapon focus: redraw the reference's lower-left crossbow complete inside the frame, including bow limbs, string, bolts, arrowheads, handle, trigger area, natural hand grip, cape corners, tassels, hands, and boots.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full crossbow/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `liu_ye` v1.
+- Continued one-character workflow with `kuai_yue` / 괴월.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/kuai_yue_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/kuai_yue_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/kuai_yue_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal-green robes, cape lining, fan jewel, and tassels.
+  - Extraction note: soft matte/despill over-thinned skin and gold/white areas, so final extraction used hard key removal with `--tolerance 105` and `--edge-contract 1`.
+  - Prompt focus: preserve adult compact heroic Jingzhou strategist style; composed face, black hair, moustache and pointed beard, black-gold crown with teal jewel, ivory robes, teal-green cape/robe panels, gold beast ornament, teal tassels, and white feather fan.
+  - Framing and prop focus: keep all feather fan tips, fan handle, natural hand grip, crown rods, wide sleeve edges, robe hems, cape corners, teal tassels, belt ornament, hands, and boots visible inside the frame.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full fan/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `kuai_yue` v1.
+- Continued one-character workflow with `kuai_liang` / 괴량.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/kuai_liang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/kuai_liang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/kuai_liang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve the deep green robes, cape, armor panels, boots, and green jewels.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`; validation showed no visible magenta residue and preserved white hair/beard, green costume panels, gold ornaments, and bamboo scroll.
+  - Prompt focus: preserve adult compact heroic elderly Jingzhou official/strategist style; stern white-haired face, thick white eyebrows, white moustache and long pointed beard, gold hairpin with green jewel, deep forest-green robes/armor, gold beast belt ornament, and rolled bamboo scroll.
+  - Framing and prop focus: keep the full scroll top/bottom caps, tassel, natural scroll grip, hairpin rods, cape corners, wide sleeves, robe hems, beard tip, hands, and boots visible inside the frame; no readable text on the scroll.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full scroll/cape/boots visible, no fire/particles/background glow, no readable text.
+  - Updated baseline progress page and review page to include `kuai_liang` v1.
+- Continued one-character workflow with `cai_mao` / 채모.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cai_mao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cai_mao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cai_mao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal-blue armor, cape, tassels, and blue-green jewels.
+  - Extraction note: soft matte/despill over-thinned skin and metallic areas, so final extraction used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 96% for safer right-cape padding.
+  - Prompt focus: preserve adult compact heroic armored commander style; fierce grin, black moustache and heavy beard, tall blue-black helmet/crown with gold rods, deep teal-blue armor, gold beast shoulder and belt ornaments, teal tassels, and dark teal cape.
+  - Framing and weapon focus: redraw the reference's saber and cape fully inside the frame, keeping full curved blade, cutting edge, tip, hilt, guard, pommel, natural grip, helmet rods, shoulder ornament, cape corners, tassels, fist, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full saber/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `cai_mao` v1.
+- Continued one-character workflow with `zhang_yun` / 장윤.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_yun_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_yun_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_yun_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, then uniformly reframed the transparent result to 96% so the polearm tip and right cape have safer padding.
+  - Prompt focus: preserve adult compact heroic armored commander style; aggressive clenched-teeth expression, black topknot, blue headband with jewel, black moustache and beard, blackened steel lamellar armor, navy cloth panels, gold beast belt ornament, and blue tassels.
+  - Framing and weapon focus: redraw the source's cropped polearm complete inside the frame, keeping full spear tip, side hooks, blade edges, socket, blue tassel, shaft, natural grip, topknot, cape corners, fist, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full polearm/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhang_yun` v1.
+- Continued one-character workflow with `xu_sheng` / 서성.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/xu_sheng_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/xu_sheng_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/xu_sheng_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal-green armor, shield, cape, boots, and jewels.
+  - First generated attempt was rejected because the face/body read too childlike for the adult game-general standard.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 97% for safer sword-side padding.
+  - Prompt focus: preserve stern young-adult compact heroic shield commander style; black topknot, teal-and-red crown plume, red ribbon tails, teal-green armor, gold beast ornaments, red tassels, and dark teal cape, without babyish or mascot proportions.
+  - Framing and weapon focus: redraw the source's cropped sword fully inside the frame and keep the complete shield outline, shield bottom point, gold beast shield ornament, sword hilt, blade, tip, crown plume, ribbon tails, cape corners, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full sword/shield/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `xu_sheng` v1.
+- Continued one-character workflow with `ding_feng` / 정봉.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/ding_feng_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/ding_feng_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/ding_feng_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, then uniformly reframed the transparent result to 97% so the polearm ends have safer padding.
+  - Prompt focus: preserve adult compact heroic armored commander style; swept-back black topknot and ponytail, blue headband with jewel, black moustache and beard, dark navy-blue armor, blue scarf, gold beast ornaments, red tassels, and dark blue cape.
+  - Framing and weapon focus: redraw the reference's cropped double-ended polearm complete inside the frame, keeping full upper blade, side points, red tassel, shaft, lower fittings, lower spear tip, natural grip, headband ribbons, cape corners, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full double-ended polearm/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `ding_feng` v1.
+- Continued one-character workflow with `han_dang` / 한당.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/han_dang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/han_dang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/han_dang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark green armor, cape, beads, tassels, and veteran palette.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 95% because the right cape edge was too close in the raw extraction.
+  - Prompt focus: preserve elderly compact heroic archer-warrior style; silver-white topknot, gold crown with red ribbon, thick grey eyebrows, grey moustache, long white-grey beard, dark forest-green armor, gold beast ornaments, and dark green cape.
+  - Framing and weapon focus: keep the complete recurved bow, bowstring, quiver, arrows, curved saber hilt/blade/tip, cape corners, beard tip, tassels, hands, and boots fully inside the frame with natural grips.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full bow/sword/quiver/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `han_dang` v1.
+- Continued one-character workflow with `cheng_pu` / 정보.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cheng_pu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cheng_pu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cheng_pu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: used standard soft matte/despill with `--edge-contract 2`, preserving white hair/beard, navy armor, red cape, red tassels, gold ornaments, and metal polearm edges while removing green residue.
+  - Prompt focus: preserve elderly compact heroic veteran commander style; silver-white topknot, red-gold crown with blue jewel, white eyebrows, white moustache and long beard, navy armor, red/maroon cape, gold beast ornaments, and red tassels.
+  - Framing and weapon focus: redraw the reference's cropped polearm complete inside the frame, keeping full spear blade, side crescent hooks, red tassel, shaft, lower shaft, natural grip, crown ribbon, cape corners, beard tip, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full polearm/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `cheng_pu` v1.
+- Continued one-character workflow with `zhou_tai` / 주태.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhou_tai_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhou_tai_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhou_tai_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - First generated attempt was rejected because the flat key background was uneven and the broad blade tip was too close to the lower-left edge.
+  - Extraction note: used soft matte/despill with `--edge-contract 2` and `--transparent-threshold 18`, then uniformly reframed the transparent result to 94% because both side margins were too tight in the raw extraction.
+  - Prompt focus: preserve rugged adult compact heroic warrior style; black topknot with red headband/ribbons, facial scars, black moustache and beard, black/charcoal armor, gold chain, gold beast ornaments, red scarf, red tassels, and dark red cape.
+  - Framing and weapon focus: redraw the reference's cropped massive curved blade complete inside the frame, keeping full hilt, guard, beast pommel, broad blade, cutting edge, engraved inner detail, tip, cape corners, ribbons, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full curved blade/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhou_tai` v1.
+- Continued one-character workflow with `jiang_qin` / 장흠.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/jiang_qin_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/jiang_qin_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/jiang_qin_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal armor, cape, headband, ribbon tails, beads, and jewels.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 97% because the right cape margin was tight in the raw extraction.
+  - Prompt focus: preserve confident young-adult compact heroic commander style; mischievous grin, black topknot, teal headband and ribbon tails, small moustache/goatee, teal armor, red scarf, red tassels, gold beast ornaments, and dark teal cape.
+  - Framing and weapon focus: keep the complete crescent-bladed pole weapon, side hook, chain ornament, red tassel, shaft, natural grip, cape corners, ribbon tails, hands, and boots visible inside the frame.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full crescent weapon/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `jiang_qin` v1.
+- Continued one-character workflow with `ling_tong` / 능통.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/ling_tong_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/ling_tong_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/ling_tong_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal armor, red cape/scarf, red ribbons, and gold ornaments.
+  - First generated attempt was rejected because the left sword tip still touched the frame edge.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 95% because the right sword/cape margin was tight in the raw extraction.
+  - Prompt focus: preserve agile young-adult compact heroic dual-sword style; confident smirk, black topknot and swept ponytail, red headband/ribbons, teal armor, red scarf, red shoulder armor, red tassels, gold beast ornament, and red cape.
+  - Framing and weapon focus: redraw the cropped left sword and keep both curved swords complete, including hilts, guards, pommels, engraved blades, tips, natural grips, cape corners, ribbon tails, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full dual swords/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `ling_tong` v1.
+- Continued one-character workflow with `lu_su` / 노숙.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/lu_su_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/lu_su_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/lu_su_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal inner robe, cape lining, beads, tassels, and green jewel.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 97% because the extended hand was close to the right edge in the raw extraction.
+  - Prompt focus: preserve elderly dignified compact heroic strategist-official style; silver-white topknot, red-white-gold official crown with green jewel, white eyebrows, white moustache and beard, layered white/ivory robes, red trim, teal inner panels, and gold beast ornament.
+  - Framing and prop focus: keep the rolled bamboo scroll, tassel, extended open hand/fingers, wide sleeves, cape corners, robe hems, crown rods, beard tip, hands, and boots fully visible; no readable text on scroll or robes.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full scroll/hand/cape/boots visible, no fire/particles/background glow, no readable text.
+  - Updated baseline progress page and review page to include `lu_su` v1.
+- Continued one-character workflow with `zhang_zhao` / 장소.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_zhao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_zhao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_zhao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve green sleeves, teal robe panel, teal beads, and green jewel.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 97% because the right cape margin was close in the raw extraction.
+  - Prompt focus: preserve elderly stern compact heroic statesman-official style; silver-white hair, tall gold official crown with teal jewel, white eyebrows, white moustache and beard, green/burgundy official robes, teal panel, gold beast ornaments, teal beads, and red tassels.
+  - Framing and prop focus: keep the complete rectangular command tablet, carved border, natural hand grip, wide sleeve edges, cape corners, robe hems, crown rods, beard tip, hands, and boots visible; no readable text or characters on the tablet.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full tablet/cape/boots visible, no fire/particles/background glow, no readable text.
+  - Updated baseline progress page and review page to include `zhang_zhao` v1.
+- Continued one-character workflow with `zhang_hong` / 장굉.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_hong_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_hong_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_hong_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - First generated attempt was rejected because the scroll had writing-like marks and the right cape margin was tight.
+  - Extraction note: final source used standard soft matte/despill with `--edge-contract 2`, then the transparent result was uniformly reframed to 96% because the right cape margin was close in the raw extraction.
+  - Prompt focus: preserve mature compact heroic strategist-official style; black hair under tall blue-gold official crown with teal jewel, black moustache and pointed goatee, royal blue robes, white inner robe, blue cape, gold beast ornament, teal beads, and blue tassels.
+  - Framing and prop focus: keep every feather fan tip, fan edge, fan handle, scroll cap, scroll tassel, wide sleeves, cape corners, crown rods, hands, and boots visible; final scroll is blank/plain bamboo texture without readable text.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full fan/scroll/cape/boots visible, no fire/particles/background glow, no readable text.
+  - Updated baseline progress page and review page to include `zhang_hong` v1.
+- Continued one-character workflow with `zhu_zhi` / 주치.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhu_zhi_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhu_zhi_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhu_zhi_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal-green armor, scarf, cape, beads, and jewels.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 96% because the polearm tip was close to the top edge in the raw extraction.
+  - Prompt focus: preserve stern adult compact heroic armored commander style; black topknot, gold crown with teal jewel, red ribbon tail, black moustache and pointed goatee, teal-green armor, teal scarf, gold beast ornaments, blue tassels, and dark teal cape.
+  - Framing and weapon focus: keep the complete polearm/spear blade, side hooks, red tassel, shaft, lower end, natural grip, cape corners, topknot, ribbon tail, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full polearm/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhu_zhi` v1.
+- Continued one-character workflow with `zhu_huan` / 주환.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhu_huan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhu_huan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhu_huan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal armor, red cape/scarf, tassels, and teal jewels.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 95% because the right cape edge was too close in the raw extraction.
+  - Prompt focus: preserve confident young-adult compact heroic commander style; fierce grin, black topknot and swept ponytail, gold crown with red jewel, small goatee, teal armor, red scarf, red tassels, gold beast ornaments, and dark red cape.
+  - Framing and weapon focus: redraw the reference's cropped curved blade complete inside the frame, keeping full hilt, guard, blade, engraved inner detail, tip, cape corners, crown rods, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full curved blade/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhu_huan` v1.
+- Continued one-character workflow with `zhu_ran` / 주연.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhu_ran_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhu_ran_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhu_ran_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve green armor panels, teal banner border, cape lining, and green jewels.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 96% because the right banner/cape margin was close in the raw extraction.
+  - Prompt focus: preserve young-adult compact heroic commander style; serious face, black topknot with red plume, gold crown with red jewel, green/red armor, red scarf, red tassels, green beads, red cape, and full command banner.
+  - Framing and weapon focus: keep the complete spear tip, side hooks, red tassel, shaft, banner pole, top finial, crossbar, full red banner fabric, teal border, cape corners, hands, and boots visible; no readable text on the banner.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full polearm/banner/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhu_ran` v1.
+- Continued one-character workflow with `bu_zhi` / 보즐.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/bu_zhi_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/bu_zhi_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/bu_zhi_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark jade-green robes, cape lining, beads, and jewel.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 96% because the sleeve/cape margins were tight in the raw extraction.
+  - Prompt focus: preserve mature compact heroic statesman-official style; black hair under black-gold official crown with green jewel, black moustache and pointed goatee, dark jade robes, burgundy inner panels, dark shoulder armor, gold beast ornament, teal beads, grey tassels, and red-brown cape.
+  - Framing and prop focus: keep the full rolled bamboo scroll, scroll caps, wrapping cord, tassel, wide sleeve edges, cape corners, robe hems, crown rods, hands, and boots visible; no readable text on the scroll.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full scroll/cape/boots visible, no fire/particles/background glow, no readable text.
+  - Updated baseline progress page and review page to include `bu_zhi` v1.
+- Continued one-character workflow with `yu_fan` / 우번.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/yu_fan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/yu_fan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/yu_fan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve black/gold armor, red straps/tassels, teal fan jewel, and white fan feathers.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`.
+  - Prompt focus: preserve stern mature compact heroic strategist-commander style; black hair, red-black official crown, thick eyebrows, black moustache and beard, black/gold armor, wide black sleeves/cape, red straps, red tassels, and white feather fan with teal jewel.
+  - Framing and prop focus: keep the complete feather fan, fan handle, pointing hand/finger, wide sleeve rims, cape corners, crown rods, robe hems, tassels, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full fan/pointing hand/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `yu_fan` v1.
+- Continued one-character workflow with `he_qi` / 하제.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/he_qi_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/he_qi_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/he_qi_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal-green armor, red cape lining, green jewels, and red tassels.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 95% because the right cape edge was too close in the raw extraction.
+  - Prompt focus: preserve fierce adult compact heroic commander style; aggressive grin, black swept hair, tall red plume, gold crown with green jewel, teal-green and red armor, gold dragon shoulder guards, gold beast ornament, red tassels, and teal cape with red lining.
+  - Framing and weapon focus: keep the complete curved saber blade, blade tip, gold dragon hilt, red tassel, plume, cape corners, shoulder spikes, armor skirt, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full curved saber/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `he_qi` v1.
+- Continued one-character workflow with `pan_zhang` / 반장.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/pan_zhang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/pan_zhang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/pan_zhang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve red/black armor, gold spikes, green beads, and red headband/tassels.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 92% because the cleaver blade was too close to the left edge in the raw extraction.
+  - Prompt focus: preserve fierce adult compact heroic heavy-warrior style; wild black spiked topknot, red headband, thick black eyebrows, black moustache and beard, shouting grin, red/black heavy armor, gold shoulder/bracer spikes, gold beast ornament, red tassels, and oversized boots.
+  - Framing and weapon focus: keep the complete broad curved cleaver hilt, blade, cutting edge, blade tip, headband tails, shoulder spikes, bracer spikes, tassels, armor skirt, fists, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full cleaver/armor spikes/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `pan_zhang` v1.
+- Continued one-character workflow with `ma_zhong_wu` / 마충.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/ma_zhong_wu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/ma_zhong_wu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/ma_zhong_wu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal-green armor, teal scarf, dark teal cape, and red spear tassel.
+  - First generated attempt was rejected because the face skewed too young compared with the adult game-general standard.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 95% because the right cape edge was too close in the raw extraction.
+  - Prompt focus: preserve young-adult compact heroic spear-commander style; mature stern face, black swept ponytail with teal band, thick eyebrows, teal scarf, teal-green armor, gold dragon shoulder guards, gold beast ornament, blue-green tassels, and dark teal cape.
+  - Framing and weapon focus: keep the complete spear blade, side hooks, shaft, gold fittings, red tassel, ponytail tips, cape corners, shoulder guards, tassels, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full spear/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `ma_zhong_wu` v1.
+- Continued one-character workflow with `quan_cong` / 전종.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/quan_cong_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/quan_cong_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/quan_cong_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green.
+  - Extraction note: final source used standard soft matte/despill with `--edge-contract 2`, then the transparent result was uniformly reframed to 95% because the right cape edge was too close in the raw extraction.
+  - Prompt focus: preserve stern adult compact heroic commander style; black swept hair, black-gold official crown with blue jewel, black moustache and beard, blue/black armor robes, gold dragon shoulder guards, gold beast ornament, blue tassels, and dark blue cape.
+  - Framing and weapon focus: redraw the reference's cropped sword fully inside the frame, keeping complete hilt, guard, full blade, blade tip, cape corners, crown rods, shoulder guards, tassels, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible green residue, full sword/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `quan_cong` v1.
+- Continued one-character workflow with `sun_jian` / 손견.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/sun_jian_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/sun_jian_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/sun_jian_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve red/black armor, red cape, red plume, and white fur collar.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 95% because the right cape edge was too close in the raw extraction.
+  - Prompt focus: preserve fierce adult compact heroic warlord style; black swept hair, red plume, gold crown with red jewel, thick eyebrows, black moustache and beard, red/black armor, white fur collar tufts, gold dragon shoulder guards, gold beast ornament, red tassels, and dark red cape.
+  - Framing and weapon focus: redraw the reference's cropped saber fully inside the frame, keeping complete hilt, guard, broad curved blade, cutting edge, engraved surface, blade tip, plume, crown rods, fur collar, cape corners, tassels, armor skirt, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full saber/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `sun_jian` v1.
+- Continued one-character workflow with `sun_shao` / 손소.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/sun_shao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/sun_shao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/sun_shao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal-green armor, teal cape, teal spear tassel, and teal jewels.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 96% because the spear tip and right cape edge were close in the raw extraction.
+  - Prompt focus: preserve young-adult compact heroic spear-commander style; calm confident face, black swept hair, small gold crown with teal jewel, teal-green armor/robe panels, gold dragon shoulder guards, gold beast ornament, teal bead strings, teal tassels, and dark teal cape.
+  - Framing and weapon focus: keep the complete spearhead, side hooks, shaft, lower spike, gold fittings, teal tassel, crown rods, cape corners, robe hems, bead strings, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full spear/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `sun_shao` v1.
+- Continued one-character workflow with `sun_huan` / 손환.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/sun_huan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/sun_huan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/sun_huan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal/red armor, red cape lining, red headband/tassels, and teal jewels.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 95% because the right cape edge was too close in the raw extraction.
+  - Prompt focus: preserve young-adult compact heroic saber-warrior style; confident grin, black swept ponytail, red headband with gold front ornament, small gold crown with teal jewel, red/teal armor, gold dragon shoulder guards, gold beast ornament, red tassels, and dark teal cape with red lining.
+  - Framing and weapon focus: redraw the reference's cropped saber fully inside the frame, keeping complete hilt, guard, curved blade, cutting edge, engraved surface, blade tip, headband tails, crown, ponytail tips, cape corners, tassels, armor skirt, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full saber/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `sun_huan` v1.
+- Continued one-character workflow with `sun_luban` / 손노반.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/sun_luban_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/sun_luban_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/sun_luban_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve red/gold armor, red cape, teal accents, and red-gold fan.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 93% because the right cape edge was too close in the raw extraction.
+  - Prompt focus: preserve adult compact heroic female-commander style; calm confident face, long black hair, high bun, ornate gold crown with red jewel and red ribbons, red/gold armor robes with teal accents, gold dragon shoulder guards, gold beast ornament, teal tassels, dark red cape, and sturdy boots.
+  - Framing and prop focus: keep the complete fan panels, fan ribs, hand grip, complete curved saber hilt, guard, blade, tip, long hair ends, crown ribbons, cape corners, robe hems, tassels, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full fan/saber/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `sun_luban` v1.
+- Continued one-character workflow with `sun_luyu` / 손노육.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/sun_luyu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/sun_luyu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/sun_luyu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal/white robes, teal cape, teal jewels, and silver sword.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 92% because the sword tip and right cape edge were too close in the raw extraction.
+  - Prompt focus: preserve adult compact heroic female noble-commander style; calm focused face, long black hair, high bun, ornate gold crown with teal jewels/tassels, teal and white armor robes, gold dragon shoulder guards, gold beast ornament, teal bead strings, white tassels, and flowing teal cape.
+  - Framing and prop focus: keep the complete sword hilt, guard, blade and tip, extended hand and fingers, wide sleeve rims, crown ornaments, teal tassels, long hair ends, cape corners, robe hems, bead strings, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full sword/extended hand/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `sun_luyu` v1.
+- Continued one-character workflow with `daqiao` / 대교.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/daqiao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/daqiao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/daqiao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve red/white robes, dark red cape, teal tassels, and red-gold fan.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 94% because both side cape/fan edges were close in the raw extraction.
+  - Prompt focus: preserve adult compact heroic noble-commander style; gentle calm face, long black hair, high bun, ornate gold crown with red jewel, red tassels, hanging forehead jewel, white/red ceremonial armor robes, red shoulder guards, gold beast ornament, teal/white tassels, flowing dark red cape, and small sturdy boots.
+  - Framing and prop focus: keep the complete fan panels, fan ribs, fan handle, extended right hand and fingers, wide sleeve rims, crown rods, red tassels, long hair ends, cape corners, robe hem, waist tassels, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full fan/extended hand/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `daqiao` v1.
+- Continued one-character workflow with `xiaoqiao` / 소교.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/xiaoqiao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/xiaoqiao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/xiaoqiao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve red/teal armor, red-and-teal cape panels, teal tassels, and dual fans.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 94% because the fan/cape edges were close on both sides in the raw extraction.
+  - Prompt focus: preserve young-adult compact heroic noble-commander style; cheerful confident face, twin black hair buns, ornate gold crown with red jewel, red/teal ribbons, red and teal armor robes, gold shoulder guards, gold beast ornament, teal/red tassels, flowing red-and-teal cape panels, and sturdy boots.
+  - Framing and prop focus: keep both complete fan panels, fan ribs, fan handles, hanging tassels, both hands, wide sleeve rims, hair bun ornaments, ribbon tails, cape corners, robe hems, waist tassels, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full dual fans/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `xiaoqiao` v1.
+- Continued one-character workflow with `lian_shi` / 연사.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/lian_shi_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/lian_shi_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/lian_shi_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve blue/white robes, blue cape, blue tassels, and blue-white feather fan.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 96% because the right cape edge was close in the raw extraction.
+  - Prompt focus: preserve adult compact heroic noble-commander style; calm gentle face, long black hair, ornate gold-and-blue crown with blue jewel/tassels, blue and white ceremonial armor robes, gold shoulder guards, gold beast ornament with blue jewels, blue bead strings, blue tassels, flowing dark blue cape panels, and small sturdy boots.
+  - Framing and prop focus: keep every feather fan tip, fan handle, blue tassels, extended right hand and fingers, wide sleeve rims, crown rods, long hair ends, cape corners, robe hem, waist tassels, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full feather fan/extended hand/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `lian_shi` v1.
+- Continued one-character workflow with `guan_ping` / 관평.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/guan_ping_front_gaze_v1.png`
+  - Fallback full-weapon source: `assets/generals/new_characters/front_gaze_200/guan_ping_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/guan_ping_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/guan_ping_fullbody_game_cutout_v1.png`
+  - Generation note: multiple built-in attempts were rejected because they produced off-topic infographics, so this v1 used local extraction from the same-character older full-weapon source and targeted cleanup of floor/background residue.
+  - Prompt/source focus: preserve young-adult compact heroic jade-armored polearm warrior style; black swept ponytail, green headband/crown jewel, green armor, gold dragon shoulder guards, gold beast ornament, green tassels, dark green cape, and chunky boots.
+  - Framing and weapon focus: keep the complete polearm blade, hooks, shaft, tassel, cape corners, headband tails, ponytail tips, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, full polearm/cape/boots visible, targeted lower-gap cleanup removed extraction floor residue, no accepted off-topic generated image.
+  - Updated baseline progress page and review page to include `guan_ping` v1.
+- Continued one-character workflow with `guan_xing` / 관흥.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/guan_xing_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/guan_xing_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/guan_xing_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve jade-green armor, green headband, green tassels, and dark green cape.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 94% because the right cape edge was too close in the raw extraction.
+  - Prompt focus: preserve adult compact heroic shouting polearm-warrior style; black swept topknot ponytail, green headband with gold ornament, small gold crown with green jewel, thick eyebrows, black moustache and pointed beard, jade-green armor, gold dragon shoulder guards, gold beast ornament, green tassels, dark green cape, and chunky boots.
+  - Framing and weapon focus: redraw the reference's cropped guandao fully inside the frame, keeping complete crescent blade, hook, gold socket, dark shaft, lower end, green tassel, cape corners, ponytail tips, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full guandao/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `guan_xing` v1.
+- Continued one-character workflow with `guan_suo` / 관색.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/guan_suo_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/guan_suo_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/guan_suo_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve jade-green armor, teal scarf, green headband, green tassels, and dark green cape.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 96% because the right cape/weapon side was close in the raw extraction.
+  - Prompt focus: preserve young-adult compact heroic dual-weapon style; energetic confident grin, no beard, black spiky swept hair, green headband with gold jewel, teal scarf, jade-green armor, gold dragon shoulder guards, gold beast ornament, green waist tassels, dark green cape, and chunky boots.
+  - Framing and weapon focus: redraw both reference weapons fully inside the frame, keeping both crescent blades, hooks, hilts, guards, gold fittings, handles, tassels, cape corners, hair tips, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full dual crescent weapons/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `guan_suo` v1.
+- Continued one-character workflow with `guan_yinping` / 관은병.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/guan_yinping_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/guan_yinping_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/guan_yinping_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve jade-green armor, green jewels, green tassels, long black hair, and dark green cape.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 96% because the right cape edge was close in the raw extraction.
+  - Prompt focus: preserve young-adult compact heroic female polearm-warrior style; calm determined face, long flowing black hair with high topknot, ornate gold crown with large green jewel, green earrings, jade-green armor dress, gold dragon shoulder guards, gold beast ornament, red/green waist tassels, dark green cape, and sturdy boots.
+  - Framing and weapon focus: redraw the reference's cropped polearm fully inside the frame, keeping complete silver spear blade, side hooks, gold socket, dark shaft, lower end, green tassel, cape corners, hair tips, hands, skirt hem, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full polearm/cape/hair/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `guan_yinping` v1.
+- Continued one-character workflow with `zhang_bao` / 장포.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_bao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_bao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_bao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark green armor, deep red armor panels, red tassels, and dark green/red cape.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 95% because the right cape edge was too close in the raw extraction.
+  - Prompt focus: preserve adult compact heroic shouting polearm-warrior style; black swept topknot tied with red band, thick black eyebrows, black moustache and full short beard, dark green/deep red armor, gold dragon shoulder guards, gold beast ornament, red tassels, dark green cape with deep red lining, and chunky boots.
+  - Framing and weapon focus: redraw the reference's cropped polearm fully inside the frame, keeping complete silver axe-spear blade, cutouts/hooks, gold socket, dark shaft, lower end, red tassel, cape corners, ponytail tips, fists, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full polearm/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhang_bao` v1.
+- Continued one-character workflow with `liu_shan` / 유선.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/liu_shan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/liu_shan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/liu_shan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve emerald-green robes, green jewels, dark green cape, and white tassels.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`; no reframe was needed because the crown rods, cape corners, tablet, robe hem, and boots had safe padding.
+  - Prompt focus: preserve youthful compact heroic prince-ruler/young official style; anxious gentle expression, black topknot, ornate gold crown with green jewel and side rods, green earrings, emerald ceremonial robes, gold beast ornament, white tassels, dark green cape, and small sturdy boots.
+  - Framing and prop focus: keep the complete command tablet, crown rods, cape corners, sleeves, robe hem, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full tablet/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `liu_shan` v1.
+- Continued one-character workflow with `liu_feng` / 유봉.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/liu_feng_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/liu_feng_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/liu_feng_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve jade-green armor, green ribbon tails, red tassels, and dark green/red cape.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 94% because both the left saber tip and right cape edge were close in the raw extraction.
+  - Prompt focus: preserve young-adult compact heroic saber-warrior style; stern focused face, no beard, black swept topknot tied with green bands, green ribbon tails, jade-green armor, gold dragon shoulder guards, gold beast ornament, red waist tassels, dark green cape with deep red lining, and chunky boots.
+  - Framing and weapon focus: redraw the reference's cropped saber fully inside the frame, keeping complete hilt, guard, gold fittings, broad curved blade, cutting edge, blade tip, ribbon tails, cape corners, fists, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full saber/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `liu_feng` v1.
+- Continued one-character workflow with `ma_su` / 마속.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/ma_su_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/ma_su_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/ma_su_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve emerald-green robes, white cloth, white feather fan, and dark green cape.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 97% because the feather fan and extended fingers were close on both sides in the raw extraction.
+  - Prompt focus: preserve adult compact heroic strategist-general style; confident sly smirk, thick black eyebrows, small pointed goatee, long black hair, tall teal-gold official crown with green jewel and side rods, emerald/white robes, gold beast ornament, white tassels, dark green cape, and chunky boots.
+  - Framing and prop focus: keep the complete white feather fan, green jewel handle, extended right hand/fingers, wide sleeves, sheathed sword/scabbard, cape corners, robe hem, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full fan/extended hand/scabbard/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `ma_su` v1.
+- Continued one-character workflow with `ma_liang` / 마량.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/ma_liang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/ma_liang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/ma_liang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve emerald-green/white robes, white eyebrows, white tassels, and green-white cape.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 94% because the extended hand/right cape edge was too close in the raw extraction.
+  - Prompt focus: preserve mature compact heroic elder strategist style; calm wise expression, thick white wing-shaped eyebrows, black moustache and long full beard, long black hair, tall teal-gold crown with green jewel and side rods, emerald/white robes, gold beast ornament, white tassels, green-white cape, and chunky boots.
+  - Framing and prop focus: keep the complete rolled bamboo scroll, extended right hand/fingers, wide sleeves, crown rods, beard tip, cape corners, robe hem, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full scroll/extended hand/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `ma_liang` v1.
+- Continued one-character workflow with `jiang_wei` / 강유.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/jiang_wei_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/jiang_wei_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/jiang_wei_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve blue scarf, blue-white armor, blue tassel, and dark blue cape.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 96% because the right cape edge was close in the raw extraction.
+  - Prompt focus: preserve young-adult compact heroic spear-general style; calm confident face, no beard, black swept topknot ponytail, small gold crown with blue jewel, blue earrings, blue scarf, white-blue armor, gold dragon shoulder guards, gold beast ornament, white tassels, dark blue cape with white outer panels, and chunky boots.
+  - Framing and weapon focus: keep the complete spear blade, side hooks, gold socket, dark shaft, lower end, blue tassel, ponytail/ribbon tips, cape corners, hands, armor skirt, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full spear/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `jiang_wei` v1.
+- Continued one-character workflow with `wei_yan` / 위연.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/wei_yan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/wei_yan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/wei_yan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark black/green armor, green headband, ragged dark green cape, and muted white-gray tassels.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 92% because both the left battle blade and right ragged cape edge were very close in the raw extraction.
+  - Prompt focus: preserve fierce adult compact heroic rough-warrior style; wild spiky black hair, green headband with gold ornament and green jewel, thick eyebrows, black moustache and rugged full beard, shouting expression, dark black-green heavy armor, gold dragon shoulder guards, gold beast ornament, muted white-gray tassels, ragged dark green cape, and chunky boots.
+  - Framing and weapon focus: redraw the reference's cropped battle blade fully inside the frame, keeping complete broad silver curved blade, decorated inner blade, gold hilt/guard, handle, blade tip, cape tears, hair tips, fists, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full battle blade/ragged cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `wei_yan` v1.
+- Continued one-character workflow with `fa_zheng` / 법정.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/fa_zheng_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/fa_zheng_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/fa_zheng_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark navy/teal robes, teal feather tips, blue tassels, and dark teal cape.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 94% because the extended hand/right cape edge was too close in the raw extraction.
+  - Prompt focus: preserve young-adult compact heroic strategist-general style; sly confident smile, no beard, long black hair, tall dark teal-gold official crown with green jewel and side rods, dark navy/teal robes, black-blue armor panels, gold dragon shoulder guard, gold beast ornament, blue tassels, dark teal cape, and chunky boots.
+  - Framing and prop focus: keep the complete white-and-teal feather fan, green jewel handle, extended right hand/fingers, wide sleeves, crown rods, cape corners, robe hem, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full fan/extended hand/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `fa_zheng` v1.
+- Continued one-character workflow with `jian_yong` / 간옹.
+  - Per user instruction, read this log and `FULLBODY_GAME_CUTOUT_REWORK_GUIDE.md` before generation/review.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/jian_yong_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/jian_yong_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/jian_yong_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve emerald-green robes, white feather fan, brown double gourd flask, green cord/tassels, and dark green cape.
+  - Extraction note: final source used hard key removal with `--tolerance 105` and `--edge-contract 1`, then the transparent result was uniformly reframed to 95% because the right flask/cape edge was close in the raw extraction.
+  - Prompt focus: preserve jovial adult compact heroic civil-official style; warm smiling face, rounded cheeks, black moustache and short full beard, tall green-gold official crown with green jewel, emerald/white robes, light armor shoulder plates, gold beast ornament, green bead strings/tassels, dark green cape, and chunky boots.
+  - Framing and prop focus: keep the complete white feather fan, green jewel handle, double gourd wine flask, green cord/tassel, sleeves, cape corners, robe hem, crown, hands, and boots visible.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, no visible magenta residue, full fan/flask/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `jian_yong` v1.
+- Continued one-character workflow with `mi_zhu` / 미축.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/mi_zhu_front_gaze_v1.png`
+  - Fallback extraction source: `assets/generals/new_characters/front_gaze_200/mi_zhu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/mi_zhu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/mi_zhu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta generated from the accepted transparent cutout for review consistency.
+  - Extraction note: repeated built-in image generation attempts were rejected because they produced off-topic document/infographic imagery instead of the character. Final v1 used local background extraction with `u2net_human_seg`, then lower cape/floor glow cleanup by darkening warm floor contamination inside the cape silhouette and clearing remaining central floor scraps.
+  - Prompt/identity focus retained from reference: jovial portly adult civil official; rounded cheeks, black moustache and full rounded beard, green-gold official crown with green jewel and side rod, emerald-green and warm-brown robes, heavy gold shoulders, gold beast chest ornament, green bead strings, dark green cape, bundled bamboo scrolls in the right hand, and open left hand.
+  - Framing and prop focus: keep the complete crown rods, open hand/fingers, scroll bundle, cape corners, robe hem, hands, chunky boots, and full body inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(57, 285, 923, 1251)`, margins `(57, 285, 101, 285)`, full scroll/cape/boots visible, off-topic generations not used.
+  - Updated baseline progress page and review page to include `mi_zhu` v1.
+- Continued one-character workflow with `mi_fang` / 미방.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/mi_fang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/mi_fang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/mi_fang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal-green scarf, emerald armor, dark green cape, and silver saber.
+  - Extraction note: all local reference variants had the saber tip leaving the left canvas edge, and local segmentation either dropped the saber or retained floor glow. Final v1 used a regenerated fullbody source that redrew the complete saber inside the frame, then hard chroma removal with `--tolerance 105` and `--edge-contract 1`; the transparent result was shifted down 104 px for centered top/bottom margins.
+  - Prompt focus: preserve anxious young-adult compact heroic warrior style; round worried eyes, sweat drops, black topknot with green-gold pin, small moustache/goatee, teal scarf, emerald lamellar armor, gold shoulder armor, gold beast belt ornament, dark green cape with gold trim, raised open right hand, and chunky boots.
+  - Framing and weapon focus: keep the complete broad silver saber, hilt, guard, cutting edge, blade tip, cape corners, raised hand/fingers, hairpin, and boots visible inside the 1024 x 1536 canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(43, 264, 989, 1272)`, margins `(43, 264, 35, 264)`, full saber/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `mi_fang` v1.
+- Continued one-character workflow with `sun_qian` / 손건.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/sun_qian_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/sun_qian_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/sun_qian_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve emerald-green and ivory robes, dark green sleeve panels, turquoise jewels, and bamboo scroll.
+  - Extraction note: final source used hard chroma removal with `--tolerance 105` and `--edge-contract 1`; the transparent result was uniformly reframed to 94% for safer sleeve/extended-hand padding.
+  - Prompt focus: preserve calm adult compact heroic civil-official style; gentle composed face, black moustache and pointed full goatee, black topknot with green-gold crown and turquoise jewel, emerald and ivory robes, gold-trimmed dark green sleeves, gold belt ornament, turquoise jewel/tassels, bamboo scroll, and chunky green boots.
+  - Framing and prop focus: keep the complete rolled bamboo scroll, extended right hand/fingers, wide sleeve ends, robe hems, crown rods, hair tips, and boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(82, 208, 941, 1328)`, margins `(82, 208, 83, 208)`, full scroll/sleeves/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `sun_qian` v1.
+- Continued one-character workflow with `liao_hua` / 요화.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/liao_hua_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/liao_hua_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/liao_hua_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark green armor/cape, green headband/ribbons, green tassel, and silver polearm head.
+  - Extraction note: the reference polearm head was clipped at the left edge, so final v1 used a regenerated fullbody source that redrew the complete weapon inside the frame. The source was extracted with hard chroma removal using `--tolerance 105` and `--edge-contract 1`, uniformly reframed to 95%, then 18 residual magenta-like edge pixels were cleared.
+  - Prompt focus: preserve stern older compact heroic warrior style; gray-black topknot, green headband with trailing torn ribbons, thick gray eyebrows, gray moustache and full beard, scarred weathered face, dark green worn armor, gold dragon shoulder armor, gold beast belt ornament, ragged dark green cape, green tassels, and chunky armored boots.
+  - Framing and weapon focus: keep the complete polearm blade/head, hooks, tip, gold socket, full black shaft, lower butt, green tassel, torn cape tips, ribbons, fists, and boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(65, 192, 958, 1343)`, margins `(65, 192, 66, 193)`, full polearm/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `liao_hua` v1.
+- Continued one-character workflow with `ma_dai` / 마대.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/ma_dai_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/ma_dai_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/ma_dai_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal armor/cape, blue headband/ribbons, blue tassel, and silver polearm head.
+  - Extraction note: the reference polearm head was clipped at the left edge, so final v1 used a regenerated fullbody source that redrew the complete weapon inside the frame. The source was extracted with hard chroma removal using `--tolerance 105` and `--edge-contract 1`, uniformly reframed to 95%, then 9 residual magenta-like edge pixels were cleared.
+  - Prompt focus: preserve determined young-adult compact heroic warrior style; stern focused face, black spiky topknot ponytail, teal-blue headband with gold diamond ornament, trailing blue ribbons, no beard, dark teal-green lamellar armor, silver wolf/dragon shoulder ornament, gold beast belt ornament, white tassels, dark teal cape, and chunky armored boots.
+  - Framing and weapon focus: keep the complete polearm blade/head, hooks, tip, gold socket, full black shaft, lower butt, blue tassel, cape corners, ribbons, fists, hair, and boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(68, 195, 956, 1340)`, margins `(68, 195, 68, 196)`, full polearm/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `ma_dai` v1.
+- Continued one-character workflow with `yan_yan` / 엄안.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/yan_yan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/yan_yan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/yan_yan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve green armor/cape, white hair/beard, white arrow feathers, gold bow, and silver saber.
+  - Extraction note: final source used hard chroma removal with `--tolerance 105` and `--edge-contract 1`, uniformly reframed to 94% for safer bow/cape padding, then 1 residual magenta-like edge pixel was cleared.
+  - Prompt focus: preserve stern elderly compact heroic archer-warrior style; long white topknot, green headband, thick white eyebrows, white moustache and long full beard, weathered face, dark green heavy armor, gold beast belt ornament, quiver of white-feather arrows, ornate bow, short curved saber, dark green cape, and chunky armored boots.
+  - Framing and weapon focus: keep the complete bow top curl/lower limb/string/grip, full saber hilt/blade/tip, quiver, arrow feathers, cape corners, beard tip, hands, and boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(59, 219, 965, 1316)`, margins `(59, 219, 59, 220)`, full bow/saber/quiver/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `yan_yan` v1.
+- Continued one-character workflow with `li_yan` / 이엄.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/li_yan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/li_yan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/li_yan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve emerald armor/cape, green-gold command baton, green crown jewel, and red-brown tassels.
+  - Extraction note: final source used hard chroma removal with `--tolerance 105` and `--edge-contract 1`, uniformly reframed to 94% for safer cape/command-baton padding, then 3 residual magenta-like edge pixels were cleared.
+  - Prompt focus: preserve stern middle-aged compact heroic commander style; black swept-back hair, tall green-and-gold official crown with side rods and green jewel, thick black eyebrows, black moustache and full square beard, dark emerald armor, gold dragon shoulders, gold beast belt ornament, red-brown tassels, dark green cape, and chunky armored boots.
+  - Framing and prop focus: keep the complete command baton/rolled military scroll, crown top and side rods, cape corners, tassels, fists, armor hem, and boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(67, 177, 957, 1358)`, margins `(67, 177, 67, 178)`, full command baton/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `li_yan` v1.
+- Continued one-character workflow with `fei_yi` / 비의.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/fei_yi_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/fei_yi_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/fei_yi_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal-green and ivory robes, wide dark green sleeves, bamboo scroll, crown jewel, and teal tassels.
+  - Extraction note: the reference right sleeve/cape edge touched the canvas boundary, so final v1 used a regenerated source with the sleeve redrawn inside the frame. The source was extracted with hard chroma removal using `--tolerance 105` and `--edge-contract 1`, uniformly reframed to 94%, then 5 residual magenta-like edge pixels were cleared.
+  - Prompt focus: preserve calm young-adult compact heroic civil-official style; composed serious face, black swept hair, tall teal-green official crown with green jewel and side rods, thin black moustache and pointed goatee, teal-green and ivory robes, wide flowing sleeves, gold beast belt ornament, teal bead tassels, bamboo scroll, and chunky green boots.
+  - Framing and prop focus: keep the complete bamboo scroll, extended right hand/fingers, wide sleeve ends, robe hems, crown top and side rods, hair tips, and boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(71, 191, 952, 1345)`, margins `(71, 191, 72, 191)`, full scroll/sleeves/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `fei_yi` v1.
+- Continued one-character workflow with `dong_yun` / 동윤.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/dong_yun_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/dong_yun_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/dong_yun_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal-green and ivory robes, command tablet, crown jewel, and dark green cape.
+  - Extraction note: final source used hard chroma removal with `--tolerance 105` and `--edge-contract 1`, uniformly reframed to 94% for safer cape/tablet padding, then 3 residual magenta-like edge pixels were cleared.
+  - Prompt focus: preserve stern young-adult to middle-aged compact heroic civil-official style; black swept hair, tall dark teal-and-gold official crown with green jewel and side rods, thick black eyebrows, thin moustache and pointed goatee, teal-green and ivory robes, light armor shoulder plates, gold beast belt ornament, teal bead tassels, dark green cape, and chunky boots.
+  - Framing and prop focus: keep the complete command tablet, crown top and side rods, wide sleeves, cape corners, robe hems, tassels, hands, and boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(105, 169, 919, 1367)`, margins `(105, 169, 105, 169)`, full tablet/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `dong_yun` v1.
+- Continued one-character workflow with `jiang_wan` / 장완.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/jiang_wan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/jiang_wan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/jiang_wan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve white feather fan, green-gold fan handle, emerald/ivory robes, scroll, and dark green cape.
+  - Extraction note: final source used hard chroma removal with `--tolerance 105` and `--edge-contract 1`, uniformly reframed to 94% for safer fan/scroll/cape padding, then 2 residual magenta-like edge pixels were cleared.
+  - Prompt focus: preserve composed middle-aged compact heroic strategist-official style; black swept hair, tall green-and-gold official crown with side rods and green jewel, thick black eyebrows, black moustache and pointed full beard, emerald-green and ivory robes, light armor shoulder plates, gold beast belt ornament, green bead tassels, white feather fan, rolled scroll, dark green cape, and chunky boots.
+  - Framing and prop focus: keep the complete feather fan, fan feathers, fan handle, rolled scroll, crown top and side rods, cape corners, wide sleeves, robe hems, tassels, hands, and boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(95, 189, 929, 1346)`, margins `(95, 189, 95, 190)`, full fan/scroll/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `jiang_wan` v1.
+- Continued one-character workflow with `huang_quan` / 황권.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/huang_quan_front_gaze_v1.png`
+  - Fallback extraction source: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/huang_quan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/huang_quan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/huang_quan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta generated from the accepted transparent cutout for review consistency.
+  - Extraction note: one built-in generation attempt was rejected because the parchment-map wording produced an off-topic infographic/document-style image. Final v1 used local `u2net` extraction from the v10 reference, lower cape/floor warm-glow decontamination, a small central floor-scrap clear, 94% uniform reframe, and residual magenta-like edge cleanup.
+  - Prompt/identity focus retained from reference: thoughtful middle-aged compact heroic strategist-commander; black swept hair, small green-gold crown with green jewel and side rods, thick black eyebrows, black moustache and full beard, pensive hand-to-chin pose, dark emerald armor/robes, gold dragon shoulder armor, gold beast belt ornament, teal tassels, dark green cape, parchment tactical map scroll, and chunky boots.
+  - Framing and prop focus: keep the complete parchment map scroll, holding fingers, chin hand, crown rods, cape corners, robe hems, tassels, hands, and boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(68, 245, 956, 1290)`, margins `(68, 245, 68, 246)`, full parchment/cape/boots visible, off-topic generation not used.
+  - Updated baseline progress page and review page to include `huang_quan` v1.
+- Continued one-character workflow with `chen_dao` / 진도.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/chen_dao_front_gaze_v1.png`
+  - Fallback extraction source: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/chen_dao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/chen_dao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/chen_dao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta generated from the accepted transparent cutout for review consistency.
+  - Extraction note: two built-in generation attempts were rejected because they produced off-topic imagery. Final v1 used local `u2net` extraction for body/shield, warm lower-floor deglow, and a composited complete upper polearm component from the accepted `liao_hua` cutout to replace the clipped reference weapon head; an isolated lower-left extraction shard was removed before final review.
+  - Prompt/identity focus retained from reference: stern young-adult compact heroic guard-general; black topknot, small green-gold crown with green jewel and side rods, green trailing ribbons, small black goatee, white-and-green scale armor, gold dragon shoulder armor, green scarf, gold beast belt ornament, dark green cape, large green-gold dragon shield, and chunky white-green boots.
+  - Framing and weapon focus: keep the complete polearm head/blade/hooks/tip/socket/tassel/shaft/butt, full shield, cape, ribbons, fists, and boots visible inside canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(64, 200, 960, 1336)`, margins `(64, 200, 64, 200)`, full polearm/shield/cape/boots visible, off-topic generations not used.
+  - Updated baseline progress page and review page to include `chen_dao` v1.
+- Continued one-character workflow with `meng_da` / 맹달.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/meng_da_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/meng_da_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/meng_da_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve emerald cape/ribbons/jewels and black-green armor.
+  - Extraction note: the v10 reference had its left saber running out of frame, so local extraction-only candidates were rejected during review because the repaired tip still showed visible seams. Final v1 used a strict built-in regeneration from the reference on flat magenta; the result preserved Meng Da's identity and kept the full saber, cape, crown, fists, and boots inside the canvas. It was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered to the 94% safe width.
+  - Prompt focus: preserve stern middle-aged compact heroic warrior-general style; black swept topknot, green-and-gold crown with teal jewel and horn-like ornaments, thick black eyebrows, black moustache and full beard, black lacquer armor, deep emerald cloth, gold dragon shoulder armor, gold beast belt ornament, green tassels, dark green cape with gold trim, ornate curved saber, and chunky armored boots.
+  - Framing and weapon focus: keep the complete curved saber hilt/guard/blade/decorated core/tip, cape corners, crown ornaments, ribbons, fists, armor hem, and boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(30, 239, 993, 1296)`, margins `(30, 239, 31, 240)`, full saber/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `meng_da` v1.
+- Continued one-character workflow with `li_hui` / 이회.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/li_hui_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/li_hui_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/li_hui_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve emerald fan feathers, robes, cape, crown jewel, and tassels.
+  - Extraction note: local extraction candidates were rejected because the right cape edge contacted the canvas and the floor area caused unstable boot/cape separation. Final v1 used a strict built-in regeneration from the reference on flat magenta; it preserved Li Hui's fan, open-palm gesture, official crown, green armor/robe palette, and complete cape/boots. It was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered to the 94% safe width.
+  - Prompt focus: preserve stern young-to-middle-aged compact heroic strategist-general style; black swept topknot, tall emerald-and-gold official crown with side rods and green jewel, thick black eyebrows, thin moustache and pointed goatee, emerald armor and robes with gold trim, gold dragon shoulder armor, gold beast belt ornament, green tassels, large white-and-green feather fan, extended right open palm, dark green cape with gold scroll trim, and chunky armored boots.
+  - Framing and prop focus: keep the complete feather fan/fan tips/handle, open right hand and fingers, cape corners, robe hems, tassels, crown rods, and both boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(30, 180, 993, 1356)`, margins `(30, 180, 31, 180)`, full fan/hand/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `li_hui` v1.
+- Continued one-character workflow with `huo_jun` / 곽준.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/huo_jun_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/huo_jun_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/huo_jun_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve green shield, armor, headband ribbons, polearm tassel, and jewels.
+  - Extraction note: local extraction candidates were rejected because a large floor-glow patch remained attached under the boots/cape even when the spear and shield were readable. Final v1 used a strict built-in regeneration from the reference on flat magenta; it preserved Huo Jun's shield, polearm, green headband, stocky guard-general silhouette, and complete boots. It was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered to the 94% safe width.
+  - Prompt focus: preserve stern stocky adult heroic guard-general style; black topknot, green headband with central gold jewel and trailing ribbons, thick black eyebrows, black moustache and full beard, dark green and black lacquer armor with gold trim, gold dragon shoulder armor, gold beast belt ornament, green tassels, large green-and-gold shield with fierce gold beast face, long polearm with silver spearhead/hooks/green jewel/brown shaft/green tassel, and chunky armored boots.
+  - Framing and weapon focus: keep the complete polearm spearhead/hooks/socket/jewel/tassel/shaft, full shield, shield corners, cape edge, headband ribbons, fists, armor hem, and boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(33, 172, 991, 1364)`, margins `(33, 172, 33, 172)`, full polearm/shield/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `huo_jun` v1.
+- Continued one-character workflow with `zhuge_zhan` / 제갈첨.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhuge_zhan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhuge_zhan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhuge_zhan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve emerald/white robes, cape, fan feathers, crown jewel, and sword tassel.
+  - Extraction note: the reference combined a sword, feather fan, cape, and strong floor glow, so final v1 used a strict built-in regeneration from the reference on flat magenta rather than local floor cleanup. The accepted source preserved Zhuge Zhan's youthful strategist-warrior identity, complete sword, complete fan, cape, robe hems, and boots. It was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered to the 94% safe width.
+  - Prompt focus: preserve confident young-adult compact heroic strategist-warrior style; black swept topknot, tall emerald-and-gold official crown with side rods and green jewel, strong black eyebrows, clean youthful face with slight stern smile, emerald green and white robes layered with light armor and gold trim, gold beast belt ornament, green tassels, dark green cape with gold scroll trim, ornate straight sword, large white-and-green feather fan, and chunky armored boots.
+  - Framing and prop focus: keep the complete sword pommel/grip/guard/jewel/tassel/blade/tip, full feather fan and every feather tip, cape corners, robe hems, tassels, crown rods, hands, and boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(30, 195, 993, 1341)`, margins `(30, 195, 31, 195)`, full sword/fan/cape/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhuge_zhan` v1.
+- Continued one-character workflow with `zhuge_jin` / 제갈근.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhuge_jin_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhuge_jin_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhuge_jin_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve blue/white robes, cape, blue tassels, crown jewel, and parchment scroll tones.
+  - Extraction note: the reference had strong floor glow around the boots/cape, so final v1 used a strict built-in regeneration from the reference on flat magenta. The accepted source preserved Zhuge Jin's elderly civil-official identity, blue crown/robes, white hair/beard, parchment scroll, wide sleeves, cape, and boots. It was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered to the 94% safe width.
+  - Prompt focus: preserve elderly compact heroic civil-official style; white swept hair, thick white eyebrows, white moustache and long full beard, calm serious face, tall blue-and-gold official crown with side rods and green jewel, deep blue and white official robes layered with light armor and gold trim, gold beast belt ornament, blue tassels, large parchment scroll with blue tassel, right hand clenched near waist, dark blue cape with gold scroll trim, and chunky armored boots.
+  - Framing and prop focus: keep the complete parchment scroll, scroll ends, tassel, crown rods, beard tip, wide sleeves, cape corners, robe hems, hands, belt ornament, and both boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(30, 214, 993, 1322)`, margins `(30, 214, 31, 214)`, full scroll/cape/sleeves/boots visible, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhuge_jin` v1.
+- Continued one-character workflow with `zhuge_dan` / 제갈탄.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhuge_dan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhuge_dan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhuge_dan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve black-purple armor, cape, tassels, purple jewel, and silver sword.
+  - Extraction note: the v10 reference had the lower-left secondary blade/scabbard area clipped by the frame. A first generation preserved the main sword but was less balanced, so a second built-in regeneration from the reference on flat magenta was accepted for steadier framing. The final keeps Zhuge Dan's black-purple armored identity, full main sword, cape, hair ornament, tassels, fists, and boots inside the canvas; the clipped left-side prop was not carried forward as a cut-off artifact. It was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered to the 94% safe width.
+  - Prompt focus: preserve stern middle-aged compact heroic armored warrior-general style; black swept topknot with gold ornament and purple jewel, sharp black eyebrows, black moustache and pointed beard, black lacquer heavy armor with gold trim and deep purple accents, gold beast belt ornament, purple bead tassels, dark black-purple cape with gold scroll trim, ornate long straight sword, and chunky armored boots.
+  - Framing and weapon focus: keep the complete diagonal sword pommel/grip/guard/jewel/blade/tip, cape corners, hair tips, tassels, fists, armor hem, and both boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(31, 185, 993, 1351)`, margins `(31, 185, 31, 185)`, full sword/cape/boots visible, clipped reference prop not retained as an edge-cut artifact, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhuge_dan` v1.
+- Continued one-character workflow with `zhang_yi_shu` / 장익.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_yi_shu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_yi_shu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_yi_shu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve green armor, cape, headband ribbons, polearm tassel, and jewels.
+  - Extraction note: the first built-in generation was rejected because it added an off-reference shield. The accepted second generation explicitly forbade shields and kept the single spear/polearm identity. Soft chroma removal over-desaturated the green armor, so final v1 used hard chroma removal with `--tolerance 105` and `--edge-contract 1`, then centered to the 94% safe frame.
+  - Prompt focus: preserve stern stocky adult heroic spear-general style; black high topknot, green headband with gold jewel and trailing ribbons, thick black eyebrows, black moustache and full beard, dark emerald armor with black lacquer plates and gold trim, gold dragon shoulder armor, gold beast belt ornament, green bead tassels, dark green cape with gold scroll trim, one long polearm/spear, and chunky armored boots.
+  - Framing and weapon focus: keep the complete spearhead tip/blade edges/hooks/socket/green jewel/tassel/full shaft/lower butt end, cape corners, headband ribbons, fists, tassels, armor hem, and boots visible inside the canvas; no shield or extra prop.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(52, 110, 972, 1425)`, margins `(52, 110, 52, 111)`, full spear/cape/boots visible, off-reference shield generation not used, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `zhang_yi_shu` v1.
+- Continued one-character workflow with `dong_jue` / 동궐.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/dong_jue_front_gaze_v1.png`
+  - Fallback extraction sources: `tmp/fullbody_cutout_review/dong_jue_rembg_u2net.png` for body, plus `tmp/fullbody_cutout_review/dong_jue_rembg_isnet-general-use.png` for the left polearm.
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/dong_jue_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/dong_jue_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta generated from the accepted transparent cutout for review consistency.
+  - Extraction note: two built-in generation attempts were rejected because they produced off-topic infographic-style output. Final v1 used local extraction instead: `u2net` preserved the body/helmet/cape identity while `isnet-general-use` preserved the complete left polearm head/tassel/shaft; small detached extraction scraps were removed before 94% reframing.
+  - Prompt/identity focus retained from reference: stern stocky adult heroic polearm-general; black topknot with swept tail, rounded green-and-gold helmet/crown with blue jewel, thick black eyebrows, black moustache and full beard, dark emerald armor with black lacquer plates and gold trim, gold dragon shoulder armor, gold beast belt ornament, green tassels, dark green cape with gold scroll trim, ornate polearm with broad silver crescent-like blade, red jewel, brown shaft, and green tassel.
+  - Framing and weapon focus: keep the complete polearm blade/tip/hooks/socket/red jewel/tassel/shaft, cape edge, hair tail, fists, tassels, armor hem, and boots visible inside the canvas; no shield or off-reference prop.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(30, 197, 993, 1339)`, margins `(30, 197, 31, 197)`, full polearm/cape/boots visible, off-topic generations not used, no fire/particles/background glow.
+  - Updated baseline progress page and review page to include `dong_jue` v1.
+- Continued one-character workflow with `xin_pi` / 신비.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/xin_pi_front_gaze_v1.png`
+  - Rejected output: one off-topic sleep/infographic-style generation was not used.
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/xin_pi_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/xin_pi_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve blue/white robes, cape, fan feathers, teal jewels, and gold trim.
+  - Extraction note: local `u2net` extraction preserved identity but retained lower floor glow, so the accepted v1 used a strict reference-based regeneration on flat magenta. The source was extracted with soft chroma removal, despill, `--edge-contract 1`, then recentered to restore safe right-side cape padding.
+  - Prompt focus: preserve serious compact heroic civil-strategist style; tall blue-and-gold official crown, black hair, short goatee, blue-and-white ornate official robes, gold beast belt ornament, blue tassels, dark blue embroidered cape, feather fan in left hand, right hand extended open, and chunky armored boots.
+  - Framing and prop focus: keep the complete fan, feather tips, crown rods, extended hand/fingers, cape corners, robe hems, tassels, belt ornament, and both boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(48, 224, 975, 1311)`, margins `(48, 224, 49, 225)`, full fan/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `xin_pi` v1.
+- Continued one-character workflow with `gongsun_zan` / 공손찬.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/gongsun_zan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/gongsun_zan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/gongsun_zan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve silver-white armor, white hair, white cape, tassels, blue jewels, and spear details.
+  - Extraction note: the reference had the left spearhead clipped by the frame, so final v1 used a strict built-in regeneration from the reference on flat magenta. The accepted source reconstructs the complete spearhead/tassel/shaft inside the canvas and was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered in the 1024 x 1536 frame.
+  - Prompt focus: preserve stern young-adult compact heroic white-armored spear-general style; white high ponytail, silver headband/crown with blue jewel, sharp eyebrows, small goatee, bright silver-white lamellar armor with blue accents, ornate silver dragon shoulder armor, gold-and-silver beast belt ornament, white tassels, white embroidered cape, long spear/polearm, and chunky armored boots.
+  - Framing and weapon focus: keep the complete spearhead tip/hooks/socket/jewel/tassel/shaft, cape corners, ponytail tips, fists, armor hem, tassels, and both boots visible inside the canvas; no horse or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(66, 135, 958, 1400)`, margins `(66, 135, 66, 136)`, full spear/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `gongsun_zan` v1.
+- Continued one-character workflow with `gongsun_du` / 공손도.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/gongsun_du_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/gongsun_du_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/gongsun_du_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark navy armor, blue tassel, white beard/hair, fur mantle, and cape edge.
+  - Extraction note: the reference had strong floor glow and left sword/tassel near the frame, so final v1 used a strict built-in regeneration from the reference on flat magenta. The accepted source keeps the complete sword/tassel/cape/boots inside the canvas and was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered in the standard frame.
+  - Prompt focus: preserve stocky stern elderly frontier warlord style; swept silver-gray hair, thick silver eyebrows, full gray moustache and beard, small blue-and-gold official crown with side rod and blue jewel, dark navy-black lamellar armor with gold studs and trim, fur mantle, gold beast belt ornament, dark blue embroidered cape, ornate straight sword with blue tassel, and chunky armored boots.
+  - Framing and weapon focus: keep the complete sword blade/tip/guard/pommel, blue tassel, cape corners, crown rod, beard tip, fists, armor hem, and both boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(33, 215, 990, 1320)`, margins `(33, 215, 34, 216)`, full sword/tassel/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `gongsun_du` v1.
+- Continued one-character workflow with `gongsun_kang` / 공손강.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/gongsun_kang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/gongsun_kang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/gongsun_kang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark armor, blue tassel, gray fur mantle, silver spearhead, and cape embroidery.
+  - Extraction note: the reference had the left blue spear tassel clipped by the frame, so final v1 used a strict built-in regeneration from the reference on flat magenta. The accepted source reconstructs the complete spear/tassel/shaft inside the canvas and was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to safe margins for the tall polearm.
+  - Prompt focus: preserve stern adult compact heroic dark-armored spear-general style; black high topknot, thick black eyebrows, black moustache and full beard, black-and-silver lamellar armor with blue accents, silver beast belt ornament, gray fur shoulder mantle with beast-head styling, dark blue embroidered cape, long spear/polearm with blue tassel, and chunky armored boots.
+  - Framing and weapon focus: keep the complete spearhead tip/edges/socket/blue tassel strands/shaft/lower butt end, fur mantle, cape corners, topknot tip, fists, armor hem, belt ornament, and both boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(31, 183, 993, 1352)`, margins `(31, 183, 31, 184)`, full spear/tassel/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `gongsun_kang` v1.
+- Continued one-character workflow with `liu_biao` / 유표.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/liu_biao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/liu_biao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/liu_biao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve emerald robes/cape, green tassel, gold dragon staff, and crown jewel.
+  - Extraction note: the reference had strong floor glow and near-edge cape/staff areas, so final v1 used a strict built-in regeneration from the reference on flat magenta. The accepted source keeps the complete dragon-head staff, jewel bead, tassel, cape corners, robe hem, and boots inside the canvas and was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered in the standard frame.
+  - Prompt focus: preserve calm tired elderly provincial-lord style; swept silver hair, thick pale eyebrows, long white moustache and full beard, tall dark green-and-gold official crown with side rods and central jewel, layered emerald green and teal official robes with gold embroidery, gold beast belt ornament, white tassels, dark green embroidered cape, ornate dragon-head staff/scepter, and chunky green armored boots.
+  - Framing and prop focus: keep the complete dragon-head staff tip/dragon silhouette/jewel bead/tassel strands/shaft/lower end, crown rods, beard tip, sleeves, cape corners, robe hem, belt ornament, and both boots visible inside the canvas.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(44, 172, 979, 1363)`, margins `(44, 172, 45, 173)`, full staff/cape/robes/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `liu_biao` v1.
+- Continued one-character workflow with `liu_zhang` / 유장.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/liu_zhang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/liu_zhang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/liu_zhang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve emerald robes/cape, green tablet, gold trim, and green boots.
+  - Extraction note: the reference had strong floor glow and a near-edge cape, so final v1 used a strict built-in regeneration from the reference on flat magenta. The accepted source keeps the rectangular ceremonial tablet/document distinct from weapons, with cape corners, robe hem, tassels, hands, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered in the standard frame.
+  - Prompt focus: preserve worried round-eyed young provincial-lord style; black swept hair/topknot, thick black eyebrows, short black moustache and beard, green-and-gold official crown with side rods and green jewel, layered emerald green and white official robes with gold embroidery, light armor shoulder plates, gold beast belt ornament, green bead tassels with white hanging tassels, large dark green embroidered cape, long rectangular green ceremonial tablet/document, and chunky green armored boots.
+  - Framing and prop focus: keep the complete rectangular tablet/document with top and bottom edges, crown rods, extended cape corners, robe sleeves, belt ornament, tassels, hands, and both boots visible inside the canvas; no sword, spear, fan, staff, or shield.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(45, 183, 979, 1352)`, margins `(45, 183, 45, 184)`, full tablet/cape/robes/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `liu_zhang` v1.
+- Continued one-character workflow with `liu_yao` / 유요.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/liu_yao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/liu_yao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/liu_yao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal armor/cape, green tassel, blue-green crown jewel, gold trim, and spear details.
+  - Extraction note: the reference spearhead was clipped by the left edge, so final v1 used a strict built-in regeneration from the reference on flat magenta. The accepted source reconstructs the complete spearhead, side hooks, tassel, shaft, and lower butt end inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered in the standard frame.
+  - Prompt focus: preserve stern adult compact heroic teal-armored spear-lord style; black swept hair/topknot, thick black eyebrows, black moustache and full beard, dark teal-and-black lamellar armor with gold trim, teal official crown with side rods and blue-green jewel, gold dragon shoulder armor, gold beast belt ornament, teal tassels, dark teal embroidered cape, long spear/polearm, and chunky teal armored boots.
+  - Framing and weapon focus: keep the complete spearhead tip/blade side hooks/socket/jewel/tassel strands/shaft/lower butt end, cape corners, crown rods, hair tips, fists, armor hem, belt ornament, tassels, and both boots visible inside the canvas; no shield.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(54, 132, 969, 1404)`, margins `(54, 132, 55, 132)`, full spear/tassel/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `liu_yao` v1.
+- Continued one-character workflow with `tao_qian` / 도겸.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/tao_qian_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/tao_qian_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/tao_qian_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve olive robes/cape, wooden document, green crown jewel, and gold trim.
+  - Extraction note: the reference had strong floor glow, so final v1 used a strict built-in regeneration from the reference on flat magenta. The accepted source keeps the cylindrical wooden bamboo-slip document/tablet distinct from weapons, with cape corners, robe hem, tassels, hands, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered in the standard frame.
+  - Prompt focus: preserve stern elderly provincial-lord style; swept silver hair, thick white eyebrows, long white moustache and full beard, dark olive-and-gold official crown with side rods and green jewel, layered olive green and cream official robes with gold embroidery, light armor shoulder plates, gold beast belt ornament with red jewel, pale tassels, dark olive embroidered cape, cylindrical wooden bamboo-slip document/tablet, and chunky armored boots.
+  - Framing and prop focus: keep the complete wooden document/tablet with top and bottom ends, crown rods, beard tip, sleeves, cape corners, belt ornament, tassels, robe hem, hands, and both boots visible inside the canvas; no sword, spear, fan, staff, scroll, or shield.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(62, 185, 962, 1351)`, margins `(62, 185, 62, 185)`, full document/cape/robes/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `tao_qian` v1.
+- Continued one-character workflow with `kong_rong` / 공융.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/kong_rong_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/kong_rong_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/kong_rong_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark green robes/cape, parchment scroll, purple tassels, and gold trim.
+  - Extraction note: the reference had strong floor glow and a near-edge cape, so final v1 used a strict built-in regeneration from the reference on flat magenta. The accepted source keeps the parchment scroll and open speaking hand distinct with no weapon added; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered in the standard frame.
+  - Prompt focus: preserve stern adult scholar-official style; black swept hair, short pointed goatee, thick black eyebrows, tall dark blue-and-gold official crown with side rods and green jewel, layered dark green, teal, and white official robes with gold embroidery, light armor shoulder plates, gold beast belt ornament, purple tassels, dark green embroidered cape, parchment scroll in left hand, right hand open, and chunky green armored boots.
+  - Framing and prop focus: keep the complete scroll with top and bottom ends, crown rods, open hand/fingers, cape corners, robe sleeves, belt ornament, tassels, robe hem, and both boots visible inside the canvas; no sword, spear, staff, shield, fan, book page, or extra prop.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(38, 167, 985, 1368)`, margins `(38, 167, 39, 168)`, full scroll/cape/robes/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `kong_rong` v1.
+- Continued one-character workflow with `zhang_lu` / 장로.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_lu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_lu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_lu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark green robes/cape, ritual staff details, green beads, white tassels, and gold trim.
+  - Extraction note: the reference ritual staff was near the left edge, so final v1 used a strict built-in regeneration from the reference on flat magenta. The generated source saved one pixel short vertically, so the accepted cutout was placed onto a 1024 x 1536 transparent canvas after extraction; it keeps the full ritual staff, circular medallion, tassels, open hand, cape corners, and boots inside the frame.
+  - Prompt focus: preserve stern adult Taoist-style warlord/officiant identity; long black flowing hair, long black moustache and full beard, small red forehead mark, tall gold-and-green ritual crown with central green jewel, dark green and black ornate robes layered with armor, gold dragon shoulder armor, gold beast belt ornament, green tassels, dark green embroidered cape, ornate ritual staff with round black-and-white medallion, and chunky armored boots.
+  - Framing and prop focus: keep the complete ritual staff top carved frame/circular medallion/side ornaments/green beads/white tassels/full shaft/lower end, open hand/fingers, crown top/side rods, hair tips, beard tip, cape corners, robe hem, belt ornament, tassels, and both boots visible inside the canvas; no sword, spear, shield, fan, scroll, book page, or extra prop.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(37, 197, 986, 1338)`, margins `(37, 197, 38, 198)`, full ritual staff/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `zhang_lu` v1.
+- Continued one-character workflow with `zhang_ren` / 장임.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_ren_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_ren_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_ren_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark green armor/cape, green tassel, jade crown jewel, and silver spearhead.
+  - Extraction note: the reference spearhead was clipped by the left edge, so final v1 used a strict built-in regeneration from the reference on flat magenta. The accepted source reconstructs the complete spearhead, socket, tassel, shaft, and lower butt end inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered in the standard frame.
+  - Prompt focus: preserve stern adult green-and-bronze spear-general identity; black topknot, thick black eyebrows, black moustache and full beard, green headband/crown with central jade jewel, bronze-and-dark-green lamellar armor with gold trim, gold dragon shoulder armor, gold beast belt ornament, green tassels, dark green embroidered cape, long spear/polearm, and chunky armored boots.
+  - Framing and weapon focus: keep the complete spearhead tip/blade side hooks/socket/jewel/tassel strands/shaft/lower butt end, cape corners, crown jewel, hair tips, fists, armor hem, belt ornament, tassels, and both boots visible inside the canvas; no shield.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(46, 129, 978, 1406)`, margins `(46, 129, 46, 130)`, full spear/tassel/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `zhang_ren` v1.
+- Continued one-character workflow with `ma_teng` / 마등.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/ma_teng_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/ma_teng_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/ma_teng_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark green armor/cape, green tassel, pale fur mantle, and silver spearhead.
+  - Extraction note: the reference had a near-edge spear and broad fur-edged cape, so final v1 used a strict built-in regeneration from the reference on flat magenta. The accepted source keeps the full spear, green tassel, fur mantle, cape corners, ponytail, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then centered in the standard frame.
+  - Prompt focus: preserve stern adult frontier spear-lord identity; black swept high ponytail/topknot with flowing hair, thick black eyebrows, black moustache and full beard, dark green scale armor with bronze-gold trim, fur mantle around the shoulders, gold dragon shoulder armor, gold beast belt ornament, green tassels, dark green embroidered cape with pale fur edge, long spear/polearm, and chunky armored boots.
+  - Framing and weapon focus: keep the complete spearhead tip/blade side hooks/socket/jewel/tassel strands/shaft/lower butt end, fur edge, cape corners, ponytail tips, fists, armor hem, belt ornament, tassels, and both boots visible inside the canvas; no horse, mount, or shield.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(37, 136, 986, 1400)`, margins `(37, 136, 38, 136)`, full spear/fur-cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `ma_teng` v1.
+- Continued one-character workflow with `han_sui` / 한수.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/han_sui_front_gaze_v1.png`
+  - Rejected output: first magenta-background candidate preserved the saber but visibly contaminated the face/armor colors, so it was not used.
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/han_sui_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/han_sui_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green, chosen after the magenta attempt caused subject color spill; final source preserved silver hair, black-silver armor, pale fur, and gold saber trim.
+  - Extraction note: the reference curved saber was clipped by the lower-left edge, so final v1 used a strict built-in regeneration from the reference on flat green. The accepted source reconstructs the complete curved saber, open right hand, fur cape edge, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to safe margins.
+  - Prompt focus: preserve stern elderly silver-haired frontier warlord identity; swept silver high ponytail/topknot, thick silver eyebrows, grey moustache and full beard, dark black-and-silver lamellar armor with gold trim, pale fur mantle around the shoulders and cape edge, silver dragon shoulder armor, gold beast belt ornament, pale tassels, dark fur-lined cape, ornate curved saber/scimitar, and chunky armored boots.
+  - Framing and weapon focus: keep the complete saber pommel/ornate gold guard/grip/curved silver blade/decorated spine/blade tip, open right hand/fingers, silver ponytail tips, fur cape edge, cape corners, fists, armor hem, belt ornament, tassels, and both boots visible inside the canvas; no spear, horse, mount, shield, fan, or staff.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(61, 240, 962, 1295)`, margins `(61, 240, 62, 241)`, full saber/fur-cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `han_sui` v1.
+- Continued one-character workflow with `dong_cheng` / 동승.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/dong_cheng_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/dong_cheng_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/dong_cheng_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green, chosen to preserve black armor, red lining/tassels, gold trim, and silver saber without magenta spill.
+  - Extraction note: the reference curved saber was clipped by the lower-left edge, so final v1 used a strict built-in regeneration from the reference on flat green. The accepted source reconstructs the complete saber, preserves the black-gold loyalist armor and red-lined cape, and was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to safe margins.
+  - Prompt focus: preserve stern adult black-armored loyalist-general identity; black swept hair/topknot, thick black eyebrows, black moustache and pointed beard, tall black-and-gold official crown with side rods and red jewel, dark black lacquer lamellar armor with gold trim and red accents, gold dragon shoulder armor, gold beast belt ornament with red jewel, red-orange tassels, dark black cape with red lining and gold embroidery, ornate curved saber, and chunky armored boots.
+  - Framing and weapon focus: keep the complete saber pommel/ornate gold guard/grip/curved silver blade/decorated spine/blade tip, crown rods, cape corners, red lining, fists, armor hem, belt ornament, red tassels, and both boots visible inside the canvas; no spear, staff, shield, fan, horse, or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(41, 191, 983, 1344)`, margins `(41, 191, 41, 192)`, full saber/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `dong_cheng` v1.
+- Continued one-character workflow with `he_jin` / 하진.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/he_jin_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/he_jin_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/he_jin_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green, chosen to preserve black-purple armor, red tassels, gold trim, and silver crescent blade without magenta spill.
+  - Extraction note: the reference had a very large crescent halberd/glaive and broad cape, so final v1 used a strict built-in regeneration from the reference on flat green. The accepted source keeps the full crescent blade, beast-head socket, red tassel, shaft, cape corners, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to safe margins.
+  - Prompt focus: preserve stocky massive angry black-purple armored commander identity; angry wide-eyed face with clenched teeth, black swept hair, very thick black eyebrows, large black moustache and full beard, tall black-and-gold official crown with side rods and red jewel, dark black-purple lamellar armor with gold trim, gold dragon shoulder armor, gold beast belt ornament, red tassels, dark purple embroidered cape, large ornate crescent halberd/glaive, and chunky armored boots.
+  - Framing and weapon focus: keep the complete crescent blade/blade tip/gold beast-head socket/red tassel strands/full shaft/lower butt end, crown rods, cape corners, fists, armor hem, belt ornament, tassels, and both boots visible inside the canvas; no sword, spear-only tip, staff, shield, fan, or extra prop.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(51, 163, 972, 1372)`, margins `(51, 163, 52, 164)`, full halberd/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `he_jin` v1.
+- Continued one-character workflow with `zhang_rang` / 장양.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_rang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_rang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_rang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green, chosen to preserve black-purple robes, gold trim, red jewel accents, and the black feather fan without magenta spill.
+  - Extraction note: final v1 used a strict built-in regeneration from the reference on flat green. The accepted source keeps the complete feather fan, crown rods, open right hand, cape corners, robe hem, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to safe margins.
+  - Prompt focus: preserve sly adult palace eunuch/officer identity; black swept hair, thick black eyebrows, thin moustache and small pointed goatee, tall black-and-gold official crown with side rods and red jewel, dark black-purple ornate official robes layered with armor, gold dragon shoulder armor, gold beast belt ornament, red tassels, dark embroidered cape, black feather fan with gold frame and red jewel, open coaxing right hand, and chunky armored boots.
+  - Framing and prop focus: keep the complete fan feather tips/gold frame/red jewel/handle, open right hand/fingers, crown rods, hair tips, cape corners, sleeve edges, robe hem, belt ornament, red tassels, and both boots visible inside the canvas; no sword, spear, staff, scroll, shield, or extra prop.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 183, 981, 1388)`, margins `(42, 183, 42, 147)`, full fan/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `zhang_rang` v1.
+- Continued one-character workflow with `wang_yun` / 왕윤.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/wang_yun_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/wang_yun_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/wang_yun_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green, chosen to preserve black-purple court robes, grey beard, gold armor trim, red tassels, and the rolled scroll without magenta spill.
+  - Extraction note: final v1 used a strict built-in regeneration from the reference on flat green. The accepted source keeps the complete rolled scroll, crown rods, open right hand, wide sleeve edges, cape corners, robe hem, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to safe margins.
+  - Prompt focus: preserve stern elderly Han court minister/officer identity; grey swept-back hair, thick dark eyebrows, grey moustache and long grey beard, tall black-and-gold official crown with side rods and central turquoise jewel, dark black-purple ornate court robes layered with lamellar armor, gold dragon shoulder armor, gold beast belt ornament, red tassels with jade beads, embroidered wide sleeves, dark cape with gold trim, rolled imperial scroll, and chunky armored boots.
+  - Framing and prop focus: keep the complete scroll top and bottom caps/engraved cylinder/hand grip, open right hand/fingers, crown top and rods, hair tips, cape corners, sleeve edges, robe hem, belt ornament, tassels, and both boots visible inside the canvas; no sword, spear, halberd, shield, fan, book pages, horse, or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 175, 981, 1395)`, margins `(42, 175, 42, 140)`, full scroll/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `wang_yun` v1.
+- Continued one-character workflow with `li_jue` / 이각.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/li_jue_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/li_jue_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/li_jue_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green, chosen to preserve black armor, red cape/accents, gold trim, and silver crescent blade without magenta spill.
+  - Extraction note: the reference crescent halberd blade was clipped by the left edge, so final v1 used a strict built-in regeneration from the reference on flat green. The accepted source reconstructs the complete blade, inner hook, socket jewel, red tassel, full shaft, red-lined cape, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to safe margins.
+  - Prompt focus: preserve fierce stocky adult warlord identity; angry open-teeth scowl, black swept-back hair/topknot, thick black eyebrows, large black moustache and full beard, cheek scar, tall black-and-gold crown with red diamond jewel and side rods, black iron lamellar armor with gold trim and red accents, spiked shoulder armor, gold beast belt ornament, red tassels with jade beads, heavy red-lined dark cape, large ornate crescent halberd/guandao, and chunky armored boots.
+  - Framing and weapon focus: keep the complete crescent blade/sharp tip/inner hook/dark blade cutout/gold socket/red jewel/dangling red tassel/full shaft/lower butt end, crown rods, cape corners, fists, armor hem, belt ornament, tassels, and both boots visible inside the canvas; no sword, spear-only weapon, shield, fan, scroll, horse, or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 160, 981, 1411)`, margins `(42, 160, 42, 124)`, full halberd/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `li_jue` v1.
+- Continued one-character workflow with `guo_si` / 곽사.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/guo_si_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/guo_si_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/guo_si_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green, chosen to preserve black-brown armor, red-brown cloth accents, gold trim, and silver hooked blade without magenta spill.
+  - Extraction note: the reference hooked spear blade was clipped by the left edge, so final v1 used a strict built-in regeneration from the reference on flat green. The accepted source reconstructs the complete hooked blade, dragon socket, red jewel, red-brown tassel, full shaft, rugged cape, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to safe margins.
+  - Prompt focus: preserve brutal stocky adult rebel warlord identity; angry bared-teeth scowl, black swept-back hair with high reddish-brown topknot plume, thick black eyebrows, large black moustache and full beard, no tall official crown, black-and-brown lamellar armor with worn red cloth accents, heavy gold dragon shoulder armor, chained chest harness, gold beast belt ornament, red-brown tassels, rugged red-lined cape, hooked halberd/spear polearm, and chunky armored boots.
+  - Framing and weapon focus: keep the complete hooked spear blade/sharp top point/side hook/gold dragon socket/red jewel/dangling tassel/full shaft/lower butt end, hair plume tips, shoulder spikes, cape corners, fists, armor hem, belt ornament, tassels, and both boots visible inside the canvas; no official crown, sword, shield, fan, scroll, horse, or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 179, 981, 1392)`, margins `(42, 179, 42, 143)`, full hooked polearm/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `guo_si` v1.
+- Continued one-character workflow with `zhang_ji` / 장제.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_ji_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_ji_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_ji_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green, chosen to preserve navy-black armor, blue pennant, fur mantle, grey beard, and gold trim without magenta spill.
+  - Extraction note: final v1 used a strict built-in regeneration from the reference on flat green. The accepted source keeps the complete spearhead, blue torn pennant, full shaft, lower butt end, fur mantle, cape corners, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to safe margins.
+  - Prompt focus: preserve stern veteran frontier general identity; black hair with grey streaks swept into a topknot, thick black eyebrows, black moustache and grey-black beard, small dark metal headpiece, dark navy-black lamellar armor with antique gold trim, fur mantle, layered shoulder armor, gold beast belt ornament, blue-black robe panels, dark blue embroidered cape, long spear/lance with blue pennant, and chunky armored boots.
+  - Framing and weapon focus: keep the complete spearhead/side edges/gold socket/blue torn pennant/full shaft/lower butt end, hair/topknot, headpiece, fur mantle, shoulder armor, cape corners, armor hem, belt ornament, robe panels, and both boots visible inside the canvas; no crescent halberd, guandao, sword, shield, fan, scroll, horse, or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 162, 981, 1408)`, margins `(42, 162, 42, 127)`, full spear/pennant/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `zhang_ji` v1.
+- Continued one-character workflow with `zhang_xiu` / 장수.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_xiu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_xiu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_xiu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green, chosen to preserve dark navy armor/cape, blue tassels, black hair, gold trim, and silver spearhead without magenta spill.
+  - Extraction note: final v1 used a strict built-in regeneration from the reference on flat green. The accepted source keeps the complete spearhead, side blades, blue tassel, full shaft, lower butt end, cape corners, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to safe margins.
+  - Prompt focus: preserve younger stern elite spear-general identity; black swept-back topknot with blue jewel hair ornament, thick black eyebrows, neat black moustache and small pointed goatee, no grey beard or fur mantle, dark navy-blue and black lamellar armor with antique gold trim, spiked shoulder armor, blue tassel ornaments, gold beast belt ornament, dark blue robe panels, dark blue embroidered cape, long ornate spear/lance, and chunky armored boots.
+  - Framing and weapon focus: keep the complete spearhead/side blades/gold socket/blue tassel/full shaft/lower butt end, topknot, hair ornament, shoulder spikes, cape corners, armor hem, belt ornament, robe panels, and both boots visible inside the canvas; no grey hair, long grey beard, fur mantle, official tall crown, guandao, sword, shield, fan, scroll, horse, or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 136, 981, 1435)`, margins `(42, 136, 42, 100)`, full spear/tassel/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `zhang_xiu` v1.
+- Continued one-character workflow with `hua_xiong` / 화웅.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/hua_xiong_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/hua_xiong_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/hua_xiong_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green, chosen to preserve black-red armor, red plume/cape, gold trim, and silver axe blade without magenta spill.
+  - Extraction note: the reference battle axe was clipped by the lower-left edge, so final v1 used a strict built-in regeneration from the reference on flat green. The accepted source reconstructs the complete crescent axe blade, lower hook, beast-head socket, handle, red plume, cape corners, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to safe wide-weapon margins.
+  - Prompt focus: preserve huge brutal stocky adult warlord identity; roaring open mouth, black swept-back hair, thick black eyebrows, large black moustache and full beard, tall black-and-gold war crown with red jewel and side rods, long red plume/ponytail, black iron lamellar armor with red plates and antique gold trim, spiked dragon shoulder armor, gold beast belt ornament, red tassels, heavy red-lined cape, massive ornate battle axe/poleaxe, and chunky armored boots.
+  - Framing and weapon focus: keep the complete crescent axe blade/outer tip/lower hook/gold beast-head socket/red jewel/full dark handle, crown rods, red plume tips, shoulder spikes, cape corners, armor hem, belt ornament, red tassels, and both boots visible inside the canvas; no sword, spear-only weapon, shield, fan, scroll, horse, or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 251, 981, 1320)`, margins `(42, 251, 42, 215)`, full axe/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `hua_xiong` v1.
+- Continued one-character workflow with `li_ru` / 이유.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/li_ru_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/li_ru_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/li_ru_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green, chosen to preserve black-grey robes, purple tassels, gold trim, and the rolled scroll without magenta spill.
+  - Extraction note: final v1 used a strict built-in regeneration from the reference on flat green. The accepted source keeps the complete rolled scroll, open right hand, crown rods, sleeve edges, cape corners, robe hem, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to safe margins.
+  - Prompt focus: preserve sharp cunning adult strategist/minister identity; long black hair, tall black-and-gold official crown with side rods and turquoise diamond jewel, narrow intense eyes, thick black eyebrows, thin black moustache and pointed goatee, no grey beard, dark black-grey official robes layered with light lamellar armor, antique gold trim, gold beast belt ornament, purple tassels, ornate wide sleeves, dark embroidered cape, rolled imperial scroll, and chunky armored boots.
+  - Framing and prop focus: keep the complete scroll top and bottom caps/engraved cylinder/hand grip, open right hand/fingers, crown top and rods, hair tips, cape corners, sleeve edges, robe hem, belt ornament, purple tassels, and both boots visible inside the canvas; no sword, spear, halberd, axe, shield, fan, book pages, horse, or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 143, 981, 1428)`, margins `(42, 143, 42, 107)`, full scroll/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `li_ru` v1.
+- Continued one-character workflow with `yuan_shu` / 원술.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/yuan_shu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/yuan_shu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/yuan_shu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark green ceremonial robes and the jade imperial seal.
+  - Extraction note: final v1 used a strict built-in regeneration from the reference on flat magenta. The accepted source keeps the complete mian crown top board, hanging pearl beads, jade seal with dragon/lion handle, open right hand, cape corners, robe hem, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to safe wide-cape margins.
+  - Prompt focus: preserve arrogant portly self-proclaimed emperor/warlord identity; smug grin, black swept hair, thick black eyebrows, large black moustache and full beard, ornate imperial mian crown with flat gold top board and hanging pearl bead strings, red-gold crown jewel, dark green and antique gold ceremonial armor-robes, gold dragon shoulder armor, gold beast belt ornament, red tassels, green-black wide sleeves, red-lined dark cape, square jade imperial seal, and chunky armored boots.
+  - Framing and prop focus: keep the complete crown top board/all hanging pearl bead strings/full jade seal/dragon-lion handle/open right hand/fingers, sleeve ends, cape corners, armor hem, belt ornament, red tassels, and both boots visible inside the canvas; no sword, spear, halberd, axe, shield, fan, scroll, book pages, horse, or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 225, 981, 1345)`, margins `(42, 225, 42, 190)`, full imperial seal/crown beads/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `yuan_shu` v1.
+- Continued one-character workflow with `liu_xun` / 유훈.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/liu_xun_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/liu_xun_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/liu_xun_fullbody_game_cutout_v1.png`
+  - Chroma key: `#00ff00` green, chosen to preserve dark navy armor, purple scarf/cape, gold trim, and silver sword blade without magenta spill.
+  - Extraction note: the reference sword blade was clipped by the left edge, so final v1 used a strict built-in regeneration from the reference on flat green. The accepted source reconstructs the complete sword hilt and blade tip, preserves the clean-shaven young face, purple scarf, cape corners, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to safe sword margins.
+  - Prompt focus: preserve young stern armored general identity; black swept-back high topknot with small gold-and-red ornament, thick black eyebrows, clean-shaven face with no moustache or beard, dark navy-black lamellar armor with antique gold trim, spiked shoulder armor, purple scarf, gold beast belt ornament, blue bead ornaments with purple tassels, dark purple embroidered cape, ornate saber/straight sword, and chunky armored boots.
+  - Framing and weapon focus: keep the complete sword pommel/guard/red jewel/full silver blade/blade tip, topknot, hair ornament, purple scarf, shoulder spikes, cape corners, armor hem, belt ornament, tassels, and both boots visible inside the canvas; no moustache, beard, spear, halberd, axe, shield, fan, scroll, horse, or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 244, 981, 1326)`, margins `(42, 244, 42, 209)`, full sword/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `liu_xun` v1.
+- Continued one-character workflow with `zhou_cang` / 주창.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhou_cang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhou_cang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhou_cang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve green headband, green armor/cape, and green tassels.
+  - Extraction note: the reference battle axe was clipped by the lower-left edge, so final v1 used a strict built-in regeneration from the reference on flat magenta. The normal soft-matte extraction made too many subject pixels partially transparent, so the accepted final used hard-key extraction with `--tolerance 110`, despill, and `--edge-contract 1` before scaling to safe wide-weapon margins.
+  - Prompt focus: preserve fierce stocky loyal warrior identity; roaring open mouth, black topknot, thick black eyebrows, large black moustache and full beard, green cloth headband with trailing ends, dark green lamellar armor with antique gold trim, green dragon shoulder armor, gold beast belt ornament with green jewel, green tassels, heavy dark green embroidered cape, massive ornate battle axe, and chunky armored boots.
+  - Framing and weapon focus: keep the complete crescent axe blade/outer blade tip/lower hook/ornate gold socket/round pommel details/full handle, topknot and headband trailing ends, raised fist, shoulder armor, cape corners, armor hem, belt ornament, green tassels, and both boots visible inside the canvas; no spear, sword, shield, fan, scroll, horse, or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 260, 981, 1311)`, margins `(42, 260, 42, 224)`, full axe/cape/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `zhou_cang` v1.
+- Continued one-character workflow with `fu_shi_ren` / 부사인.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/fu_shi_ren_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/fu_shi_ren_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/fu_shi_ren_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve muted green scarf, sleeves, and trousers.
+  - Extraction note: final v1 used a strict built-in regeneration from the reference on flat magenta. The accepted source keeps the complete two-handed short sword, anxious sweat drops, simple topknot/hairpin, scarf, armor hem, and boots inside the canvas; it was extracted with soft chroma removal, despill, `--edge-contract 1`, then scaled to full-height safe margins.
+  - Prompt focus: preserve nervous timid adult infantry officer identity; worried wide eyes, raised eyebrows, small open anxious mouth, visible sweat drops, black topknot with plain bronze hairpin, tiny black goatee only, no moustache/full beard, muted green scarf, dull bronze-brown lamellar armor, green cloth sleeves and trousers, simple belt with small gold beast buckle, short straight sword, and practical armored boots.
+  - Framing and weapon focus: keep the complete sword pommel/simple guard/full silver blade/blade tip, both hands, topknot and hairpin, sweat drops, scarf, sleeves, armor hem, belt buckle, trouser cuffs, and both boots visible inside the canvas; no fierce expression, ornate war crown, dragon shoulder armor, heavy cape, spear, halberd, axe, shield, fan, scroll, horse, or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(150, 106, 873, 1465)`, margins `(150, 106, 150, 70)`, full sword/scarf/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `fu_shi_ren` v1.
+- Continued one-character workflow with `zhang_song` / 장송.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_song_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_song_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_song_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve green-and-white court robes, green crown panels, and jade ornaments.
+  - Extraction note: final v1 used a strict built-in regeneration from the reference on flat magenta. The normal soft-matte extraction made too many subject pixels partially transparent, so the accepted final used hard-key extraction with `--tolerance 110`, despill, and `--edge-contract 1` before centering.
+  - Prompt focus: preserve clever young strategist/envoy identity; sharp confident eyes, black swept-back long hair, small pointed black goatee, no full beard, tall green-and-gold official crown with side rods and jade jewel, elegant white and dark green court robes with antique gold trim, green shoulder guards, gold beast belt ornament, white tassels with jade beads, wide sleeves, dark green embroidered outer robe, large parchment map scroll, and small armored shoes.
+  - Framing and prop focus: keep the complete map scroll top/bottom/side edges, pointing finger and both hands, crown top and rods, hair tips, sleeve ends, cape/robe corners, robe hem, belt ornament, tassels, and both shoes visible inside the canvas; no sword, spear, halberd, axe, shield, fan, readable text, horse, or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 185, 981, 1386)`, margins `(42, 185, 42, 149)`, full map scroll/robe/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `zhang_song` v1.
+- Continued one-character workflow with `sha_moke` / 사마가.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/sha_moke_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/sha_moke_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/sha_moke_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve green cloth panels, feather accents, and tribal armor colors.
+  - Extraction note: the reference spiked club was clipped by the left edge, so final v1 used a strict built-in regeneration from the reference on flat magenta. The accepted final used hard-key extraction with `--tolerance 110`, despill, and `--edge-contract 1`, then scaled to safe club/pelt margins.
+  - Prompt focus: preserve fierce stocky tribal barbarian warlord identity; snarling clenched-teeth grin, wild black topknot, thick black eyebrows, large black moustache and full beard, green-and-gold forehead band with jade jewel, orange and green feathers, fur mantle, dark bronze-black armor with antique gold trim, spiked shoulder armor, ragged green cloth panels, green tassels, rough hide/fur cape, huge primitive spiked wooden club, and chunky armored boots.
+  - Framing and weapon focus: keep the complete wooden club head/rounded top/all studs and spikes/wrapped handle/dangling tassel-feather strips/full shaft/lower butt end, topknot, feather tips, shoulder spikes, fur mantle, tattered pelt corners, armor hem, green cloth panels, tassels, and both boots visible inside the canvas; no sword, spear, halberd, axe, shield, fan, scroll, official crown, horse, or mount.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 217, 981, 1353)`, margins `(42, 217, 42, 182)`, full club/feathers/pelt/boots visible, no floor glow/particles/background.
+  - Updated baseline progress page and review page to include `sha_moke` v1.
+- Continued one-character workflow with `yuan_xi` / 원희.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/yuan_xi_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/yuan_xi_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/yuan_xi_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve the green-lined cape and blue-green armor panels.
+  - Extraction note: the v10 reference touched the right cape edge, so final v1 used `assets/generals/fullbody_v6/yuan_xi.webp` as the uncropped fullbody source. The accepted file uses `isnet-anime` local masking, removes small detached fragments, recolors residual lower-cape fire tones into dark cape-shadow tones, then fits the complete spear/cape/boots inside the 1024 x 1536 canvas.
+  - Prompt/source focus: preserve worried young noble officer identity; anxious eyes, small open mouth, tiny goatee, tall white-and-gold official crown with blue jewel and side rods, white and pale blue armor-robes with antique gold trim, silver dragon shoulder armor, gold beast belt ornament, blue tassels, green-lined white cape, vertical spear with white tassel, and chunky armored boots.
+  - Framing and weapon focus: keep the complete spearhead/shaft/white tassel, crown top and rods, hair tips, cape corners, robe hem, belt ornament, blue tassels, and both boots visible inside the canvas; no sword, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 200, 981, 1256)`, margins `(42, 200, 42, 279)`, full spear/cape/boots visible.
+  - Updated baseline progress page and review page to include `yuan_xi` v1.
+- Continued one-character workflow with `ju_shou` / 저수.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/ju_shou_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/ju_shou_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/ju_shou_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve blue/green robes, teal armor panels, and the dark cape.
+  - Extraction note: final v1 used `assets/generals/fullbody_v6/ju_shou.webp` as the fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted threshold preserved the complete wooden tablet, left dangling sleeve/tassel, crown rods, beard hand, cape corners, robe hem, and boots while dropping the baked floor glow and embers.
+  - Prompt/source focus: preserve anxious elder strategist identity; worried raised eyebrows, grey-black hair and beard, tall blue-and-gold official crown with side rods and blue jewel, blue-green official armor-robes with antique gold trim, gold dragon shoulder armor, gold beast belt ornament, white tassels, dark blue embroidered cape, long wooden memorial tablet, and chunky armored boots.
+  - Framing and prop focus: keep the full wooden tablet top/bottom, dangling tassel, crown top and rods, hand-to-beard pose, sleeve ends, cape corners, robe hem, belt ornament, white tassels, and both boots visible inside the canvas; no sword, spear, axe, shield, fan, scroll roll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 981, 1284)`, margins `(42, 190, 42, 251)`, full tablet/cape/boots visible.
+  - Updated baseline progress page and review page to include `ju_shou` v1.
+- Continued one-character workflow with `shen_pei` / 심배.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/shen_pei_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/shen_pei_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/shen_pei_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve purple plume/cape, dark armor, and the silver sword.
+  - Extraction note: final v1 used `assets/generals/fullbody_v6/shen_pei.webp` as the fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the complete sword grip/guard/blade/tip, helmet plume, shoulder spikes, cape corners, armor hem, and both boots without retaining floor glow.
+  - Prompt/source focus: preserve stern armored enforcer identity; intense eyes, black beard and moustache, ornate black-and-gold helmet with purple plume, dark navy-black lamellar armor with antique gold trim, spiked shoulder armor, gold beast belt ornament, green tassels, purple cape, one-handed straight sword, and chunky armored boots.
+  - Framing and weapon focus: keep the full sword handle/pommel/guard/silver blade/blade tip, helmet plume, shoulder spikes, clenched fist, cape corners, armor hem, belt ornament, tassels, and both boots visible inside the canvas; no spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 981, 1209)`, margins `(42, 190, 42, 326)`, full sword/cape/boots visible.
+  - Updated baseline progress page and review page to include `shen_pei` v1.
+- Continued one-character workflow with `feng_ji` / 봉기.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/feng_ji_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/feng_ji_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/feng_ji_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve green robes, purple sleeve/cape, and the white feather fan.
+  - Extraction note: final v1 used `assets/generals/fullbody_v6/feng_ji.webp` as the fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the full feather fan, open right hand, crown rods, cape corners, robe hem, and boots, with low floor glow suppressed into neutral dark edge tones.
+  - Prompt/source focus: preserve sly young strategist identity; sharp eyes, smirking mouth, long black hair, small pointed goatee, tall black-and-gold official crown with purple jewel and side rods, green and dark armor-robes with antique gold trim, gold dragon shoulder armor, gold beast belt ornament, teal/white tassels, purple embroidered cape, ornate white feather fan, and chunky armored boots.
+  - Framing and prop focus: keep the complete feather fan tips, fan handle and jewel, open hand and fingers, crown top and rods, hair tips, cape corners, robe hem, belt ornament, tassels, and both boots visible inside the canvas; no sword, spear, axe, shield, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 981, 1227)`, margins `(42, 190, 42, 308)`, full fan/cape/boots visible.
+  - Updated baseline progress page and review page to include `feng_ji` v1.
+- Continued one-character workflow with `guo_tu` / 곽도.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/guo_tu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/guo_tu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/guo_tu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark robes, red-brown cape lining, and gold trim.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the complete scroll, open right hand, crown rods, sleeve/cape corners, robe hem, and boots, with low floor glow suppressed into neutral dark edge tones.
+  - Prompt/source focus: preserve confident court strategist identity; sharp eyes, black topknot and goatee, tall black-and-gold official crown with turquoise jewel and side rods, dark brown-black armor-robes with antique gold trim, spiked shoulder armor, gold beast belt ornament, red tassels, large parchment scroll, wide sleeves, red-brown lined cape, and chunky armored boots.
+  - Framing and prop focus: keep the complete scroll top/bottom/rolled rim, tassels, open hand and fingers, crown top and rods, hair tips, sleeve openings, cape corners, robe hem, belt ornament, and both boots visible inside the canvas; no sword, spear, axe, shield, fan, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1222)`, margins `(42, 190, 42, 314)`, full scroll/cape/boots visible.
+  - Updated baseline progress page and review page to include `guo_tu` v1.
+- Continued one-character workflow with `xin_ping` / 신평.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/xin_ping_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/xin_ping_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/xin_ping_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve blue-green robes, dark cape, and gold trim.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted candidate keeps the complete wooden tablet, crown rods, sleeve/cape corners, robe hem, tassels, and boots; a narrow edge-only cleanup neutralized residual lower floor glow without recoloring the garment panels.
+  - Prompt/source focus: preserve stern court official identity; serious eyes, black hair and small goatee, tall blue-black official crown with turquoise jewel and side rods, blue-green and dark armor-robes with antique gold trim, layered shoulder armor, gold beast belt ornament, blue tassels, dark green cape, vertical wooden tablet, and chunky armored boots.
+  - Framing and prop focus: keep the complete wooden tablet top/bottom, hand and fingers, crown top and rods, hair tips, sleeve openings, cape corners, robe hem, belt ornament, tassels, and both boots visible inside the canvas; no sword, spear, axe, shield, fan, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1328)`, margins `(42, 190, 42, 208)`, full tablet/cape/boots visible.
+  - Updated baseline progress page and review page to include `xin_ping` v1.
+- Continued one-character workflow with `gao_lan` / 고람.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/gao_lan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/gao_lan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/gao_lan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve red-black armor, cape lining, and silver polearm blade.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the complete polearm blade/shaft, crown spikes, shoulder dragon armor, cape corners, armor hem, and boots without retaining floor glow.
+  - Prompt/source focus: preserve imposing heavy general identity; fierce eyes, black topknot, thick black beard and moustache, ornate gold crown with red jewel, red-and-black lamellar armor with antique gold trim, dragon shoulder armor, gold beast belt ornament, dark red cape, large crescent polearm, and chunky armored boots.
+  - Framing and weapon focus: keep the complete polearm blade/tip/notches/ornate socket/full shaft/lower grip, crown top and spikes, shoulder dragon head, clenched fist, cape corners, armor skirt, belt ornament, and both boots visible inside the canvas; no sword, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1182)`, margins `(42, 190, 42, 354)`, full polearm/cape/boots visible.
+  - Updated baseline progress page and review page to include `gao_lan` v1.
+- Continued one-character workflow with `zhang_bu` / 장무.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_bu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_bu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_bu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve red-black armor, red cape, and silver sword blade.
+  - Extraction note: both available fullbody sources had the sword blade touching the left image edge. Final v1 used the v10 fullbody source, reduced the fit width to create safe left margin, applied a direct local `birefnet-general-lite` ONNX mask, then overlaid a local full-blade redraw aligned to the hilt so the sword point is closed inside the canvas.
+  - Prompt/source focus: preserve fierce compact armored officer identity; intense eyes, black topknot, short black moustache and goatee, gold hair ornament with blue jewel, red-and-black lamellar armor with antique gold trim, dragon shoulder armor, gold beast belt ornament, white tassels, red cape, one-handed straight sword, and chunky armored boots.
+  - Framing and weapon focus: keep the complete sword point/full silver blade/central ridge/guard/grip, hair ornament and topknot, clenched fist, shoulder dragon head, cape corners, armor skirt, belt ornament, tassels, and both boots visible inside the canvas; no spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(41, 190, 952, 1106)`, margins `(41, 190, 72, 430)`, redrawn sword/cape/boots visible.
+  - Updated baseline progress page and review page to include `zhang_bu` v1.
+- Continued one-character workflow with `gongsun_yuan` / 공손연.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/gongsun_yuan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/gongsun_yuan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/gongsun_yuan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve black fur mantle, dark armor, red-brown cape lining, and silver saber blade.
+  - Extraction note: both available sources had the broad saber touching the left image edge. Final v1 used the v10 fullbody source, reduced the fit width to create safe margins, applied a direct local `birefnet-general-lite` ONNX mask, and kept the original blade pixels while trimming only the left saber silhouette so the weapon reads as closed inside the canvas.
+  - Prompt/source focus: preserve fierce northern warlord identity; angry eyes, black topknot with ornate crown, thick black beard and moustache, black fur mantle, dark black-gold lamellar armor, dragon shoulder armor, gold beast belt ornament, tassels, heavy fur-lined cape, broad curved saber, open commanding hand, and chunky armored boots.
+  - Framing and weapon focus: keep the full saber visible within the canvas, crown top, hair plume, fur mantle edges, open hand and fingers, cape corners, armor skirt, belt ornament, tassels, and both boots; no spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(72, 190, 952, 1146)`, margins `(72, 190, 72, 390)`, saber/cape/boots visible.
+  - Updated baseline progress page and review page to include `gongsun_yuan` v1.
+- Continued one-character workflow with `liu_yu` / 유우.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/liu_yu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/liu_yu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/liu_yu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve green robes, white sleeves, green cape lining, and gold staff ornament.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted candidate keeps the complete dragon-headed staff and tassel, open hand, crown rods, cape corners, robe hem, and boots; a narrow edge-only cleanup neutralized low floor glow without changing the green-white robe colors.
+  - Prompt/source focus: preserve gentle elder governor identity; worried soft eyes, grey-black hair and beard, small moustache, green-and-gold official crown with side rods, white and green court armor-robes with antique gold trim, dragon shoulder armor, gold beast belt ornament, green tassels, green-lined cape, ornate dragon-headed staff, and chunky armored boots.
+  - Framing and prop focus: keep the complete staff head/shaft/green tassel, crown top and rods, open hand and fingers, sleeve openings, cape corners, robe hem, belt ornament, tassels, and both boots visible inside the canvas; no sword, spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1255)`, margins `(42, 190, 42, 281)`, full staff/cape/boots visible.
+  - Updated baseline progress page and review page to include `liu_yu` v1.
+- Continued one-character workflow with `yan_pu` / 염포.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/yan_pu_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/yan_pu_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/yan_pu_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal-green robes, dark cape, parchment scroll, and gold trim.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the complete scroll, dangling beads/tassel, hand-to-chin pose, crown rods, cape corners, robe hem, and boots without retaining the floor glow.
+  - Prompt/source focus: preserve calculating strategist identity; stern thinking expression, black hair and small goatee, tall teal-and-gold official crown with side rods and green jewel, dark teal official armor-robes with antique gold trim, gold beast belt ornament, white tassels, dark green cape, parchment scroll with red tassel, and chunky armored boots.
+  - Framing and prop focus: keep the complete scroll top/bottom/rolled rim, bead chain and tassel, crown top and rods, hand-to-chin pose, sleeve openings, cape corners, robe hem, belt ornament, tassels, and both boots visible inside the canvas; no sword, spear, axe, shield, fan, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1402)`, margins `(42, 190, 42, 134)`, full scroll/cape/boots visible.
+  - Updated baseline progress page and review page to include `yan_pu` v1.
+- Continued one-character workflow with `cheng_yin` / 성의.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cheng_yin_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cheng_yin_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cheng_yin_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark red cape strips, red plume/scarf, bronze armor, and silver curved sword.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the full curved sword, red plume, torn cape strips, armor skirt, and boots without retaining the floor glow.
+  - Prompt/source focus: preserve aggressive armored raider identity; fierce eyes, black goatee and moustache, bronze helmet with blue jewel and red plume, dark bronze lamellar armor, red scarf, tattered dark red cape, long curved sword held across the body, clenched fist, and chunky armored boots.
+  - Framing and weapon focus: keep the complete curved sword tip/full blade/guard/grip, helmet jewel and plume tips, scarf, clenched fist, torn cape strips, armor skirt, belt ornaments, and both boots visible inside the canvas; no spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1141)`, margins `(42, 190, 42, 395)`, full sword/cape/boots visible.
+  - Updated baseline progress page and review page to include `cheng_yin` v1.
+- Continued one-character workflow with `yuan_tan` / 원담.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/yuan_tan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/yuan_tan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/yuan_tan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve red armor, red cape, white fur collar, and gold trim.
+  - Extraction note: previous image-generation attempts for this character produced unrelated images, so final v1 used only the local v10 fullbody source. All available source versions had the broad sword touching the left edge; final v1 reduced the fit width, applied a direct local `birefnet-general-lite` ONNX mask, and accepted the closed in-canvas blade silhouette rather than introducing an off-topic redraw.
+  - Prompt/source focus: preserve confident young noble officer identity; smirking face, black topknot, ornate red-and-gold crown with side rods, red-and-gold lamellar armor, gold dragon shoulder armor, white fur collar, gold beast belt ornament, red tassels, red cape, broad sword, and chunky armored boots.
+  - Framing and weapon focus: keep the broad sword silhouette, crown top and rods, shoulder dragon head, white fur collar, hand on hip, cape corners, armor skirt, belt ornament, tassels, and both boots visible inside the canvas; no spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(72, 190, 952, 1148)`, margins `(72, 190, 72, 388)`, sword/cape/boots visible.
+  - Updated baseline progress page and review page to include `yuan_tan` v1.
+- Continued one-character workflow with `yuan_shang` / 원상.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/yuan_shang_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/yuan_shang_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/yuan_shang_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve purple armor, purple tassels, dark cape, and gold trim.
+  - Extraction note: final v1 used the v10 fullbody source, reduced the fit width for safe sword/cape margins, and applied a direct local `birefnet-general-lite` ONNX mask. The accepted candidate avoids the earlier large floor-blob masks while preserving the original armor and cape colors.
+  - Prompt/source focus: preserve smug young noble officer identity; calm smirk, black hair and small pointed goatee, tall red-and-gold official crown with blue jewel and side rods, purple-and-gold lamellar armor, gold dragon shoulder armor, gold beast belt ornament, purple tassels, dark purple cape, broad sword, and chunky armored boots.
+  - Framing and weapon focus: keep the broad sword silhouette, crown top and rods, shoulder dragon head, hand-on-hip pose, cape corners, armor skirt, belt ornament, tassels, and both boots visible inside the canvas; no spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(72, 190, 952, 1136)`, margins `(72, 190, 72, 400)`, sword/cape/boots visible.
+  - Updated baseline progress page and review page to include `yuan_shang` v1.
+- Continued one-character workflow with `tian_feng` / 전풍.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/tian_feng_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/tian_feng_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/tian_feng_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve purple tassels, dark cape, blue jewel, and parchment scroll.
+  - Extraction note: previous generated-image attempts for this character produced unrelated images, so final v1 used only the local v10 fullbody source. A direct local `birefnet-general-lite` ONNX mask at the accepted threshold kept the full scroll and cape while dropping the earlier large floor remnants.
+  - Prompt/source focus: preserve stern elder strategist identity; intense eyes, black hair, thick black beard and moustache, tall black-and-gold official crown with blue jewel and side rods, dark navy-black armor-robes with antique gold trim, gold dragon shoulder armor, gold beast belt ornament, purple tassels, dark purple cape, parchment scroll, open commanding hand, and chunky armored boots.
+  - Framing and prop focus: keep the complete scroll top/bottom/rolled rim, purple tassel, crown top and rods, open hand and fingers, sleeve openings, cape corners, robe hem, belt ornament, tassels, and both boots visible inside the canvas; no sword, spear, axe, shield, fan, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1206)`, margins `(42, 190, 42, 330)`, full scroll/cape/boots visible.
+  - Updated baseline progress page and review page to include `tian_feng` v1.
+- Continued one-character workflow with `liang_xing` / 양흥.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/liang_xing_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/liang_xing_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/liang_xing_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve green scarf/cape, fur trim, red tassel, and silver axe head.
+  - Extraction note: final v1 used the v10 fullbody source, reduced the fit width for safe margins around the left axe and right cape, and applied a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the axe head/shaft/tassel, headband, fur trim, cape corners, armor hem, and boots without retaining floor glow.
+  - Prompt/source focus: preserve rugged western officer identity; stern eyes, black topknot, thick black beard and moustache, gold headband with green cloth tie, green scarf, fur-trimmed bronze armor, spiked shoulder armor, gold beast belt ornament, green cape, pole axe with red tassel, and chunky armored boots.
+  - Framing and weapon focus: keep the complete axe head/left blade silhouette/shaft/red tassel, headband tie, fur collar and cuffs, clenched fist, cape corners, armor skirt, belt ornament, and both boots visible inside the canvas; no sword, spear, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(72, 190, 952, 1146)`, margins `(72, 190, 72, 390)`, full axe/cape/boots visible.
+  - Updated baseline progress page and review page to include `liang_xing` v1.
+- Continued one-character workflow with `hou_xuan` / 후선.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/hou_xuan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/hou_xuan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/hou_xuan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve green cape/scarf, bronze armor, sweat details, and silver curved sword.
+  - Extraction note: final v1 used the v10 fullbody source, reduced the fit width for safe margins around the left sword and right cape, and applied a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the sword silhouette, hair plume, cape corners, armor hem, and boots without retaining floor glow.
+  - Prompt/source focus: preserve anxious armored western officer identity; worried eyes, clenched teeth, sweat drops, black topknot with headband, green scarf, fur-trimmed bronze armor, gold beast belt ornament, green cape, curved sword, clenched fist, and chunky armored boots.
+  - Framing and weapon focus: keep the complete curved sword silhouette/guard/grip, headband and hair plume tips, sweat drops, scarf, clenched fist, cape corners, armor skirt, belt ornament, tassels, and both boots visible inside the canvas; no spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(72, 190, 952, 1124)`, margins `(72, 190, 72, 412)`, full sword/cape/boots visible.
+  - Updated baseline progress page and review page to include `hou_xuan` v1.
+- Continued one-character workflow with `cheng_gongying` / 성공영.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cheng_gongying_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cheng_gongying_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cheng_gongying_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark green robes, white fur trim, red tassels, and bronze staff ornament.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the complete dragon staff head, bead chain, red tassel, open right hand, fur-trimmed sleeves, robe hem, and boots without retaining floor glow.
+  - Prompt/source focus: preserve sly western strategist identity; narrow smirking eyes, long black beard and moustache, tall green-and-gold official crown, dark green official armor-robes, white fur trim, bronze shoulder armor, gold beast belt ornament, bead tassels, ornate dragon-headed staff, open beckoning hand, and chunky armored boots.
+  - Framing and prop focus: keep the complete staff head/shaft/beads/red tassel, crown top and rods, open hand and fingers, fur trim, sleeve openings, robe hem, belt ornament, tassels, and both boots visible inside the canvas; no sword, spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1211)`, margins `(42, 190, 42, 325)`, full staff/robe/boots visible.
+  - Updated baseline progress page and review page to include `cheng_gongying` v1.
+- Continued one-character workflow with `emperor_xian` / 헌제.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/emperor_xian_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/emperor_xian_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/emperor_xian_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve gold robes, green tablet, black hair, and the pale imperial bead curtain.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the imperial crown board, bead curtain, green tablet, cape corners, robe hem, and boots with holes between beads remaining transparent.
+  - Prompt/source focus: preserve timid young emperor identity; worried round eyes, small downturned mouth, tiny goatee, imperial bead curtain crown, black hair, gold and black court armor-robes, gold dragon shoulder armor, gold beast belt ornament, green tablet, gold cape, and small armored boots.
+  - Framing and prop focus: keep the complete crown board/bead curtain, green tablet top/bottom, hands, cape corners, robe hem, belt ornament, tassels, and both boots visible inside the canvas; no sword, spear, axe, shield, fan, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1366)`, margins `(42, 190, 42, 170)`, full crown/tablet/cape/boots visible.
+  - Updated baseline progress page and review page to include `emperor_xian` v1.
+- Continued one-character workflow with `diao_chan` / 초선.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/diao_chan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/diao_chan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/diao_chan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve pink ribbons, feather fan, white robe panels, and gold trim.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the feather fan, thin ribbons, extended hand, sleeve ends, robe panels, cape corners, and boots without retaining floor glow.
+  - Prompt/source focus: preserve elegant court dancer identity; composed eyes, long black hair, ornate gold crown with floral ornaments, pink and white armor-robes with antique gold trim, gold shoulder armor, gold beast belt ornament, red tassels, feather fan with pink ribbons, flowing sleeves and cape, and small armored boots.
+  - Framing and prop focus: keep the complete feather fan tips, fan handle, left ribbons, crown flowers, hair ornaments, open hand and fingers, sleeve ends, cape corners, robe hem, belt ornament, tassels, and both boots visible inside the canvas; no sword, spear, axe, shield, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1174)`, margins `(42, 190, 42, 362)`, full fan/ribbons/cape/boots visible.
+  - Updated baseline progress page and review page to include `diao_chan` v1.
+- Continued one-character workflow with `fan_chou` / 번조.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/fan_chou_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/fan_chou_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/fan_chou_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark armor, black cape, red tassel/plume, and silver poleaxe blade.
+  - Extraction note: final v1 used the v10 fullbody source, reduced the fit width for safe margins around the left poleaxe and right cape, and applied a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the poleaxe blade/shaft/red tassel, helmet plume, cape corners, armor hem, and boots without retaining floor glow.
+  - Prompt/source focus: preserve stout armored warlord identity; stern eyes, black beard and moustache, steel helmet with red plume, heavy dark lamellar armor with antique gold trim, dragon shoulder armor, gold beast belt ornament, black cape, poleaxe with red tassel, clenched fist, and chunky armored boots.
+  - Framing and weapon focus: keep the complete poleaxe blade/inner notch/shaft/red tassel, helmet plume, clenched fist, cape corners, armor skirt, belt ornament, and both boots visible inside the canvas; no sword, spear, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(72, 190, 952, 1108)`, margins `(72, 190, 72, 428)`, full poleaxe/cape/boots visible.
+  - Updated baseline progress page and review page to include `fan_chou` v1.
+- Continued one-character workflow with `hu_che_er` / 호거아.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/hu_che_er_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/hu_che_er_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/hu_che_er_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve bronze-black armor, skin tones, fur edges, and the dark spiked club.
+  - Extraction note: final v1 used the v10 fullbody source, reduced the fit width for safe margins around the horizontal club, and applied a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the spiked club head/shaft/end cap, clenched fist, tattered pelt, armor hem, and boots without retaining floor glow.
+  - Prompt/source focus: preserve hulking guard identity; stern eyes, black topknot, thick black beard and moustache, heavy bronze-black armor, spiked shoulder armor, fur trim, gold beast belt ornament, tattered brown pelt, massive spiked club over shoulder, bare muscular arm, and chunky armored boots.
+  - Framing and weapon focus: keep the complete spiked club head/studs/spikes/shaft/end cap, topknot, clenched fist, bare arm, pelt strips, armor skirt, belt ornament, and both boots visible inside the canvas; no sword, spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(72, 190, 952, 1147)`, margins `(72, 190, 72, 389)`, full club/pelt/boots visible.
+  - Updated baseline progress page and review page to include `hu_che_er` v1.
+- Continued one-character workflow with `zou_shi` / 추씨.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zou_shi_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zou_shi_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zou_shi_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve teal mirror face, purple robes, pink flowers/tassels, and gold trim.
+  - Extraction note: the direct local `birefnet-general-lite` ONNX mask on the v10 fullbody source preserved the body, hand, handle, tassel, cape, and boots but dropped the ornate handheld mirror head. Image generation attempts were not used; final v1 combined the accepted fullbody Biref base with a clean same-character cutout of the mirror/handle/hand detail, scaled by template matching and composited locally to restore the complete prop without background flecks.
+  - Prompt/source focus: preserve elegant noblewoman identity; calm eyes, ornate gold crown and hairpins, black hair with pink floral ornament, purple-and-gold armor-robes, gold beast belt ornament, flowing cape and sleeves, teal floral handheld mirror, pink tassels, open right hand, and small armored boots.
+  - Framing and prop focus: keep the complete mirror face/gold rim/top ornament/handle/pink tassel, left gripping hand, right open fingers, crown rods, floral hair ornament, sleeve openings, cape corners, robe hem, belt ornament, and both boots visible inside the canvas; no sword, spear, axe, shield, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1257)`, margins `(42, 190, 42, 279)`, full mirror/cape/boots visible.
+  - Updated baseline progress page and review page to include `zou_shi` v1.
+- Continued one-character workflow with `ji_ling` / 기령.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/ji_ling_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/ji_ling_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/ji_ling_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve red lamellar armor, crimson cape, red tassel, gold trim, and silver spear blades.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the complete trident spear head, side blades, shaft, red tassel, crown tassels, cape corners, armor hem, and boots without retaining floor glow.
+  - Prompt/source focus: preserve stern heavy general identity; thick black eyebrows, black moustache and pointed beard, tall gold crown with side tassels, red-and-gold lamellar armor, gold beast belt ornament, crimson cape, clenched right fist, ornate trident spear with red tassel, and chunky armored boots.
+  - Framing and weapon focus: keep the complete trident spear tip/side blades/shaft/red tassel, crown top and side tassels, clenched hands, cape corners, armor skirt, belt ornament, and both boots visible inside the canvas; no sword, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1345)`, margins `(42, 190, 42, 191)`, full spear/cape/boots visible.
+  - Updated baseline progress page and review page to include `ji_ling` v1.
+- Continued one-character workflow with `chen_lan` / 진란.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/chen_lan_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/chen_lan_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/chen_lan_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve green scarf and cloth strips, dark armor, skin tones, and silver axe blades.
+  - Extraction note: final v1 used the v10 fullbody source, reduced the fit width for safe weapon margins, and applied a direct local `birefnet-general-lite` ONNX mask. The mask kept the body, right axe, hair, scarf, armor, cloth strips, and boots, but dropped the left axe blade; the accepted file restores that blade and its mounting from the same source mapped to the final scale while keeping background particles out.
+  - Prompt/source focus: preserve rough dual-axe warrior identity; fierce eyes, gritted teeth, messy black topknot with green headband, short black beard, dark lamellar armor, green scarf and ragged waist cloth, gold beast belt ornament, left raised hand axe, right low hand axe, and chunky armored boots.
+  - Framing and weapon focus: keep the complete left axe blade/handle cap/shaft, right axe blade/handle, gripping hands, hair spikes, green headband tails, scarf ends, ragged cloth strips, armor hem, belt ornament, and both boots visible inside the canvas; no spear, sword, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(72, 190, 952, 1249)`, margins `(72, 190, 72, 287)`, full dual axes/cloth strips/boots visible.
+  - Updated baseline progress page and review page to include `chen_lan` v1.
+- Continued one-character workflow with `lei_bo` / 뇌박.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/lei_bo_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/lei_bo_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/lei_bo_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark blue-black armor, gold trim, skin tones, and bronze spiked mace details.
+  - Extraction note: final v1 used the v10 fullbody source, reduced the fit width for safe margins around the left spiked mace head and right fist, and applied a direct local `birefnet-general-lite` ONNX mask. The accepted wide fit keeps the mace head, spikes, shaft, lower pommel, raised fist, armor skirt, and boots without retaining floor glow.
+  - Prompt/source focus: preserve roaring heavy bruiser identity; bald head with small topknot, thick black beard and moustache, huge open shouting mouth, dark blue-black studded armor, spiked shoulder armor, lightning chest emblem, gold beast belt ornament, massive spiked mace, clenched right fist, and chunky armored boots.
+  - Framing and weapon focus: keep the complete spiked mace head/spikes/shaft/lower pommel, gripping left hand, clenched right fist, topknot, shoulder spikes, armor skirt, belt ornament, and both boots visible inside the canvas; no sword, spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(72, 190, 952, 1147)`, margins `(72, 190, 72, 389)`, full mace/fist/boots visible.
+  - Updated baseline progress page and review page to include `lei_bo` v1.
+- Continued one-character workflow with `zhang_xun` / 장훈.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_xun_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_xun_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_xun_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve red armor, crimson cape and plume, red tassels, gold trim, and silver halberd blade.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the complete halberd blade, side hook, red tassel, shaft, top plume, cape corners, armor skirt, and boots without retaining floor glow.
+  - Prompt/source focus: preserve stern red-armored officer identity; black beard and moustache, red hair plume, gold crown, red-and-gold dragon armor, gold beast belt ornament, crimson cape, pole halberd with red tassel, clenched right fist, and chunky armored boots.
+  - Framing and weapon focus: keep the complete halberd tip/side hook/shaft/red tassel, red plume, crown top, gripping hand, clenched fist, cape corners, armor hem, belt ornament, and both boots visible inside the canvas; no sword, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1213)`, margins `(42, 190, 42, 323)`, full halberd/cape/boots visible.
+  - Updated baseline progress page and review page to include `zhang_xun` v1.
+- Continued one-character workflow with `qiao_rui` / 교유.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/qiao_rui_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/qiao_rui_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/qiao_rui_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve gold armor, yellow cape, dark hair, brown tassels, and the dark curved saber.
+  - Extraction note: final v1 used the v10 fullbody source, reduced the fit width to keep safe left margin for the long curved saber, and applied a direct local `birefnet-general-lite` ONNX mask. The mask preserved the body, hilt, tassel, cape, and boots, but dropped most of the blade; the accepted file restores the broad curved blade from the same source mapped to the final scale, with ember tones inside the blade suppressed so they do not read as background particles.
+  - Prompt/source focus: preserve gold-armored officer identity; stern eyes, black topknot, gold headband, short black beard and moustache, gold lamellar armor with white fur collar, gold beast belt ornament, yellow cape, curved saber with ornate guard and tassel, clenched right fist, and chunky armored boots.
+  - Framing and weapon focus: keep the complete curved saber blade/guard/grip/tassel, left gripping hand, clenched right fist, topknot, headband tails, cape corners, armor hem, belt ornament, and both boots visible inside the canvas; no spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(25, 190, 902, 1128)`, margins `(25, 190, 122, 408)`, full saber/cape/boots visible.
+  - Updated baseline progress page and review page to include `qiao_rui` v1.
+- Continued one-character workflow with `han_xian` / 한섬.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_distinct_v3_stylematched/han_xian_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/han_xian_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/han_xian_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark brown armor, fur collar, black hair, bow, arrows, spear shaft, and silver spearheads.
+  - Extraction note: v10/fullbody_v6 were rejected for this pass because the left spear blade is visibly clipped by the source frame. Final v1 uses the same-character v3 stylematched fullbody source where both spearheads, bow, bowstring, quiver, cape, and boots are inside the image, then applies a direct local `birefnet-general-lite` ONNX mask.
+  - Prompt/source focus: preserve rugged archer-spearman identity; black high topknot hair, stern eyes, short beard and moustache, thick grey fur collar, dark lamellar armor, tattered black cape, quiver of arrows, curved bow, diagonal double-ended spear, and armored boots.
+  - Framing and weapon focus: keep the complete left spearhead/shaft/lower spearhead, bow limbs/string, quiver and arrows, hair topknot, fur collar, cape ends, armor hem, both hands, and both boots visible inside the canvas; no sword, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1173)`, margins `(42, 190, 42, 363)`, full spear/bow/quiver/cape/boots visible.
+  - Updated baseline progress page and review page to include `han_xian` v1.
+- Continued one-character workflow with `yang_feng` / 양봉.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/yang_feng_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/yang_feng_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/yang_feng_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve black armor, grey cape, leather spear shaft, blue-grey tassel, skin tones, and silver spearheads.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the complete vertical spear top, side tassels, shaft, lower spear butt, broad cape tail, armor skirt, both fists, and boots without retaining floor glow.
+  - Prompt/source focus: preserve stern black-armored commander identity; tall black official-style helmet, thick eyebrows, black beard and moustache, dark lamellar armor, round shoulder clasps, beast belt ornament, wide grey-black cape, vertical spear with tassel, clenched right fist, and chunky armored boots.
+  - Framing and weapon focus: keep the complete spear tip/side blades/tassel/shaft/lower butt, left gripping hand, clenched right fist, helmet top, cape corners, armor hem, belt ornament, and both boots visible inside the canvas; no sword, axe, shield, bow, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1224)`, margins `(42, 190, 42, 312)`, full spear/cape/boots visible.
+  - Updated baseline progress page and review page to include `yang_feng` v1.
+- Continued one-character workflow with `hua_tuo` / 화타.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/hua_tuo_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/hua_tuo_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/hua_tuo_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve white hair, pale robe, green outer robe, bronze chains, medicine bag, bottles, and the thin acupuncture needle.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the thin needle in the raised left hand, medicine bottles, shoulder chains, right-side bag, robe hems, ribbon tails, and both shoes without retaining floor glow.
+  - Prompt/source focus: preserve elderly physician identity; white topknot and long white hair, white eyebrows and beard, green robe over pale under-robe, hanging medicine pouches, bronze chain ornaments, round medicine bottles, raised needle hand, and black shoes.
+  - Framing and prop focus: keep the complete raised hand/needle, green hair ribbon, medicine pouch straps, side bag and bottles, robe cuffs, robe hem, belt ornaments, and both shoes visible inside the canvas; no sword, spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(46, 190, 978, 1510)`, margins `(46, 190, 46, 26)`, full needle/bag/robe/shoes visible.
+  - Updated baseline progress page and review page to include `hua_tuo` v1.
+- Continued one-character workflow with `zuo_ci` / 좌자.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zuo_ci_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zuo_ci_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zuo_ci_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve white-and-black feather fan, blue-purple robe, gold ornaments, brown gourds, rope tassels, and skin tones.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the feather fan silhouette, crown rods, sleeve edges, gourd cluster, rope loops, red tassel, robe tails, and both shoes without retaining floor glow.
+  - Prompt/source focus: preserve sly Taoist strategist identity; white hair and small pointed beard, black-gold crown, smirking face, ornate blue-purple robe, feather fan, yin-yang belt ornament, extended right fist holding rope, double gourd charm, and black shoes.
+  - Framing and prop focus: keep the complete feather fan, crown side rods, right sleeve and fist, gourd bodies, rope loops, red tassel, robe tails, belt ornaments, and both shoes visible inside the canvas; no sword, spear, axe, shield, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1196)`, margins `(42, 190, 42, 340)`, full fan/gourd/robe/shoes visible.
+  - Updated baseline progress page and review page to include `zuo_ci` v1.
+- Continued one-character workflow with `yu_ji` / 우길.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/yu_ji_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/yu_ji_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/yu_ji_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve blue-grey robes, white hair, bronze staff, jade ornaments, bamboo scroll, tan tassels, and skin tones.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the ornate staff head, hanging jade bead, left tassel, bamboo scroll, right tassel, robe sleeves, belt ornaments, and both shoes without retaining floor glow.
+  - Prompt/source focus: preserve calm Taoist sage identity; long white hair and beard, blue-grey crown, blue-grey embroidered robe, ornate bronze staff with jade tassel, bamboo scroll in right hand, chest jade ornament, waist charm, and black shoes.
+  - Framing and prop focus: keep the complete staff curls, jade beads, tassels, scroll body, scroll cord, right-side tassel, robe hem, sleeves, belt ornaments, and both shoes visible inside the canvas; no sword, spear, axe, shield, fan, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1299)`, margins `(42, 190, 42, 237)`, full staff/scroll/tassels/robe/shoes visible.
+  - Updated baseline progress page and review page to include `yu_ji` v1.
+- Continued one-character workflow with `zhang_jiao` / 장각.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200/zhang_jiao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_jiao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_jiao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve yellow robes, black hair and beard, gold armor, dragon staff, tassels, skin tones, and dark cape folds.
+  - Extraction note: v10/fullbody_v6 were rejected for this pass because the left dragon staff head is visibly clipped by the source frame. Final v1 uses the same-character initial fullbody source where the dragon staff head is intact, reduces the fit width to 880px for safe margins, and applies a direct local `birefnet-general-lite` ONNX mask.
+  - Prompt/source focus: preserve roaring Yellow Turban leader identity; black hair and heavy beard, yellow headband and fluttering ribbons, gold crown, yellow-and-black armor robes, dragon belt ornament, extended right hand, ornate dragon staff with hanging bead and tassel, broad cape, and armored boots.
+  - Framing and prop focus: keep the complete dragon staff head/horns/shaft/bead/tassel, left gripping hand, extended right hand and fingers, headband ribbons, crown, cape corners, robe hem, belt ornament, and both boots visible inside the canvas; no sword, spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(72, 190, 952, 1051)`, margins `(72, 190, 72, 485)`, full dragon staff/tassel/cape/boots visible.
+  - Updated baseline progress page and review page to include `zhang_jiao` v1.
+- Continued one-character workflow with `zhang_bao_yellow` / 장보.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_bao_yellow_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_bao_yellow_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_bao_yellow_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve yellow-gold armor, black beard and hair, silver sword, dark cape tears, skin tones, and yin-yang ornaments.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The source's golden spell sigil reads as background effect rather than body/prop, so the accepted cutout intentionally excludes that glow while preserving the full sword, extended hand, cape, robe tears, and boots.
+  - Prompt/source focus: preserve Yellow Turban sorcerer-officer identity; black beard and moustache, tall yin-yang crown, yellow-gold armor, spiked shoulder guard, dragon belt ornament, silver sword in left hand, extended right spell hand, torn yellow cape, and armored boots.
+  - Framing and weapon focus: keep the complete sword tip/blade/guard/grip, left gripping hand, extended right hand and fingers, crown top, cape corners, robe tears, belt ornament, and both boots visible inside the canvas; no extra spell glow, spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1185)`, margins `(42, 190, 42, 351)`, full sword/hand/cape/boots visible.
+  - Updated baseline progress page and review page to include `zhang_bao_yellow` v1.
+- Continued one-character workflow with `zhang_liang_yellow` / 장량.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_distinct_v3_stylematched/zhang_liang_yellow_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_liang_yellow_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_liang_yellow_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve black-and-gold armor, horned yellow helmet, black beard, spiked mace, shield, torn yellow cloth strips, and skin tones.
+  - Extraction note: v10/fullbody_v6 were rejected for this pass because the left spiked mace head is visibly clipped by the source frame. Final v1 uses the same-character v3 stylematched fullbody source where the mace head and shield are intact, then applies a direct local `birefnet-general-lite` ONNX mask.
+  - Prompt/source focus: preserve Yellow Turban shield bruiser identity; horned yellow helmet, black beard and moustache, dark black-gold armor, round shield with yellow strips, spiked mace in left hand, skull belt ornament, torn yellow ribbons, and armored boots.
+  - Framing and weapon focus: keep the complete spiked mace head/spikes/shaft, left gripping hand, shield rim/boss/cloth strips, helmet horns and ribbons, armor hem, skull belt ornament, and both boots visible inside the canvas; no sword, spear, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1191)`, margins `(42, 190, 42, 345)`, full mace/shield/helmet/boots visible.
+  - Updated baseline progress page and review page to include `zhang_liang_yellow` v1.
+- Continued one-character workflow with `bo_cai` / 파재.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_distinct_v3_stylematched/bo_cai_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/bo_cai_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/bo_cai_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve black-yellow armor, black hair and beard, curved silver blade, gold scarf, dark cape tears, and skin tones.
+  - Extraction note: v10/fullbody_v6 were rejected for this pass because the left curved sword blade is visibly clipped by the source frame. Final v1 uses the same-character v3 stylematched fullbody source where the raised curved blade is intact, then applies a direct local `birefnet-general-lite` ONNX mask.
+  - Prompt/source focus: preserve roaring Yellow Turban raider identity; wild black hair, yellow headband, black beard, open shouting mouth, black-and-yellow ragged armor, dragon belt ornament, raised curved blade in left hand, extended clawing right hand, tattered cape, and armored boots.
+  - Framing and weapon focus: keep the complete curved blade tip/edge/guard/grip, left gripping hand, extended right hand and fingers, hair silhouette, cape corners, robe tears, belt ornament, and both boots visible inside the canvas; no spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1169)`, margins `(42, 190, 42, 367)`, full sword/hand/cape/boots visible.
+  - Updated baseline progress page and review page to include `bo_cai` v1.
+- Continued one-character workflow with `cheng_yuanzhi` / 정원지.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/cheng_yuanzhi_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/cheng_yuanzhi_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/cheng_yuanzhi_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve dark armor, yellow scarf and spear cloth, gold trim, silver spearhead, black hair, skin tones, and dark cape.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the full spearhead, shaft, ragged yellow cloth strips, detached headband ribbon, crown side rods, cape tail, armor skirt, clenched right fist, and both boots without retaining floor glow.
+  - Prompt/source focus: preserve stern Yellow Turban spear officer identity; black topknot hair, black moustache and pointed beard, tall yellow-black crown, dark lamellar armor, yellow sash, gold beast belt ornament, long spear with ragged yellow cloth, yellow cape, and armored boots.
+  - Framing and weapon focus: keep the complete spearhead/shaft/yellow cloth strips, left gripping hand, crown top and side rods, headband ribbons, right fist, cape corners, armor hem, belt ornament, and both boots visible inside the canvas; no sword, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1339)`, margins `(42, 190, 42, 197)`, full spear/cloth/cape/boots visible.
+  - Updated baseline progress page and review page to include `cheng_yuanzhi` v1.
+- Continued one-character workflow with `deng_mao` / 등무.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200/deng_mao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/deng_mao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/deng_mao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve yellow-black armor, black hair and beard, spiked mace, skin tones, gold belt ornaments, and ragged yellow cape strips.
+  - Extraction note: v10/fullbody_v6 were rejected for this pass because the left axe-like weapon blade is visibly clipped by the source frame. A v3 candidate still had a mace side spike touching the left frame, so final v1 uses the same-character initial fullbody source where the spiked mace head is intact, reduces the fit width to 880px for safe margins, and applies a direct local `birefnet-general-lite` ONNX mask.
+  - Prompt/source focus: preserve roaring Yellow Turban bruiser identity; black topknot hair, yellow headband, thick black beard, open shouting mouth, muscular arms, spiked shoulder guard, yellow-black ragged armor, gold beast belt ornament, large spiked mace, clenched right fist, and armored boots.
+  - Framing and weapon focus: keep the complete spiked mace head/spikes/shaft, left gripping hand, right fist, hair topknot, shoulder spikes, cape strips, armor hem, belt ornament, and both boots visible inside the canvas; no sword, spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(72, 190, 952, 1084)`, margins `(72, 190, 72, 452)`, full mace/cape/boots visible.
+  - Updated baseline progress page and review page to include `deng_mao` v1.
+- Continued one-character workflow with `guan_hai` / 관해.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200/guan_hai_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/guan_hai_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/guan_hai_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve black-gold armor, yellow plume and cape, dark beard, silver polearm blade, gold tassel, and skin tones.
+  - Extraction note: v10/fullbody_v6 and v3-style variants were rejected for this pass because the large left axe blade is visibly clipped by the source frame. Final v1 uses the same-character initial fullbody source where the polearm blade and tassel are intact, then applies a direct local `birefnet-general-lite` ONNX mask.
+  - Prompt/source focus: preserve stern Yellow Turban heavy commander identity; black beard and moustache, gold headband and plume, black-gold armor, ornate shoulder armor, gold beast belt ornament, long polearm with silver blade and tassel, broad yellow cape, and armored boots.
+  - Framing and weapon focus: keep the complete polearm blade/side prongs/tassel/shaft, left gripping hand, plume and ribbon, right fist, cape corners, armor hem, belt ornament, and both boots visible inside the canvas; no sword, axe cutoff, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1152)`, margins `(42, 190, 42, 384)`, full polearm/cape/boots visible.
+  - Updated baseline progress page and review page to include `guan_hai` v1.
+- Continued one-character workflow with `pei_yuanshao` / 배원소.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200/pei_yuanshao_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/pei_yuanshao_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/pei_yuanshao_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve yellow-black armor, dark hair and beard, silver spearhead, yellow cape, fur collar, skin tones, and gold trim.
+  - Extraction note: v10/fullbody_v6 were avoided for this pass because the upper-left spear blade sits too close to the frame edge. Final v1 uses the same-character initial fullbody source with safer spearhead margin, then applies a direct local `birefnet-general-lite` ONNX mask.
+  - Prompt/source focus: preserve fierce Yellow Turban spear raider identity; wild black topknot, yellow headband, black beard and moustache, open grin, black-gold ragged armor, fur collar, gold beast belt ornament, long spear, clenched right fist, broad yellow cape, and armored boots.
+  - Framing and weapon focus: keep the complete spearhead/shaft/ornate collar, left gripping hand, right fist, headband and hair, cape corners, armor hem, belt ornament, and both boots visible inside the canvas; no sword, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1217)`, margins `(42, 190, 42, 319)`, full spear/cape/boots visible.
+  - Updated baseline progress page and review page to include `pei_yuanshao` v1.
+- Continued one-character workflow with `zhang_man_cheng` / 장만성.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhang_man_cheng_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhang_man_cheng_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhang_man_cheng_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve yellow robes, feather crown, dragon staff, tassels, dark hair, skin tones, gold armor, and black cape lining.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the dragon staff head, hanging beads, twin tassels, feather crown, extended right hand, robe sleeves, cape tail, robe hem, and both boots without retaining floor glow.
+  - Prompt/source focus: preserve noble Yellow Turban ritual commander identity; black topknot, small moustache and pointed beard, yellow feather crown, gold chest medallion, black-and-gold armor robes, dragon staff with beads and tassels, extended right hand, broad yellow cape, and armored boots.
+  - Framing and prop focus: keep the complete dragon staff head/shaft/beads/tassels, left gripping hand, feather crown, right hand and fingers, robe sleeves, cape corners, robe hem, chest medallion, and both boots visible inside the canvas; no sword, spear, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1368)`, margins `(42, 190, 42, 168)`, full staff/feathers/cape/boots visible.
+  - Updated baseline progress page and review page to include `zhang_man_cheng` v1.
+- Continued one-character workflow with `han_zhong` / 한충.
+  - Per user instruction, stayed on fullbody cutouts only and worked one character at a time.
+  - Source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/han_zhong_front_gaze_v1.png`
+  - Chroma-key source: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/han_zhong_fullbody_game_cutout_v1_chromakey.png`
+  - Transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/han_zhong_fullbody_game_cutout_v1.png`
+  - Chroma key: `#ff00ff` magenta, chosen to preserve yellow-black armor, dark hair and beard, silver spearhead, yellow cape and tassels, green beads, and skin tones.
+  - Extraction note: final v1 used the v10 fullbody source and a direct local `birefnet-general-lite` ONNX mask. The accepted mask keeps the full spearhead, shaft, hanging bead/tag/tassel ornament, hair topknot, headband ribbons, cape tail, armor hem, and both boots without retaining floor glow.
+  - Prompt/source focus: preserve stern Yellow Turban spear commander identity; black topknot hair, yellow headband, thick black beard, yellow-black ragged armor, gold beast belt ornament, long spear with hanging ornament and tassel, broad yellow cape, and armored boots.
+  - Framing and weapon focus: keep the complete spearhead/shaft/hanging ornament/tassel, left gripping hand, headband ribbons, hair silhouette, right fist, cape corners, armor hem, belt ornament, and both boots visible inside the canvas; no sword, axe, shield, fan, scroll, horse, mount, background fire, or particles.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(46, 190, 978, 1510)`, margins `(46, 190, 46, 26)`, full spear/tassel/cape/boots visible.
+  - Updated baseline progress page and review page to include `han_zhong` v1.
+
+## 2026-06-02 Fullbody Style Re-Audit
+
+- User correction accepted: the previous completion check counted files and edge safety, but did not strictly enforce the MD/guide rule that the reference fullbody is the style target, not only an identity target.
+- Re-audit rule for this pass: pass only when the cutout preserves the source roster face, rounded adult-compact proportions, short weighty stance, chunky hands/boots, silhouette weight, palette, and prop intent. A clean alpha PNG with complete weapons is not enough if the character becomes a sharper, taller, more detailed fantasy illustration.
+- Started one-character correction with `zhou_yu` / 주유 after visual review.
+  - Previous current v1 rejected for style drift: face became sharper and more mature-handsome, body proportions became longer, armor became overly detailed, and the result read like polished fantasy cutscene art rather than the original rounded game-roster style.
+  - Corrected source reference: `assets/generals/new_characters/front_gaze_200_v10_scale_audit/zhou_yu_front_gaze_v1.png`
+  - Corrected transparent cutout: `assets/generals/new_characters/fullbody_game_cutout_v1/zhou_yu_fullbody_game_cutout_v1.png`
+  - Corrected chroma key: `assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/zhou_yu_fullbody_game_cutout_v1_chromakey.png`
+  - Extraction note: replaced the generated/redrawn v1 with a direct local `birefnet-general-lite` ONNX mask from the v10 source so the face, head scale, rounded armor masses, short stance, chunky boots, and original silhouette remain intact.
+  - Framing note: the accepted mask keeps the curved sword, hilt, cape edge, plume, armor hem, and both boots inside the canvas with no edge contact.
+  - Validation: 1024 x 1536, RGBA alpha channel present, four transparent corners, no edge contact, bbox `(42, 190, 982, 1243)`, margins `(42, 190, 42, 293)`, source-roster style restored.
+- Completed a full 200-character style re-audit against the guide and `HALFBODY_GAME_CUTOUT_REWORK.md` clipping rules.
+  - Built comparison sheets in `tmp/fullbody_style_audit/` showing source/current/candidate and then source/replaced-current.
+  - Generated source-preserving local `birefnet-general-lite` candidates for all 200 active roster IDs. This pass does not create new character art; it masks the original fullbody style target and fits it into the transparent game canvas.
+  - Rejected the prior broad generated/redrawn active set as too often drifting toward sharper faces, taller proportions, cleaner fantasy-cutscene rendering, and over-detailed armor.
+  - Backed up the previous active mapped files under `tmp/fullbody_style_audit/previous_current_backup/`.
+  - Replaced each active mapped transparent file with the matching source-preserving candidate, keeping the existing `fullbodyCutoutFiles` filenames and review versions intact, including `cao_cao` v3 and `dong_zhuo` v2 mapped filenames.
+  - Replaced each matching active chroma-key file with the source-preserving candidate chroma source.
+  - Validation after replacement: roster IDs `200`, fullbody ID set `200`, file map `200`, review samples `200`, missing files `0`, image issues `0`, all active transparent cutouts are 1024 x 1536 RGBA with transparent corners and no edge contact.
+  - Visual review after replacement: source/current sheets show the active cutouts now preserve the original roster face shapes, rounded adult-compact proportions, short weighty stance, chunky boots/hands, and original silhouette weight instead of the sharper generated style.

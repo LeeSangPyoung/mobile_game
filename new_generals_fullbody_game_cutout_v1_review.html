@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>전신 게임 컷아웃 v1 리뷰</title>
+<style>
+* { box-sizing:border-box; }
+:root {
+  color-scheme:dark;
+  --bg:#11100d;
+  --panel:#1f1a14;
+  --line:rgba(244,223,184,.18);
+  --gold:#ffd36a;
+  --text:#f4dfb8;
+  --muted:#baa886;
+}
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+}
+header {
+  position:sticky;
+  top:0;
+  z-index:3;
+  padding:15px 20px 13px;
+  background:rgba(17,16,13,.95);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(10px);
+}
+h1 {
+  margin:0;
+  font-size:21px;
+  line-height:1.2;
+}
+.note {
+  margin-top:6px;
+  color:var(--muted);
+  font-size:13px;
+}
+main { padding:18px 20px 30px; }
+.review {
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+  background:var(--panel);
+}
+.review + .review { margin-top:18px; }
+.stage {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:1px;
+  background:var(--line);
+}
+.slot {
+  position:relative;
+  min-height:560px;
+  aspect-ratio:2/3;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.slot img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center bottom;
+}
+.original img { object-fit:cover; object-position:center 45%; }
+.dark { background:#070706; }
+.light { background:#e8dfcf; }
+.checker {
+  background-color:#2f2f2f;
+  background-image:
+    linear-gradient(45deg,#444 25%,transparent 25%),
+    linear-gradient(-45deg,#444 25%,transparent 25%),
+    linear-gradient(45deg,transparent 75%,#444 75%),
+    linear-gradient(-45deg,transparent 75%,#444 75%);
+  background-size:28px 28px;
+  background-position:0 0,0 14px,14px -14px,-14px 0;
+}
+.game {
+  background:
+    linear-gradient(180deg,rgba(5,10,18,.18),rgba(0,0,0,.58)),
+    radial-gradient(circle at 50% 82%,rgba(255,211,106,.22),transparent 34%),
+    linear-gradient(135deg,#223022,#161920 46%,#2a1d16);
+}
+.badge {
+  position:absolute;
+  left:10px;
+  top:10px;
+  z-index:1;
+  padding:4px 8px;
+  border-radius:6px;
+  background:rgba(13,9,6,.78);
+  border:1px solid rgba(255,211,106,.32);
+  color:var(--gold);
+  font-size:12px;
+  font-weight:850;
+}
+.meta {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:14px;
+  padding:11px 13px 13px;
+}
+.name {
+  margin:0;
+  font-size:17px;
+  font-weight:850;
+}
+.paths {
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+a {
+  color:var(--gold);
+  font-size:11px;
+  line-height:1.35;
+  text-decoration:none;
+  overflow-wrap:anywhere;
+}
+a:hover { text-decoration:underline; }
+@media (max-width:1100px) {
+  .stage { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:620px) {
+  header { padding:13px 12px 11px; }
+  main { padding:12px; }
+  .stage { grid-template-columns:1fr; }
+  .slot { min-height:480px; }
+  .meta { display:block; }
+  .paths { justify-content:flex-start; margin-top:7px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>전신 게임 컷아웃 v1 리뷰</h1>
+  <div class="note">기준: new_generals_halfbody_recovered_200_v6_progress.html · 컷아웃 진행 200명</div>
+</header>
+<main><section id="reviews"></section></main>
+<script>
+const samples = [
+  ["cao_cao", "조조", "002", "v3"],
+  ["cao_xing", "조흥", "003", "v1"],
+  ["dian_wei", "전위", "004", "v1"],
+  ["dong_zhuo", "동탁", "005", "v2"],
+  ["gan_ning", "감녕", "006", "v1"],
+  ["guan_yu", "관우", "007", "v1"],
+  ["guo_jia", "곽가", "008", "v1"],
+  ["huang_gai", "황개", "009", "v1"],
+  ["huang_zhong", "황충", "010", "v1"],
+  ["liu_bei", "유비", "011", "v1"],
+  ["lu_bu", "여포", "012", "v1"],
+  ["lu_xun", "육손", "013", "v1"],
+  ["ma_chao", "마초", "014", "v1"],
+  ["meng_huo", "맹획", "015", "v1"],
+  ["pang_tong", "방통", "016", "v1"],
+  ["sima_yi", "사마의", "017", "v1"],
+  ["sun_ce", "손책", "018", "v1"],
+  ["sun_quan", "손권", "019", "v1"],
+  ["taishi_ci", "태사자", "020", "v1"],
+  ["wen_chou", "문추", "021", "v1"],
+  ["xiahou_dun", "하후돈", "022", "v1"],
+  ["xu_chu", "허저", "023", "v1"],
+  ["xu_huang", "서황", "024", "v1"],
+  ["yan_liang", "안량", "025", "v1"],
+  ["yuan_shao", "원소", "026", "v1"],
+  ["zhang_fei", "장비", "027", "v1"],
+  ["zhang_liao", "장료", "028", "v1"],
+  ["zhao_yun", "조운", "029", "v1"],
+  ["zhou_yu", "주유", "030", "v1"],
+  ["zhuge_liang", "제갈량", "031", "v1"],
+  ["zhang_he", "장합", "032", "v1"],
+  ["yu_jin", "우금", "033", "v1"],
+  ["yue_jin", "악진", "034", "v1"],
+  ["li_dian", "이전", "035", "v1"],
+  ["cao_ren", "조인", "036", "v1"],
+  ["cao_hong", "조홍", "037", "v1"],
+  ["cao_pi", "조비", "038", "v1"],
+  ["cao_zhi", "조식", "039", "v1"],
+  ["cao_zhang", "조창", "040", "v1"],
+  ["cao_ang", "조앙", "041", "v1"],
+  ["cao_rui", "조예", "042", "v1"],
+  ["cao_shuang", "조상", "043", "v1"],
+  ["cao_zhen", "조진", "044", "v1"],
+  ["cao_xiu", "조휴", "045", "v1"],
+  ["xiahou_yuan", "하후연", "046", "v1"],
+  ["xiahou_ba", "하후패", "047", "v1"],
+  ["cheng_yu", "정욱", "048", "v1"],
+  ["xun_yu", "순욱", "049", "v1"],
+  ["xun_you", "순유", "050", "v1"],
+  ["jia_xu", "가후", "051", "v1"],
+  ["man_chong", "만총", "052", "v1"],
+  ["zhong_yao", "종요", "053", "v1"],
+  ["deng_ai", "등애", "054", "v1"],
+  ["zhong_hui", "종회", "055", "v1"],
+  ["guo_huai", "곽회", "056", "v1"],
+  ["wang_ping", "왕평", "057", "v1"],
+  ["wen_pin", "문빙", "058", "v1"],
+  ["zang_ba", "장패", "059", "v1"],
+  ["li_tong", "이통", "060", "v1"],
+  ["han_hao", "한호", "061", "v1"],
+  ["lu_qian", "여건", "062", "v1"],
+  ["mao_jie", "모개", "063", "v1"],
+  ["liu_ye", "유엽", "064", "v1"],
+  ["kuai_yue", "괴월", "065", "v1"],
+  ["kuai_liang", "괴량", "066", "v1"],
+  ["cai_mao", "채모", "067", "v1"],
+  ["zhang_yun", "장윤", "068", "v1"],
+  ["xu_sheng", "서성", "069", "v1"],
+  ["ding_feng", "정봉", "070", "v1"],
+  ["han_dang", "한당", "071", "v1"],
+  ["cheng_pu", "정보", "072", "v1"],
+  ["zhou_tai", "주태", "073", "v1"],
+  ["jiang_qin", "장흠", "074", "v1"],
+  ["ling_tong", "능통", "075", "v1"],
+  ["lu_su", "노숙", "076", "v1"],
+  ["zhang_zhao", "장소", "077", "v1"],
+  ["zhang_hong", "장굉", "078", "v1"],
+  ["zhu_zhi", "주치", "079", "v1"],
+  ["zhu_huan", "주환", "080", "v1"],
+  ["zhu_ran", "주연", "081", "v1"],
+  ["bu_zhi", "보즐", "082", "v1"],
+  ["kan_ze", "감택", "083", "v1"],
+  ["yu_fan", "우번", "084", "v1"],
+  ["he_qi", "하제", "085", "v1"],
+  ["pan_zhang", "반장", "086", "v1"],
+  ["ma_zhong_wu", "마충", "087", "v1"],
+  ["quan_cong", "전종", "088", "v1"],
+  ["sun_jian", "손견", "089", "v1"],
+  ["sun_shao", "손소", "090", "v1"],
+  ["sun_huan", "손환", "091", "v1"],
+  ["sun_luban", "손노반", "092", "v1"],
+  ["sun_luyu", "손노육", "093", "v1"],
+  ["daqiao", "대교", "094", "v1"],
+  ["xiaoqiao", "소교", "095", "v1"],
+  ["lian_shi", "연사", "096", "v1"],
+  ["guan_ping", "관평", "097", "v1"],
+  ["guan_xing", "관흥", "098", "v1"],
+  ["guan_suo", "관색", "099", "v1"],
+  ["guan_yinping", "관은병", "100", "v1"],
+  ["zhang_bao", "장포", "101", "v1"],
+  ["liu_shan", "유선", "102", "v1"],
+  ["liu_feng", "유봉", "103", "v1"],
+  ["ma_su", "마속", "104", "v1"],
+  ["ma_liang", "마량", "105", "v1"],
+  ["jiang_wei", "강유", "106", "v1"],
+  ["wei_yan", "위연", "107", "v1"],
+  ["fa_zheng", "법정", "108", "v1"],
+  ["jian_yong", "간옹", "109", "v1"],
+  ["mi_zhu", "미축", "110", "v1"],
+  ["mi_fang", "미방", "111", "v1"],
+  ["sun_qian", "손건", "112", "v1"],
+  ["liao_hua", "요화", "113", "v1"],
+  ["ma_dai", "마대", "114", "v1"],
+  ["yan_yan", "엄안", "115", "v1"],
+  ["li_yan", "이엄", "116", "v1"],
+  ["fei_yi", "비의", "117", "v1"],
+  ["dong_yun", "동윤", "118", "v1"],
+  ["jiang_wan", "장완", "119", "v1"],
+  ["huang_quan", "황권", "120", "v1"],
+  ["chen_dao", "진도", "121", "v1"],
+  ["meng_da", "맹달", "122", "v1"],
+  ["li_hui", "이회", "123", "v1"],
+  ["huo_jun", "곽준", "124", "v1"],
+  ["zhuge_zhan", "제갈첨", "125", "v1"],
+  ["zhuge_jin", "제갈근", "126", "v1"],
+  ["zhuge_dan", "제갈탄", "127", "v1"],
+  ["zhang_yi_shu", "장익", "128", "v1"],
+  ["dong_jue", "동궐", "129", "v1"],
+  ["xin_pi", "신비", "130", "v1"],
+  ["gongsun_zan", "공손찬", "131", "v1"],
+  ["gongsun_du", "공손도", "132", "v1"],
+  ["gongsun_kang", "공손강", "133", "v1"],
+  ["liu_biao", "유표", "134", "v1"],
+  ["liu_zhang", "유장", "135", "v1"],
+  ["liu_yao", "유요", "136", "v1"],
+  ["tao_qian", "도겸", "137", "v1"],
+  ["kong_rong", "공융", "138", "v1"],
+  ["zhang_lu", "장로", "139", "v1"],
+  ["zhang_ren", "장임", "140", "v1"],
+  ["ma_teng", "마등", "141", "v1"],
+  ["han_sui", "한수", "142", "v1"],
+  ["dong_cheng", "동승", "143", "v1"],
+  ["he_jin", "하진", "144", "v1"],
+  ["zhang_rang", "장양", "145", "v1"],
+  ["wang_yun", "왕윤", "146", "v1"],
+  ["li_jue", "이각", "147", "v1"],
+  ["guo_si", "곽사", "148", "v1"],
+  ["zhang_ji", "장제", "149", "v1"],
+  ["zhang_xiu", "장수", "150", "v1"],
+  ["hua_xiong", "화웅", "151", "v1"],
+  ["li_ru", "이유", "152", "v1"],
+  ["yuan_shu", "원술", "153", "v1"],
+  ["liu_xun", "유훈", "154", "v1"],
+  ["zhou_cang", "주창", "155", "v1"],
+  ["fu_shi_ren", "부사인", "156", "v1"],
+  ["zhang_song", "장송", "157", "v1"],
+  ["sha_moke", "사마가", "158", "v1"],
+  ["yuan_xi", "원희", "159", "v1"],
+  ["ju_shou", "저수", "160", "v1"],
+  ["shen_pei", "심배", "161", "v1"],
+  ["feng_ji", "봉기", "162", "v1"],
+  ["guo_tu", "곽도", "163", "v1"],
+  ["xin_ping", "신평", "164", "v1"],
+  ["gao_lan", "고람", "165", "v1"],
+  ["zhang_bu", "장무", "166", "v1"],
+  ["gongsun_yuan", "공손연", "167", "v1"],
+  ["liu_yu", "유우", "168", "v1"],
+  ["yan_pu", "염포", "169", "v1"],
+  ["cheng_yin", "성의", "170", "v1"],
+  ["yuan_tan", "원담", "171", "v1"],
+  ["yuan_shang", "원상", "172", "v1"],
+  ["tian_feng", "전풍", "173", "v1"],
+  ["liang_xing", "양흥", "174", "v1"],
+  ["hou_xuan", "후선", "175", "v1"],
+  ["cheng_gongying", "성공영", "176", "v1"],
+  ["emperor_xian", "헌제", "177", "v1"],
+  ["diao_chan", "초선", "178", "v1"],
+  ["fan_chou", "번조", "179", "v1"],
+  ["hu_che_er", "호거아", "180", "v1"],
+  ["zou_shi", "추씨", "181", "v1"],
+  ["ji_ling", "기령", "182", "v1"],
+  ["chen_lan", "진란", "183", "v1"],
+  ["lei_bo", "뇌박", "184", "v1"],
+  ["zhang_xun", "장훈", "185", "v1"],
+  ["qiao_rui", "교유", "186", "v1"],
+  ["han_xian", "한섬", "187", "v1"],
+  ["yang_feng", "양봉", "188", "v1"],
+  ["hua_tuo", "화타", "189", "v1"],
+  ["zuo_ci", "좌자", "190", "v1"],
+  ["yu_ji", "우길", "191", "v1"],
+  ["zhang_jiao", "장각", "192", "v1"],
+  ["zhang_bao_yellow", "장보", "193", "v1"],
+  ["zhang_liang_yellow", "장량", "194", "v1"],
+  ["bo_cai", "파재", "195", "v1"],
+  ["cheng_yuanzhi", "정원지", "196", "v1"],
+  ["deng_mao", "등무", "197", "v1"],
+  ["guan_hai", "관해", "198", "v1"],
+  ["pei_yuanshao", "배원소", "199", "v1"],
+  ["zhang_man_cheng", "장만성", "200", "v1"],
+  ["han_zhong", "한충", "201", "v1"]
+];
+const reviews = document.getElementById("reviews");
+const cacheBust = "style-reaudit-source-mask-20260602";
+samples.forEach(([id, ko, no, version]) => {
+  const suffix = `${id}_fullbody_game_cutout_${version}.png`;
+  const source = `./assets/generals/new_characters/front_gaze_200_v10_scale_audit/${id}_front_gaze_v1.png?v=${cacheBust}`;
+  const chroma = `./assets/generals/new_characters/fullbody_game_cutout_v1_chromakey/${id}_fullbody_game_cutout_${version}_chromakey.png?v=${cacheBust}`;
+  const cutout = `./assets/generals/new_characters/fullbody_game_cutout_v1/${suffix}?v=${cacheBust}`;
+  const el = document.createElement("article");
+  el.className = "review";
+  el.innerHTML = `
+    <div class="stage">
+      <div class="slot original">
+        <span class="badge">기준 전신</span>
+        <img src="${source}" alt="${ko} 기준 전신">
+      </div>
+      <div class="slot checker">
+        <span class="badge">투명 체크</span>
+        <img src="${cutout}" alt="${ko} 전신 게임 컷아웃 ${version}">
+      </div>
+      <div class="slot light">
+        <span class="badge">밝은 배경</span>
+        <img src="${cutout}" alt="${ko} 밝은 배경 검수 ${version}">
+      </div>
+      <div class="slot game">
+        <span class="badge">게임 배경</span>
+        <img src="${cutout}" alt="${ko} 게임 배경 검수 ${version}">
+      </div>
+    </div>
+    <div class="meta">
+      <p class="name">${ko} ${version} <small>${no} · ${id}</small></p>
+      <div class="paths">
+        <a href="${chroma}">chroma-key source</a>
+        <a href="${cutout}">transparent cutout</a>
+      </div>
+    </div>`;
+  reviews.appendChild(el);
+});
+</script>
+</body>
+</html>

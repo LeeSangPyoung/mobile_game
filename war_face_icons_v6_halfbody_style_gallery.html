@@ -1,0 +1,1607 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>전쟁 얼굴 아이콘 v6 cute50 투명</title>
+<style>
+* { box-sizing: border-box; }
+:root {
+  color-scheme: dark;
+  --bg:#120f0b;
+  --panel:#211913;
+  --panel2:#18120d;
+  --line:rgba(244,223,184,.18);
+  --gold:#ffd36a;
+  --text:#f4dfb8;
+  --muted:#bfa986;
+  --done:#6ee7a8;
+  --wait:#ffb46b;
+}
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+}
+header {
+  position:sticky;
+  top:0;
+  z-index:5;
+  padding:16px 20px 13px;
+  background:rgba(18,15,11,.95);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(10px);
+}
+.top {
+  display:flex;
+  align-items:baseline;
+  gap:14px;
+  flex-wrap:wrap;
+}
+h1 {
+  margin:0;
+  font-size:22px;
+  font-weight:850;
+  letter-spacing:0;
+}
+.count {
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.45;
+}
+main { padding:18px 20px 28px; }
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:14px;
+}
+article {
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel);
+  box-shadow:0 10px 22px rgba(0,0,0,.22);
+}
+.pair {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1px;
+  background:rgba(244,223,184,.15);
+}
+.art {
+  position:relative;
+  display:grid;
+  place-items:center;
+  aspect-ratio:1;
+  overflow:hidden;
+  background:#0f0c09;
+}
+.ref img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center 34%;
+}
+.icon {
+  background:
+    linear-gradient(45deg, rgba(255,255,255,.08) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,.08) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,.08) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.08) 75%),
+    #17110d;
+  background-size:20px 20px;
+  background-position:0 0, 0 10px, 10px -10px, -10px 0;
+}
+.icon img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.badge,.status {
+  position:absolute;
+  z-index:1;
+  padding:3px 7px 4px;
+  border-radius:6px;
+  background:rgba(13,9,6,.76);
+  border:1px solid rgba(255,211,106,.32);
+  color:var(--gold);
+  font-size:11px;
+  font-weight:850;
+}
+.badge { left:8px; top:8px; }
+.status { right:8px; top:8px; }
+.done { color:var(--done); }
+.wait { color:var(--wait); }
+.missing {
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:100%;
+  padding:14px;
+  color:var(--wait);
+  font-size:13px;
+  font-weight:850;
+  text-align:center;
+  background:var(--panel2);
+}
+.meta { padding:10px 11px 12px; }
+.name {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:8px;
+  margin:0 0 7px;
+  font-size:16px;
+  font-weight:850;
+}
+.name small {
+  color:#9e8a67;
+  font-size:11px;
+  font-weight:750;
+}
+.note {
+  margin:0 0 7px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+}
+a {
+  display:block;
+  overflow-wrap:anywhere;
+  color:var(--gold);
+  font-size:11px;
+  line-height:1.35;
+  text-decoration:none;
+}
+a:hover { text-decoration:underline; }
+@media (max-width:720px) {
+  header { padding:14px 12px 12px; }
+  main { padding:12px; }
+  .grid { grid-template-columns:1fr; gap:12px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>전쟁 얼굴 아이콘 v6 cute50 투명</h1>
+    <div id="count" class="count">진행 확인중</div>
+  </div>
+</header>
+<main><section id="grid" class="grid"></section></main>
+<script src="./assets/generals/roster_200.js"></script>
+<script>
+const version = "war-face-v6-cute50-transparent-20260604-xiahou-dun-neck-combat";
+const iconBase = "./assets/generals/face_icons/war_v6_halfbody_style_transparent";
+const refBase = "./assets/generals/new_characters/upper_body_200_redraw_v6_above_navel";
+const completed = {
+  cao_cao: {
+    label: "cute50",
+    expression: "비장한 귀요미 군주 · 투명 PNG",
+    icon: `${iconBase}/cao_cao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cao_cao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cao_xing: {
+    label: "cute50",
+    expression: "비장한 궁병 귀요미 · 투명 PNG",
+    icon: `${iconBase}/cao_xing_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cao_xing_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  dian_wei: {
+    label: "cute50",
+    expression: "성난 맹장 귀요미 · 투명 PNG",
+    icon: `${iconBase}/dian_wei_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/dian_wei_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  dong_zhuo: {
+    label: "cute50",
+    expression: "음흉한 폭군 귀요미 · 얼굴 확대 · 투명 PNG",
+    icon: `${iconBase}/dong_zhuo_war_face_icon_v6_cute50_tight.png?v=${version}`,
+    source: `${iconBase}/dong_zhuo_war_face_icon_v6_cute50_tight_source.png?v=${version}`
+  },
+  gan_ning: {
+    label: "cute50",
+    expression: "날렵한 돌격 귀요미 · 투명 PNG",
+    icon: `${iconBase}/gan_ning_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/gan_ning_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  guan_yu: {
+    label: "cute50",
+    expression: "새로 그린 관우 · 황개 기준 얼굴-only · 투명 PNG",
+    icon: `${iconBase}/guan_yu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/guan_yu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  guo_jia: {
+    label: "cute50",
+    expression: "새로 그린 곽가 · 황개 기준 얼굴-only · 투명 PNG",
+    icon: `${iconBase}/guo_jia_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/guo_jia_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  huang_gai: {
+    label: "cute50",
+    expression: "노장 맹장 귀요미 · 흰 수염 전투 표정 · 투명 PNG",
+    icon: `${iconBase}/huang_gai_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/huang_gai_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  huang_zhong: {
+    label: "cute50",
+    expression: "노장 궁수 귀요미 · 흰 수염 전투 표정 · 투명 PNG",
+    icon: `${iconBase}/huang_zhong_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/huang_zhong_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  liu_bei: {
+    label: "cute50",
+    expression: "결연한 군주 귀요미 · 녹금 관과 검은 수염 · 투명 PNG",
+    icon: `${iconBase}/liu_bei_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/liu_bei_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  lu_bu: {
+    label: "cute50",
+    expression: "맹렬한 무장 귀요미 · 붉은 깃털 관식 · 투명 PNG",
+    icon: `${iconBase}/lu_bu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/lu_bu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  lu_xun: {
+    label: "cute50",
+    expression: "날렵한 책사 귀요미 · 적흑 관과 검은 머리 · 투명 PNG",
+    icon: `${iconBase}/lu_xun_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/lu_xun_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  ma_chao: {
+    label: "cute50",
+    expression: "젊은 기마장수 귀요미 · 은발과 푸른 보석 · 투명 PNG",
+    icon: `${iconBase}/ma_chao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/ma_chao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  meng_huo: {
+    label: "cute50",
+    expression: "야성적인 남만왕 귀요미 · 황금 뿔과 검은 수염 · 투명 PNG",
+    icon: `${iconBase}/meng_huo_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/meng_huo_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  pang_tong: {
+    label: "cute50",
+    expression: "교활한 책사 귀요미 · 녹금 관과 검은 수염 · 투명 PNG",
+    icon: `${iconBase}/pang_tong_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/pang_tong_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  sima_yi: {
+    label: "cute50",
+    expression: "냉철한 책사 귀요미 · 보라 관과 작은 수염 · 투명 PNG",
+    icon: `${iconBase}/sima_yi_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/sima_yi_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  sun_ce: {
+    label: "cute50",
+    expression: "젊은 패왕 귀요미 · 붉은 보석과 높은 포니테일 · 투명 PNG",
+    icon: `${iconBase}/sun_ce_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/sun_ce_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  sun_quan: {
+    label: "cute50",
+    expression: "청록 군주 귀요미 · 왕관과 검은 수염 · 투명 PNG",
+    icon: `${iconBase}/sun_quan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/sun_quan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  taishi_ci: {
+    label: "cute50",
+    expression: "돌격 무장 귀요미 · 푸른 머리띠와 높은 포니테일 · 투명 PNG",
+    icon: `${iconBase}/taishi_ci_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/taishi_ci_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  wen_chou: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/wen_chou_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/wen_chou_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  xiahou_dun: {
+    label: "cute50",
+    expression: "새로 그린 하후돈 · 전투 표정 얼굴+목 · 투명 PNG",
+    icon: `${iconBase}/xiahou_dun_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/xiahou_dun_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  xu_chu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/xu_chu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/xu_chu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  xu_huang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/xu_huang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/xu_huang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  yan_liang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/yan_liang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/yan_liang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  yuan_shao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/yuan_shao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/yuan_shao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_fei: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_fei_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_fei_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_liao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_liao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_liao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhao_yun: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhao_yun_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhao_yun_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhou_yu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhou_yu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhou_yu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhuge_liang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhuge_liang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhuge_liang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_he: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_he_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_he_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  yu_jin: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/yu_jin_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/yu_jin_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  yue_jin: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/yue_jin_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/yue_jin_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  li_dian: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/li_dian_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/li_dian_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cao_ren: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cao_ren_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cao_ren_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cao_hong: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cao_hong_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cao_hong_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cao_pi: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cao_pi_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cao_pi_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cao_zhi: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cao_zhi_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cao_zhi_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cao_zhang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cao_zhang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cao_zhang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cao_ang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cao_ang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cao_ang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cao_rui: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cao_rui_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cao_rui_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cao_shuang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cao_shuang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cao_shuang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cao_zhen: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cao_zhen_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cao_zhen_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cao_xiu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cao_xiu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cao_xiu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  xiahou_yuan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/xiahou_yuan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/xiahou_yuan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  xiahou_ba: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/xiahou_ba_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/xiahou_ba_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cheng_yu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cheng_yu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cheng_yu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  xun_yu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/xun_yu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/xun_yu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  xun_you: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/xun_you_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/xun_you_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  jia_xu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/jia_xu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/jia_xu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  man_chong: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/man_chong_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/man_chong_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhong_yao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhong_yao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhong_yao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  deng_ai: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/deng_ai_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/deng_ai_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhong_hui: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhong_hui_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhong_hui_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  guo_huai: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/guo_huai_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/guo_huai_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  wang_ping: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/wang_ping_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/wang_ping_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  wen_pin: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/wen_pin_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/wen_pin_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zang_ba: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zang_ba_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zang_ba_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  li_tong: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/li_tong_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/li_tong_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  han_hao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/han_hao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/han_hao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  lu_qian: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/lu_qian_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/lu_qian_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  mao_jie: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/mao_jie_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/mao_jie_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  liu_ye: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/liu_ye_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/liu_ye_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  kuai_yue: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/kuai_yue_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/kuai_yue_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  kuai_liang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/kuai_liang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/kuai_liang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cai_mao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cai_mao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cai_mao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_yun: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_yun_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_yun_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  xu_sheng: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/xu_sheng_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/xu_sheng_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  ding_feng: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/ding_feng_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/ding_feng_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  han_dang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/han_dang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/han_dang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cheng_pu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cheng_pu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cheng_pu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhou_tai: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhou_tai_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhou_tai_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  jiang_qin: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/jiang_qin_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/jiang_qin_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  ling_tong: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/ling_tong_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/ling_tong_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  lu_su: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/lu_su_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/lu_su_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_zhao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_zhao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_zhao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_hong: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_hong_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_hong_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhu_zhi: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhu_zhi_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhu_zhi_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhu_huan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhu_huan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhu_huan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhu_ran: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhu_ran_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhu_ran_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  bu_zhi: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/bu_zhi_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/bu_zhi_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  kan_ze: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/kan_ze_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/kan_ze_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  yu_fan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/yu_fan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/yu_fan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  he_qi: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/he_qi_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/he_qi_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  pan_zhang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/pan_zhang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/pan_zhang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  ma_zhong_wu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/ma_zhong_wu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/ma_zhong_wu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  quan_cong: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/quan_cong_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/quan_cong_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  sun_jian: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/sun_jian_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/sun_jian_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  sun_shao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/sun_shao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/sun_shao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  sun_huan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/sun_huan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/sun_huan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  sun_luban: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/sun_luban_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/sun_luban_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  sun_luyu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/sun_luyu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/sun_luyu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  daqiao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/daqiao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/daqiao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  xiaoqiao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/xiaoqiao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/xiaoqiao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  lian_shi: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/lian_shi_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/lian_shi_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  guan_ping: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/guan_ping_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/guan_ping_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  guan_xing: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/guan_xing_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/guan_xing_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  guan_suo: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/guan_suo_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/guan_suo_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  guan_yinping: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/guan_yinping_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/guan_yinping_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_bao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_bao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_bao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  liu_shan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/liu_shan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/liu_shan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  liu_feng: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/liu_feng_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/liu_feng_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  ma_su: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/ma_su_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/ma_su_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  ma_liang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/ma_liang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/ma_liang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  jiang_wei: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/jiang_wei_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/jiang_wei_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  wei_yan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/wei_yan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/wei_yan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  fa_zheng: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/fa_zheng_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/fa_zheng_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  jian_yong: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/jian_yong_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/jian_yong_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  mi_zhu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/mi_zhu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/mi_zhu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  mi_fang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/mi_fang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/mi_fang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  sun_qian: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/sun_qian_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/sun_qian_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  liao_hua: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/liao_hua_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/liao_hua_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhou_cang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhou_cang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhou_cang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  ma_dai: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/ma_dai_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/ma_dai_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  yan_yan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/yan_yan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/yan_yan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  li_yan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/li_yan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/li_yan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  fei_yi: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/fei_yi_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/fei_yi_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  dong_yun: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/dong_yun_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/dong_yun_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  jiang_wan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/jiang_wan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/jiang_wan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  huang_quan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/huang_quan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/huang_quan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  chen_dao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/chen_dao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/chen_dao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  fu_shi_ren: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/fu_shi_ren_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/fu_shi_ren_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  meng_da: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/meng_da_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/meng_da_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_song: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_song_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_song_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  li_hui: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/li_hui_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/li_hui_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  huo_jun: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/huo_jun_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/huo_jun_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  sha_moke: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/sha_moke_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/sha_moke_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhuge_zhan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhuge_zhan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhuge_zhan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhuge_jin: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhuge_jin_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhuge_jin_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhuge_dan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhuge_dan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhuge_dan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_yi_shu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_yi_shu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_yi_shu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  dong_jue: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/dong_jue_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/dong_jue_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  yuan_tan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/yuan_tan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/yuan_tan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  yuan_xi: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/yuan_xi_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/yuan_xi_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  yuan_shang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/yuan_shang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/yuan_shang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  tian_feng: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/tian_feng_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/tian_feng_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  ju_shou: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/ju_shou_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/ju_shou_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  shen_pei: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/shen_pei_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/shen_pei_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  feng_ji: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/feng_ji_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/feng_ji_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  guo_tu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/guo_tu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/guo_tu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  xin_ping: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/xin_ping_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/xin_ping_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  xin_pi: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/xin_pi_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/xin_pi_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  gao_lan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/gao_lan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/gao_lan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_bu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_bu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_bu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  gongsun_zan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/gongsun_zan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/gongsun_zan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  gongsun_du: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/gongsun_du_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/gongsun_du_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  gongsun_kang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/gongsun_kang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/gongsun_kang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  gongsun_yuan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/gongsun_yuan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/gongsun_yuan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  liu_biao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/liu_biao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/liu_biao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  liu_zhang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/liu_zhang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/liu_zhang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  liu_yao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/liu_yao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/liu_yao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  liu_yu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/liu_yu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/liu_yu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  tao_qian: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/tao_qian_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/tao_qian_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  kong_rong: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/kong_rong_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/kong_rong_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_lu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_lu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_lu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_ren: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_ren_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_ren_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  yan_pu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/yan_pu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/yan_pu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  ma_teng: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/ma_teng_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/ma_teng_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  han_sui: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/han_sui_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/han_sui_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cheng_yin: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cheng_yin_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cheng_yin_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  liang_xing: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/liang_xing_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/liang_xing_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  hou_xuan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/hou_xuan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/hou_xuan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cheng_gongying: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cheng_gongying_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cheng_gongying_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  dong_cheng: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/dong_cheng_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/dong_cheng_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  he_jin: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/he_jin_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/he_jin_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_rang: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_rang_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_rang_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  emperor_xian: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/emperor_xian_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/emperor_xian_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  wang_yun: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/wang_yun_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/wang_yun_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  diao_chan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/diao_chan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/diao_chan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  li_jue: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/li_jue_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/li_jue_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  guo_si: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/guo_si_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/guo_si_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  fan_chou: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/fan_chou_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/fan_chou_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_ji: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_ji_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_ji_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_xiu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_xiu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_xiu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  hu_che_er: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/hu_che_er_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/hu_che_er_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zou_shi: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zou_shi_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zou_shi_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  hua_xiong: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/hua_xiong_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/hua_xiong_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  li_ru: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/li_ru_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/li_ru_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  yuan_shu: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/yuan_shu_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/yuan_shu_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  ji_ling: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/ji_ling_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/ji_ling_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  liu_xun: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/liu_xun_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/liu_xun_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  chen_lan: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/chen_lan_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/chen_lan_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  lei_bo: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/lei_bo_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/lei_bo_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_xun: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_xun_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_xun_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  qiao_rui: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/qiao_rui_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/qiao_rui_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  han_xian: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/han_xian_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/han_xian_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  yang_feng: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/yang_feng_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/yang_feng_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  hua_tuo: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/hua_tuo_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/hua_tuo_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zuo_ci: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zuo_ci_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zuo_ci_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  yu_ji: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/yu_ji_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/yu_ji_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_jiao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_jiao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_jiao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_bao_yellow: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_bao_yellow_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_bao_yellow_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_liang_yellow: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_liang_yellow_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_liang_yellow_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  bo_cai: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/bo_cai_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/bo_cai_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  cheng_yuanzhi: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/cheng_yuanzhi_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/cheng_yuanzhi_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  deng_mao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/deng_mao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/deng_mao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  guan_hai: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/guan_hai_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/guan_hai_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  pei_yuanshao: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/pei_yuanshao_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/pei_yuanshao_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  zhang_man_cheng: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/zhang_man_cheng_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/zhang_man_cheng_war_face_icon_v6_cute50_source.png?v=${version}`
+  },
+  han_zhong: {
+    label: "redraw 필요",
+    needsRedraw: true,
+    expression: "기존 crop 임시본 · 황개 기준 새로 그리기 필요",
+    icon: `${iconBase}/han_zhong_war_face_icon_v6_cute50.png?v=${version}`,
+    source: `${iconBase}/han_zhong_war_face_icon_v6_cute50_source.png?v=${version}`
+  }
+};
+const grid = document.getElementById("grid");
+const count = document.getElementById("count");
+
+function refPath(id) {
+  return `${refBase}/${id}_halfbody_redraw_v6.png?v=${version}`;
+}
+
+window.GENERALS_200.forEach(([id, ko], index) => {
+  const no = String(index + 1).padStart(3, "0");
+  const item = completed[id];
+  const done = Boolean(item);
+  const accepted = done && !item.needsRedraw;
+  const article = document.createElement("article");
+  article.innerHTML = `
+    <div class="pair">
+      <div class="art ref">
+        <span class="badge">v6 반신</span>
+        <img loading="lazy" src="${refPath(id)}" alt="${ko} v6 반신">
+      </div>
+      <div class="art icon">
+        <span class="badge">${done ? item.label : "대기"}</span>
+        <span class="status ${accepted ? "done" : "wait"}">${accepted ? "완료" : (done ? "재생성필요" : "미생성")}</span>
+        ${done
+          ? `<img loading="lazy" src="${item.icon}" alt="${ko} 전쟁 얼굴 아이콘">`
+          : `<div class="missing">아이콘 대기</div>`}
+      </div>
+    </div>
+    <div class="meta">
+      <p class="name"><span>${ko}</span><small>${no} · ${id}</small></p>
+      <p class="note">${done ? item.expression : "배경 없는 cute50 투명 PNG로 생성 예정"}</p>
+      <a href="${refPath(id)}">반신 기준: ${refPath(id)}</a>
+      ${done ? `<a href="${item.icon}">아이콘: ${item.icon}</a><a href="${item.source}">소스: ${item.source}</a>` : ""}
+    </div>`;
+  const ref = article.querySelector(".ref img");
+  ref.addEventListener("error", () => {
+    ref.replaceWith(Object.assign(document.createElement("div"), {
+      className: "missing",
+      textContent: "반신 없음"
+    }));
+  }, { once:true });
+  grid.appendChild(article);
+});
+
+const acceptedCount = Object.values(completed).filter(item => !item.needsRedraw).length;
+count.textContent = `완료 ${acceptedCount}/${window.GENERALS_200.length} · 기준 톤 cute50 · 배경 없음/투명 PNG · 재생성 필요 ${Object.keys(completed).length - acceptedCount}`;
+</script>
+</body>
+</html>

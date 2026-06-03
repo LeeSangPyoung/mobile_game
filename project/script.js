@@ -7,6 +7,16 @@
 (function () {
   'use strict';
 
+  /* ---------- 0. atlas 이미지 사용 가능 여부 ---------- */
+  function detectAtlas() {
+    const root = document.documentElement;
+    const probe = new Image();
+    probe.onload = () => root.classList.add('atlas-ready');
+    probe.onerror = () => root.classList.add('atlas-missing');
+    probe.src = 'assets/ui_atlas.png';
+  }
+  detectAtlas();
+
   /* ---------- 1. 토스트 ---------- */
   const toastEl = document.getElementById('toast');
   let toastTimer = null;
@@ -80,7 +90,7 @@
     const stageMatch = STAGE_RE.exec(key);
     if (stageMatch) {
       const id = stageMatch[1];
-      if (el.classList.contains('node--locked')) {
+      if (el.classList.contains('node--locked') || el.classList.contains('node-locked')) {
         toast(`🔒 스테이지 ${id} (잠김)`);
       } else {
         toast(`스테이지 ${id} 진입`);

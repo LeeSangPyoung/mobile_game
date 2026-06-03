@@ -87,6 +87,13 @@ article {
   object-fit:cover;
   object-position:center 42%;
 }
+.cutout {
+  background:#fff;
+}
+.cutout img {
+  object-fit:contain;
+  object-position:center bottom;
+}
 .missing {
   display:flex;
   align-items:center;
@@ -147,14 +154,1224 @@ a:hover { text-decoration:underline; }
 <body>
 <header>
   <div class="top">
-    <h1>신규 반신 200명 v6 실제 진행</h1>
-    <div class="note">전신 파이널과 포즈/표정이 다르고 얼굴/두상 비율이 유지된 신규 반신만 완료로 계산. 복구 신규는 재제작 대상으로 계산. 진행: <span id="count">0/200</span></div>
+    <h1>신규 반신 200명 v9 review 실제 진행</h1>
+    <div class="note">전신을 작게 줄인 컷이 아니라, 허리/상체 중심으로 읽히는 strict 반신 컷아웃만 완료로 계산. 진행: <span id="count">0/200</span></div>
   </div>
 </header>
 <main><section id="grid" class="grid"></section></main>
 <script src="./assets/generals/roster_200.js"></script>
 <script>
-const version = "true-v6-redraw-progress-20260529-final-review-strict-belt-v10";
+const version = "cao-cao-cao-xing-v9-new-halfbody-review-20260604";
+const fullbodyCutoutIds = new Set([
+  "cao_cao", "cao_xing", "dian_wei", "dong_zhuo", "gan_ning",
+  "guan_yu", "guo_jia", "huang_gai", "huang_zhong", "liu_bei",
+  "lu_bu", "lu_xun", "ma_chao", "meng_huo", "pang_tong", "sima_yi",
+  "sun_ce", "sun_quan", "taishi_ci", "wen_chou", "xiahou_dun", "xu_chu", "xu_huang", "yan_liang", "yuan_shao", "zhang_fei", "zhang_liao", "zhao_yun", "zhou_yu", "zhuge_liang", "zhang_he", "yu_jin", "yue_jin", "li_dian", "cao_ren", "cao_hong", "cao_pi", "cao_zhi", "cao_zhang", "cao_ang", "cao_rui", "cao_shuang", "cao_zhen", "cao_xiu", "xiahou_yuan", "xiahou_ba", "cheng_yu", "xun_yu", "xun_you", "jia_xu", "man_chong", "zhong_yao", "deng_ai", "zhong_hui", "guo_huai", "wang_ping", "wen_pin", "zang_ba", "li_tong", "han_hao", "lu_qian", "mao_jie", "liu_ye", "kuai_yue", "kuai_liang", "cai_mao", "zhang_yun", "xu_sheng", "ding_feng", "han_dang", "cheng_pu", "zhou_tai", "jiang_qin", "ling_tong", "lu_su", "zhang_zhao", "zhang_hong", "zhu_zhi", "zhu_huan", "zhu_ran", "bu_zhi", "kan_ze", "yu_fan", "he_qi", "pan_zhang", "ma_zhong_wu", "quan_cong", "sun_jian", "sun_shao", "sun_huan", "sun_luban", "sun_luyu", "daqiao", "xiaoqiao", "lian_shi", "guan_ping", "guan_xing", "guan_suo", "guan_yinping", "zhang_bao", "liu_shan", "liu_feng", "ma_su", "ma_liang", "jiang_wei", "wei_yan", "fa_zheng", "jian_yong", "mi_zhu", "mi_fang", "sun_qian", "liao_hua", "ma_dai", "yan_yan", "li_yan", "fei_yi", "dong_yun", "jiang_wan", "huang_quan", "chen_dao", "meng_da", "li_hui", "huo_jun", "zhuge_zhan", "zhuge_jin", "zhuge_dan", "zhang_yi_shu", "dong_jue", "xin_pi", "gongsun_zan", "gongsun_du", "gongsun_kang", "liu_biao", "liu_zhang", "liu_yao", "tao_qian", "kong_rong", "zhang_lu", "zhang_ren", "ma_teng", "han_sui", "dong_cheng", "he_jin", "zhang_rang", "wang_yun", "li_jue", "guo_si", "zhang_ji", "zhang_xiu", "hua_xiong", "li_ru", "yuan_shu", "liu_xun", "zhou_cang", "fu_shi_ren", "zhang_song", "sha_moke", "yuan_xi", "ju_shou", "shen_pei", "feng_ji", "guo_tu", "xin_ping", "gao_lan", "zhang_bu", "gongsun_yuan", "liu_yu", "yan_pu", "cheng_yin", "yuan_tan", "yuan_shang", "tian_feng", "liang_xing", "hou_xuan", "cheng_gongying", "emperor_xian", "diao_chan", "fan_chou", "hu_che_er", "zou_shi", "ji_ling", "chen_lan", "lei_bo", "zhang_xun", "qiao_rui", "han_xian", "yang_feng", "hua_tuo", "zuo_ci", "yu_ji", "zhang_jiao", "zhang_bao_yellow", "zhang_liang_yellow", "bo_cai", "cheng_yuanzhi", "deng_mao", "guan_hai", "pei_yuanshao", "zhang_man_cheng", "han_zhong"
+]);
+const fullbodyCutoutFiles = {
+  cao_cao: "cao_cao_fullbody_game_cutout_v3.png",
+  cao_xing: "cao_xing_fullbody_game_cutout_v1.png",
+  dian_wei: "dian_wei_fullbody_game_cutout_v1.png",
+  dong_zhuo: "dong_zhuo_fullbody_game_cutout_v2.png",
+  gan_ning: "gan_ning_fullbody_game_cutout_v1.png",
+  guan_yu: "guan_yu_fullbody_game_cutout_v1.png",
+  guo_jia: "guo_jia_fullbody_game_cutout_v1.png",
+  huang_gai: "huang_gai_fullbody_game_cutout_v1.png",
+  huang_zhong: "huang_zhong_fullbody_game_cutout_v1.png",
+  liu_bei: "liu_bei_fullbody_game_cutout_v1.png",
+  lu_bu: "lu_bu_fullbody_game_cutout_v1.png",
+  lu_xun: "lu_xun_fullbody_game_cutout_v1.png",
+  ma_chao: "ma_chao_fullbody_game_cutout_v1.png",
+  meng_huo: "meng_huo_fullbody_game_cutout_v1.png",
+  pang_tong: "pang_tong_fullbody_game_cutout_v1.png",
+  sima_yi: "sima_yi_fullbody_game_cutout_v1.png",
+  sun_ce: "sun_ce_fullbody_game_cutout_v1.png",
+  sun_quan: "sun_quan_fullbody_game_cutout_v1.png",
+  taishi_ci: "taishi_ci_fullbody_game_cutout_v1.png",
+  wen_chou: "wen_chou_fullbody_game_cutout_v1.png",
+  xiahou_dun: "xiahou_dun_fullbody_game_cutout_v1.png",
+  xu_chu: "xu_chu_fullbody_game_cutout_v1.png",
+  xu_huang: "xu_huang_fullbody_game_cutout_v1.png",
+  yan_liang: "yan_liang_fullbody_game_cutout_v1.png",
+  yuan_shao: "yuan_shao_fullbody_game_cutout_v1.png",
+  zhang_fei: "zhang_fei_fullbody_game_cutout_v1.png",
+  zhang_liao: "zhang_liao_fullbody_game_cutout_v1.png",
+  zhao_yun: "zhao_yun_fullbody_game_cutout_v1.png",
+  zhou_yu: "zhou_yu_fullbody_game_cutout_v1.png",
+  zhuge_liang: "zhuge_liang_fullbody_game_cutout_v1.png",
+  zhang_he: "zhang_he_fullbody_game_cutout_v1.png",
+  yu_jin: "yu_jin_fullbody_game_cutout_v1.png",
+  yue_jin: "yue_jin_fullbody_game_cutout_v1.png",
+  li_dian: "li_dian_fullbody_game_cutout_v1.png",
+  cao_ren: "cao_ren_fullbody_game_cutout_v1.png",
+  cao_hong: "cao_hong_fullbody_game_cutout_v1.png",
+  cao_pi: "cao_pi_fullbody_game_cutout_v1.png",
+  cao_zhi: "cao_zhi_fullbody_game_cutout_v1.png",
+  cao_zhang: "cao_zhang_fullbody_game_cutout_v1.png",
+  cao_ang: "cao_ang_fullbody_game_cutout_v1.png",
+  cao_rui: "cao_rui_fullbody_game_cutout_v1.png",
+  cao_shuang: "cao_shuang_fullbody_game_cutout_v1.png",
+  cao_zhen: "cao_zhen_fullbody_game_cutout_v1.png",
+  cao_xiu: "cao_xiu_fullbody_game_cutout_v1.png",
+  xiahou_yuan: "xiahou_yuan_fullbody_game_cutout_v1.png",
+  xiahou_ba: "xiahou_ba_fullbody_game_cutout_v1.png",
+  cheng_yu: "cheng_yu_fullbody_game_cutout_v1.png",
+  xun_yu: "xun_yu_fullbody_game_cutout_v1.png",
+  xun_you: "xun_you_fullbody_game_cutout_v1.png",
+  jia_xu: "jia_xu_fullbody_game_cutout_v1.png",
+  man_chong: "man_chong_fullbody_game_cutout_v1.png",
+  zhong_yao: "zhong_yao_fullbody_game_cutout_v1.png",
+  deng_ai: "deng_ai_fullbody_game_cutout_v1.png",
+  zhong_hui: "zhong_hui_fullbody_game_cutout_v1.png",
+  guo_huai: "guo_huai_fullbody_game_cutout_v1.png",
+  wang_ping: "wang_ping_fullbody_game_cutout_v1.png",
+  wen_pin: "wen_pin_fullbody_game_cutout_v1.png",
+  zang_ba: "zang_ba_fullbody_game_cutout_v1.png",
+  li_tong: "li_tong_fullbody_game_cutout_v1.png",
+  han_hao: "han_hao_fullbody_game_cutout_v1.png",
+  lu_qian: "lu_qian_fullbody_game_cutout_v1.png",
+  mao_jie: "mao_jie_fullbody_game_cutout_v1.png",
+  liu_ye: "liu_ye_fullbody_game_cutout_v1.png",
+  kuai_yue: "kuai_yue_fullbody_game_cutout_v1.png",
+  kuai_liang: "kuai_liang_fullbody_game_cutout_v1.png",
+  cai_mao: "cai_mao_fullbody_game_cutout_v1.png",
+  zhang_yun: "zhang_yun_fullbody_game_cutout_v1.png",
+  xu_sheng: "xu_sheng_fullbody_game_cutout_v1.png",
+  ding_feng: "ding_feng_fullbody_game_cutout_v1.png",
+  han_dang: "han_dang_fullbody_game_cutout_v1.png",
+  cheng_pu: "cheng_pu_fullbody_game_cutout_v1.png",
+  zhou_tai: "zhou_tai_fullbody_game_cutout_v1.png",
+  jiang_qin: "jiang_qin_fullbody_game_cutout_v1.png",
+  ling_tong: "ling_tong_fullbody_game_cutout_v1.png",
+  lu_su: "lu_su_fullbody_game_cutout_v1.png",
+  zhang_zhao: "zhang_zhao_fullbody_game_cutout_v1.png",
+  zhang_hong: "zhang_hong_fullbody_game_cutout_v1.png",
+  zhu_zhi: "zhu_zhi_fullbody_game_cutout_v1.png",
+  zhu_huan: "zhu_huan_fullbody_game_cutout_v1.png",
+  zhu_ran: "zhu_ran_fullbody_game_cutout_v1.png",
+  bu_zhi: "bu_zhi_fullbody_game_cutout_v1.png",
+  kan_ze: "kan_ze_fullbody_game_cutout_v1.png",
+  yu_fan: "yu_fan_fullbody_game_cutout_v1.png",
+  he_qi: "he_qi_fullbody_game_cutout_v1.png",
+  pan_zhang: "pan_zhang_fullbody_game_cutout_v1.png",
+  ma_zhong_wu: "ma_zhong_wu_fullbody_game_cutout_v1.png",
+  quan_cong: "quan_cong_fullbody_game_cutout_v1.png",
+  sun_jian: "sun_jian_fullbody_game_cutout_v1.png",
+  sun_shao: "sun_shao_fullbody_game_cutout_v1.png",
+  sun_huan: "sun_huan_fullbody_game_cutout_v1.png",
+  sun_luban: "sun_luban_fullbody_game_cutout_v1.png",
+  sun_luyu: "sun_luyu_fullbody_game_cutout_v1.png",
+  daqiao: "daqiao_fullbody_game_cutout_v1.png",
+  xiaoqiao: "xiaoqiao_fullbody_game_cutout_v1.png",
+  lian_shi: "lian_shi_fullbody_game_cutout_v1.png",
+  guan_ping: "guan_ping_fullbody_game_cutout_v1.png",
+  guan_xing: "guan_xing_fullbody_game_cutout_v1.png",
+  guan_suo: "guan_suo_fullbody_game_cutout_v1.png",
+  guan_yinping: "guan_yinping_fullbody_game_cutout_v1.png",
+  zhang_bao: "zhang_bao_fullbody_game_cutout_v1.png",
+  liu_shan: "liu_shan_fullbody_game_cutout_v1.png",
+  liu_feng: "liu_feng_fullbody_game_cutout_v1.png",
+  ma_su: "ma_su_fullbody_game_cutout_v1.png",
+  ma_liang: "ma_liang_fullbody_game_cutout_v1.png",
+  jiang_wei: "jiang_wei_fullbody_game_cutout_v1.png",
+  wei_yan: "wei_yan_fullbody_game_cutout_v1.png",
+  fa_zheng: "fa_zheng_fullbody_game_cutout_v1.png",
+  jian_yong: "jian_yong_fullbody_game_cutout_v1.png",
+  mi_zhu: "mi_zhu_fullbody_game_cutout_v1.png",
+  mi_fang: "mi_fang_fullbody_game_cutout_v1.png",
+  sun_qian: "sun_qian_fullbody_game_cutout_v1.png",
+  liao_hua: "liao_hua_fullbody_game_cutout_v1.png",
+  ma_dai: "ma_dai_fullbody_game_cutout_v1.png",
+  yan_yan: "yan_yan_fullbody_game_cutout_v1.png",
+  li_yan: "li_yan_fullbody_game_cutout_v1.png",
+  fei_yi: "fei_yi_fullbody_game_cutout_v1.png",
+  dong_yun: "dong_yun_fullbody_game_cutout_v1.png",
+  jiang_wan: "jiang_wan_fullbody_game_cutout_v1.png",
+  huang_quan: "huang_quan_fullbody_game_cutout_v1.png",
+  chen_dao: "chen_dao_fullbody_game_cutout_v1.png",
+  meng_da: "meng_da_fullbody_game_cutout_v1.png",
+  li_hui: "li_hui_fullbody_game_cutout_v1.png",
+  huo_jun: "huo_jun_fullbody_game_cutout_v1.png",
+  zhuge_zhan: "zhuge_zhan_fullbody_game_cutout_v1.png",
+  zhuge_jin: "zhuge_jin_fullbody_game_cutout_v1.png",
+  zhuge_dan: "zhuge_dan_fullbody_game_cutout_v1.png",
+  zhang_yi_shu: "zhang_yi_shu_fullbody_game_cutout_v1.png",
+  dong_jue: "dong_jue_fullbody_game_cutout_v1.png",
+  xin_pi: "xin_pi_fullbody_game_cutout_v1.png",
+  gongsun_zan: "gongsun_zan_fullbody_game_cutout_v1.png",
+  gongsun_du: "gongsun_du_fullbody_game_cutout_v1.png",
+  gongsun_kang: "gongsun_kang_fullbody_game_cutout_v1.png",
+  liu_biao: "liu_biao_fullbody_game_cutout_v1.png",
+  liu_zhang: "liu_zhang_fullbody_game_cutout_v1.png",
+  liu_yao: "liu_yao_fullbody_game_cutout_v1.png",
+  tao_qian: "tao_qian_fullbody_game_cutout_v1.png",
+  kong_rong: "kong_rong_fullbody_game_cutout_v1.png",
+  zhang_lu: "zhang_lu_fullbody_game_cutout_v1.png",
+  zhang_ren: "zhang_ren_fullbody_game_cutout_v1.png",
+  ma_teng: "ma_teng_fullbody_game_cutout_v1.png",
+  han_sui: "han_sui_fullbody_game_cutout_v1.png",
+  dong_cheng: "dong_cheng_fullbody_game_cutout_v1.png",
+  he_jin: "he_jin_fullbody_game_cutout_v1.png",
+  zhang_rang: "zhang_rang_fullbody_game_cutout_v1.png",
+  wang_yun: "wang_yun_fullbody_game_cutout_v1.png",
+  li_jue: "li_jue_fullbody_game_cutout_v1.png",
+  guo_si: "guo_si_fullbody_game_cutout_v1.png",
+  zhang_ji: "zhang_ji_fullbody_game_cutout_v1.png",
+  zhang_xiu: "zhang_xiu_fullbody_game_cutout_v1.png",
+  hua_xiong: "hua_xiong_fullbody_game_cutout_v1.png",
+  li_ru: "li_ru_fullbody_game_cutout_v1.png",
+  yuan_shu: "yuan_shu_fullbody_game_cutout_v1.png",
+  liu_xun: "liu_xun_fullbody_game_cutout_v1.png",
+  zhou_cang: "zhou_cang_fullbody_game_cutout_v1.png",
+  fu_shi_ren: "fu_shi_ren_fullbody_game_cutout_v1.png",
+  zhang_song: "zhang_song_fullbody_game_cutout_v1.png",
+  sha_moke: "sha_moke_fullbody_game_cutout_v1.png",
+  yuan_xi: "yuan_xi_fullbody_game_cutout_v1.png",
+  ju_shou: "ju_shou_fullbody_game_cutout_v1.png",
+  shen_pei: "shen_pei_fullbody_game_cutout_v1.png",
+  feng_ji: "feng_ji_fullbody_game_cutout_v1.png",
+  guo_tu: "guo_tu_fullbody_game_cutout_v1.png",
+  xin_ping: "xin_ping_fullbody_game_cutout_v1.png",
+  gao_lan: "gao_lan_fullbody_game_cutout_v1.png",
+  zhang_bu: "zhang_bu_fullbody_game_cutout_v1.png",
+  gongsun_yuan: "gongsun_yuan_fullbody_game_cutout_v1.png",
+  liu_yu: "liu_yu_fullbody_game_cutout_v1.png",
+  yan_pu: "yan_pu_fullbody_game_cutout_v1.png",
+  cheng_yin: "cheng_yin_fullbody_game_cutout_v1.png",
+  yuan_tan: "yuan_tan_fullbody_game_cutout_v1.png",
+  yuan_shang: "yuan_shang_fullbody_game_cutout_v1.png",
+  tian_feng: "tian_feng_fullbody_game_cutout_v1.png",
+  liang_xing: "liang_xing_fullbody_game_cutout_v1.png",
+  hou_xuan: "hou_xuan_fullbody_game_cutout_v1.png",
+  cheng_gongying: "cheng_gongying_fullbody_game_cutout_v1.png",
+  emperor_xian: "emperor_xian_fullbody_game_cutout_v1.png",
+  diao_chan: "diao_chan_fullbody_game_cutout_v1.png",
+  fan_chou: "fan_chou_fullbody_game_cutout_v1.png",
+  hu_che_er: "hu_che_er_fullbody_game_cutout_v1.png",
+  zou_shi: "zou_shi_fullbody_game_cutout_v1.png",
+  ji_ling: "ji_ling_fullbody_game_cutout_v1.png",
+  chen_lan: "chen_lan_fullbody_game_cutout_v1.png",
+  lei_bo: "lei_bo_fullbody_game_cutout_v1.png",
+  zhang_xun: "zhang_xun_fullbody_game_cutout_v1.png",
+  qiao_rui: "qiao_rui_fullbody_game_cutout_v1.png",
+  han_xian: "han_xian_fullbody_game_cutout_v1.png",
+  yang_feng: "yang_feng_fullbody_game_cutout_v1.png",
+  hua_tuo: "hua_tuo_fullbody_game_cutout_v1.png",
+  zuo_ci: "zuo_ci_fullbody_game_cutout_v1.png",
+  yu_ji: "yu_ji_fullbody_game_cutout_v1.png",
+  zhang_jiao: "zhang_jiao_fullbody_game_cutout_v1.png",
+  zhang_bao_yellow: "zhang_bao_yellow_fullbody_game_cutout_v1.png",
+  zhang_liang_yellow: "zhang_liang_yellow_fullbody_game_cutout_v1.png",
+  bo_cai: "bo_cai_fullbody_game_cutout_v1.png",
+  cheng_yuanzhi: "cheng_yuanzhi_fullbody_game_cutout_v1.png",
+  deng_mao: "deng_mao_fullbody_game_cutout_v1.png",
+  guan_hai: "guan_hai_fullbody_game_cutout_v1.png",
+  pei_yuanshao: "pei_yuanshao_fullbody_game_cutout_v1.png",
+  zhang_man_cheng: "zhang_man_cheng_fullbody_game_cutout_v1.png",
+  han_zhong: "han_zhong_fullbody_game_cutout_v1.png"
+};
+const halfbodyCutouts = {
+  cao_cao: {
+    version: "v9 review",
+    dir: "upper_body_200_redraw_v9_new_halfbody",
+    file: "cao_cao_halfbody_game_cutout_v9.png"
+  },
+  cao_xing: {
+    version: "v9 review",
+    dir: "upper_body_200_redraw_v9_new_halfbody",
+    file: "cao_xing_halfbody_game_cutout_v9.png"
+  },
+  dian_wei: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "dian_wei_halfbody_game_cutout_v7.png"
+  },
+  dong_zhuo: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "dong_zhuo_halfbody_game_cutout_v7.png"
+  },
+  gan_ning: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "gan_ning_halfbody_game_cutout_v7.png"
+  },
+  guan_yu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "guan_yu_halfbody_game_cutout_v7.png"
+  },
+  guo_jia: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "guo_jia_halfbody_game_cutout_v7.png"
+  },
+  huang_gai: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "huang_gai_halfbody_game_cutout_v7.png"
+  },
+  huang_zhong: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "huang_zhong_halfbody_game_cutout_v7.png"
+  },
+  liu_bei: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "liu_bei_halfbody_game_cutout_v7.png"
+  },
+  lu_bu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "lu_bu_halfbody_game_cutout_v7.png"
+  },
+  lu_xun: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "lu_xun_halfbody_game_cutout_v7.png"
+  },
+  ma_chao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "ma_chao_halfbody_game_cutout_v7.png"
+  },
+  meng_huo: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "meng_huo_halfbody_game_cutout_v7.png"
+  },
+  pang_tong: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "pang_tong_halfbody_game_cutout_v7.png"
+  },
+  sima_yi: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "sima_yi_halfbody_game_cutout_v7.png"
+  },
+  sun_ce: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "sun_ce_halfbody_game_cutout_v7.png"
+  },
+  sun_quan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "sun_quan_halfbody_game_cutout_v7.png"
+  },
+  taishi_ci: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "taishi_ci_halfbody_game_cutout_v7.png"
+  },
+  wen_chou: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "wen_chou_halfbody_game_cutout_v7.png"
+  },
+  xiahou_dun: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "xiahou_dun_halfbody_game_cutout_v7.png"
+  },
+  xu_chu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "xu_chu_halfbody_game_cutout_v7.png"
+  },
+  xu_huang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "xu_huang_halfbody_game_cutout_v7.png"
+  },
+  yan_liang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "yan_liang_halfbody_game_cutout_v7.png"
+  },
+  yuan_shao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "yuan_shao_halfbody_game_cutout_v7.png"
+  },
+  zhang_fei: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_fei_halfbody_game_cutout_v7.png"
+  },
+  zhang_liao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_liao_halfbody_game_cutout_v7.png"
+  },
+  zhao_yun: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhao_yun_halfbody_game_cutout_v7.png"
+  },
+  zhou_yu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhou_yu_halfbody_game_cutout_v7.png"
+  },
+  zhuge_liang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhuge_liang_halfbody_game_cutout_v7.png"
+  },
+  zhang_he: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_he_halfbody_game_cutout_v7.png"
+  },
+  yu_jin: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "yu_jin_halfbody_game_cutout_v7.png"
+  },
+  yue_jin: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "yue_jin_halfbody_game_cutout_v7.png"
+  },
+  li_dian: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "li_dian_halfbody_game_cutout_v7.png"
+  },
+  cao_ren: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cao_ren_halfbody_game_cutout_v7.png"
+  },
+  cao_hong: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cao_hong_halfbody_game_cutout_v7.png"
+  },
+  cao_pi: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cao_pi_halfbody_game_cutout_v7.png"
+  },
+  cao_zhi: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cao_zhi_halfbody_game_cutout_v7.png"
+  },
+  cao_zhang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cao_zhang_halfbody_game_cutout_v7.png"
+  },
+  cao_ang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cao_ang_halfbody_game_cutout_v7.png"
+  },
+  cao_rui: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cao_rui_halfbody_game_cutout_v7.png"
+  },
+  cao_shuang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cao_shuang_halfbody_game_cutout_v7.png"
+  },
+  cao_zhen: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cao_zhen_halfbody_game_cutout_v7.png"
+  },
+  cao_xiu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cao_xiu_halfbody_game_cutout_v7.png"
+  },
+  xiahou_yuan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "xiahou_yuan_halfbody_game_cutout_v7.png"
+  },
+  xiahou_ba: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "xiahou_ba_halfbody_game_cutout_v7.png"
+  },
+  cheng_yu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cheng_yu_halfbody_game_cutout_v7.png"
+  },
+  xun_yu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "xun_yu_halfbody_game_cutout_v7.png"
+  },
+  xun_you: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "xun_you_halfbody_game_cutout_v7.png"
+  },
+  jia_xu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "jia_xu_halfbody_game_cutout_v7.png"
+  },
+  man_chong: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "man_chong_halfbody_game_cutout_v7.png"
+  },
+  zhong_yao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhong_yao_halfbody_game_cutout_v7.png"
+  },
+  deng_ai: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "deng_ai_halfbody_game_cutout_v7.png"
+  },
+  zhong_hui: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhong_hui_halfbody_game_cutout_v7.png"
+  },
+  guo_huai: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "guo_huai_halfbody_game_cutout_v7.png"
+  },
+  wang_ping: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "wang_ping_halfbody_game_cutout_v7.png"
+  },
+  wen_pin: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "wen_pin_halfbody_game_cutout_v7.png"
+  },
+  zang_ba: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zang_ba_halfbody_game_cutout_v7.png"
+  },
+  li_tong: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "li_tong_halfbody_game_cutout_v7.png"
+  },
+  han_hao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "han_hao_halfbody_game_cutout_v7.png"
+  },
+  lu_qian: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "lu_qian_halfbody_game_cutout_v7.png"
+  },
+  mao_jie: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "mao_jie_halfbody_game_cutout_v7.png"
+  },
+  liu_ye: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "liu_ye_halfbody_game_cutout_v7.png"
+  },
+  kuai_yue: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "kuai_yue_halfbody_game_cutout_v7.png"
+  },
+  kuai_liang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "kuai_liang_halfbody_game_cutout_v7.png"
+  },
+  cai_mao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cai_mao_halfbody_game_cutout_v7.png"
+  },
+  zhang_yun: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_yun_halfbody_game_cutout_v7.png"
+  },
+  xu_sheng: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "xu_sheng_halfbody_game_cutout_v7.png"
+  },
+  ding_feng: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "ding_feng_halfbody_game_cutout_v7.png"
+  },
+  han_dang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "han_dang_halfbody_game_cutout_v7.png"
+  },
+  cheng_pu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cheng_pu_halfbody_game_cutout_v7.png"
+  },
+  zhou_tai: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhou_tai_halfbody_game_cutout_v7.png"
+  },
+  jiang_qin: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "jiang_qin_halfbody_game_cutout_v7.png"
+  },
+  ling_tong: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "ling_tong_halfbody_game_cutout_v7.png"
+  },
+  lu_su: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "lu_su_halfbody_game_cutout_v7.png"
+  },
+  zhang_zhao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_zhao_halfbody_game_cutout_v7.png"
+  },
+  zhang_hong: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_hong_halfbody_game_cutout_v7.png"
+  },
+  zhu_zhi: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhu_zhi_halfbody_game_cutout_v7.png"
+  },
+  zhu_huan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhu_huan_halfbody_game_cutout_v7.png"
+  },
+  zhu_ran: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhu_ran_halfbody_game_cutout_v7.png"
+  },
+  bu_zhi: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "bu_zhi_halfbody_game_cutout_v7.png"
+  },
+  kan_ze: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "kan_ze_halfbody_game_cutout_v7.png"
+  },
+  yu_fan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "yu_fan_halfbody_game_cutout_v7.png"
+  },
+  he_qi: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "he_qi_halfbody_game_cutout_v7.png"
+  },
+  pan_zhang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "pan_zhang_halfbody_game_cutout_v7.png"
+  },
+  ma_zhong_wu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "ma_zhong_wu_halfbody_game_cutout_v7.png"
+  },
+  quan_cong: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "quan_cong_halfbody_game_cutout_v7.png"
+  },
+  sun_jian: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "sun_jian_halfbody_game_cutout_v7.png"
+  },
+  sun_shao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "sun_shao_halfbody_game_cutout_v7.png"
+  },
+  sun_huan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "sun_huan_halfbody_game_cutout_v7.png"
+  },
+  sun_luban: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "sun_luban_halfbody_game_cutout_v7.png"
+  },
+  sun_luyu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "sun_luyu_halfbody_game_cutout_v7.png"
+  },
+  daqiao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "daqiao_halfbody_game_cutout_v7.png"
+  },
+  xiaoqiao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "xiaoqiao_halfbody_game_cutout_v7.png"
+  },
+  lian_shi: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "lian_shi_halfbody_game_cutout_v7.png"
+  },
+  guan_ping: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "guan_ping_halfbody_game_cutout_v7.png"
+  },
+  guan_xing: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "guan_xing_halfbody_game_cutout_v7.png"
+  },
+  guan_suo: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "guan_suo_halfbody_game_cutout_v7.png"
+  },
+  guan_yinping: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "guan_yinping_halfbody_game_cutout_v7.png"
+  },
+  zhang_bao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_bao_halfbody_game_cutout_v7.png"
+  },
+  liu_shan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "liu_shan_halfbody_game_cutout_v7.png"
+  },
+  liu_feng: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "liu_feng_halfbody_game_cutout_v7.png"
+  },
+  ma_su: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "ma_su_halfbody_game_cutout_v7.png"
+  },
+  ma_liang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "ma_liang_halfbody_game_cutout_v7.png"
+  },
+  jiang_wei: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "jiang_wei_halfbody_game_cutout_v7.png"
+  },
+  wei_yan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "wei_yan_halfbody_game_cutout_v7.png"
+  },
+  fa_zheng: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "fa_zheng_halfbody_game_cutout_v7.png"
+  },
+  jian_yong: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "jian_yong_halfbody_game_cutout_v7.png"
+  },
+  mi_zhu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "mi_zhu_halfbody_game_cutout_v7.png"
+  },
+  mi_fang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "mi_fang_halfbody_game_cutout_v7.png"
+  },
+  sun_qian: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "sun_qian_halfbody_game_cutout_v7.png"
+  },
+  liao_hua: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "liao_hua_halfbody_game_cutout_v7.png"
+  },
+  zhou_cang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhou_cang_halfbody_game_cutout_v7.png"
+  },
+  ma_dai: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "ma_dai_halfbody_game_cutout_v7.png"
+  },
+  yan_yan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "yan_yan_halfbody_game_cutout_v7.png"
+  },
+  li_yan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "li_yan_halfbody_game_cutout_v7.png"
+  },
+  fei_yi: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "fei_yi_halfbody_game_cutout_v7.png"
+  },
+  dong_yun: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "dong_yun_halfbody_game_cutout_v7.png"
+  },
+  jiang_wan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "jiang_wan_halfbody_game_cutout_v7.png"
+  },
+  huang_quan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "huang_quan_halfbody_game_cutout_v7.png"
+  },
+  chen_dao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "chen_dao_halfbody_game_cutout_v7.png"
+  },
+  fu_shi_ren: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "fu_shi_ren_halfbody_game_cutout_v7.png"
+  },
+  meng_da: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "meng_da_halfbody_game_cutout_v7.png"
+  },
+  zhang_song: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_song_halfbody_game_cutout_v7.png"
+  },
+  li_hui: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "li_hui_halfbody_game_cutout_v7.png"
+  },
+  huo_jun: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "huo_jun_halfbody_game_cutout_v7.png"
+  },
+  sha_moke: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "sha_moke_halfbody_game_cutout_v7.png"
+  },
+  zhuge_zhan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhuge_zhan_halfbody_game_cutout_v7.png"
+  },
+  zhuge_jin: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhuge_jin_halfbody_game_cutout_v7.png"
+  },
+  zhuge_dan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhuge_dan_halfbody_game_cutout_v7.png"
+  },
+  zhang_yi_shu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_yi_shu_halfbody_game_cutout_v7.png"
+  },
+  dong_jue: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "dong_jue_halfbody_game_cutout_v7.png"
+  },
+  yuan_tan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "yuan_tan_halfbody_game_cutout_v7.png"
+  },
+  yuan_xi: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "yuan_xi_halfbody_game_cutout_v7.png"
+  },
+  yuan_shang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "yuan_shang_halfbody_game_cutout_v7.png"
+  },
+  tian_feng: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "tian_feng_halfbody_game_cutout_v7.png"
+  },
+  ju_shou: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "ju_shou_halfbody_game_cutout_v7.png"
+  },
+  shen_pei: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "shen_pei_halfbody_game_cutout_v7.png"
+  },
+  feng_ji: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "feng_ji_halfbody_game_cutout_v7.png"
+  },
+  guo_tu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "guo_tu_halfbody_game_cutout_v7.png"
+  },
+  xin_ping: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "xin_ping_halfbody_game_cutout_v7.png"
+  },
+  xin_pi: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "xin_pi_halfbody_game_cutout_v7.png"
+  },
+  gao_lan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "gao_lan_halfbody_game_cutout_v7.png"
+  },
+  zhang_bu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_bu_halfbody_game_cutout_v7.png"
+  },
+  gongsun_zan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "gongsun_zan_halfbody_game_cutout_v7.png"
+  },
+  gongsun_du: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "gongsun_du_halfbody_game_cutout_v7.png"
+  },
+  gongsun_kang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "gongsun_kang_halfbody_game_cutout_v7.png"
+  },
+  gongsun_yuan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "gongsun_yuan_halfbody_game_cutout_v7.png"
+  },
+  liu_biao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "liu_biao_halfbody_game_cutout_v7.png"
+  },
+  liu_zhang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "liu_zhang_halfbody_game_cutout_v7.png"
+  },
+  liu_yao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "liu_yao_halfbody_game_cutout_v7.png"
+  },
+  liu_yu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "liu_yu_halfbody_game_cutout_v7.png"
+  },
+  tao_qian: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "tao_qian_halfbody_game_cutout_v7.png"
+  },
+  kong_rong: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "kong_rong_halfbody_game_cutout_v7.png"
+  },
+  zhang_lu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_lu_halfbody_game_cutout_v7.png"
+  },
+  zhang_ren: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_ren_halfbody_game_cutout_v7.png"
+  },
+  yan_pu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "yan_pu_halfbody_game_cutout_v7.png"
+  },
+  ma_teng: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "ma_teng_halfbody_game_cutout_v7.png"
+  },
+  han_sui: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "han_sui_halfbody_game_cutout_v7.png"
+  },
+  cheng_yin: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cheng_yin_halfbody_game_cutout_v7.png"
+  },
+  liang_xing: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "liang_xing_halfbody_game_cutout_v7.png"
+  },
+  hou_xuan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "hou_xuan_halfbody_game_cutout_v7.png"
+  },
+  cheng_gongying: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cheng_gongying_halfbody_game_cutout_v7.png"
+  },
+  dong_cheng: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "dong_cheng_halfbody_game_cutout_v7.png"
+  },
+  he_jin: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "he_jin_halfbody_game_cutout_v7.png"
+  },
+  zhang_rang: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_rang_halfbody_game_cutout_v7.png"
+  },
+  emperor_xian: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "emperor_xian_halfbody_game_cutout_v7.png"
+  },
+  wang_yun: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "wang_yun_halfbody_game_cutout_v7.png"
+  },
+  diao_chan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "diao_chan_halfbody_game_cutout_v7.png"
+  },
+  li_jue: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "li_jue_halfbody_game_cutout_v7.png"
+  },
+  guo_si: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "guo_si_halfbody_game_cutout_v7.png"
+  },
+  fan_chou: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "fan_chou_halfbody_game_cutout_v7.png"
+  },
+  zhang_ji: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_ji_halfbody_game_cutout_v7.png"
+  },
+  zhang_xiu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_xiu_halfbody_game_cutout_v7.png"
+  },
+  hu_che_er: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "hu_che_er_halfbody_game_cutout_v7.png"
+  },
+  zou_shi: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zou_shi_halfbody_game_cutout_v7.png"
+  },
+  hua_xiong: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "hua_xiong_halfbody_game_cutout_v7.png"
+  },
+  li_ru: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "li_ru_halfbody_game_cutout_v7.png"
+  },
+  yuan_shu: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "yuan_shu_halfbody_game_cutout_v7.png"
+  },
+  ji_ling: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "ji_ling_halfbody_game_cutout_v7.png"
+  },
+  liu_xun: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "liu_xun_halfbody_game_cutout_v7.png"
+  },
+  chen_lan: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "chen_lan_halfbody_game_cutout_v7.png"
+  },
+  lei_bo: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "lei_bo_halfbody_game_cutout_v7.png"
+  },
+  zhang_xun: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_xun_halfbody_game_cutout_v7.png"
+  },
+  qiao_rui: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "qiao_rui_halfbody_game_cutout_v7.png"
+  },
+  han_xian: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "han_xian_halfbody_game_cutout_v7.png"
+  },
+  yang_feng: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "yang_feng_halfbody_game_cutout_v7.png"
+  },
+  hua_tuo: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "hua_tuo_halfbody_game_cutout_v7.png"
+  },
+  zuo_ci: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zuo_ci_halfbody_game_cutout_v7.png"
+  },
+  yu_ji: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "yu_ji_halfbody_game_cutout_v7.png"
+  },
+  zhang_jiao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_jiao_halfbody_game_cutout_v7.png"
+  },
+  zhang_bao_yellow: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_bao_yellow_halfbody_game_cutout_v7.png"
+  },
+  zhang_liang_yellow: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_liang_yellow_halfbody_game_cutout_v7.png"
+  },
+  bo_cai: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "bo_cai_halfbody_game_cutout_v7.png"
+  },
+  cheng_yuanzhi: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "cheng_yuanzhi_halfbody_game_cutout_v7.png"
+  },
+  deng_mao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "deng_mao_halfbody_game_cutout_v7.png"
+  },
+  guan_hai: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "guan_hai_halfbody_game_cutout_v7.png"
+  },
+  pei_yuanshao: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "pei_yuanshao_halfbody_game_cutout_v7.png"
+  },
+  zhang_man_cheng: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "zhang_man_cheng_halfbody_game_cutout_v7.png"
+  },
+  han_zhong: {
+    version: "v7 rejected",
+    dir: "upper_body_200_redraw_v7_strict_halfbody",
+    file: "han_zhong_halfbody_game_cutout_v7.png"
+  }
+};
 const strictRegeneratedIds = new Set(window.GENERALS_200.slice(63).map(([id]) => id));
 const recoveredNeedsRedrawIds = new Set([
   "xu_sheng", "ding_feng", "han_dang", "cheng_pu", "zhou_tai", "jiang_qin",
@@ -180,8 +1397,9 @@ const totals = {
 };
 
 function updateCount() {
-  const pending = totals.recoveredPending + totals.provisionalPending;
-  count.textContent = `완료 ${totals.done}/${window.GENERALS_200.length} · 남음 ${pending} · 복구 재제작 ${totals.recoveredPending} · 임시 재제작 ${totals.provisionalPending}`;
+  const reviewTotal = Object.values(halfbodyCutouts).filter((item) => item.version.includes("review")).length;
+  const rejectedTotal = Object.values(halfbodyCutouts).filter((item) => item.version.includes("rejected")).length;
+  count.textContent = `Review ${reviewTotal}/${window.GENERALS_200.length} · Rejected ${rejectedTotal}`;
 }
 
 window.GENERALS_200.forEach(([id, ko], index) => {
@@ -197,8 +1415,19 @@ window.GENERALS_200.forEach(([id, ko], index) => {
     totals.provisionalPending += 1;
   }
   const no = String(index + 1).padStart(3, "0");
-  const full = `./assets/generals/new_characters/front_gaze_200_v10_scale_audit/${id}_front_gaze_v1.png?v=${version}`;
-  const half = `./assets/generals/new_characters/upper_body_200_redraw_v6_above_navel/${id}_halfbody_redraw_v6.png?v=${version}`;
+  const hasFullbodyCutout = fullbodyCutoutIds.has(id);
+  const halfbodyCutout = halfbodyCutouts[id];
+  const hasHalfbodyCutout = Boolean(halfbodyCutout);
+  const fullVersion = id === "cao_cao" ? "v3" : id === "dong_zhuo" ? "v2" : "v1";
+  const fullLabel = hasFullbodyCutout ? `전신 컷아웃 ${fullVersion}` : "전신 파이널";
+  const halfVersion = hasHalfbodyCutout ? halfbodyCutout.version : "v1";
+  const halfLabel = hasHalfbodyCutout ? `반신 컷아웃 ${halfVersion}` : "반신";
+  const full = hasFullbodyCutout
+    ? `./assets/generals/new_characters/fullbody_game_cutout_v1/${fullbodyCutoutFiles[id]}?v=${version}`
+    : `./assets/generals/new_characters/front_gaze_200_v10_scale_audit/${id}_front_gaze_v1.png?v=${version}`;
+  const half = hasHalfbodyCutout
+    ? `./assets/generals/new_characters/${halfbodyCutout.dir}/${halfbodyCutout.file}?v=${version}`
+    : `./assets/generals/new_characters/upper_body_200_redraw_v6_above_navel/${id}_halfbody_redraw_v6.png?v=${version}`;
   const badge = isStrictRegenerated
     ? "엄격 재생성"
     : isBaseTrue
@@ -209,21 +1438,31 @@ window.GENERALS_200.forEach(([id, ko], index) => {
   const el = document.createElement("article");
   el.innerHTML = `
     <div class="pair">
-      <div class="art full"><span class="badge">전신 파이널</span><img loading="lazy" src="${full}" alt="${ko} 전신"></div>
-      <div class="art half">
-        <span class="badge">${badge}</span>
+      <div class="art full${hasFullbodyCutout ? " cutout" : ""}"><span class="badge">${fullLabel}</span><img loading="lazy" src="${full}" alt="${ko} ${fullLabel}"></div>
+      <div class="art half${hasHalfbodyCutout ? " cutout" : ""}">
+        <span class="badge">${hasHalfbodyCutout ? halfLabel : badge}</span>
         <span class="status">확인중</span>
-        <img loading="lazy" src="${half}" alt="${ko} 신규 반신">
+        <img loading="lazy" src="${half}" alt="${ko} ${halfLabel}">
       </div>
     </div>
     <div class="meta">
       <p class="name"><span>${ko}</span><small>${no} · ${id}</small></p>
-      <a href="${half}">${half}</a>
+      <a href="${full}">${fullLabel}: ${full}</a>
+      <a href="${half}">${halfLabel}: ${half}</a>
     </div>`;
   const img = el.querySelector(".half img");
   const status = el.querySelector(".status");
   img.addEventListener("load", () => {
-    if (isDone) {
+    if (hasHalfbodyCutout && halfbodyCutout.version.includes("review")) {
+      status.textContent = "Review";
+      status.className = "status review";
+    } else if (hasHalfbodyCutout && halfbodyCutout.version.includes("rejected")) {
+      status.textContent = "재생성 필요";
+      status.className = "status temp";
+    } else if (hasHalfbodyCutout) {
+      status.textContent = "컷아웃 통과";
+      status.className = "status done";
+    } else if (isDone) {
       status.textContent = isStrictRegenerated ? "엄격 통과" : "v6 신규";
       status.className = "status done";
     } else if (needsRecoveredRedraw) {

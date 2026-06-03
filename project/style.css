@@ -197,7 +197,8 @@ button {
   display: flex; flex-direction: column; align-items: center;
   padding: 8px 12px 12px;
 }
-.stage__bg {
+.stage__bg,
+.hero-section {
   /* TODO: 이미지 교체 → background-image: url(assets/bg_main.png) */
   position: absolute; inset: 0;
   background: radial-gradient(ellipse 110% 60% at 50% 30%,
@@ -345,6 +346,9 @@ button {
 .mode-card--red  { background: linear-gradient(180deg, #8a1818, var(--c-red-deep)); }
 .mode-card--blue { background: linear-gradient(180deg, #1e3a6a, #0a1830); }
 .mode-card--dark { background: linear-gradient(180deg, #5a3818, #2a1810); }
+.panel-pvp   { background: linear-gradient(180deg, #8a1818, var(--c-red-deep)); }
+.panel-tower { background: linear-gradient(180deg, #1e3a6a, #0a1830); }
+.panel-guild { background: linear-gradient(180deg, #5a3818, #2a1810); }
 
 .mode-card__icon {
   /* TODO: 이미지 교체 → background-image: url(assets/icon_*.png) */
@@ -419,21 +423,25 @@ button {
   box-shadow: var(--sh-md);
 }
 .node:active { transform: translate(-50%, -50%) scale(0.92); }
-.node--cleared {
+.node--cleared,
+.node-cleared {
   background: linear-gradient(180deg, var(--c-gold), #ffb800);
 }
-.node--current {
+.node--current,
+.node-current {
   background: linear-gradient(180deg, #6effa0, var(--c-green-deep));
   color: #fff;
   -webkit-text-stroke: 1px var(--c-stroke); paint-order: stroke fill;
   animation: nodePulse 1.4s ease-in-out infinite;
 }
-.node--locked {
+.node--locked,
+.node-locked {
   opacity: 0.65;
   background: linear-gradient(180deg, #555, #2a2a2a);
   color: var(--c-text-mute);
 }
-.node--boss {
+.node--boss,
+.node-boss {
   width: 54px; height: 54px;
   background: linear-gradient(180deg, #ff8d6b, var(--c-red));
   color: #fff;
@@ -538,7 +546,7 @@ button {
    1.0 = 원본, 0.27 = 폰 화면용 축소 */
 :root { --atlas-scale: 0.27; }
 
-.atlas {
+.atlas-ready .atlas {
   background-image: var(--atlas-url);
   background-repeat: no-repeat;
   display: inline-block;
@@ -549,9 +557,9 @@ button {
   background-color: transparent;
 }
 /* atlas가 적용된 요소는 기존 placeholder gradient 제거 */
-.atlas.character,
-.atlas.cta-start,
-.atlas.hero-section { background-color: transparent; }
+.atlas-ready .atlas.character,
+.atlas-ready .atlas.cta-start,
+.atlas-ready .atlas.hero-section { background-color: transparent; }
 
 /* ===== 슬롯 정의 (원본 atlas 좌표/크기, --atlas-scale 비율로 자동 축소) =====
    원본 스펙:
@@ -561,22 +569,22 @@ button {
      panel:          220x80
      node:           80x80
 */
-.atlas.character--guanyu {
+.atlas-ready .atlas.character--guanyu {
   width:  calc(300px * var(--atlas-scale));
   height: calc(400px * var(--atlas-scale));
   background-position: calc(-40px * var(--atlas-scale)) calc(-120px * var(--atlas-scale));
 }
-.atlas.character--cao {
+.atlas-ready .atlas.character--cao {
   width:  calc(300px * var(--atlas-scale));
   height: calc(400px * var(--atlas-scale));
   background-position: calc(-380px * var(--atlas-scale)) calc(-120px * var(--atlas-scale));
 }
-.atlas.character--zhuge {
+.atlas-ready .atlas.character--zhuge {
   width:  calc(300px * var(--atlas-scale));
   height: calc(400px * var(--atlas-scale));
   background-position: calc(-720px * var(--atlas-scale)) calc(-120px * var(--atlas-scale));
 }
-.atlas.btn-start {
+.atlas-ready .atlas.btn-start {
   width:  calc(500px * var(--atlas-scale) * 1.4);  /* 출정은 좀 더 크게 */
   height: calc(180px * var(--atlas-scale) * 1.4);
   background-size: calc(var(--atlas-w) * var(--atlas-scale) * 1.4)
@@ -586,7 +594,7 @@ button {
   box-shadow: var(--sh-md);
   padding: 0;
 }
-.atlas.bg-main {
+.atlas-ready .atlas.bg-main {
   width: 100%;
   height: 100%;
   /* bg는 슬롯 cover로 풀필 */
@@ -595,22 +603,23 @@ button {
   /* atlas 안의 bg-main 영역만 보이게 — clip-path 대신 별도 ratio */
   /* 단순화: 전체 atlas를 cover로 깔되, 메인 BG 슬롯이 중앙에 오도록 position 조정 */
 }
-.atlas.panel-pvp,
-.atlas.panel-tower,
-.atlas.panel-guild {
+.atlas-ready .atlas.panel-pvp,
+.atlas-ready .atlas.panel-tower,
+.atlas-ready .atlas.panel-guild {
   width:  calc(220px * var(--atlas-scale) * 1.1);
   height: calc(80px  * var(--atlas-scale) * 1.1);
   background-size: calc(var(--atlas-w) * var(--atlas-scale) * 1.1)
                    calc(var(--atlas-h) * var(--atlas-scale) * 1.1);
 }
-.atlas.panel-pvp   { background-position: calc(-560px * var(--atlas-scale) * 1.1) calc(-560px * var(--atlas-scale) * 1.1); }
-.atlas.panel-tower { background-position: calc(-800px * var(--atlas-scale) * 1.1) calc(-560px * var(--atlas-scale) * 1.1); }
-.atlas.panel-guild { background-position: calc(-1040px* var(--atlas-scale) * 1.1) calc(-560px * var(--atlas-scale) * 1.1); }
+.atlas-ready .atlas.panel-pvp   { background-position: calc(-560px * var(--atlas-scale) * 1.1) calc(-560px * var(--atlas-scale) * 1.1); }
+.atlas-ready .atlas.panel-tower { background-position: calc(-800px * var(--atlas-scale) * 1.1) calc(-560px * var(--atlas-scale) * 1.1); }
+.atlas-ready .atlas.panel-guild { background-position: calc(-1040px* var(--atlas-scale) * 1.1) calc(-560px * var(--atlas-scale) * 1.1); }
 
-.atlas.node-cleared,
-.atlas.node-current,
-.atlas.node-locked,
-.atlas.node-boss {
+.atlas-ready .atlas.node-cleared,
+.atlas-ready .atlas.node-current,
+.atlas-ready .atlas.node-locked,
+.atlas-ready .atlas.node--locked,
+.atlas-ready .atlas.node-boss {
   width:  calc(80px * var(--atlas-scale) * 1.5);
   height: calc(80px * var(--atlas-scale) * 1.5);
   background-size: calc(var(--atlas-w) * var(--atlas-scale) * 1.5)
@@ -618,14 +627,15 @@ button {
   border: 0;
   background-color: transparent;
 }
-.atlas.node-cleared { background-position: calc(-1300px * var(--atlas-scale) * 1.5) calc(-660px * var(--atlas-scale) * 1.5); }
-.atlas.node-current { background-position: calc(-1390px * var(--atlas-scale) * 1.5) calc(-660px * var(--atlas-scale) * 1.5); }
-.atlas.node-locked  { background-position: calc(-1480px * var(--atlas-scale) * 1.5) calc(-660px * var(--atlas-scale) * 1.5); }
-.atlas.node-boss    { background-position: calc(-1570px * var(--atlas-scale) * 1.5) calc(-660px * var(--atlas-scale) * 1.5); }
+.atlas-ready .atlas.node-cleared { background-position: calc(-1300px * var(--atlas-scale) * 1.5) calc(-660px * var(--atlas-scale) * 1.5); }
+.atlas-ready .atlas.node-current { background-position: calc(-1390px * var(--atlas-scale) * 1.5) calc(-660px * var(--atlas-scale) * 1.5); }
+.atlas-ready .atlas.node-locked,
+.atlas-ready .atlas.node--locked { background-position: calc(-1480px * var(--atlas-scale) * 1.5) calc(-660px * var(--atlas-scale) * 1.5); }
+.atlas-ready .atlas.node-boss    { background-position: calc(-1570px * var(--atlas-scale) * 1.5) calc(-660px * var(--atlas-scale) * 1.5); }
 
 /* ===== atlas 적용된 .character / .cta-start 의 텍스트 라벨은 위쪽에 떠 있도록 ===== */
-.atlas.character { position: relative; }
-.atlas.character .character__name {
+.atlas-ready .atlas.character { position: relative; }
+.atlas-ready .atlas.character .character__name {
   position: absolute; bottom: 8px; left: 0; right: 0; text-align: center;
 }
 
