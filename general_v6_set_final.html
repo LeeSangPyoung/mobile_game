@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>장수 v6 세트 FINAL · 전신 / 반신 / 얼굴</title>
+<style>
+* { box-sizing: border-box; }
+:root {
+  color-scheme: dark;
+  --bg:#120f0b;
+  --panel:#211913;
+  --panel2:#18120d;
+  --line:rgba(244,223,184,.18);
+  --gold:#ffd36a;
+  --text:#f4dfb8;
+  --muted:#bfa986;
+  --done:#6ee7a8;
+  --wait:#ffb46b;
+}
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+}
+header {
+  position:sticky;
+  top:0;
+  z-index:5;
+  padding:16px 20px 13px;
+  background:rgba(18,15,11,.95);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(10px);
+}
+.top { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+h1 { margin:0; font-size:22px; font-weight:850; }
+.count { color:var(--muted); font-size:13px; line-height:1.45; }
+.legend { color:var(--muted); font-size:12px; margin-top:6px; line-height:1.5; }
+.legend b { color:var(--gold); font-weight:800; }
+main { padding:18px 20px 28px; }
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
+  gap:14px;
+}
+article {
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel);
+  box-shadow:0 10px 22px rgba(0,0,0,.22);
+}
+.trio {
+  display:grid;
+  grid-template-columns:1.05fr 1fr 1fr;
+  gap:1px;
+  background:rgba(244,223,184,.15);
+}
+.art {
+  position:relative;
+  display:grid;
+  place-items:center;
+  aspect-ratio:3/4;
+  overflow:hidden;
+  background:#0f0c09;
+}
+.art img { width:100%; height:100%; object-fit:cover; object-position:center top; }
+.icon { aspect-ratio:3/4; }
+.icon img { object-fit:contain; object-position:center; }
+.icon {
+  background:
+    linear-gradient(45deg, rgba(255,255,255,.07) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,.07) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,.07) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.07) 75%),
+    #17110d;
+  background-size:20px 20px;
+  background-position:0 0, 0 10px, 10px -10px, -10px 0;
+}
+.badge {
+  position:absolute;
+  z-index:1;
+  left:7px; top:7px;
+  padding:3px 7px 4px;
+  border-radius:6px;
+  background:rgba(13,9,6,.78);
+  border:1px solid rgba(255,211,106,.32);
+  color:var(--gold);
+  font-size:10px;
+  font-weight:850;
+}
+.missing {
+  display:grid;
+  place-items:center;
+  width:100%; height:100%;
+  padding:14px;
+  color:var(--wait);
+  font-size:12px;
+  font-weight:850;
+  text-align:center;
+  background:var(--panel2);
+}
+.meta { padding:10px 12px 12px; }
+.name {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:8px;
+  margin:0;
+  font-size:16px;
+  font-weight:850;
+}
+.name small { color:#9e8a67; font-size:11px; font-weight:750; }
+@media (max-width:480px) {
+  header { padding:14px 12px 12px; }
+  main { padding:12px; }
+  .grid { grid-template-columns:1fr; gap:12px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>장수 v6 세트 FINAL</h1>
+    <div id="count" class="count">집계중…</div>
+  </div>
+  <div class="legend">
+    <b>전신</b> fullbody_v6 · <b>반신</b> halfbody_v6 · <b>얼굴</b> 전쟁 아이콘 v6 cute50(투명) — 게임 실제 사용(prototype.html) 기준 최신 v6 세트
+  </div>
+</header>
+<main><section id="grid" class="grid"></section></main>
+<script src="./assets/generals/roster_200.js"></script>
+<script>
+const version = "v6-set-final-20260611";
+const fullBase = "./assets/generals/fullbody_v6";
+const halfBase = "./assets/generals/halfbody_v6";
+const faceBase = "./assets/generals/face_icons/war_v6_halfbody_style_transparent";
+
+const fullPath = id => `${fullBase}/${id}.webp?v=${version}`;
+const halfPath = id => `${halfBase}/${id}.webp?v=${version}`;
+const facePath = id => `${faceBase}/${id}_war_face_icon_v6_cute50.png?v=${version}`;
+
+const grid = document.getElementById("grid");
+const count = document.getElementById("count");
+
+function cell(cls, label, src, alt) {
+  return `<div class="art ${cls}">
+    <span class="badge">${label}</span>
+    <img loading="lazy" src="${src}" alt="${alt}" data-fallback="${label} 없음">
+  </div>`;
+}
+
+window.GENERALS_200.forEach(([id, ko], index) => {
+  const no = String(index + 1).padStart(3, "0");
+  const article = document.createElement("article");
+  article.innerHTML = `
+    <div class="trio">
+      ${cell("full", "전신", fullPath(id), `${ko} 전신`)}
+      ${cell("half", "반신", halfPath(id), `${ko} 반신`)}
+      ${cell("icon", "얼굴", facePath(id), `${ko} 얼굴`)}
+    </div>
+    <div class="meta">
+      <p class="name"><span>${ko}</span><small>${no} · ${id}</small></p>
+    </div>`;
+  article.querySelectorAll("img").forEach(img => {
+    img.addEventListener("error", () => {
+      img.replaceWith(Object.assign(document.createElement("div"), {
+        className: "missing",
+        textContent: img.dataset.fallback
+      }));
+    }, { once:true });
+  });
+  grid.appendChild(article);
+});
+
+count.textContent = `${window.GENERALS_200.length}명 · 전신·반신·얼굴 3종 세트 · v6 FINAL`;
+</script>
+</body>
+</html>

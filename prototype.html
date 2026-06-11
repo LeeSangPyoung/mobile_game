@@ -11074,6 +11074,7 @@
     left: 50%;
     transform: translateX(-50%);
     display: flex;
+    box-sizing: border-box;
     gap: 4px;
     padding: 4px 6px;
     background: rgba(8,4,2,0.78);
@@ -11087,10 +11088,35 @@
   #factionLegend .fl-row {
     display: flex;
     align-items: center;
+    position: relative;
     gap: 4px;
     padding: 2px 6px 2px 4px;
     border-radius: 8px;
     background: rgba(20,12,8,0.55);
+    white-space: nowrap;
+  }
+  #factionLegend .fl-row.is-empty { opacity: 0.42; filter: grayscale(0.25); }
+  #factionLegend.is-alliance {
+    border-color: rgba(255,216,107,0.42);
+    gap: 0;
+    padding: 3px 5px;
+  }
+  #factionLegend.is-alliance .fl-row {
+    display: none !important;
+  }
+  #factionLegend .fl-row.is-allied {
+    background: rgba(36,22,10,0.62);
+  }
+  #factionLegend .fl-row.is-allied::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: 1px;
+    height: 2px;
+    border-radius: 2px;
+    background: rgba(255,216,107,0.92);
+    pointer-events: none;
   }
   #factionLegend .fl-row[data-owner="1"] { box-shadow: inset 0 0 0 1px #5a90e0; }
   #factionLegend .fl-row[data-owner="2"] { box-shadow: inset 0 0 0 1px #e07060; }
@@ -11109,10 +11135,14 @@
   #factionLegend .fl-row[data-owner="2"] .fl-flag { background: #c83228; color: #fff; }
   #factionLegend .fl-row[data-owner="3"] .fl-flag { background: #e0a418; color: #2a0d05; }
   #factionLegend .fl-row[data-owner="4"] .fl-flag { background: #3da064; color: #fff; }
+  #factionLegend .fl-row.is-allied .fl-flag {
+    box-shadow: 0 0 0 1px rgba(42,13,5,0.95), 0 0 0 3px rgba(255,216,107,0.92);
+  }
   #factionLegend .fl-name {
     color: #f4dfb8;
     font-size: 11px;
     font-weight: 800;
+    white-space: nowrap;
   }
   #factionLegend .fl-cnt {
     color: #ffe796;
@@ -11123,14 +11153,39 @@
   }
   #factionLegend .fl-alliance {
     align-self: center;
-    margin-left: 4px;
-    padding: 2px 6px;
-    background: linear-gradient(180deg, #ffd86b, #b87018);
-    color: #2a0d05;
-    border-radius: 6px;
-    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-left: 0;
+    min-height: 18px;
+    padding: 2px 7px;
+    background: rgba(30,18,8,0.78);
+    color: #ffe796;
+    border: 1px solid rgba(255,216,107,0.58);
+    border-radius: 7px;
+    font-size: 10px;
     font-weight: 900;
-    letter-spacing: 1px;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+  #factionLegend .fl-alliance-text {
+    line-height: 1;
+  }
+  #factionLegend .fl-alliance-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  #factionLegend .fl-alliance-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(42,13,5,0.92), 0 0 0 2px rgba(255,216,107,0.62);
+  }
+  #factionIntroCard.show + #factionLegend {
+    opacity: 0;
+    visibility: hidden;
   }
   /* === 진영 소개 인트로 카드 === */
   #factionIntroCard {
@@ -11149,6 +11204,7 @@
     color: #ffe796;
     text-align: center;
     font-family: 'Noto Serif KR', serif;
+    max-width: calc(100vw - 28px);
     opacity: 0;
     transition: opacity 0.25s ease, transform 0.25s ease;
   }
@@ -11168,20 +11224,124 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
     gap: 10px;
     font-weight: 900;
     font-size: 16px;
   }
   #factionIntroCard .fic-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
     padding: 4px 10px;
     border-radius: 8px;
     color: #fff;
     text-shadow: 0 1px 0 rgba(0,0,0,0.55);
+    white-space: nowrap;
+  }
+  #factionIntroCard .fic-tag[data-owner="3"] {
+    color: #2a0d05;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.36);
+  }
+  #factionIntroCard .fic-alliance-group {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 5px 8px;
+    border-radius: 10px;
+    background: rgba(255,216,107,0.08);
+    border: 1px solid rgba(255,216,107,0.62);
+    box-shadow: inset 0 0 0 1px rgba(42,13,5,0.34);
+  }
+  #factionIntroCard .fic-plus {
+    color: #ffd86b;
+    font-size: 13px;
+    opacity: 0.86;
+  }
+  #factionIntroCard .fic-alliance-badge {
+    padding: 3px 7px;
+    border-radius: 7px;
+    background: linear-gradient(180deg, #ffe796, #c98522);
+    color: #2a0d05;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-shadow: none;
   }
   #factionIntroCard .fic-vs {
     color: #f4dfb8;
     font-size: 14px;
     opacity: 0.7;
+  }
+  @media (max-width: 640px) {
+    #factionLegend {
+      top: calc(env(safe-area-inset-top, 0px) + 188px);
+      left: max(8px, env(safe-area-inset-left));
+      right: auto;
+      transform: none;
+      max-width: calc(100vw - 16px);
+      flex-wrap: wrap;
+      gap: 3px;
+      padding: 3px;
+      border-radius: 8px;
+      z-index: 8700;
+    }
+    #factionLegend .fl-row {
+      gap: 3px;
+      min-width: 42px;
+      padding: 2px 5px 2px 3px;
+      border-radius: 7px;
+    }
+    #factionLegend .fl-name { display: none; }
+    #factionLegend .fl-flag {
+      width: 16px;
+      height: 16px;
+      line-height: 16px;
+      font-size: 11px;
+    }
+    #factionLegend .fl-cnt {
+      min-width: 10px;
+      font-size: 12px;
+    }
+    #factionLegend .fl-alliance {
+      min-height: 17px;
+      padding: 2px 6px;
+      font-size: 10px;
+      gap: 4px;
+    }
+    #factionIntroCard {
+      top: 32%;
+      width: min(340px, calc(100vw - 28px));
+      padding: 12px 14px 14px;
+      border-radius: 10px;
+    }
+    #factionIntroCard .fic-mode {
+      font-size: 12px;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+    #factionIntroCard .fic-row {
+      gap: 8px;
+      font-size: 15px;
+    }
+    #factionIntroCard[data-factions="4"] .fic-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    #factionIntroCard[data-factions="4"] .fic-vs {
+      display: none;
+    }
+    #factionIntroCard .fic-tag {
+      min-width: 0;
+      padding: 5px 8px;
+    }
+    #factionIntroCard .fic-alliance-group {
+      gap: 5px;
+      padding: 5px 6px;
+    }
   }
   /* === 챕터 좌우 이동 화살표 === */
   #stageSelect .ss-chap-arrow {
@@ -11615,7 +11775,7 @@
   <div class="fl-row" data-owner="2"><span class="fl-flag">魏</span><span class="fl-name">위</span><span class="fl-cnt">0</span></div>
   <div class="fl-row" data-owner="3"><span class="fl-flag">吳</span><span class="fl-name">오</span><span class="fl-cnt">0</span></div>
   <div class="fl-row" data-owner="4"><span class="fl-flag">蜀</span><span class="fl-name">촉</span><span class="fl-cnt">0</span></div>
-  <div class="fl-alliance" id="flAlliance" style="display:none">🤝 동맹</div>
+  <div class="fl-alliance" id="flAlliance" style="display:none">同盟</div>
 </div>
 <div id="hud" style="display:none">
   <div><span class="label">아군</span> <span class="my" id="myTotal">0</span></div>
@@ -14194,17 +14354,24 @@ function checkTutorialProgress() {
 }
 
 function startOpeningCinematic() {
-  const enemies = castles.filter(c => c.owner === 2);
+  const enemies = castles.filter(c => c.owner !== 1 && c.owner !== 0);
   const neutrals = castles.filter(c => c.owner === 0);
   const mine = castles.find(c => c.owner === 1);
   if (!enemies.length || !mine) { cinematic = null; return; }
   const baseZoom = zoom;
   const phases = [];
+  const multiFaction = (typeof _isMultiFactionStageActive === 'function') && _isMultiFactionStageActive();
+  const enemyLabel = (c) => {
+    if (!multiFaction) return '적 군';
+    const f = FACTION[c.owner];
+    const name = FACTION_KOR[c.owner] || '적';
+    return f && f.flagGlyph ? `${f.flagGlyph} ${name}` : name;
+  };
   // 적군: 하나씩 순회
   enemies.forEach((c, i) => {
     const n = { nx: c.x, ny: c.y };
     phases.push({ d: 0.55, name: 'panEnemy' + i, n, z: baseZoom, label: null });
-    phases.push({ d: 1.1,  name: 'enemy' + i,    n, z: baseZoom, label: '적 군' });
+    phases.push({ d: 1.1,  name: 'enemy' + i,    n, z: baseZoom, label: enemyLabel(c) });
   });
   // 공성 가능한 중립 성 (owner=0)
   neutrals.forEach((c, i) => {
@@ -14283,9 +14450,23 @@ function drawCinematicLabel(text, big) {
   if (sameLabel && el.style.opacity === '1') return;
   el.dataset.labelText = text;
   el.dataset.labelBig = String(!!big);
+  const factionIntro = document.getElementById('factionIntroCard');
+  if (text && !big && factionIntro && factionIntro.classList.contains('show')) {
+    el.style.opacity = '0';
+    return;
+  }
 
   const showFallbackText = () => {
     if (el.dataset.labelText !== text) return;
+    const labelOwner = (() => {
+      if (typeof FACTION === 'undefined') return null;
+      for (let o = 1; o <= 4; o++) {
+        const glyph = FACTION[o] && FACTION[o].flagGlyph;
+        if (glyph && text.indexOf(glyph) === 0) return o;
+      }
+      return null;
+    })();
+    const labelFaction = labelOwner ? FACTION[labelOwner] : null;
     if (img) {
       img.onload = null;
       img.onerror = null;
@@ -14296,8 +14477,12 @@ function drawCinematicLabel(text, big) {
       fallback.style.cssText = 'display:block;font-weight:900;color:#fff;-webkit-text-stroke:5px #2a1810;paint-order:stroke fill;letter-spacing:8px;font-family:inherit;text-shadow:0 0 24px rgba(255,210,80,.6);';
       fallback.textContent = text;
       fallback.style.fontSize = big ? '72px' : '40px';
-      fallback.style.color = big ? '#ffd23f' : '#fff';
-      fallback.style.letterSpacing = big ? '12px' : '8px';
+      fallback.style.color = big ? '#ffd23f' : (labelFaction ? labelFaction.light : '#fff');
+      fallback.style.letterSpacing = big ? '12px' : (labelFaction ? '4px' : '8px');
+      fallback.style.webkitTextStroke = `5px ${labelOwner === 3 ? '#2a0d05' : '#2a1810'}`;
+      fallback.style.textShadow = labelFaction
+        ? `0 0 24px ${labelFaction.light}, 0 8px 18px rgba(0,0,0,.54)`
+        : '0 0 24px rgba(255,210,80,.6)';
     }
     el.style.width = 'auto';
     el.style.transform = 'translate(-50%,-50%) scale(1)';
@@ -15724,16 +15909,75 @@ function getBattleBgImage() {
   try {
     if (typeof currentStage === 'number') stageIdx = currentStage;
   } catch (_) {}
-  const img = battleBgImages[Math.abs(stageIdx) % battleBgImages.length] || battleBgImages[0];
+  const img = battleBgImages[getBattleBgIndex(stageIdx)] || battleBgImages[0];
   return img && img.complete && img.naturalWidth > 0 ? img : null;
 }
+function getBattleBgIndex(stageIdx) {
+  return Math.abs(stageIdx || 0) % battleBgImages.length;
+}
 function drawBattleBgCover(g, img, w, h) {
+  g.imageSmoothingEnabled = true;
+  g.imageSmoothingQuality = 'high';
   const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
   const dw = img.naturalWidth * scale;
   const dh = img.naturalHeight * scale;
   const dx = (w - dw) / 2;
   const dy = (h - dh) / 2;
   g.drawImage(img, dx, dy, dw, dh);
+}
+function battleBgDetailPalette(idx) {
+  const palettes = [
+    { base: 'rgba(214,238,144,', dark: 'rgba(46,88,28,', light: 'rgba(244,255,194,', pebble: 'rgba(92,108,74,' },
+    { base: 'rgba(220,236,242,', dark: 'rgba(126,148,156,', light: 'rgba(255,255,255,', pebble: 'rgba(150,164,170,' },
+    { base: 'rgba(172,176,142,', dark: 'rgba(76,78,58,', light: 'rgba(218,216,176,', pebble: 'rgba(88,88,76,' },
+    { base: 'rgba(162,210,110,', dark: 'rgba(56,96,40,', light: 'rgba(226,244,154,', pebble: 'rgba(100,122,68,' },
+    { base: 'rgba(201,184,104,', dark: 'rgba(100,78,38,', light: 'rgba(246,224,134,', pebble: 'rgba(124,92,54,' },
+    { base: 'rgba(188,158,104,', dark: 'rgba(92,68,44,', light: 'rgba(234,202,142,', pebble: 'rgba(116,96,76,' },
+    { base: 'rgba(218,176,100,', dark: 'rgba(128,82,38,', light: 'rgba(255,220,138,', pebble: 'rgba(154,106,62,' },
+    { base: 'rgba(122,108,86,', dark: 'rgba(58,48,40,', light: 'rgba(168,150,112,', pebble: 'rgba(78,68,56,' },
+    { base: 'rgba(214,154,78,', dark: 'rgba(116,62,34,', light: 'rgba(250,198,118,', pebble: 'rgba(126,76,48,' },
+    { base: 'rgba(94,142,92,', dark: 'rgba(34,70,44,', light: 'rgba(148,190,128,', pebble: 'rgba(58,90,62,' },
+  ];
+  return palettes[idx % palettes.length];
+}
+function drawBattleBgDetailOverlay(g, w, h, idx, seed) {
+  const pal = battleBgDetailPalette(idx);
+  let s = (seed || 1) >>> 0;
+  const rand = () => {
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+  const area = Math.max(1, w * h);
+  const strokeCount = Math.max(900, Math.min(3600, Math.round(area / 2700)));
+  const pebbleCount = Math.max(120, Math.min(760, Math.round(area / 14500)));
+  g.save();
+  g.lineCap = 'round';
+  g.lineJoin = 'round';
+  for (let i = 0; i < strokeCount; i++) {
+    const x = rand() * w;
+    const y = rand() * h;
+    const len = (3.5 + rand() * 10) * DPR();
+    const ang = (-0.95 + rand() * 0.55) + Math.sin((x / Math.max(1, w)) * Math.PI * 2) * 0.18;
+    const alpha = 0.035 + rand() * 0.07;
+    const tone = rand();
+    g.strokeStyle = (tone < 0.45 ? pal.dark : (tone < 0.78 ? pal.base : pal.light)) + alpha.toFixed(3) + ')';
+    g.lineWidth = (0.55 + rand() * 0.85) * DPR();
+    g.beginPath();
+    g.moveTo(x, y);
+    g.lineTo(x + Math.cos(ang) * len, y + Math.sin(ang) * len);
+    g.stroke();
+  }
+  for (let i = 0; i < pebbleCount; i++) {
+    const x = rand() * w;
+    const y = rand() * h;
+    const rx = (0.9 + rand() * 2.6) * DPR();
+    const ry = rx * (0.45 + rand() * 0.4);
+    g.fillStyle = pal.pebble + (0.045 + rand() * 0.075).toFixed(3) + ')';
+    g.beginPath();
+    g.ellipse(x, y, rx, ry, rand() * Math.PI, 0, Math.PI * 2);
+    g.fill();
+  }
+  g.restore();
 }
 
 const CASTLE_SPRITE_ASSETS = {
@@ -15822,31 +16066,72 @@ const FACTION = {
 };
 // === 다진영 UI 헬퍼 ===
 const FACTION_KOR = { 0: '중립', 1: '아군', 2: '위', 3: '오', 4: '촉' };
+const FACTION_COLOR_KOR = { 1: '파랑', 2: '빨강', 3: '노랑', 4: '초록' };
 function _countCastlesByOwner() {
   const m = {1:0, 2:0, 3:0, 4:0};
   for (const c of castles) if (m[c.owner] != null) m[c.owner]++;
   return m;
 }
+function _stageFactionOwners(stage) {
+  const set = new Set();
+  if (stage && stage.castles) {
+    for (const c of stage.castles) {
+      if (c.owner !== 0 && FACTION[c.owner]) set.add(c.owner);
+    }
+  }
+  return Array.from(set).sort((a, b) => a - b);
+}
+function _isMultiFactionStageActive(stage) {
+  return _stageFactionOwners(stage || STAGES[currentStage]).length >= 3;
+}
+function _allianceEnemyOwners(stage) {
+  const st = stage || STAGES[currentStage];
+  if (!st || !st.alliance || st._allianceBroken) return [];
+  return _stageFactionOwners(st).filter(o => o !== 1 && o !== 0);
+}
+function _allianceLabelForOwners(owners) {
+  return owners
+    .map(o => FACTION_COLOR_KOR[o] || FACTION_KOR[o] || '')
+    .filter(Boolean)
+    .join('·');
+}
 function updateFactionLegend() {
   const legend = document.getElementById('factionLegend');
   if (!legend) return;
+  const stage = STAGES[currentStage];
   const cnt = _countCastlesByOwner();
-  const present = [];
-  for (let o = 1; o <= 4; o++) if (cnt[o] > 0) present.push(o);
-  // 다진영(2개 초과)일 때만 범례 표시
-  legend.style.display = present.length >= 3 ? 'flex' : 'none';
+  const stageOwners = _stageFactionOwners(stage);
+  const visible = new Set(stageOwners.length >= 3 ? stageOwners : []);
+  const alliedOwners = _allianceEnemyOwners(stage);
+  const alliedSet = new Set(alliedOwners);
+  const allianceActive = alliedOwners.length >= 2;
+  for (let o = 1; o <= 4; o++) if (cnt[o] > 0 && stageOwners.length >= 3) visible.add(o);
+  // 다진영 스테이지는 한 진영 성이 0개가 되어도 색상 키를 유지
+  legend.style.display = stageOwners.length >= 3 ? 'flex' : 'none';
+  legend.classList.toggle('is-alliance', allianceActive);
   for (let o = 1; o <= 4; o++) {
     const row = legend.querySelector(`.fl-row[data-owner="${o}"]`);
     if (!row) continue;
-    row.style.display = cnt[o] > 0 ? 'flex' : 'none';
+    row.style.display = visible.has(o) ? 'flex' : 'none';
+    row.classList.toggle('is-empty', visible.has(o) && cnt[o] <= 0);
+    row.classList.toggle('is-allied', allianceActive && alliedSet.has(o));
     const cntEl = row.querySelector('.fl-cnt');
     if (cntEl) cntEl.textContent = String(cnt[o] || 0);
   }
   // 동맹 표식
   const aEl = document.getElementById('flAlliance');
-  const stage = STAGES[currentStage];
   if (aEl) {
-    aEl.style.display = (stage && stage.alliance && !stage._allianceBroken) ? 'inline-block' : 'none';
+    aEl.style.display = allianceActive ? 'inline-flex' : 'none';
+    if (allianceActive) {
+      const label = _allianceLabelForOwners(alliedOwners);
+      const dots = alliedOwners.map((o) => {
+        const f = FACTION[o];
+        return `<span class="fl-alliance-dot" style="background:${f.main}" aria-hidden="true"></span>`;
+      }).join('');
+      aEl.innerHTML = `<span class="fl-alliance-text">동맹</span><span class="fl-alliance-dots">${dots}</span>`;
+      aEl.setAttribute('aria-label', `${label} 동맹`);
+      aEl.title = `${label} 동맹`;
+    }
   }
 }
 function showFactionIntroIfNeeded() {
@@ -15860,16 +16145,19 @@ function showFactionIntroIfNeeded() {
   const mode = document.getElementById('ficMode');
   const row = document.getElementById('ficRow');
   if (!card || !mode || !row) return;
-  const allied = !!stage.alliance;
-  mode.textContent = allied ? '동맹 협공!' : (set.size === 3 ? '三國 자유 다툼' : '四國 난세');
+  const alliedOwners = _allianceEnemyOwners(stage);
+  const allianceActive = alliedOwners.length >= 2;
+  mode.textContent = allianceActive ? '동맹 협공!' : (set.size === 3 ? '三國 자유 다툼' : '四國 난세');
   // 적을 그룹화: 동맹이면 적 둘을 묶음
   const ordered = [1, ...Array.from(set).filter(o => o !== 1).sort()];
-  const tag = (owner) => `<span class="fic-tag" style="background:${FACTION[owner].main}">${FACTION[owner].flagGlyph} ${FACTION_KOR[owner]}</span>`;
-  if (allied) {
-    // [漢 아군] vs [魏 + 吳] 협공
-    const player = tag(1);
-    const enemies = ordered.filter(o => o !== 1).map(tag).join(' + ');
-    row.innerHTML = `${player} <span class="fic-vs">vs</span> ${enemies}`;
+  card.dataset.factions = String(ordered.length);
+  card.dataset.alliance = allianceActive ? '1' : '0';
+  const tag = (owner) => `<span class="fic-tag" data-owner="${owner}" style="background:${FACTION[owner].main}"><span>${FACTION[owner].flagGlyph}</span><span>${FACTION_KOR[owner]}</span></span>`;
+  if (allianceActive) {
+    // 동맹은 스테이지 시작 조건이므로 전투를 가리는 대형 안내 대신 범례의 작은 색상 표식만 사용
+    card.classList.remove('show');
+    clearTimeout(window._ficTimer);
+    return;
   } else {
     row.innerHTML = ordered.map(tag).join(' <span class="fic-vs">vs</span> ');
   }
@@ -20674,9 +20962,9 @@ let _bgCache = { key: null, canvas: null };
 function buildBackground() {
   // W, H를 일시적으로 월드 크기로 덮어 — 본문에서 W/H 그대로 사용 가능
   const _sw = W, _sh = H;
-  // 배경 캔버스는 최대 2048픽셀로 제한 (모든 디바이스에서 일정 부하)
+  // 배경 캔버스는 고DPR 모바일에서 흐려지지 않도록 넉넉히 잡되, 캐시 1회 생성으로 제한한다.
   const fullW = worldPxW(), fullH = worldPxH();
-  const MAX_BG = 2048;
+  const MAX_BG = 4096;
   const sc = Math.min(1, MAX_BG / Math.max(fullW, fullH));
   const _scW = Math.round(fullW * sc), _scH = Math.round(fullH * sc);
   // 캐시 키: 같은 스테이지/챕터/해상도/배경이미지면 재생성 생략 (200~500ms 절약)
@@ -20697,6 +20985,8 @@ function buildBackground() {
   const artBg = getBattleBgImage();
   if (artBg) {
     drawBattleBgCover(bg, artBg, W, H);
+    const bgIdx = (typeof getBattleBgIndex === 'function') ? getBattleBgIndex(_stIdx) : 0;
+    drawBattleBgDetailOverlay(bg, W, H, bgIdx, ((_stIdx + 1) * 2654435761) >>> 0);
     const centerLight = bg.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W, H) * 0.62);
     centerLight.addColorStop(0, 'rgba(255,245,170,0.08)');
     centerLight.addColorStop(0.62, 'rgba(255,245,170,0)');
@@ -22203,16 +22493,17 @@ function drawCastle(c) {
   if (c._seed === undefined) c._seed = Math.random() * 1000;
 
   // === 진영 인디케이터 — 성 발치 큰 색깔 링 (한눈에 식별) ===
-  const ownerColor = c.owner === 1 ? '#3a8aff' : (c.owner === 2 ? '#ff3a3a' : '#999');
+  const ownerColor = (f && f.flag) || '#999';
+  const ownerLight = (f && f.light) || ownerColor;
   ctx.save();
-  ctx.globalAlpha = 0.55;
+  ctx.globalAlpha = c.owner === 0 ? 0.34 : 0.48;
   ctx.fillStyle = ownerColor;
   ctx.beginPath();
   ctx.ellipse(x, y + r * 0.95, r * 1.30, r * 0.35, 0, 0, Math.PI * 2);
   ctx.fill();
-  ctx.globalAlpha = 1;
-  ctx.strokeStyle = ownerColor;
-  ctx.lineWidth = 4 * DPR();
+  ctx.globalAlpha = c.owner === 0 ? 0.55 : 0.95;
+  ctx.strokeStyle = ownerLight;
+  ctx.lineWidth = (c.owner === 0 ? 2.5 : 4) * DPR();
   ctx.beginPath();
   ctx.ellipse(x, y + r * 0.95, r * 1.30, r * 0.35, 0, 0, Math.PI * 2);
   ctx.stroke();
@@ -22276,7 +22567,9 @@ function drawCastle(c) {
   let wallFill, wallStroke, wallAccent;
   if (c.owner === 0) { wallFill = '#9f9278'; wallStroke = '#2c2115'; wallAccent = '#c9b58e'; }
   else if (c.owner === 1) { wallFill = '#8f9f9a'; wallStroke = '#123763'; wallAccent = '#d1c09a'; }
-  else { wallFill = '#9f8d78'; wallStroke = '#5a1410'; wallAccent = '#d0b185'; }
+  else if (c.owner === 3) { wallFill = '#b5a06a'; wallStroke = FACTION[3].dark; wallAccent = '#efd486'; }
+  else if (c.owner === 4) { wallFill = '#88a78e'; wallStroke = FACTION[4].dark; wallAccent = '#bce0b8'; }
+  else { wallFill = '#9f8d78'; wallStroke = FACTION[c.owner].dark; wallAccent = '#d0b185'; }
 
   // 진영색 외곽 링은 얇게만 사용해서 성곽보다 UI가 먼저 보이지 않게 함
   ctx.save();
@@ -22357,8 +22650,12 @@ function drawCastle(c) {
   // === 북쪽 위로 빠진 성문 + 망루 + 누각: 성곽의 랜드마크 ===
   const stone = c.owner === 0 ? '#b6aa8e' : '#d7c49b';
   const stoneDark = c.owner === 0 ? '#5a4a34' : '#6a4a2a';
-  const roofColor = c.owner === 2 ? '#7f1714' : (c.owner === 1 ? '#1d4f83' : '#6d5334');
-  const roofDark = c.owner === 2 ? '#2a0505' : '#1a1008';
+  const roofColor = c.owner === 1 ? '#1d4f83'
+    : c.owner === 2 ? '#7f1714'
+    : c.owner === 3 ? '#b88312'
+    : c.owner === 4 ? '#2f8354'
+    : '#6d5334';
+  const roofDark = c.owner === 0 ? '#1a1008' : (f.dark || '#1a1008');
   const keepW = r * 1.22;
   const keepH = r * 0.84;
   const keepX = x - keepW / 2;
@@ -22461,7 +22758,7 @@ function drawCastle(c) {
   const gateH = r * 0.42;
   const gateBotY = keepY + keepH;
   const gateTopY = gateBotY - gateH;
-  ctx.fillStyle = c.owner === 0 ? '#4a3420' : '#7a1a12';
+  ctx.fillStyle = c.owner === 0 ? '#4a3420' : (f.dark || '#7a1a12');
   ctx.beginPath();
   ctx.moveTo(x - gateW / 2, gateBotY);
   ctx.lineTo(x - gateW / 2, gateTopY + gateW * 0.22);
@@ -22593,7 +22890,7 @@ function drawCastle(c) {
     ctx.closePath();
     ctx.fill(); ctx.stroke();
     glyphCx = poleX + flagW*0.45; glyphCy = poleTop + flagH*0.55 + wave*0.3;
-    glyphColor = '#e8c060';
+    glyphColor = c.owner === 3 ? '#2a0d05' : (c.owner === 4 ? '#ffffff' : '#e8c060');
   }
   // 깃발 글자 (진영 표식)
   const factionLabel = f.flagGlyph || '';
@@ -22728,9 +23025,16 @@ function drawCastle(c) {
   const pillH = 18*DPR() + npadY*2;
   // 배경
   ctx.fillStyle = 'rgba(20,12,8,0.78)';
-  ctx.strokeStyle = '#d4a850'; ctx.lineWidth = 1.5 * DPR();
+  ctx.strokeStyle = c.owner === 0 ? '#d4a850' : ownerLight; ctx.lineWidth = (c.owner === 0 ? 1.5 : 2.0) * DPR();
   roundRect(pillX, pillY, pillInnerW + npadX*2, pillH, 6*DPR());
   ctx.fill(); ctx.stroke();
+  ctx.save();
+  roundRect(pillX, pillY, pillInnerW + npadX*2, pillH, 6*DPR());
+  ctx.clip();
+  ctx.globalAlpha = c.owner === 0 ? 0.45 : 0.88;
+  ctx.fillStyle = ownerColor;
+  ctx.fillRect(pillX, pillY, 5 * DPR(), pillH);
+  ctx.restore();
   // 이름 (좌측)
   const nameCx = pillX + npadX + nameW/2;
   ctx.font = `bold ${15 * DPR()}px 'Noto Serif KR', serif`;
@@ -22740,9 +23044,9 @@ function drawCastle(c) {
   ctx.strokeText(c.name, nameCx, nameY);
   ctx.fillStyle = '#f4e4b8';
   ctx.fillText(c.name, nameCx, nameY);
-  // 빨간 배지 (우측)
+  // 총 병력 배지 (진영색)
   const badgeCx = pillX + npadX + nameW + innerGap + badgeR;
-  ctx.fillStyle = 'rgba(180,40,40,0.95)';
+  ctx.fillStyle = c.owner === 0 ? 'rgba(120,84,44,0.95)' : (f.main || 'rgba(180,40,40,0.95)');
   ctx.strokeStyle = '#1a0a08'; ctx.lineWidth = 1.2 * DPR();
   ctx.beginPath();
   ctx.arc(badgeCx, nameY, badgeR, 0, Math.PI*2);
@@ -22752,7 +23056,7 @@ function drawCastle(c) {
   ctx.lineWidth = 3 * DPR();
   ctx.lineJoin = 'round';
   ctx.strokeText(totalStr, badgeCx, nameY);
-  ctx.fillStyle = '#fff';
+  ctx.fillStyle = c.owner === 3 ? '#2a0d05' : '#fff';
   ctx.fillText(totalStr, badgeCx, nameY);
   ctx.textBaseline = 'alphabetic';
 
@@ -23787,6 +24091,8 @@ function render(dt) {
   ctx.translate(W/2, H/2);
   ctx.scale(zoom, zoom);
   ctx.translate(-camX, -camY);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(bgCanvas, 0, 0, bgCanvas._fullW || worldPxW(), bgCanvas._fullH || worldPxH());
   // 구름 흐름 (D9) - 위치 갱신만 (그리기는 모든 게임 요소 위에서 — 아래 drawSpeeches 직전)
   if (window._clouds) {
@@ -24435,10 +24741,11 @@ function drawMinimap() {
     const px = MM.x + c.x * MM.w;
     const py = MM.y + c.y * MM.h;
     const f = FACTION[c.owner];
+    const r = (3.5 + 1.5 * c.size) * DPR();
     ctx.fillStyle = f.main;
     ctx.strokeStyle = '#1a0a08';
     ctx.lineWidth = 1.5 * DPR();
-    ctx.beginPath(); ctx.arc(px, py, (3.5 + 1.5 * c.size) * DPR(), 0, Math.PI*2);
+    ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2);
     ctx.fill(); ctx.stroke();
   }
   drawMinimapAlerts();

@@ -157,10 +157,10 @@ a:hover { text-decoration:underline; }
 <body style="--battle-bg:url('./assets/battle/bg_battle_01_grass.jpg')">
 <header>
   <div class="top">
-    <h1>신규 반신 200명 게임용 투명 컷아웃 v9 review</h1>
+    <h1>신규 반신 200명 게임용 투명 컷아웃 v9/v10 review</h1>
     <div class="note" id="count">0/200</div>
   </div>
-  <div class="note">기준: v9 review. 전신 크롭 금지. 포즈/표정은 반신용으로 새로 구성하고, 조조/조흥만 검토본. 나머지 v7 자동 크롭은 재생성 대상.</div>
+    <div class="note">기준: v9/v10 review. 관우 1차 스타일 밸런스 기준 및 001 조조/002 조흥 샘플 케이스 확인. 전신 크롭 금지. 포즈/표정은 반신용으로 새로 구성하고, 조조부터 유선까지 검토본. 임시/후처리 보정본 10명은 무보정 재생성 완료. 주유 스타일 재감사/무보정 재생성 완료. 제갈량/장합/우금/악진/이전/조인/조홍/조비/조식/조창/조앙/조예/조상/조진/조휴/하후연/하후패/정욱/순욱/순유/가후/만총/종요/등애/종회/곽회/왕평/문빙/장패/이통/한호/여건/모개/유엽/괴월/괴량/채모/장윤/서성/정봉/한당/정보/주태/장흠/능통/노숙/장소/장굉/주치/주환/주연/보즐/감택/우번/하제/반장/마충/전종/손견/손소/손환/손노반/손노육/대교/소교/연사/관평/관흥/관색/관은병/장포/유선 v9 신규 반신 완료. 유엽 v10 초반 6장 게임캐릭터 스타일 재작업 반영. 괴량 v10 방향 복구 샘플 반영. 유봉/마속/마량/강유/위연/법정/간옹/미축/미방 v9 피드백 샘플 반영. 손건-황권 v9 10개 배치 반영. 진도-제갈탄 v9 10개 배치 반영. 장익부터 v7 자동 크롭은 재생성 대상.</div>
   <div class="controls">
     <button class="active" data-bg="./assets/battle/bg_battle_01_grass.jpg">초원</button>
     <button data-bg="./assets/battle/bg_battle_08_rain_mud.jpg">진흙</button>
@@ -173,7 +173,7 @@ a:hover { text-decoration:underline; }
 <main><section id="grid" class="grid"></section></main>
 <script src="./assets/generals/roster_200.js"></script>
 <script>
-const version = "cao-cao-cao-xing-v9-new-halfbody-review-20260604";
+const version = "cao-through-zhuge-dan-v9-liu-ye-kuai-liang-v10-rework-20260611";
 const grid = document.getElementById("grid");
 const count = document.getElementById("count");
 const reviewIds = new Set([
@@ -189,516 +189,516 @@ const cutoutOverrides = {
     src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/cao_xing_halfbody_game_cutout_v9.png"
   },
   dian_wei: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/dian_wei_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/dian_wei_halfbody_game_cutout_v9.png"
   },
   dong_zhuo: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/dong_zhuo_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/dong_zhuo_halfbody_game_cutout_v9.png"
   },
   gan_ning: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/gan_ning_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/gan_ning_halfbody_game_cutout_v9.png"
   },
   guan_yu: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/guan_yu_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/guan_yu_halfbody_game_cutout_v9.png"
   },
   guo_jia: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/guo_jia_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/guo_jia_halfbody_game_cutout_v9.png"
   },
   huang_gai: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/huang_gai_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/huang_gai_halfbody_game_cutout_v9.png"
   },
   huang_zhong: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/huang_zhong_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/huang_zhong_halfbody_game_cutout_v9.png"
   },
   liu_bei: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/liu_bei_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/liu_bei_halfbody_game_cutout_v9.png"
   },
   lu_bu: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/lu_bu_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/lu_bu_halfbody_game_cutout_v9.png"
   },
   lu_xun: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/lu_xun_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/lu_xun_halfbody_game_cutout_v9.png"
   },
   ma_chao: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/ma_chao_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/ma_chao_halfbody_game_cutout_v9.png"
   },
   meng_huo: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/meng_huo_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/meng_huo_halfbody_game_cutout_v9.png"
   },
   pang_tong: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/pang_tong_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/pang_tong_halfbody_game_cutout_v9.png"
   },
   sima_yi: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/sima_yi_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/sima_yi_halfbody_game_cutout_v9.png"
   },
   sun_ce: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/sun_ce_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/sun_ce_halfbody_game_cutout_v9.png"
   },
   sun_quan: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/sun_quan_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/sun_quan_halfbody_game_cutout_v9.png"
   },
   taishi_ci: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/taishi_ci_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/taishi_ci_halfbody_game_cutout_v9.png"
   },
   wen_chou: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/wen_chou_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/wen_chou_halfbody_game_cutout_v9.png"
   },
   xiahou_dun: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/xiahou_dun_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/xiahou_dun_halfbody_game_cutout_v9.png"
   },
   xu_chu: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/xu_chu_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/xu_chu_halfbody_game_cutout_v9.png"
   },
   xu_huang: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/xu_huang_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/xu_huang_halfbody_game_cutout_v9.png"
   },
   yan_liang: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/yan_liang_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/yan_liang_halfbody_game_cutout_v9.png"
   },
   yuan_shao: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/yuan_shao_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/yuan_shao_halfbody_game_cutout_v9.png"
   },
   zhang_fei: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhang_fei_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhang_fei_halfbody_game_cutout_v9.png"
   },
   zhang_liao: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhang_liao_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhang_liao_halfbody_game_cutout_v9.png"
   },
   zhao_yun: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhao_yun_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhao_yun_halfbody_game_cutout_v9.png"
   },
   zhou_yu: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhou_yu_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhou_yu_halfbody_game_cutout_v9.png"
   },
   zhuge_liang: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhuge_liang_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhuge_liang_halfbody_game_cutout_v9.png"
   },
   zhang_he: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhang_he_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhang_he_halfbody_game_cutout_v9.png"
   },
   yu_jin: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/yu_jin_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/yu_jin_halfbody_game_cutout_v9.png"
   },
   yue_jin: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/yue_jin_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/yue_jin_halfbody_game_cutout_v9.png"
   },
   li_dian: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/li_dian_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/li_dian_halfbody_game_cutout_v9.png"
   },
   cao_ren: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/cao_ren_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/cao_ren_halfbody_game_cutout_v9.png"
   },
   cao_hong: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/cao_hong_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/cao_hong_halfbody_game_cutout_v9.png"
   },
   cao_pi: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/cao_pi_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/cao_pi_halfbody_game_cutout_v9.png"
   },
   cao_zhi: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/cao_zhi_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/cao_zhi_halfbody_game_cutout_v9.png"
   },
   cao_zhang: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/cao_zhang_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/cao_zhang_halfbody_game_cutout_v9.png"
   },
   cao_ang: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/cao_ang_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/cao_ang_halfbody_game_cutout_v9.png"
   },
   cao_rui: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/cao_rui_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/cao_rui_halfbody_game_cutout_v9.png"
   },
   cao_shuang: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/cao_shuang_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/cao_shuang_halfbody_game_cutout_v9.png"
   },
   cao_zhen: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/cao_zhen_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/cao_zhen_halfbody_game_cutout_v9.png"
   },
   cao_xiu: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/cao_xiu_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/cao_xiu_halfbody_game_cutout_v9.png"
   },
   xiahou_yuan: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/xiahou_yuan_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/xiahou_yuan_halfbody_game_cutout_v9.png"
   },
   xiahou_ba: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/xiahou_ba_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/xiahou_ba_halfbody_game_cutout_v9.png"
   },
   cheng_yu: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/cheng_yu_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/cheng_yu_halfbody_game_cutout_v9.png"
   },
   xun_yu: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/xun_yu_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/xun_yu_halfbody_game_cutout_v9.png"
   },
   xun_you: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/xun_you_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/xun_you_halfbody_game_cutout_v9.png"
   },
   jia_xu: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/jia_xu_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/jia_xu_halfbody_game_cutout_v9.png"
   },
   man_chong: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/man_chong_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/man_chong_halfbody_game_cutout_v9.png"
   },
   zhong_yao: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhong_yao_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhong_yao_halfbody_game_cutout_v9.png"
   },
   deng_ai: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/deng_ai_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/deng_ai_halfbody_game_cutout_v9.png"
   },
   zhong_hui: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhong_hui_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhong_hui_halfbody_game_cutout_v9.png"
   },
   guo_huai: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/guo_huai_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/guo_huai_halfbody_game_cutout_v9.png"
   },
   wang_ping: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/wang_ping_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/wang_ping_halfbody_game_cutout_v9.png"
   },
   wen_pin: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/wen_pin_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/wen_pin_halfbody_game_cutout_v9.png"
   },
   zang_ba: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zang_ba_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zang_ba_halfbody_game_cutout_v9.png"
   },
   li_tong: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/li_tong_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/li_tong_halfbody_game_cutout_v9.png"
   },
   han_hao: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/han_hao_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/han_hao_halfbody_game_cutout_v9.png"
   },
   lu_qian: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/lu_qian_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/lu_qian_halfbody_game_cutout_v9.png"
   },
   mao_jie: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/mao_jie_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/mao_jie_halfbody_game_cutout_v9.png"
   },
   liu_ye: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/liu_ye_halfbody_game_cutout_v7.png"
+    label: "v10 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/liu_ye_halfbody_game_cutout_v10.png"
   },
   kuai_yue: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/kuai_yue_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/kuai_yue_halfbody_game_cutout_v9.png"
   },
   kuai_liang: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/kuai_liang_halfbody_game_cutout_v7.png"
+    label: "v10 rework",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/kuai_liang_halfbody_game_cutout_v10.png"
   },
   cai_mao: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/cai_mao_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/cai_mao_halfbody_game_cutout_v9.png"
   },
   zhang_yun: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhang_yun_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhang_yun_halfbody_game_cutout_v9.png"
   },
   xu_sheng: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/xu_sheng_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/xu_sheng_halfbody_game_cutout_v9.png"
   },
   ding_feng: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/ding_feng_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/ding_feng_halfbody_game_cutout_v9.png"
   },
   han_dang: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/han_dang_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/han_dang_halfbody_game_cutout_v9.png"
   },
   cheng_pu: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/cheng_pu_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/cheng_pu_halfbody_game_cutout_v9.png"
   },
   zhou_tai: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhou_tai_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhou_tai_halfbody_game_cutout_v9.png"
   },
   jiang_qin: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/jiang_qin_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/jiang_qin_halfbody_game_cutout_v9.png"
   },
   ling_tong: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/ling_tong_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/ling_tong_halfbody_game_cutout_v9.png"
   },
   lu_su: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/lu_su_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/lu_su_halfbody_game_cutout_v9.png"
   },
   zhang_zhao: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhang_zhao_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhang_zhao_halfbody_game_cutout_v9.png"
   },
   zhang_hong: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhang_hong_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhang_hong_halfbody_game_cutout_v9.png"
   },
   zhu_zhi: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhu_zhi_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhu_zhi_halfbody_game_cutout_v9.png"
   },
   zhu_huan: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhu_huan_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhu_huan_halfbody_game_cutout_v9.png"
   },
   zhu_ran: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhu_ran_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhu_ran_halfbody_game_cutout_v9.png"
   },
   bu_zhi: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/bu_zhi_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/bu_zhi_halfbody_game_cutout_v9.png"
   },
   kan_ze: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/kan_ze_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/kan_ze_halfbody_game_cutout_v9.png"
   },
   yu_fan: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/yu_fan_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/yu_fan_halfbody_game_cutout_v9.png"
   },
   he_qi: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/he_qi_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/he_qi_halfbody_game_cutout_v9.png"
   },
   pan_zhang: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/pan_zhang_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/pan_zhang_halfbody_game_cutout_v9.png"
   },
   ma_zhong_wu: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/ma_zhong_wu_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/ma_zhong_wu_halfbody_game_cutout_v9.png"
   },
   quan_cong: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/quan_cong_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/quan_cong_halfbody_game_cutout_v9.png"
   },
   sun_jian: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/sun_jian_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/sun_jian_halfbody_game_cutout_v9.png"
   },
   sun_shao: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/sun_shao_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/sun_shao_halfbody_game_cutout_v9.png"
   },
   sun_huan: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/sun_huan_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/sun_huan_halfbody_game_cutout_v9.png"
   },
   sun_luban: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/sun_luban_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/sun_luban_halfbody_game_cutout_v9.png"
   },
   sun_luyu: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/sun_luyu_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/sun_luyu_halfbody_game_cutout_v9.png"
   },
   daqiao: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/daqiao_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/daqiao_halfbody_game_cutout_v9.png"
   },
   xiaoqiao: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/xiaoqiao_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/xiaoqiao_halfbody_game_cutout_v9.png"
   },
   lian_shi: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/lian_shi_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/lian_shi_halfbody_game_cutout_v9.png"
   },
   guan_ping: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/guan_ping_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/guan_ping_halfbody_game_cutout_v9.png"
   },
   guan_xing: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/guan_xing_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/guan_xing_halfbody_game_cutout_v9.png"
   },
   guan_suo: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/guan_suo_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/guan_suo_halfbody_game_cutout_v9.png"
   },
   guan_yinping: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/guan_yinping_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/guan_yinping_halfbody_game_cutout_v9.png"
   },
   zhang_bao: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhang_bao_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhang_bao_halfbody_game_cutout_v9.png"
   },
   liu_shan: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/liu_shan_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/liu_shan_halfbody_game_cutout_v9.png"
   },
   liu_feng: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/liu_feng_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/liu_feng_halfbody_game_cutout_v9.png"
   },
   ma_su: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/ma_su_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/ma_su_halfbody_game_cutout_v9.png"
   },
   ma_liang: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/ma_liang_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/ma_liang_halfbody_game_cutout_v9.png"
   },
   jiang_wei: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/jiang_wei_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/jiang_wei_halfbody_game_cutout_v9.png"
   },
   wei_yan: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/wei_yan_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/wei_yan_halfbody_game_cutout_v9.png"
   },
   fa_zheng: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/fa_zheng_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/fa_zheng_halfbody_game_cutout_v9.png"
   },
   jian_yong: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/jian_yong_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/jian_yong_halfbody_game_cutout_v9.png"
   },
   mi_zhu: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/mi_zhu_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/mi_zhu_halfbody_game_cutout_v9.png"
   },
   mi_fang: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/mi_fang_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/mi_fang_halfbody_game_cutout_v9.png"
   },
   sun_qian: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/sun_qian_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/sun_qian_halfbody_game_cutout_v9.png"
   },
   liao_hua: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/liao_hua_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/liao_hua_halfbody_game_cutout_v9.png"
   },
   zhou_cang: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhou_cang_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhou_cang_halfbody_game_cutout_v9.png"
   },
   ma_dai: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/ma_dai_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/ma_dai_halfbody_game_cutout_v9.png"
   },
   yan_yan: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/yan_yan_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/yan_yan_halfbody_game_cutout_v9.png"
   },
   li_yan: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/li_yan_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/li_yan_halfbody_game_cutout_v9.png"
   },
   fei_yi: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/fei_yi_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/fei_yi_halfbody_game_cutout_v9.png"
   },
   dong_yun: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/dong_yun_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/dong_yun_halfbody_game_cutout_v9.png"
   },
   jiang_wan: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/jiang_wan_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/jiang_wan_halfbody_game_cutout_v9.png"
   },
   huang_quan: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/huang_quan_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/huang_quan_halfbody_game_cutout_v9.png"
   },
   chen_dao: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/chen_dao_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/chen_dao_halfbody_game_cutout_v9.png"
   },
   fu_shi_ren: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/fu_shi_ren_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/fu_shi_ren_halfbody_game_cutout_v9.png"
   },
   meng_da: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/meng_da_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/meng_da_halfbody_game_cutout_v9.png"
   },
   zhang_song: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhang_song_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhang_song_halfbody_game_cutout_v9.png"
   },
   li_hui: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/li_hui_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/li_hui_halfbody_game_cutout_v9.png"
   },
   huo_jun: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/huo_jun_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/huo_jun_halfbody_game_cutout_v9.png"
   },
   sha_moke: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/sha_moke_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/sha_moke_halfbody_game_cutout_v9.png"
   },
   zhuge_zhan: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhuge_zhan_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhuge_zhan_halfbody_game_cutout_v9.png"
   },
   zhuge_jin: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhuge_jin_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhuge_jin_halfbody_game_cutout_v9.png"
   },
   zhuge_dan: {
-    label: "v7 rejected",
-    src: "./assets/generals/new_characters/upper_body_200_redraw_v7_strict_halfbody/zhuge_dan_halfbody_game_cutout_v7.png"
+    label: "v9 review",
+    src: "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody/zhuge_dan_halfbody_game_cutout_v9.png"
   },
   zhang_yi_shu: {
     label: "v7 rejected",
