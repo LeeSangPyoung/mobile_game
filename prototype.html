@@ -13744,12 +13744,21 @@ function closeGeneralSelect() {
 }
 let activeDeployGeneralUids = [];
 const generalFaceImages = {};
+// 전투신 얼굴 아이콘: war v6 cute50(투명) — 갤러리 general_v6_set_final 기준. 없으면 기존 얼굴로 폴백
+function battleFaceIconSrc(id, g) {
+  if (GENERAL_V6_IDS.has(id)) {
+    return versionedGeneralV6Asset(`./assets/generals/face_icons/war_v6_halfbody_style_transparent/${id}_war_face_icon_v6_cute50.png`);
+  }
+  return (g && g.face) || '';
+}
 function getGeneralFaceImage(id) {
   const g = getGeneralById(id);
   if (!g) return null;
   if (!generalFaceImages[id]) {
     const img = new Image();
-    img.src = g.face;
+    const fallback = g.face;
+    img.onerror = () => { if (!img._fellBack && fallback) { img._fellBack = true; img.src = fallback; } };
+    img.src = battleFaceIconSrc(id, g);
     generalFaceImages[id] = img;
   }
   return generalFaceImages[id];
