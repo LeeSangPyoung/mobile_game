@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>반신 최종점검 · 카드 프레이밍(눈정렬)</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; background:#12100c; color:#f0e2c0; font-family:-apple-system,"Noto Sans KR",sans-serif; }
+  header { position:sticky; top:0; z-index:5; padding:12px 16px; background:rgba(18,16,12,.96);
+           border-bottom:1px solid rgba(240,226,180,.18); backdrop-filter:blur(8px);
+           display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  h1 { font-size:18px; margin:0; font-weight:800; }
+  .ctr { color:#bda; font-size:13px; }
+  label { font-size:13px; color:#cdbf98; display:flex; align-items:center; gap:6px; cursor:pointer; }
+  .legend { color:#9a8a64; font-size:12px; }
+  main { padding:14px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; }
+  .card { background:#1d1812; border:1px solid rgba(240,226,180,.14); border-radius:8px; overflow:hidden; }
+  .art { position:relative; width:100%; background:
+      linear-gradient(45deg,rgba(255,255,255,.05) 25%,transparent 25%),
+      linear-gradient(-45deg,rgba(255,255,255,.05) 25%,transparent 25%),
+      linear-gradient(45deg,transparent 75%,rgba(255,255,255,.05) 75%),
+      linear-gradient(-45deg,transparent 75%,rgba(255,255,255,.05) 75%), #15110c;
+      background-size:18px 18px; background-position:0 0,0 9px,9px -9px,-9px 0; }
+  /* 카드 모드: 게임 카드와 동일(정사각, cover, 상단고정) */
+  body.card-mode .art { aspect-ratio:1/1; }
+  body.card-mode .art img { width:100%; height:100%; object-fit:cover; object-position:top center; }
+  /* 풀 모드: 반신 전체(3:4 contain) */
+  body.full-mode .art { aspect-ratio:3/4; }
+  body.full-mode .art img { width:100%; height:100%; object-fit:contain; object-position:top center; }
+  .meta { padding:6px 8px 8px; display:flex; justify-content:space-between; align-items:baseline; gap:6px; }
+  .nm { font-size:14px; font-weight:800; }
+  .no { color:#9a8a64; font-size:11px; }
+  .missing { display:grid; place-items:center; aspect-ratio:1/1; color:#ffb46b; font-size:12px; font-weight:800; }
+</style>
+</head>
+<body class="card-mode">
+<header>
+  <h1>반신 최종점검</h1>
+  <div id="ctr" class="ctr">로딩…</div>
+  <label><input type="radio" name="mode" value="card" checked> 카드(정사각·상단고정)</label>
+  <label><input type="radio" name="mode" value="full"> 반신 전체(3:4)</label>
+  <span class="legend">게임 카드와 동일 프레이밍 · halfbody_v6(눈정렬)</span>
+</header>
+<main><section id="grid" class="grid"></section></main>
+<script src="./assets/generals/roster_200.js"></script>
+<script>
+const base = "./assets/generals/halfbody_v6";
+const ver = "final-eyealign-" + Date.now();   // 캐시 무력화
+const grid = document.getElementById("grid");
+const list = window.GENERALS_200 || [];
+list.forEach(([id, ko], i) => {
+  const no = String(i+1).padStart(3,"0");
+  const card = document.createElement("article");
+  card.className = "card";
+  card.innerHTML = `
+    <div class="art"><img loading="lazy" src="${base}/${id}.webp?v=${ver}" alt="${ko}"></div>
+    <div class="meta"><span class="nm">${ko}</span><span class="no">${no} · ${id}</span></div>`;
+  const img = card.querySelector("img");
+  img.addEventListener("error", () => {
+    const d = document.createElement("div"); d.className="missing"; d.textContent="없음";
+    img.replaceWith(d);
+  }, {once:true});
+  grid.appendChild(card);
+});
+document.getElementById("ctr").textContent = `${list.length}명`;
+document.querySelectorAll('input[name=mode]').forEach(r =>
+  r.addEventListener("change", e => {
+    document.body.className = e.target.value === "card" ? "card-mode" : "full-mode";
+  }));
+</script>
+</body>
+</html>

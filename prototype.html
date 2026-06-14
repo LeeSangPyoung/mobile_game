@@ -2545,6 +2545,12 @@
     object-fit: contain;
     filter: drop-shadow(0 4px 4px rgba(0,0,0,0.45));
   }
+  /* 포로 등용 초상: 새 반신을 머리~가슴팍으로(cover) */
+  #prisonerScreen .prison-face-frame img {
+    width: 100% !important; height: 100% !important;
+    object-fit: cover !important; object-position: top center !important;
+    transform: none !important;
+  }
   .prison-speech {
     min-height: 116px;
     position: relative;
@@ -5242,6 +5248,7 @@
   }
   #starterPickScreen .sp-confirm:not(:disabled):active { transform: translateY(2px); filter: brightness(0.96); }
   /* 관리 화면 3열 — 카드 컴팩트 + 가독성 */
+  /* 내 장수 카드: 초상(머리~가슴팍) + 이름 + 능력치(4종). 높이 여유 */
   .manage-roster .deploy-card {
     min-height: 138px;
     padding: 8px 2px 10px;
@@ -5581,11 +5588,11 @@
   .deploy-roster {
     min-height: 0;
     overflow-y: auto;
-    padding: 8px 4px 12px;
+    padding: 8px 7px 12px;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     align-content: start;
-    gap: 10px;
+    gap: 8px 7px;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     touch-action: pan-y;
@@ -5636,6 +5643,153 @@
     object-fit: contain;
     transform: translate(-5%, -4%);
     filter: drop-shadow(0 4px 4px rgba(0,0,0,0.48));
+  }
+  /* 내 장수 카드: 캐릭터 사진 영역을 크게 + 캐릭터가 박스를 꽉 채우게(cover) */
+  :is(.manage-roster,.deploy-roster) .deploy-card {
+    min-height: 162px !important;
+    justify-content: flex-start !important;
+  }
+  :is(.manage-roster,.deploy-roster) .deploy-card .deploy-face {
+    flex: 0 0 auto !important;
+    width: 108px !important; height: 82px !important;
+  }
+  :is(.manage-roster,.deploy-roster) .deploy-card .deploy-face img {
+    width: 100% !important; height: 100% !important;
+    object-fit: cover !important;
+    object-position: center 14% !important;
+    transform: none !important;
+  }
+  /* ===== 희귀도(별 등급)별 카드 연출: 아우라 + 프레임 + 배경틴트 ===== */
+  :is(.manage-roster,.deploy-roster) .deploy-card { transition: box-shadow .2s, border-color .2s !important; }
+  /* ★1 일반(은백) — 차분 */
+  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star1 {
+    background: linear-gradient(180deg, #2a313c, #161b22) !important;
+    border-color: rgba(222,232,245,0.40) !important;
+    box-shadow: 0 0 0 1px rgba(222,232,245,0.16), 0 4px 10px rgba(0,0,0,0.42) !important;
+  }
+  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star1 .deploy-face {
+    background: radial-gradient(circle at 50% 36%, rgba(222,232,245,0.20), rgba(255,255,255,0.05) 52%, transparent 74%), #11161f !important;
+  }
+  /* ★2 고급(초록) */
+  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star2 {
+    background: linear-gradient(180deg, #1d3a2c, #15211b) !important;
+    border-color: rgba(87,242,135,0.55) !important;
+    box-shadow: 0 0 0 1px rgba(87,242,135,0.30), 0 0 12px rgba(87,242,135,0.30), 0 4px 10px rgba(0,0,0,0.42) !important;
+  }
+  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star2 .deploy-face {
+    background: radial-gradient(circle at 50% 36%, rgba(87,242,135,0.34), rgba(91,255,191,0.14) 52%, transparent 74%), #11161f !important;
+  }
+  /* ★3 희귀(파랑) */
+  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star3 {
+    background: linear-gradient(180deg, #143049, #151d28) !important;
+    border-color: rgba(77,181,255,0.60) !important;
+    box-shadow: 0 0 0 1px rgba(77,181,255,0.34), 0 0 14px rgba(77,181,255,0.36), 0 4px 10px rgba(0,0,0,0.42) !important;
+  }
+  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star3 .deploy-face {
+    background: radial-gradient(circle at 50% 36%, rgba(77,181,255,0.38), rgba(95,234,255,0.16) 52%, transparent 74%), #11161f !important;
+  }
+  /* ★4 영웅(보라) */
+  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star4 {
+    background: linear-gradient(180deg, #321d49, #1c1526) !important;
+    border-color: rgba(199,125,255,0.66) !important;
+    box-shadow: 0 0 0 1px rgba(199,125,255,0.40), 0 0 16px rgba(199,125,255,0.44), 0 4px 12px rgba(0,0,0,0.45) !important;
+  }
+  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star4 .deploy-face {
+    background: radial-gradient(circle at 50% 36%, rgba(199,125,255,0.42), rgba(255,101,238,0.18) 52%, transparent 74%), #120e18 !important;
+  }
+  /* ★5 전설(금) — 가장 화려 */
+  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star5 {
+    background: linear-gradient(180deg, #4a3410, #241a08) !important;
+    border-color: rgba(255,211,106,0.85) !important;
+    box-shadow: 0 0 0 1.5px rgba(255,211,106,0.6), 0 0 20px rgba(255,191,64,0.55), 0 4px 14px rgba(0,0,0,0.5) !important;
+  }
+  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star5 .deploy-face {
+    background: radial-gradient(circle at 50% 36%, rgba(255,191,64,0.48), rgba(255,76,124,0.18) 50%, transparent 74%), #1a1206 !important;
+  }
+  /* 돋보기(상세) 버튼: 이름과 한 줄로 가지런히(이름 오른쪽 인라인) */
+  :is(.manage-roster,.deploy-roster) .deploy-card .deploy-name {
+    display: flex !important; align-items: center !important; justify-content: center !important;
+    gap: 6px !important; flex-wrap: nowrap !important; white-space: nowrap !important;
+  }
+  :is(.manage-roster,.deploy-roster) .deploy-card .deploy-name .dn-text {
+    min-width: 0 !important; overflow: hidden !important; text-overflow: ellipsis !important;
+  }
+  :is(.manage-roster,.deploy-roster) .deploy-card .general-detail-btn {
+    position: static !important; top: auto !important; right: auto !important; margin: 0 !important;
+    width: 24px !important; height: 24px !important; flex: 0 0 auto !important; align-self: center !important;
+  }
+  /* 두 화면 글씨 크기 통일(작게) — 능력치 4개가 안 잘리게 */
+  :is(.manage-roster,.deploy-roster) .deploy-card .deploy-name {
+    font-size: 14px !important; letter-spacing: 1px !important;
+  }
+  :is(.manage-roster,.deploy-roster) .deploy-card .deploy-name .lv-pill { font-size: 11px !important; }
+  :is(.manage-roster,.deploy-roster) .deploy-card .deploy-stat {
+    font-size: 10px !important; line-height: 1.25 !important;
+  }
+  :is(.manage-roster,.deploy-roster) .deploy-card .buff-chip {
+    font-size: 9px !important; padding: 1px 3px !important; letter-spacing: -0.2px !important;
+  }
+  /* ===== 편성 슬롯(天/地/人) 희귀도 연출: 테두리 + 글로우 + 아우라 ===== */
+  .formation-slot.filled.tier-star1 {
+    border-color: rgba(222,232,245,0.55) !important;
+    box-shadow: 0 0 8px rgba(222,232,245,0.28) !important;
+  }
+  .formation-slot.filled.tier-star2 {
+    border-color: #57f287 !important;
+    box-shadow: 0 0 10px rgba(87,242,135,0.5) !important;
+  }
+  .formation-slot.filled.tier-star3 {
+    border-color: #4db5ff !important;
+    box-shadow: 0 0 11px rgba(77,181,255,0.55) !important;
+  }
+  .formation-slot.filled.tier-star4 {
+    border-color: #c77dff !important;
+    box-shadow: 0 0 13px rgba(199,125,255,0.6) !important;
+  }
+  .formation-slot.filled.tier-star5 {
+    border-color: #ffd36a !important;
+    box-shadow: 0 0 16px rgba(255,191,64,0.7) !important;
+  }
+  /* ===== 강화 대상/재료 카드 희귀도 연출 (내 장수와 통일) ===== */
+  .enh-roster-card.tier-star1 {
+    background: linear-gradient(180deg, #2a313c, #161b22) !important;
+    border-color: rgba(222,232,245,0.42) !important;
+    box-shadow: 0 0 0 1px rgba(222,232,245,0.16), 0 4px 9px rgba(0,0,0,0.42) !important;
+  }
+  .enh-roster-card.tier-star1 .face-wrap {
+    background: radial-gradient(circle at 50% 36%, rgba(222,232,245,0.20), rgba(255,255,255,0.05) 52%, transparent 74%), #11161f !important;
+  }
+  .enh-roster-card.tier-star2 {
+    background: linear-gradient(180deg, #1d3a2c, #15211b) !important;
+    border-color: rgba(87,242,135,0.55) !important;
+    box-shadow: 0 0 0 1px rgba(87,242,135,0.30), 0 0 12px rgba(87,242,135,0.30), 0 4px 9px rgba(0,0,0,0.42) !important;
+  }
+  .enh-roster-card.tier-star2 .face-wrap {
+    background: radial-gradient(circle at 50% 36%, rgba(87,242,135,0.34), rgba(91,255,191,0.14) 52%, transparent 74%), #11161f !important;
+  }
+  .enh-roster-card.tier-star3 {
+    background: linear-gradient(180deg, #143049, #151d28) !important;
+    border-color: rgba(77,181,255,0.60) !important;
+    box-shadow: 0 0 0 1px rgba(77,181,255,0.34), 0 0 14px rgba(77,181,255,0.36), 0 4px 9px rgba(0,0,0,0.42) !important;
+  }
+  .enh-roster-card.tier-star3 .face-wrap {
+    background: radial-gradient(circle at 50% 36%, rgba(77,181,255,0.38), rgba(95,234,255,0.16) 52%, transparent 74%), #11161f !important;
+  }
+  .enh-roster-card.tier-star4 {
+    background: linear-gradient(180deg, #321d49, #1c1526) !important;
+    border-color: rgba(199,125,255,0.66) !important;
+    box-shadow: 0 0 0 1px rgba(199,125,255,0.40), 0 0 16px rgba(199,125,255,0.44), 0 4px 10px rgba(0,0,0,0.45) !important;
+  }
+  .enh-roster-card.tier-star4 .face-wrap {
+    background: radial-gradient(circle at 50% 36%, rgba(199,125,255,0.42), rgba(255,101,238,0.18) 52%, transparent 74%), #120e18 !important;
+  }
+  .enh-roster-card.tier-star5 {
+    background: linear-gradient(180deg, #4a3410, #241a08) !important;
+    border-color: rgba(255,211,106,0.85) !important;
+    box-shadow: 0 0 0 1.5px rgba(255,211,106,0.6), 0 0 20px rgba(255,191,64,0.55), 0 4px 12px rgba(0,0,0,0.5) !important;
+  }
+  .enh-roster-card.tier-star5 .face-wrap {
+    background: radial-gradient(circle at 50% 36%, rgba(255,191,64,0.48), rgba(255,76,124,0.18) 50%, transparent 74%), #1a1206 !important;
   }
   .deploy-name {
     width: 100%;
@@ -5692,7 +5846,8 @@
   .deploy-card.selected .buff-chip b { color: #ffd75e; }
   .deploy-card.selected .buff-chip i { color: #fff5d8; }
   /* 관리 화면(3열) 칩: 라인이 잘리지 않게 패딩·gap 최소화 */
-  .manage-roster .deploy-card .buff-chips { gap: 2px 2px; padding: 0; }
+  /* 버프 영역 2줄 높이로 고정 — 능력치 적은 장수(마초·전위 등)는 아래 빈 줄, 전 카드 높이 통일 */
+  :is(.manage-roster,.deploy-roster) .deploy-card .buff-chips { gap: 2px 2px; padding: 0; min-height: 33px; align-content: start; }
   .manage-roster .deploy-card .buff-chip { font-size: 9px; padding: 1px 3px; letter-spacing: -0.2px; }
   .manage-roster .deploy-card .buff-chip i { margin-left: 2px; }
   .deploy-pick {
@@ -5889,11 +6044,12 @@
   .idg-portrait.idg-right { border-color: #08284a; }
   .idg-portrait.idg-right.active { box-shadow: 0 0 0 3px #60c8ff, 0 0 28px rgba(80,180,255,0.55), 0 18px 32px rgba(0,0,0,0.7), inset 0 2px 0 rgba(255,255,255,0.2); }
   .idg-portrait img {
-    width: 110%;
-    height: 110%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    object-position: top center;
     position: absolute;
-    left: -5%; top: -5%;
+    left: 0; top: 0;
     filter: drop-shadow(0 6px 8px rgba(0,0,0,0.5));
   }
   .idg-name {
@@ -11386,6 +11542,19 @@
     0%,100% { box-shadow: 0 0 0 2px #ffd23f, 0 6px 14px rgba(255,210,90,0.32); }
     50%     { box-shadow: 0 0 0 3px #ffe796, 0 8px 20px rgba(255,210,90,0.55); }
   }
+  /* 장수 카드 썸네일 = 반신(halfbody) 통일: 머리 상단 고정 + 박스 꽉 채움 */
+  .deploy-face img,
+  .formation-slot img,
+  .enh-target-frame img,
+  .enh-roster-card .face-wrap img,
+  .enh-roster-card img,
+  .enh-fodder-card-art img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: top center !important;
+    transform: none !important;
+  }
 </style>
 </head>
 <body>
@@ -12364,6 +12533,20 @@ if (!SAVE.testGrant20V1) {
   SAVE.testGrant20V1 = true;
   saveProgress();
 }
+// 일회성(확인용): 전체 장수 지급 — 내 장수 메뉴에 모든 장수 표시
+if (!SAVE.testGrantAllV1) {
+  if (!Array.isArray(SAVE.generals)) SAVE.generals = [];
+  let _ua = (SAVE.nextGeneralUid | 0) || 1;
+  const _haveAll = new Set(SAVE.generals.map(g => g && g.id));
+  for (const g of GENERAL_ROSTER) {
+    if (_haveAll.has(g.id)) continue;
+    SAVE.generals.push({ uid: _ua++, id: g.id, lv: 1 });
+    _haveAll.add(g.id);
+  }
+  SAVE.nextGeneralUid = _ua;
+  SAVE.testGrantAllV1 = true;
+  saveProgress();
+}
 // 일회성(테스트): 별 100개 지급 — 강화 테스트용
 if (!SAVE.testGrant100StarsV1) {
   SAVE.starsAvailable = (SAVE.starsAvailable | 0) + 100;
@@ -13182,12 +13365,12 @@ function renderGeneralSelect() {
       const uid = activeArr[i];
       const g = uid != null ? getOwnedGeneral(uid) : null;
       const slot = document.createElement('div');
-      slot.className = 'formation-slot' + (g ? ' filled' : '');
+      slot.className = 'formation-slot' + (g ? ' filled tier-' + getGeneralRarity(g).tier : '');
       if (g) {
         slot.innerHTML = `
           <span class="slot-rank">${i + 1}</span>
           ${rarityBadgeHTML(g)}
-          <img src="${g.face}" alt="">
+          <img src="${g.bust || g.face}" alt="">
           <span class="slot-name">${g.name}${g.lv > 1 ? ` <small style="color:#ffd23f;">+${g.lv-1}</small>` : ''}</span>
           <span class="slot-x">×</span>
         `;
@@ -13216,10 +13399,11 @@ function renderGeneralSelect() {
     const isIn = g.uid != null && inFormation.has(g.uid);
     const isLeader = isIn && activeArr[0] === g.uid;
     const isDupId = !isIn && inFormationIds.has(g.id);
-    const card = document.createElement('button');
-    card.type = 'button';
+    const card = document.createElement('div');
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
     card.style.position = 'relative';
-    card.className = 'deploy-card tier-' + getGeneralRarity(g).tier
+    card.className = 'deploy-card has-detail tier-' + getGeneralRarity(g).tier
       + (isIn ? ' in-formation' : '')
       + (isDupId ? ' duplicate-id' : '');
     const badgeHTML = isLeader
@@ -13228,11 +13412,22 @@ function renderGeneralSelect() {
     card.innerHTML = `
       ${rarityBadgeHTML(g)}
       ${badgeHTML}
-      <div class="deploy-face"><img src="${g.face}" alt=""></div>
-      <div class="deploy-name">${g.name}${g.lv > 1 ? ` <span class="lv-pill">+${g.lv-1}</span>` : ''}</div>
+      <div class="deploy-face"><img src="${g.bust || g.face}" alt=""></div>
+      <div class="deploy-name"><span class="dn-text">${g.name}${g.lv > 1 ? ` <span class="lv-pill">+${g.lv-1}</span>` : ''}</span><button type="button" class="general-detail-btn" title="상세보기" aria-label="${htmlSafe(g.name)} 상세보기"></button></div>
       <div class="deploy-stat">${formatGeneralBuffsChips(g)}</div>
     `;
-    bindTap(card, () => {
+    const _detailBtn = card.querySelector('.general-detail-btn');
+    if (_detailBtn) {
+      _detailBtn.addEventListener('touchstart', ev => ev.stopPropagation(), { passive: true });
+      _detailBtn.addEventListener('touchmove', ev => ev.stopPropagation(), { passive: true });
+      bindTap(_detailBtn, (ev) => {
+        if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+        if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+        showGeneralDetail(g);
+      });
+    }
+    bindTap(card, (ev) => {
+      if (ev && ev.target && ev.target.closest && ev.target.closest('.general-detail-btn')) return;
       if (g.uid == null) { showSelectToast('테스트 모드: 보유 안 한 카드', '#c1121f'); return; }
       const idx = selectedDeployGenerals.indexOf(g.uid);
       if (idx === 0) {
@@ -13568,12 +13763,12 @@ function renderGeneralManage() {
       const uid = activeArr[i];
       const g = uid != null ? getOwnedGeneral(uid) : null;
       const slot = document.createElement('div');
-      slot.className = 'formation-slot' + (g ? ' filled' : '') + (i === selectedSlotIdx ? ' slot-selected' : '');
+      slot.className = 'formation-slot' + (g ? ' filled tier-' + getGeneralRarity(g).tier : '') + (i === selectedSlotIdx ? ' slot-selected' : '');
       if (g) {
         slot.innerHTML = `
           <span class="slot-rank">${i + 1}</span>
           ${rarityBadgeHTML(g)}
-          <img src="${g.face}" alt="">
+          <img src="${g.bust || g.face}" alt="">
           <span class="slot-name">${g.name}${g.lv > 1 ? ` <small style="color:#ffd23f;">+${g.lv-1}</small>` : ''}</span>
           <span class="slot-x">×</span>
         `;
@@ -13646,9 +13841,8 @@ function renderGeneralManage() {
     card.innerHTML = `
       ${rarityBadgeHTML(g)}
       ${badgeHTML}
-      <button type="button" class="general-detail-btn" title="상세보기" aria-label="${htmlSafe(g.name)} 상세보기"></button>
-      <div class="deploy-face"><img src="${g.face}" alt=""></div>
-      <div class="deploy-name">${g.name}${g.lv > 1 ? ` <span class="lv-pill">+${g.lv-1}</span>` : ''}</div>
+      <div class="deploy-face"><img src="${g.bust || g.face}" alt=""></div>
+      <div class="deploy-name"><span class="dn-text">${g.name}${g.lv > 1 ? ` <span class="lv-pill">+${g.lv-1}</span>` : ''}</span><button type="button" class="general-detail-btn" title="상세보기" aria-label="${htmlSafe(g.name)} 상세보기"></button></div>
       <div class="deploy-stat">${formatGeneralBuffsChips(g)}</div>
     `;
     const detailBtn = card.querySelector('.general-detail-btn');
@@ -14819,10 +15013,9 @@ function startIntroDialog() {
   const rImg = document.getElementById('idgRightImg');
   const lNm = document.getElementById('idgLeftName');
   const rNm = document.getElementById('idgRightName');
-  const lF = getGeneralFaceImage(eDef.id);
-  const rF = getGeneralFaceImage(pDef.id);
-  lImg.src = (lF && lF.src) || `./assets/generals/faces/${eDef.id}.png`;
-  rImg.src = (rF && rF.src) || `./assets/generals/faces/${pDef.id}.png`;
+  // VS 도발 컷씬은 반신(bust=halfbody) 사용 — 전장 뱃지(war 얼굴 아이콘)와 구분
+  lImg.src = eDef.bust || `./assets/generals/faces/${eDef.id}.png`;
+  rImg.src = pDef.bust || `./assets/generals/faces/${pDef.id}.png`;
   lNm.textContent = `적장 · ${eDef.name}`;
   rNm.textContent = `아군 · ${pDef.name}`;
   // 상태 초기화
@@ -16029,15 +16222,25 @@ function drawCastleCommanderBadge(c, x, y, r) {
   // 그림자
   ctx.fillStyle = 'rgba(0,0,0,0.42)';
   ctx.beginPath(); ctx.ellipse(2 * DPR(), rad + 4 * DPR(), rad * 1.05, rad * 0.36, 0, 0, Math.PI * 2); ctx.fill();
+  // 등급 아우라 (아군: 희귀도 색 글로우)
+  const rmeta = STAR_META[clampStars((inst && inst.stars) || 1)] || STAR_META[1];
+  if (!isEnemy) {
+    const aura = ctx.createRadialGradient(0, 0, rad * 0.65, 0, 0, rad * 2.0);
+    aura.addColorStop(0, rmeta.auraHot);
+    aura.addColorStop(0.45, rmeta.auraMain);
+    aura.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = aura;
+    ctx.beginPath(); ctx.arc(0, 0, rad * 2.0, 0, Math.PI * 2); ctx.fill();
+  }
   // 배경 원
   ctx.fillStyle = isEnemy ? '#2a0408' : '#2a0d05';
   ctx.beginPath(); ctx.arc(0, 0, rad + 3 * DPR(), 0, Math.PI * 2); ctx.fill();
-  // 테두리 그라데이션
+  // 테두리 그라데이션 (아군: 등급색 / 적군: 적색)
   const frame = ctx.createLinearGradient(0, -rad, 0, rad);
   if (isEnemy) {
     frame.addColorStop(0, '#ffb0a0'); frame.addColorStop(0.5, '#d22020'); frame.addColorStop(1, '#5a0808');
   } else {
-    frame.addColorStop(0, '#fff2a8'); frame.addColorStop(0.5, '#e5a91e'); frame.addColorStop(1, '#8b4a05');
+    frame.addColorStop(0, '#ffffff'); frame.addColorStop(0.42, rmeta.color); frame.addColorStop(1, rmeta.color);
   }
   ctx.fillStyle = frame;
   ctx.beginPath(); ctx.arc(0, 0, rad + 1.5 * DPR(), 0, Math.PI * 2); ctx.fill();
@@ -19967,7 +20170,7 @@ function showStarterPick(onDone) {
     card.className = 'deploy-card tier-' + getGeneralRarity(g).tier;
     card.innerHTML = `
       ${rarityBadgeHTML(g)}
-      <div class="deploy-face"><img src="${def.face}" alt=""></div>
+      <div class="deploy-face"><img src="${def.bust || def.face}" alt=""></div>
       <div class="deploy-name">${def.name}</div>
       <div class="deploy-stat">${formatGeneralBuffsChips({ ...def, lv: 1, stars: 3 })}</div>
     `;
@@ -20070,7 +20273,7 @@ function showPrisonerScreen(prisoners, onContinue) {
       renderButtons([{ text: '계속 진행', className: 'finish', action: finish }], true);
       return;
     }
-    face.src = p.face;
+    const _pg = getGeneralById(p.id); face.src = (_pg && _pg.bust) || p.bust || p.face;
     renderAbility(p);
     const _st = clampStars(p.stars || 1);
     const _meta = STAR_META[_st] || STAR_META[1];
@@ -34167,7 +34370,7 @@ function closeTutorialOffer(accept) {
     text-overflow: ellipsis;
     z-index: 7 !important;
   }
-  .manage-roster .general-detail-btn {
+  :is(.manage-roster,.deploy-roster) .general-detail-btn {
     top: 7px !important;
     right: 7px !important;
     width: 28px !important;
@@ -34179,12 +34382,12 @@ function closeTutorialOffer(accept) {
     box-shadow: none !important;
     z-index: 8 !important;
   }
-  .manage-roster .general-detail-btn::before,
-  .manage-roster .general-detail-btn::after {
+  :is(.manage-roster,.deploy-roster) .general-detail-btn::before,
+  :is(.manage-roster,.deploy-roster) .general-detail-btn::after {
     content: none !important;
     display: none !important;
   }
-  .manage-roster .general-detail-btn:active {
+  :is(.manage-roster,.deploy-roster) .general-detail-btn:active {
     transform: translateY(1px) scale(0.94);
     filter: brightness(1.08);
   }
@@ -39534,7 +39737,7 @@ function enhanceFodderBoardCardHTML(g) {
 			    <div class="enh-fodder-card-label">재료 · Lv ${g.lv || 1}</div>
 			    <div class="enh-fodder-card-art">
 			      ${rarityBadgeHTML(g)}
-			      <img src="${g.face}" alt="">
+			      <img src="${g.bust || g.face}" alt="">
 			    </div>
 	    <span class="x">×</span>
 	    <div class="enh-fodder-card-name">${g.name}</div>
@@ -39794,7 +39997,7 @@ function renderEnhance() {
       <button class="enh-target-clear" type="button" aria-label="강화 대상 해제">×</button>
       <div class="enh-target-frame">
         ${rarityBadgeHTML(g)}
-        <img src="${g.face}" alt="">
+        <img src="${g.bust || g.face}" alt="">
       </div>
       <div class="enh-slot-name">${g.name}</div>
       <div class="enh-slot-lv">Lv ${g.lv}${g.lv > 1 ? ` · +${g.lv - 1}` : ''}</div>
@@ -39939,7 +40142,7 @@ function renderEnhanceRoster() {
       <div class="face-wrap">
         ${rarityBadgeHTML(g)}
         ${g.lv > 1 ? `<div class="lv-badge">Lv${g.lv}</div>` : ''}
-        <img src="${g.face}" alt="">
+        <img src="${g.bust || g.face}" alt="">
       </div>
       ${__ENH.pickMode === 'fodder' && isFodder && !isTarget ? '<span class="enh-roster-remove" aria-hidden="true"></span>' : ''}
       <div class="name">${g.name}</div>
@@ -40082,7 +40285,7 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
     const offsetX = (i - (cnt - 1) / 2) * 92;
     el.style.left = `calc(50% + ${offsetX}px - 39px)`;
     el.style.bottom = '12%';
-    el.innerHTML = `<img src="${f.face}" alt=""><div class="er-fodder-name">${f.name}</div>`;
+    el.innerHTML = `<img src="${f.bust || f.face}" alt=""><div class="er-fodder-name">${f.name}</div>`;
     fodderRow.appendChild(el);
     return el;
   });
@@ -40463,7 +40666,7 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
     const offsetX = (i - (cnt - 1) / 2) * 78;
     el.style.left = `calc(50% + ${offsetX}px - 35px)`;
     el.style.bottom = '19%';
-    el.innerHTML = `<img src="${f.face}" alt=""><div class="er-fodder-name">${safe(f.name)}</div>`;
+    el.innerHTML = `<img src="${f.bust || f.face}" alt=""><div class="er-fodder-name">${safe(f.name)}</div>`;
     fodderRow.appendChild(el);
     return el;
   });

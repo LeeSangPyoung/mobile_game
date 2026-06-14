@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>General Halfbody Rework v9/v10</title>
+<style>
+* { box-sizing:border-box; }
+:root {
+  color-scheme:dark;
+  --bg:#120f0b;
+  --panel:#211913;
+  --line:rgba(244,223,184,.18);
+  --gold:#ffd36a;
+  --text:#f4dfb8;
+  --muted:#bfa986;
+  --wait:#ffb46b;
+}
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+}
+header {
+  position:sticky;
+  top:0;
+  z-index:5;
+  padding:16px 20px 13px;
+  background:rgba(18,15,11,.95);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(10px);
+}
+.top {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+}
+h1 {
+  margin:0;
+  font-size:22px;
+  font-weight:850;
+  letter-spacing:0;
+}
+.count {
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.45;
+}
+.note {
+  margin-top:6px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
+main { padding:18px 20px 28px; }
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:14px;
+}
+article {
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel);
+  box-shadow:0 10px 22px rgba(0,0,0,.22);
+}
+.art {
+  position:relative;
+  display:grid;
+  place-items:end center;
+  aspect-ratio:4/5;
+  overflow:hidden;
+  background:
+    linear-gradient(45deg, rgba(255,255,255,.055) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,.055) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,.055) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.055) 75%),
+    #17110d;
+  background-size:24px 24px;
+  background-position:0 0, 0 12px, 12px -12px, -12px 0;
+}
+.art img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center bottom;
+}
+.badge {
+  position:absolute;
+  z-index:1;
+  left:8px;
+  top:8px;
+  padding:3px 7px 4px;
+  border-radius:6px;
+  background:rgba(13,9,6,.78);
+  border:1px solid rgba(255,211,106,.32);
+  color:var(--gold);
+  font-size:10px;
+  font-weight:850;
+}
+.missing {
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:100%;
+  padding:14px;
+  color:var(--wait);
+  font-size:12px;
+  font-weight:850;
+  text-align:center;
+}
+.meta {
+  padding:10px 12px 12px;
+}
+.name {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:8px;
+  margin:0;
+  font-size:16px;
+  font-weight:850;
+}
+.name small {
+  color:#9e8a67;
+  font-size:11px;
+  font-weight:750;
+}
+@media (max-width:720px) {
+  header { padding:14px 12px 12px; }
+  main { padding:12px; }
+  .grid { grid-template-columns:1fr 1fr; gap:10px; }
+  .name { font-size:14px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>Halfbody Rework v9/v10</h1>
+    <div id="count" class="count">Loading...</div>
+  </div>
+  <div class="note">Source: upper_body_200_redraw_v9_new_halfbody. Recent reviewed reworks use v10; kuai_yue and kuai_liang use v12.</div>
+</header>
+<main><section id="grid" class="grid"></section></main>
+<script src="./assets/generals/roster_200.js"></script>
+<script>
+const version = "halfbody-rework-final-chenggongying-fanchou-v12-20260613";
+const halfBase = "./assets/generals/new_characters/upper_body_200_redraw_v9_new_halfbody";
+const halfVersionOverrides = {
+  liu_ye: "v10",
+  kuai_yue: "v12",
+  kuai_liang: "v12",
+  zhang_he: "v10",
+  zhang_yi_shu: "v12",
+  dong_jue: "v12",
+  yuan_tan: "v12",
+  yuan_xi: "v12",
+  yuan_shang: "v12",
+  tian_feng: "v18",
+  ju_shou: "v12",
+  shen_pei: "v12",
+  feng_ji: "v12",
+  guo_tu: "v12",
+  xin_ping: "v12",
+  xin_pi: "v12",
+  gao_lan: "v12",
+  zhang_bu: "v12",
+  gongsun_zan: "v12",
+  gongsun_du: "v12",
+  gongsun_kang: "v12",
+  gongsun_yuan: "v12",
+  liu_biao: "v12",
+  liu_zhang: "v12",
+  liu_yao: "v12",
+  liu_yu: "v12",
+  tao_qian: "v12",
+  kong_rong: "v12",
+  zhang_lu: "v12",
+  zhang_ren: "v12",
+  yan_pu: "v12",
+  ma_teng: "v12",
+  han_sui: "v12",
+  cheng_yin: "v12",
+  liang_xing: "v12",
+  hou_xuan: "v12",
+  cheng_gongying: "v14",
+  dong_cheng: "v14",
+  he_jin: "v12",
+  zhang_rang: "v12",
+  emperor_xian: "v12",
+  wang_yun: "v12",
+  diao_chan: "v12",
+  li_jue: "v12",
+  guo_si: "v12",
+  fan_chou: "v14",
+  zhang_ji: "v14",
+  zhang_xiu: "v14",
+  hu_che_er: "v14",
+  zou_shi: "v14",
+  hua_xiong: "v14",
+  li_ru: "v14",
+  yuan_shu: "v14",
+  ji_ling: "v14",
+  liu_xun: "v14",
+  chen_lan: "v14",
+  lei_bo: "v14",
+  zhang_xun: "v14",
+  qiao_rui: "v14",
+  han_xian: "v14",
+  yang_feng: "v14",
+  hua_tuo: "v18",
+  zuo_ci: "v18",
+  yu_ji: "v18",
+  zhang_jiao: "v18",
+  zhang_bao_yellow: "v18",
+  zhang_liang_yellow: "v18",
+  bo_cai: "v18",
+  cheng_yuanzhi: "v18",
+  deng_mao: "v18",
+  guan_hai: "v18",
+  pei_yuanshao: "v18",
+  zhang_man_cheng: "v18",
+  han_zhong: "v18",
+  lu_su: "v10",
+  zhang_zhao: "v10",
+  zhang_hong: "v10",
+  zhu_zhi: "v10",
+  bu_zhi: "v10",
+  quan_cong: "v10",
+  guan_xing: "v10",
+  liu_shan: "v10",
+  liu_feng: "v10",
+  ma_liang: "v10",
+  jiang_wei: "v10",
+  fa_zheng: "v10",
+  sun_qian: "v10",
+  liao_hua: "v10",
+  zhou_cang: "v10",
+  ma_dai: "v10",
+  yan_yan: "v10",
+  li_yan: "v10",
+  fei_yi: "v10",
+  dong_yun: "v10",
+  jiang_wan: "v10",
+  huang_quan: "v10",
+  chen_dao: "v10",
+  fu_shi_ren: "v10",
+  meng_da: "v10",
+  zhang_song: "v10",
+  li_hui: "v10",
+  huo_jun: "v10",
+  sha_moke: "v10",
+  zhuge_zhan: "v10",
+  zhuge_jin: "v10",
+  zhuge_dan: "v10",
+  xu_sheng: "v10",
+  han_dang: "v10",
+  cheng_pu: "v10",
+  zhou_tai: "v10"
+};
+const availableHalfbodyIds = new Set([
+  "cao_cao", "cao_xing", "dian_wei", "dong_zhuo", "gan_ning",
+  "guan_yu", "guo_jia", "huang_gai", "huang_zhong", "liu_bei",
+  "lu_bu", "lu_xun", "ma_chao", "meng_huo", "pang_tong", "sima_yi",
+  "sun_ce", "sun_quan", "taishi_ci", "wen_chou", "xiahou_dun", "xu_chu",
+  "xu_huang", "yan_liang", "yuan_shao", "zhang_fei", "zhang_liao",
+  "zhao_yun", "zhou_yu", "zhuge_liang", "zhang_he", "yu_jin", "yue_jin",
+  "li_dian", "cao_ren", "cao_hong", "cao_pi", "cao_zhi", "cao_zhang",
+  "cao_ang", "cao_rui", "cao_shuang", "cao_zhen", "cao_xiu", "xiahou_yuan",
+  "xiahou_ba", "cheng_yu", "xun_yu", "xun_you", "jia_xu", "man_chong",
+  "zhong_yao", "deng_ai", "zhong_hui", "guo_huai", "wang_ping", "wen_pin",
+  "zang_ba", "li_tong", "han_hao", "lu_qian", "mao_jie", "liu_ye",
+  "kuai_yue", "kuai_liang", "cai_mao", "zhang_yun", "xu_sheng", "ding_feng",
+  "han_dang", "cheng_pu", "zhou_tai", "jiang_qin", "ling_tong", "lu_su",
+  "zhang_zhao", "zhang_hong", "zhu_zhi", "zhu_huan", "zhu_ran", "bu_zhi",
+  "kan_ze", "yu_fan", "he_qi", "pan_zhang", "ma_zhong_wu", "quan_cong",
+  "sun_jian", "sun_shao", "sun_huan", "sun_luban", "sun_luyu", "daqiao",
+  "xiaoqiao", "lian_shi", "guan_ping", "guan_xing", "guan_suo",
+  "guan_yinping", "zhang_bao", "liu_shan", "liu_feng", "ma_su", "ma_liang",
+  "jiang_wei", "wei_yan", "fa_zheng", "jian_yong", "mi_zhu", "mi_fang",
+  "sun_qian", "liao_hua", "zhou_cang", "ma_dai", "yan_yan", "li_yan",
+  "fei_yi", "dong_yun", "jiang_wan", "huang_quan", "chen_dao", "fu_shi_ren",
+  "meng_da", "zhang_song", "li_hui", "huo_jun", "sha_moke", "zhuge_zhan",
+  "zhuge_jin", "zhuge_dan", "zhang_yi_shu", "dong_jue",
+  "yuan_tan", "yuan_xi", "yuan_shang", "tian_feng", "ju_shou",
+  "shen_pei", "feng_ji", "guo_tu", "xin_ping", "xin_pi", "gao_lan",
+  "zhang_bu", "gongsun_zan", "gongsun_du", "gongsun_kang",
+  "gongsun_yuan", "liu_biao", "liu_zhang", "liu_yao", "liu_yu",
+  "tao_qian", "kong_rong", "zhang_lu", "zhang_ren", "yan_pu",
+  "ma_teng", "han_sui", "cheng_yin", "liang_xing", "hou_xuan",
+  "cheng_gongying", "dong_cheng", "he_jin", "zhang_rang",
+  "emperor_xian", "wang_yun", "diao_chan", "li_jue",
+  "guo_si", "fan_chou", "zhang_ji", "zhang_xiu", "hu_che_er",
+  "zou_shi", "hua_xiong", "li_ru", "yuan_shu", "ji_ling",
+  "liu_xun", "chen_lan", "lei_bo", "zhang_xun", "qiao_rui",
+  "han_xian", "yang_feng", "hua_tuo", "zuo_ci", "yu_ji",
+  "zhang_jiao", "zhang_bao_yellow",
+  "zhang_liang_yellow", "bo_cai",
+  "cheng_yuanzhi", "deng_mao", "guan_hai", "pei_yuanshao",
+  "zhang_man_cheng", "han_zhong"
+]);
+
+const grid = document.getElementById("grid");
+const count = document.getElementById("count");
+
+function halfPath(id) {
+  const v = halfVersionOverrides[id] || "v9";
+  return `${halfBase}/${id}_halfbody_game_cutout_${v}.png?v=${version}`;
+}
+
+window.GENERALS_200.forEach(([id, ko], index) => {
+  const no = String(index + 1).padStart(3, "0");
+  const article = document.createElement("article");
+  const label = halfVersionOverrides[id] || "v9";
+  const body = availableHalfbodyIds.has(id)
+    ? `<img loading="lazy" src="${halfPath(id)}" alt="${ko} halfbody" data-fallback="missing halfbody">`
+    : `<div class="missing">No halfbody yet</div>`;
+  article.innerHTML = `
+    <div class="art">
+      <span class="badge">${availableHalfbodyIds.has(id) ? label : "missing"}</span>
+      ${body}
+    </div>
+    <div class="meta">
+      <p class="name"><span>${ko}</span><small>${no} · ${id}</small></p>
+    </div>`;
+  const img = article.querySelector("img");
+  if (img) {
+    img.addEventListener("error", () => {
+      img.replaceWith(Object.assign(document.createElement("div"), {
+        className: "missing",
+        textContent: img.dataset.fallback
+      }));
+    }, { once:true });
+  }
+  grid.appendChild(article);
+});
+
+count.textContent = `${availableHalfbodyIds.size}/${window.GENERALS_200.length} halfbodies`;
+</script>
+</body>
+</html>
