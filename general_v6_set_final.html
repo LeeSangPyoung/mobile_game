@@ -66,6 +66,17 @@ article {
   background:#0f0c09;
 }
 .art img { width:100%; height:100%; object-fit:cover; object-position:center top; }
+.half {
+  background:
+    linear-gradient(45deg, rgba(255,255,255,.055) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,.055) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,.055) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.055) 75%),
+    #17110d;
+  background-size:20px 20px;
+  background-position:0 0, 0 10px, 10px -10px, -10px 0;
+}
+.half img { object-fit:contain; object-position:center bottom; }
 .icon { aspect-ratio:3/4; }
 .icon img { object-fit:contain; object-position:center; }
 .icon {
@@ -132,11 +143,10 @@ article {
 <main><section id="grid" class="grid"></section></main>
 <script src="./assets/generals/roster_200.js"></script>
 <script>
-const version = "v6-set-final-20260611";
+const version = "v6-set-final-halfbody-facealign-20260614";
 const fullBase = "./assets/generals/fullbody_v6";
 const halfBase = "./assets/generals/halfbody_v6";
 const faceBase = "./assets/generals/face_icons/war_v6_halfbody_style_transparent";
-
 const fullPath = id => `${fullBase}/${id}.webp?v=${version}`;
 const halfPath = id => `${halfBase}/${id}.webp?v=${version}`;
 const facePath = id => `${faceBase}/${id}_war_face_icon_v6_cute50.png?v=${version}`;

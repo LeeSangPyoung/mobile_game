@@ -1,0 +1,33 @@
+{
+  "_doc": "반신 얼굴정렬 개별 보정표. id별로 필요한 값만 넣으면 됨. 기본값: scale=1.0, dx=0, dy=0.",
+  "_fields": {
+    "scale": "얼굴 크기 배수(1.0 기준, 키우면 확대)",
+    "dx": "가로 픽셀 이동(+오른쪽)",
+    "dy": "세로 픽셀 이동(+아래)",
+    "face": "[x,y,w,h] 얼굴박스 수동지정(검출 실패/오검출 시)"
+  },
+  "overrides": {
+    "zhang_ji": {
+      "scale": 0.8,
+      "dx": 44,
+      "dy": 2
+    },
+    "fan_chou": {
+      "scale": 0.72,
+      "dx": 48,
+      "dy": 2
+    },
+    "mi_zhu": { "scale": 0.78 },
+    "zhang_liang_yellow": { "scale": 0.75 },
+    "hu_che_er": { "scale": 0.80 },
+    "guan_hai": { "scale": 0.82 },
+    "deng_mao": { "scale": 0.85 },
+    "zhang_bao_yellow": { "scale": 0.85 },
+    "sha_moke": { "scale": 0.85 },
+    "xun_yu": { "scale": 0.85 },
+    "guan_yu": { "scale": 1.25 },
+    "huang_gai": { "scale": 0.85 },
+    "lu_xun": { "scale": 0.85 },
+    "lu_bu": { "scale": 1.12 }
+  }
+}
