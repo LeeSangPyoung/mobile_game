@@ -13,6 +13,11 @@ app/www/index.html.bak_stale_1229
 
 # 미사용 자산 격리 보관소 (702MB, 복구용 — 게임 미참조)
 app/_unused_assets_quarantine/
+
+# 릴리스 서명 (절대 커밋 금지 — 분실 시 백업본만 복구 가능)
+app/android/keystore.properties
+app/android/*.jks
+app/android/*.keystore
 app/node_modules/
 app/www/
 
