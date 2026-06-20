@@ -61,3 +61,6 @@ assets/generals/halfbodies/
 assets/generals/style_refs/
 # pid/임시
 *.pid
+
+# 폰트 서브셋 작업용 원본 TTF (대용량, 산출물 아님)
+_fonttmp/
