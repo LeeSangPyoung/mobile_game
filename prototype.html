@@ -5645,88 +5645,88 @@
     filter: drop-shadow(0 4px 4px rgba(0,0,0,0.48));
   }
   /* 내 장수 카드: 캐릭터 사진 영역을 크게 + 캐릭터가 박스를 꽉 채우게(cover) */
-  :is(.manage-roster,.deploy-roster) .deploy-card {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card {
     min-height: 162px !important;
     justify-content: flex-start !important;
   }
-  :is(.manage-roster,.deploy-roster) .deploy-card .deploy-face {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card .deploy-face {
     flex: 0 0 auto !important;
     width: 108px !important; height: 82px !important;
   }
-  :is(.manage-roster,.deploy-roster) .deploy-card .deploy-face img {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card .deploy-face img {
     width: 100% !important; height: 100% !important;
     object-fit: cover !important;
     object-position: center 14% !important;
     transform: none !important;
   }
   /* ===== 희귀도(별 등급)별 카드 연출: 아우라 + 프레임 + 배경틴트 ===== */
-  :is(.manage-roster,.deploy-roster) .deploy-card { transition: box-shadow .2s, border-color .2s !important; }
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card { transition: box-shadow .2s, border-color .2s !important; }
   /* ★1 일반(은백) — 차분 */
-  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star1 {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star1 {
     background: linear-gradient(180deg, #2a313c, #161b22) !important;
     border-color: rgba(222,232,245,0.40) !important;
     box-shadow: 0 0 0 1px rgba(222,232,245,0.16), 0 4px 10px rgba(0,0,0,0.42) !important;
   }
-  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star1 .deploy-face {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star1 .deploy-face {
     background: radial-gradient(circle at 50% 36%, rgba(222,232,245,0.20), rgba(255,255,255,0.05) 52%, transparent 74%), #11161f !important;
   }
   /* ★2 고급(초록) */
-  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star2 {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star2 {
     background: linear-gradient(180deg, #1d3a2c, #15211b) !important;
     border-color: rgba(87,242,135,0.55) !important;
     box-shadow: 0 0 0 1px rgba(87,242,135,0.30), 0 0 12px rgba(87,242,135,0.30), 0 4px 10px rgba(0,0,0,0.42) !important;
   }
-  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star2 .deploy-face {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star2 .deploy-face {
     background: radial-gradient(circle at 50% 36%, rgba(87,242,135,0.34), rgba(91,255,191,0.14) 52%, transparent 74%), #11161f !important;
   }
   /* ★3 희귀(파랑) */
-  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star3 {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star3 {
     background: linear-gradient(180deg, #143049, #151d28) !important;
     border-color: rgba(77,181,255,0.60) !important;
     box-shadow: 0 0 0 1px rgba(77,181,255,0.34), 0 0 14px rgba(77,181,255,0.36), 0 4px 10px rgba(0,0,0,0.42) !important;
   }
-  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star3 .deploy-face {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star3 .deploy-face {
     background: radial-gradient(circle at 50% 36%, rgba(77,181,255,0.38), rgba(95,234,255,0.16) 52%, transparent 74%), #11161f !important;
   }
   /* ★4 영웅(보라) */
-  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star4 {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star4 {
     background: linear-gradient(180deg, #321d49, #1c1526) !important;
     border-color: rgba(199,125,255,0.66) !important;
     box-shadow: 0 0 0 1px rgba(199,125,255,0.40), 0 0 16px rgba(199,125,255,0.44), 0 4px 12px rgba(0,0,0,0.45) !important;
   }
-  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star4 .deploy-face {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star4 .deploy-face {
     background: radial-gradient(circle at 50% 36%, rgba(199,125,255,0.42), rgba(255,101,238,0.18) 52%, transparent 74%), #120e18 !important;
   }
   /* ★5 전설(금) — 가장 화려 */
-  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star5 {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star5 {
     background: linear-gradient(180deg, #4a3410, #241a08) !important;
     border-color: rgba(255,211,106,0.85) !important;
     box-shadow: 0 0 0 1.5px rgba(255,211,106,0.6), 0 0 20px rgba(255,191,64,0.55), 0 4px 14px rgba(0,0,0,0.5) !important;
   }
-  :is(.manage-roster,.deploy-roster) .deploy-card.tier-star5 .deploy-face {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star5 .deploy-face {
     background: radial-gradient(circle at 50% 36%, rgba(255,191,64,0.48), rgba(255,76,124,0.18) 50%, transparent 74%), #1a1206 !important;
   }
   /* 돋보기(상세) 버튼: 이름과 한 줄로 가지런히(이름 오른쪽 인라인) */
-  :is(.manage-roster,.deploy-roster) .deploy-card .deploy-name {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card .deploy-name {
     display: flex !important; align-items: center !important; justify-content: center !important;
     gap: 6px !important; flex-wrap: nowrap !important; white-space: nowrap !important;
   }
-  :is(.manage-roster,.deploy-roster) .deploy-card .deploy-name .dn-text {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card .deploy-name .dn-text {
     min-width: 0 !important; overflow: hidden !important; text-overflow: ellipsis !important;
   }
-  :is(.manage-roster,.deploy-roster) .deploy-card .general-detail-btn {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card .general-detail-btn {
     position: static !important; top: auto !important; right: auto !important; margin: 0 !important;
     width: 24px !important; height: 24px !important; flex: 0 0 auto !important; align-self: center !important;
   }
   /* 두 화면 글씨 크기 통일(작게) — 능력치 4개가 안 잘리게 */
-  :is(.manage-roster,.deploy-roster) .deploy-card .deploy-name {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card .deploy-name {
     font-size: 14px !important; letter-spacing: 1px !important;
   }
-  :is(.manage-roster,.deploy-roster) .deploy-card .deploy-name .lv-pill { font-size: 11px !important; }
-  :is(.manage-roster,.deploy-roster) .deploy-card .deploy-stat {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card .deploy-name .lv-pill { font-size: 11px !important; }
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card .deploy-stat {
     font-size: 10px !important; line-height: 1.25 !important;
   }
-  :is(.manage-roster,.deploy-roster) .deploy-card .buff-chip {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card .buff-chip {
     font-size: 9px !important; padding: 1px 3px !important; letter-spacing: -0.2px !important;
   }
   /* ===== 편성 슬롯(天/地/人) 희귀도 연출: 테두리 + 글로우 + 아우라 ===== */
@@ -5847,7 +5847,7 @@
   .deploy-card.selected .buff-chip i { color: #fff5d8; }
   /* 관리 화면(3열) 칩: 라인이 잘리지 않게 패딩·gap 최소화 */
   /* 버프 영역 2줄 높이로 고정 — 능력치 적은 장수(마초·전위 등)는 아래 빈 줄, 전 카드 높이 통일 */
-  :is(.manage-roster,.deploy-roster) .deploy-card .buff-chips { gap: 2px 2px; padding: 0; min-height: 33px; align-content: start; }
+  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card .buff-chips { gap: 2px 2px; padding: 0; min-height: 33px; align-content: start; }
   .manage-roster .deploy-card .buff-chip { font-size: 9px; padding: 1px 3px; letter-spacing: -0.2px; }
   .manage-roster .deploy-card .buff-chip i { margin-left: 2px; }
   .deploy-pick {
@@ -10806,13 +10806,37 @@
     text-shadow: 0 1px 1px rgba(0,0,0,0.45) !important;
   }
   #enhanceScreen .enh-go:disabled,
-  #upgradeScreen .upg-buy.disabled {
+  #upgradeScreen .upg-buy.disabled,
+  .er-action-btn:disabled {
     background-image: url('./assets/ui/ui_button_disabled.png') !important;
     color: rgba(235,243,255,0.58) !important;
     text-shadow: none !important;
+    cursor: not-allowed !important;
+    filter: saturate(0.7) brightness(0.9) !important;
   }
   #upgradeScreen .upg-buy {
     min-height: 54px !important;
+  }
+  /* 골드 부족 → 별 교환 유도 힌트 칩 (강화 시작 화면 + 의식 결과창 공용) */
+  .gold-short-hint {
+    display: none;
+    align-items: center; justify-content: center; gap: 6px;
+    margin: 9px auto 0; padding: 9px 15px;
+    width: max-content; max-width: 92%;
+    border: 1px solid rgba(255,210,90,0.55); border-radius: 12px;
+    background: linear-gradient(180deg, rgba(74,42,12,0.94), rgba(40,22,8,0.94));
+    color: #ffe7a8; font-weight: 800; font-size: 13px; line-height: 1.2;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+    animation: goldHintPulse 1.5s ease-in-out infinite;
+  }
+  .gold-short-hint.show { display: flex; }   /* 블록 레벨 flex → margin:auto 로 가로 중앙 */
+  .gold-short-hint:active { transform: scale(0.97); }
+  .gold-short-hint .ghx-star { color: #ffd23f; }
+  .gold-short-hint .ghx-go { color: #fff4d2; text-decoration: underline; }
+  .gold-short-hint b { color: #fff4d2; font-weight: 900; }
+  @keyframes goldHintPulse {
+    0%, 100% { box-shadow: 0 0 0 1px rgba(0,0,0,0.4), 0 5px 14px rgba(0,0,0,0.32); }
+    50%      { box-shadow: 0 0 0 1px rgba(0,0,0,0.4), 0 5px 14px rgba(0,0,0,0.32), 0 0 14px 2px rgba(255,210,90,0.5); }
   }
 
   .formation-tab,
@@ -11555,6 +11579,47 @@
     object-position: top center !important;
     transform: none !important;
   }
+  /* === 강화 골드부족 힌트 = 화면 상단 알림 배너 (제목 위에서 슬라이드 인) + 비활성 버튼 회색 === */
+  #enhRitual #erGoldHint,
+  #enhanceScreen #enhGoldHint {
+    position: fixed !important;
+    top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+    left: 50% !important; right: auto !important; bottom: auto !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+    z-index: 99999 !important;        /* 의식 오버레이(9000)보다 위 */
+    white-space: nowrap !important;
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    gap: 6px !important;
+    border-radius: 14px !important;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.5) !important;
+  }
+  #enhRitual #erGoldHint.show,
+  #enhanceScreen #enhGoldHint.show {
+    display: flex !important;
+    animation: goldHintDrop 0.34s cubic-bezier(.2,1.1,.3,1) both,
+               goldHintPulse 1.6s 0.34s ease-in-out infinite !important;
+  }
+  #enhRitual #erGoldHint:active,
+  #enhanceScreen #enhGoldHint:active { transform: translateX(-50%) scale(0.97) !important; }
+  @keyframes goldHintDrop {
+    from { opacity: 0; transform: translate(-50%, -18px); }
+    to   { opacity: 1; transform: translate(-50%, 0); }
+  }
+  /* 비활성 강화 버튼 → 회색 disabled 이미지 (활성처럼 보이는 문제 해결) */
+  #enhRitual .er-action-btn:disabled,
+  #enhRitual .er-action-btn[disabled] {
+    background: #50545c !important;          /* 단색 회색 */
+    background-image: none !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    border-radius: 14px !important;          /* '완료'와 같은 둥근 알약 모양 */
+    color: rgba(235,238,245,0.45) !important;
+    text-shadow: none !important;
+    cursor: not-allowed !important;
+    filter: none !important;
+    box-shadow: none !important;
+  }
 </style>
 </head>
 <body>
@@ -11738,7 +11803,7 @@
       <button class="auto-form-btn" id="deployAutoBtn">⚔ 자동 편성</button>
     </div>
     <div class="deploy-roster" id="deployRoster"></div>
-    <img id="deployLeadImg" alt="" style="display:none"><span id="deployCount" style="display:none"></span><div id="deploySelectedStrip" style="display:none"></div>
+    <img id="deployLeadImg" alt="" style="display:none"><span id="deployCountLegacy" style="display:none"></span><div id="deploySelectedStrip" style="display:none"></div>
     <div class="deploy-actions">
       <button class="deploy-secondary" id="deployCancel">뒤 로</button>
       <button class="deploy-primary" id="deployStart">출 정</button>
@@ -11863,6 +11928,9 @@
     <div class="enh-fodder-label" id="enhFodderLabel">재료 카드 (0/0)</div>
     <div class="enh-fodder-row" id="enhFodderRow"></div>
     <button class="enh-go" id="enhGoBtn" disabled>강화 시도</button>
+    <div class="gold-short-hint" id="enhGoldHint" onclick="showStarExchange()" role="button" tabindex="0">
+      <span>⚠ 골드 부족</span><span class="ghx-star">★</span><span class="ghx-go">별 교환</span><b id="enhGoldHintGain">·</b>
+    </div>
   </div>
   <div class="enh-picker-scrim" id="enhPickerScrim"></div>
   <div class="enh-picker-panel" id="enhPickerPanel">
@@ -11906,6 +11974,9 @@
   <div class="er-result" id="erResult">
     <div class="er-result-title" id="erResultTitle"></div>
     <div class="er-result-lv" id="erResultLv"></div>
+  </div>
+  <div class="gold-short-hint" id="erGoldHint" onclick="showStarExchange()" role="button" tabindex="0">
+    <span>⚠ 골드 부족</span><span class="ghx-star">★</span><span class="ghx-go">별 교환</span><b id="erGoldHintGain">·</b>
   </div>
   <div class="er-actions" id="erActions">
     <button class="er-action-btn" id="erRetryBtn">다시 강화</button>
@@ -12228,6 +12299,12 @@
 <script>
 // ===== 화면 전환 + 진행 상태 =====
 const SCREENS = ['splash', 'menu', 'stageSelect', 'stageInfo', 'generalSelectScreen', 'generalManageScreen', 'upgradeScreen', 'prisonerScreen', 'enhanceScreen', 'starterPickScreen'];
+// ?reset=1 로 접속하면 저장 데이터를 지우고 신규 플레이로 시작 (개발용)
+if (new URLSearchParams(location.search).get('reset') === '1') {
+  localStorage.removeItem('save');
+  // 파라미터 제거 후 깨끗한 URL로 리로드 — 매 새로고침마다 초기화되는 것 방지
+  location.replace(location.pathname);
+}
 const SAVE = JSON.parse(localStorage.getItem('save') || '{"stars":{},"unlocked":2}');
 // 마이그레이션: 골드 + 강화 데이터
 if (typeof SAVE.gold !== 'number') SAVE.gold = 0;
@@ -12290,19 +12367,8 @@ if (!SAVE.generalsClearV2) {
   SAVE.lastDeployGenerals = [];
   SAVE.generalsClearV2 = true;
 }
-// 일회성: 신규/리셋 플레이어에게 유비 초기 카드 1장 지급
-if (!SAVE.initialGiftV1) {
-  if (!Array.isArray(SAVE.generals)) SAVE.generals = [];
-  if (SAVE.generals.length === 0) {
-    const _uid = (SAVE.nextGeneralUid | 0) || 1;
-    SAVE.nextGeneralUid = _uid + 1;
-    SAVE.generals.push({ uid: _uid, id: 'liu_bei', lv: 1, stars: 3 });
-    if (!SAVE.formations) SAVE.formations = { '天': [], '地': [], '人': [] };
-    if (!Array.isArray(SAVE.formations['天'])) SAVE.formations['天'] = [];
-    if (!SAVE.formations['天'].includes(_uid)) SAVE.formations['天'].unshift(_uid);
-  }
-  SAVE.initialGiftV1 = true;
-}
+// (변경) 신규 시작은 빈 로스터 — 첫 장수는 튜토리얼 클리어 보상으로 직접 선택받음.
+//        기존 유비 초기 지급 / 테스트용 20명·전체 지급 블록은 제거했습니다.
 // 장수 강화 레벨 (Lv1~Lv6, 기본 Lv1)
 if (!SAVE.generalLevels || typeof SAVE.generalLevels !== 'object') {
   SAVE.generalLevels = {};
@@ -12518,39 +12584,12 @@ if (!SAVE.generalsV2) {
   saveProgress();
 }
 
-// 일회성(테스트): 보유 장수 20명 지급 — 가드 플래그로 1회만. GENERAL_ROSTER 정의 후라 안전.
-if (!SAVE.testGrant20V1) {
-  if (!Array.isArray(SAVE.generals)) SAVE.generals = [];
-  let _u = (SAVE.nextGeneralUid | 0) || 1;
-  const _have = new Set(SAVE.generals.map(g => g && g.id));
-  for (const g of GENERAL_ROSTER) {
-    if (SAVE.generals.length >= 20) break;
-    if (_have.has(g.id)) continue;
-    SAVE.generals.push({ uid: _u++, id: g.id, lv: 1 });
-    _have.add(g.id);
-  }
-  SAVE.nextGeneralUid = _u;
-  SAVE.testGrant20V1 = true;
-  saveProgress();
-}
-// 일회성(확인용): 전체 장수 지급 — 내 장수 메뉴에 모든 장수 표시
-if (!SAVE.testGrantAllV1) {
-  if (!Array.isArray(SAVE.generals)) SAVE.generals = [];
-  let _ua = (SAVE.nextGeneralUid | 0) || 1;
-  const _haveAll = new Set(SAVE.generals.map(g => g && g.id));
-  for (const g of GENERAL_ROSTER) {
-    if (_haveAll.has(g.id)) continue;
-    SAVE.generals.push({ uid: _ua++, id: g.id, lv: 1 });
-    _haveAll.add(g.id);
-  }
-  SAVE.nextGeneralUid = _ua;
-  SAVE.testGrantAllV1 = true;
-  saveProgress();
-}
-// 일회성(테스트): 별 100개 지급 — 강화 테스트용
-if (!SAVE.testGrant100StarsV1) {
-  SAVE.starsAvailable = (SAVE.starsAvailable | 0) + 100;
-  SAVE.testGrant100StarsV1 = true;
+// (제거) 테스트용 장수 20명 지급 / 전체 장수 지급 블록 — 신규 시작은 빈 로스터.
+
+// 일회성: 신규 시작 자원 — 별 10개 (강화/교환 입문용)
+if (!SAVE.starterStarsV1) {
+  SAVE.starsAvailable = (SAVE.starsAvailable | 0) + 10;
+  SAVE.starterStarsV1 = true;
   saveProgress();
 }
 // === 디버그 일회성: 강화 테스트용 보유 장수/자원 지급 ===
@@ -12733,8 +12772,10 @@ function showScreen(name) {
     if (typeof cinematic !== 'undefined') cinematic = null;
     // 잔상 일괄 제거 — 화면 전환 시 떠 있던 플로팅 UI를 모두 숨김
     { const _cl = document.getElementById('cinematicLabel'); if (_cl) { _cl.textContent = ''; _cl.style.opacity = '0'; } }
-    { const _f = document.getElementById('tutoFinger'); if (_f) { _f.style.opacity = '0'; _f.classList.remove('tap'); } }
-    { const _r = document.getElementById('tutoFingerRing'); if (_r) _r.classList.remove('show'); }
+    { const _ctb = document.getElementById('chapterTierBanner'); if (_ctb) { _ctb.style.opacity = '0'; } }
+    { const _f = document.getElementById('tutoFinger'); if (_f) { _f.style.opacity = '0'; _f.classList.remove('tap', 'drag'); _f.style.transform = 'none'; } }
+    { const _r = document.getElementById('tutoFingerRing'); if (_r) _r.classList.remove('show', 'aim'); }
+    { const _ag = document.getElementById('tutoAttackGuide'); if (_ag) _ag.style.opacity = '0'; }
     { const _vf = document.getElementById('victoryFlash'); if (_vf) { _vf.style.opacity = '0'; _vf.style.transform = 'translate(-50%,-50%) scale(0.6)'; } }
     { const _ws = document.getElementById('warning'); if (_ws) { _ws.style.display = 'none'; _ws.style.opacity = '0'; } }
     // 튜토리얼 도중 퇴각 시 상태도 리셋 (재진입 시 첫 단계부터 다시 시작)
@@ -12851,6 +12892,15 @@ function setPostBattleReturnStage(idx) {
   if (_postUpgradeStage != null) selectedStage = _postUpgradeStage;
 }
 function returnFromUtilityScreen() {
+  // 승리 모달에서 진입한 경우 → 스테이지 선택을 배경으로 깔고 그 위에 승리 모달을 다시 띄움
+  if (window._resumeVictoryModal) {
+    const resume = window._resumeVictoryModal;
+    const idx = _postUpgradeStage;
+    _postUpgradeStage = null;
+    if (typeof idx === 'number') goToStageSelectAt(idx);
+    resume();
+    return;
+  }
   if (_postUpgradeStage != null) {
     const idx = _postUpgradeStage;
     _postUpgradeStage = null;
@@ -13084,6 +13134,23 @@ function launchTutorialStage() {
   selectedStage = 0;
   startStage();
 }
+// 출정 버튼 — 튜토리얼 미완료면 안내 모달 후 튜토리얼로, 완료면 스테이지 선택
+function onCampaignButton() {
+  if (!SAVE.tutorialDone) {
+    showMsg(
+      '첫 출정을 위해 간단한 튜토리얼을 먼저 진행합니다. 완료하면 원하는 장수 1명을 드립니다!',
+      undefined,
+      [
+        { text: '튜토리얼 시작', variant: 'primary', action: () => launchTutorialStage() },
+        { text: '나중에', variant: 'secondary', action: () => {} },
+      ],
+      undefined,
+      undefined
+    );
+    return;
+  }
+  goToStageSelect();
+}
 const MAX_DEPLOY_GENERALS = 10;
 let selectedDeployGenerals = [];
 function getGeneralById(id) {
@@ -13310,6 +13377,7 @@ function openGeneralSelect(idx) {
   }
   // 활성 포메이션을 작업판에 복제 (이 화면에서의 변경은 임시)
   selectedDeployGenerals = getFormationIds(getActiveFormationKey()).slice();
+  deploySelectedSlotIndex = null;
   showScreen('generalSelectScreen');
   renderGeneralSelect();
 }
@@ -13320,11 +13388,13 @@ function renderGeneralSelect() {
   // 출전 화면은 임시 작업판 — 더 이상 보유 안 하는 uid만 정리
   selectedDeployGenerals = (selectedDeployGenerals || []).filter(uid => validUids.has(uid)).slice(0, MAX_DEPLOY_GENERALS);
   let activeArr = selectedDeployGenerals;
+  const selectedSlotIdx = normalizeDeploySlotSelection();
   const stage = STAGES[selectedStage];
   const stageEl = document.getElementById('deployStageName');
   const leadName = document.getElementById('deployLeadName');
   const note = document.getElementById('deployNote');
   const titleEl = document.getElementById('deployTitle');
+  const countEl = document.getElementById('deployCount');
   const rosterEl = document.getElementById('deployRoster');
   const startBtn = document.getElementById('deployStart');
   const testingAll = !(Array.isArray(SAVE.generals) && SAVE.generals.length);
@@ -13333,10 +13403,13 @@ function renderGeneralSelect() {
   if (stageEl) stageEl.textContent = stage ? stage.name : `${campaignStageNumber(selectedStage)}장`;
   if (leadName) leadName.textContent = leader ? `${leader.name} 선봉` : '미선택';
   if (titleEl) titleEl.textContent = `[${activeKey} ${FORMATION_SUBS[activeKey]}] 포메이션 ${activeArr.length}/${MAX_DEPLOY_GENERALS}`;
+  if (countEl) countEl.textContent = `${activeArr.length} / ${MAX_DEPLOY_GENERALS}`;
   if (note) {
     note.textContent = testingAll
       ? '보유 장수가 없어 전체 장수가 후보로 표시됩니다.'
-      : '이 화면에서 변경은 이번 판만 적용 — 영구 편성은 [내 장수]에서.';
+      : (selectedSlotIdx == null
+        ? '슬롯을 탭해 선택, 카드/슬롯을 탭해 교체 · X로 해제 (이번 판만 적용)'
+        : `${selectedSlotIdx + 1}번 위치 선택 중 — 다른 슬롯/카드를 탭해 교체`);
   }
   if (startBtn) startBtn.classList.toggle('disabled', activeArr.length === 0);
   // 포메이션 탭
@@ -13351,6 +13424,7 @@ function renderGeneralSelect() {
       tab.innerHTML = `<b>${k}</b><small>${FORMATION_SUBS[k]} · ${arr.length}/${MAX_DEPLOY_GENERALS}</small>`;
       bindTap(tab, () => {
         setActiveFormation(k);
+        deploySelectedSlotIndex = null;
         selectedDeployGenerals = getFormationIds(k).filter(u => validUids.has(u)).slice();
         renderGeneralSelect();
       });
@@ -13365,7 +13439,7 @@ function renderGeneralSelect() {
       const uid = activeArr[i];
       const g = uid != null ? getOwnedGeneral(uid) : null;
       const slot = document.createElement('div');
-      slot.className = 'formation-slot' + (g ? ' filled tier-' + getGeneralRarity(g).tier : '');
+      slot.className = 'formation-slot' + (g ? ' filled tier-' + getGeneralRarity(g).tier : '') + (i === selectedSlotIdx ? ' slot-selected' : '');
       if (g) {
         slot.innerHTML = `
           <span class="slot-rank">${i + 1}</span>
@@ -13375,12 +13449,45 @@ function renderGeneralSelect() {
           <span class="slot-x">×</span>
         `;
         bindTap(slot, () => {
-          const idx = selectedDeployGenerals.indexOf(uid);
-          if (idx >= 0) selectedDeployGenerals.splice(idx, 1);
+          const picked = normalizeDeploySlotSelection();
+          if (picked == null) {
+            deploySelectedSlotIndex = i;
+            showSelectToast(`${i + 1}번 위치 선택`, '#ffd23f');
+          } else if (picked === i) {
+            const ix = selectedDeployGenerals.indexOf(uid);
+            if (ix >= 0) selectedDeployGenerals.splice(ix, 1);
+            clearDeploySlotSelection();
+            showSelectToast(`${g.name} 출전 해제`, '#ffd23f');
+          } else {
+            const tmp = selectedDeployGenerals[picked];
+            selectedDeployGenerals[picked] = selectedDeployGenerals[i];
+            selectedDeployGenerals[i] = tmp;
+            clearDeploySlotSelection();
+            showSelectToast(`${picked + 1}번 ↔ ${i + 1}번 자리교체`, '#ffd23f');
+          }
+          renderGeneralSelect();
+        });
+        const xEl = slot.querySelector('.slot-x');
+        if (xEl) bindTap(xEl, (e) => {
+          if (e) { try { e.stopPropagation(); } catch (_) {} try { e.preventDefault(); } catch (_) {} }
+          const ix = selectedDeployGenerals.indexOf(uid);
+          if (ix >= 0) selectedDeployGenerals.splice(ix, 1);
+          clearDeploySlotSelection();
+          showSelectToast(`${g.name} 출전 해제`, '#ffd23f');
           renderGeneralSelect();
         });
       } else {
         slot.textContent = '+';
+        bindTap(slot, () => {
+          const picked = normalizeDeploySlotSelection();
+          if (picked == null) return;
+          const mv = selectedDeployGenerals[picked];
+          selectedDeployGenerals.splice(picked, 1);
+          selectedDeployGenerals.push(mv);
+          clearDeploySlotSelection();
+          showSelectToast('마지막 위치로 이동', '#ffd23f');
+          renderGeneralSelect();
+        });
       }
       slotsEl.appendChild(slot);
     }
@@ -13429,12 +13536,28 @@ function renderGeneralSelect() {
     bindTap(card, (ev) => {
       if (ev && ev.target && ev.target.closest && ev.target.closest('.general-detail-btn')) return;
       if (g.uid == null) { showSelectToast('테스트 모드: 보유 안 한 카드', '#c1121f'); return; }
+      const picked = normalizeDeploySlotSelection();
       const idx = selectedDeployGenerals.indexOf(g.uid);
-      if (idx === 0) {
-        // 이미 선봉 — 탭으로 제거
+      if (picked != null) {
+        if (idx === picked) {
+          clearDeploySlotSelection();
+        } else if (idx >= 0) {
+          const tmp = selectedDeployGenerals[picked];
+          selectedDeployGenerals[picked] = selectedDeployGenerals[idx];
+          selectedDeployGenerals[idx] = tmp;
+          clearDeploySlotSelection();
+          showSelectToast(`${picked + 1}번 ↔ ${idx + 1}번 자리교체`, '#ffd23f');
+        } else if (inFormationIds.has(g.id)) {
+          showSelectToast(`동일 장수(${g.name})는 한 명만 출전 가능`, '#c1121f');
+          return;
+        } else {
+          selectedDeployGenerals[picked] = g.uid;
+          clearDeploySlotSelection();
+          showSelectToast(`${picked + 1}번 위치에 ${g.name} 출전`, '#ffd23f');
+        }
+      } else if (idx === 0) {
         selectedDeployGenerals.splice(0, 1);
       } else if (idx > 0) {
-        // 편성됨이지만 선봉 아님 → 선봉으로 이동
         selectedDeployGenerals.splice(idx, 1);
         selectedDeployGenerals.unshift(g.uid);
         showSelectToast(`${g.name} 선봉으로 변경`, '#ffd23f');
@@ -13459,7 +13582,7 @@ function getManagedGenerals() {
     const def = getGeneralById(inst.id);
     return def ? { ...def, uid: inst.uid, lv: inst.lv || 1, stars: instanceStars(inst) } : null;
   }).filter(Boolean);
-  if (!list.length) return sortGeneralsByRarityDesc(GENERAL_ROSTER.map(g => ({ ...g, uid: null, lv: 1 })));
+  // 보유 0명이면 빈 목록 — 미리보기로 전체 장수를 노출하지 않음
   return sortGeneralsByRarityDesc(list);
 }
 function showGeneralManage() {
@@ -13470,6 +13593,14 @@ function showGeneralManage() {
 const FORMATION_KEYS = ['天','地','人'];
 const FORMATION_SUBS  = { '天': '하늘', '地': '땅', '人': '사람' };
 let manageSelectedSlotIndex = null;
+let deploySelectedSlotIndex = null;
+function clearDeploySlotSelection() { deploySelectedSlotIndex = null; }
+function normalizeDeploySlotSelection() {
+  if (!Number.isInteger(deploySelectedSlotIndex)) return null;
+  const len = Array.isArray(selectedDeployGenerals) ? selectedDeployGenerals.length : 0;
+  if (deploySelectedSlotIndex < 0 || deploySelectedSlotIndex >= len) { deploySelectedSlotIndex = null; return null; }
+  return deploySelectedSlotIndex;
+}
 function getActiveFormationKey() {
   return FORMATION_KEYS.includes(SAVE.activeFormation) ? SAVE.activeFormation : '天';
 }
@@ -13606,6 +13737,7 @@ function resolveGeneralFullbodySources(g) {
   const sources = [];
   // 신규 v6 전신(WebP)을 최우선, 그다음 v6 반신 → 기존 폴더 순 폴백
   if (GENERAL_V6_IDS.has(id)) {
+    sources.push(versionedGeneralV6Asset(`./assets/generals/fullbody_v6_aligned/${id}.webp`));
     sources.push(versionedGeneralV6Asset(`./assets/generals/fullbody_v6/${id}.webp`));
     sources.push(versionedGeneralV6Asset(`./assets/generals/halfbody_v6/${id}.webp`));
   }
@@ -13733,13 +13865,13 @@ function renderGeneralManage() {
   const activeKey = getActiveFormationKey();
   const activeArr = getFormationIds(activeKey);
   const selectedSlotIdx = normalizeManageSlotSelection(activeArr);
-  if (titleEl) titleEl.textContent = ownedCount ? `보유 장수 ${ownedCount}명` : '전체 장수 미리보기';
+  if (titleEl) titleEl.textContent = ownedCount ? `보유 장수 ${ownedCount}명` : '보유 장수 없음';
   if (noteEl) {
     noteEl.textContent = ownedCount
       ? (selectedSlotIdx == null
         ? `[${activeKey} ${FORMATION_SUBS[activeKey]}] 포메이션 ${activeArr.length}/${MAX_DEPLOY_GENERALS} — 슬롯을 탭해 선택, 카드/슬롯을 탭해 교체`
         : `${selectedSlotIdx + 1}번 위치 선택 중 — 다른 슬롯 또는 장수 카드를 탭해 교체`)
-      : '보유 장수가 없어 현재는 전체 장수를 미리 표시합니다.';
+      : '아직 보유한 장수가 없습니다. 튜토리얼을 클리어하면 첫 장수를 받을 수 있어요.';
   }
   // 포메이션 탭
   const tabsEl = document.getElementById('formationTabs');
@@ -14293,6 +14425,13 @@ function renderUpgrade() {
 let cinematic = null;
 function startStage() {
   currentStage = selectedStage;
+  menuCastle = null;
+  armedUnit = null;
+  dragUnit = null;
+  dragStart = null;
+  dragMoved = false;
+  dragSourceCastle = null;
+  dragSourceArmy = null;
   activeDeployGeneralUids = (Array.isArray(SAVE.lastDeployGenerals) ? SAVE.lastDeployGenerals : [])
     .filter(uid => getInstance(uid))
     .slice(0, MAX_DEPLOY_GENERALS);
@@ -14310,6 +14449,14 @@ function startStage() {
   showScreen('game');
   msgShown = false;
   startOpeningCinematic();
+  // (B) 챕터 오프너 — "적 강화 티어" 안내. 챕터=다시 작은 맵 리셋이 '후퇴'가 아니라 '승급'으로 읽히게.
+  try {
+    if (typeof isCampaignStageIndex === 'function' && isCampaignStageIndex(currentStage)) {
+      const _ch = campaignChapterForIndex(currentStage);
+      const _local = ((currentStage - campaignOffset()) % STAGES_PER_CHAPTER) + 1;
+      if (_ch >= 2 && _local === 1) showChapterTierBanner(_ch);
+    }
+  } catch (_) {}
   if (typeof stopWeather === 'function') stopWeather();
   // 튜토리얼 스테이지 → 인터랙티브 가이드 컨트롤러
   if (STAGES[currentStage] && STAGES[currentStage].isTutorial) {
@@ -14320,21 +14467,46 @@ function startStage() {
   }
 }
 
+// (B) 챕터 진입 배너 — 적 강화 티어를 시각적으로 알림(에셋 없음, 비차단 상단 배너)
+function showChapterTierBanner(ch) {
+  let el = document.getElementById('chapterTierBanner');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'chapterTierBanner';
+    el.style.cssText = 'position:fixed; left:50%; top:13%; transform:translate(-50%,-8px); z-index:6200; pointer-events:none; text-align:center; opacity:0; transition:opacity .35s ease, transform .35s ease; font-family:inherit;';
+    document.body.appendChild(el);
+  }
+  const tier = Math.max(1, Math.min(10, ch));
+  const bars = '■'.repeat(tier) + '□'.repeat(10 - tier);
+  el.innerHTML =
+    '<div style="display:inline-block; padding:10px 18px 12px; border-radius:14px; background:linear-gradient(180deg, rgba(40,16,10,0.94), rgba(18,8,5,0.94)); border:2px solid #e0a94a; box-shadow:0 0 0 1px #2a1810, 0 10px 22px rgba(0,0,0,0.55);">'
+    + '<div style="font-size:20px; font-weight:900; letter-spacing:2px; color:#ffd86a;">제' + ch + '장</div>'
+    + '<div style="font-size:12px; font-weight:800; color:#ff9d6a; margin-top:3px;">적이 한층 강해졌습니다 ⚔</div>'
+    + '<div style="font-size:11px; color:#caa35a; margin-top:5px; letter-spacing:1px;">적 전력 <span style="color:#ff7a52; font-weight:900;">' + bars + '</span></div>'
+    + '</div>';
+  clearTimeout(el._t1); clearTimeout(el._t2);
+  requestAnimationFrame(() => { el.style.opacity = '1'; el.style.transform = 'translate(-50%,0)'; });
+  el._t1 = setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translate(-50%,-8px)'; }, 2300);
+}
+
 // === 인터랙티브 튜토리얼 컨트롤러 ===
 let tutorialState = null;
 const TUTO_STEPS = [
-  // 1단계: 성 탭 + 병종 선택
-  { id: 'select', title: '1단계 — 성을 탭하고 병종을 선택', sub: '상성: 창 > 기 > 궁 > 창 (적이 기병이니 창 선택)' },
-  { id: 'reward1', title: '+500G 잘하셨어요', sub: '병종 상성 학습 완료', auto: 1400 },
-  // 2단계: 요격
-  { id: 'intercept', title: '2단계 — 적군이 옵니다! 요격하세요', sub: '아군 성에서 적 부대로 드래그' },
-  { id: 'reward2', title: '+500G 적군 격퇴!', sub: '요격 성공', auto: 1400 },
-  // 3단계: 적 성 파괴
-  { id: 'finish', title: '3단계 — 적 성을 파괴하세요', sub: '아군 성에서 적 성으로 드래그' },
-  { id: 'done', title: '+500G 튜토리얼 완료!', sub: '이제 챕터 1로 출정하세요', auto: 2000 },
+  // 1단계: 두 손가락 핀치 확대/축소 (지도 보기)
+  { id: 'zoom', title: '1단계 — 두 손가락을 펴서 확대', sub: '손가락을 벌리면 지도가 확대됩니다' },
+  { id: 'rewardZoom', title: '좋아요', sub: '핀치 줌으로 전장을 자유롭게 보세요', auto: 900 },
+  // 2단계: 성 탭 + 병종 선택
+  { id: 'select', title: '2단계 — 성을 탭하고 병종을 선택', sub: '상성: 창 > 기 > 궁 > 창 (적이 기병이니 창 선택)' },
+  { id: 'reward1', title: '잘하셨어요', sub: '병종 상성 학습 완료', auto: 900 },
+  // 3단계: 요격
+  { id: 'intercept', title: '3단계 — 적군이 옵니다! 요격하세요', sub: '아군 성에서 적 부대로 드래그' },
+  { id: 'reward2', title: '적군 격퇴', sub: '요격 성공', auto: 900 },
+  // 4단계: 적 성 파괴
+  { id: 'finish', title: '4단계 — 적 성을 파괴하세요', sub: '아군 성에서 적 성으로 드래그' },
+  { id: 'done', title: '튜토리얼 완료', sub: '이제 챕터 1로 출정하세요', auto: 1600 },
 ];
 function startTutorialController() {
-  tutorialState = { stepIdx: 0, spawnedFoe: false, defeatedFoe: false };
+  tutorialState = { stepIdx: 0, spawnedFoe: false, defeatedFoe: false, _zoomPhase: 'in', _zoomRef: null };
   showTutorialPrompt(TUTO_STEPS[0]);
 }
 function showTutorialPrompt(step) {
@@ -14354,6 +14526,7 @@ function closeTutorialPrompt() {
   const el = document.getElementById('tutoPrompt');
   if (el) el.style.opacity = '0';
   hideTutoFinger();
+  hideTutoPinch();
 }
 // === 튜토리얼 손가락 가이드 ===
 function ensureTutoFinger() {
@@ -14361,31 +14534,42 @@ function ensureTutoFinger() {
   if (!f) {
     f = document.createElement('div');
     f.id = 'tutoFinger';
-    f.style.cssText = 'position:fixed; left:0; top:0; width:64px; height:64px; pointer-events:none; z-index:6500; opacity:0; transition:opacity 0.18s;';
+    f.style.cssText = 'position:fixed; left:0; top:0; width:104px; height:122px; pointer-events:none; z-index:6500; opacity:0; transition:opacity 0.18s; transform-origin:13px 13px;';
     f.innerHTML = `
-      <svg viewBox="0 0 64 80" width="64" height="80">
-        <ellipse cx="20" cy="78" rx="14" ry="3" fill="rgba(0,0,0,0.3)"/>
-        <path d="M14 24 Q12 22 12 18 L12 8 Q12 4 16 4 Q20 4 20 8 L20 22 L26 22 L28 4 Q28 0 32 0 Q36 0 36 4 L36 24 L40 22 Q44 22 44 26 L44 30 L46 30 Q50 30 50 34 L50 38 L52 38 Q56 38 56 42 L56 56 Q56 70 42 70 L24 70 Q14 70 14 60 Z" fill="#ffd9a8" stroke="#2a1810" stroke-width="2.5" stroke-linejoin="round"/>
-        <circle cx="16" cy="14" r="9" fill="rgba(255,210,63,0.35)" stroke="#ffd23f" stroke-width="2"/>
-      </svg>`;
+      <img class="tuto-hand" src="./assets/ui/tutorial_hand_pinch.png?v=20260617a" alt="">`;
     document.body.appendChild(f);
     const style = document.createElement('style');
     style.textContent = `
       @keyframes tutoTap {
         0%, 100% { transform: scale(1) translateY(0); }
-        50% { transform: scale(0.85) translateY(8px); }
+        50% { transform: scale(0.91) translateY(7px); }
       }
       @keyframes tutoPulse {
-        0%, 100% { box-shadow: 0 0 0 0 rgba(255,210,63,0.8); opacity: 0.85; }
-        50% { box-shadow: 0 0 0 28px rgba(255,210,63,0); opacity: 1; }
+        0%, 100% { box-shadow: 0 0 0 0 rgba(255,210,63,0.78); opacity: 0.9; }
+        50% { box-shadow: 0 0 0 24px rgba(255,210,63,0); opacity: 1; }
       }
-      #tutoFinger.tap > svg { animation: tutoTap 1.1s ease-in-out infinite; transform-origin: 16px 14px; }
+      @keyframes tutoAimPulse {
+        0%, 100% { transform: scale(0.96); filter: brightness(1); }
+        50% { transform: scale(1.04); filter: brightness(1.18); }
+      }
+      #tutoFinger .tuto-hand {
+        width:104px; height:122px; object-fit:contain; display:block;
+        transform-origin:13px 13px;
+        filter: drop-shadow(0 7px 7px rgba(0,0,0,0.42));
+      }
+      #tutoFinger.tap .tuto-hand { animation: tutoTap 1.05s ease-in-out infinite; }
+      #tutoFinger.drag .tuto-hand { animation: tutoAimPulse 0.85s ease-in-out infinite; }
       #tutoFingerRing {
         position: fixed; pointer-events: none; z-index: 6400;
         border: 4px dashed #ffd23f; border-radius: 50%;
         opacity: 0; transition: opacity 0.18s;
       }
       #tutoFingerRing.show { opacity: 1; animation: tutoPulse 1.1s ease-in-out infinite; }
+      #tutoFingerRing.aim {
+        border-style: solid;
+        border-color: rgba(255, 82, 48, 0.95);
+        box-shadow: 0 0 0 2px rgba(26,8,4,0.82), 0 0 24px rgba(255,70,30,0.48);
+      }
     `;
     document.head.appendChild(style);
   }
@@ -14402,63 +14586,441 @@ function ensureTutoRing() {
 }
 // sx,sy: 캔버스 픽셀 좌표
 function showTutoFingerAt(sx, sy, mode) {
+  hideTutoAttackGuide();
   const f = ensureTutoFinger();
   const ring = ensureTutoRing();
   const cx = sx / DPR(), cy = sy / DPR();
-  f.style.left = (cx - 16) + 'px';
-  f.style.top = (cy - 6) + 'px';
+  f.style.left = (cx - 13) + 'px';
+  f.style.top = (cy - 13) + 'px';
+  f.style.transform = 'none';
   f.style.opacity = '1';
   f.classList.toggle('tap', mode === 'tap');
+  f.classList.remove('drag');
   const RR = 38;
   ring.style.width = (RR * 2) + 'px';
   ring.style.height = (RR * 2) + 'px';
   ring.style.left = (cx - RR) + 'px';
   ring.style.top = (cy - RR) + 'px';
+  ring.classList.remove('aim');
   ring.classList.toggle('show', mode === 'tap');
 }
 let _tutoDragT = 0;
-let _tutoDragLoopCount = 0;
 let _tutoDragKey = '';
 function resetTutoDrag(key) {
   if (key !== _tutoDragKey) {
     _tutoDragKey = key;
     _tutoDragT = 0;
-    _tutoDragLoopCount = 0;
   }
 }
+function ensureTutoAttackGuide() {
+  let g = document.getElementById('tutoAttackGuide');
+  if (!g) {
+    g = document.createElement('div');
+    g.id = 'tutoAttackGuide';
+    g.style.cssText = 'position:fixed; inset:0; pointer-events:none; z-index:6500; opacity:0; transition:opacity 0.18s;';
+    g.innerHTML = `
+      <i class="tag-start"></i>
+      <div class="tag-route">
+        <i class="tag-line"></i>
+        <i class="tag-comet"></i>
+        <i class="tag-arrow"></i>
+      </div>
+      <i class="tag-target"></i>`;
+    document.body.appendChild(g);
+    const style = document.createElement('style');
+    style.textContent = `
+      #tutoAttackGuide .tag-route {
+        position:fixed;
+        left:0; top:0;
+        width:var(--tag-dist, 120px);
+        height:42px;
+        margin-top:-21px;
+        transform-origin:0 50%;
+        transform:translate(var(--tag-x1, 0px), var(--tag-y1, 0px)) rotate(var(--tag-angle, 0deg));
+      }
+      #tutoAttackGuide .tag-line {
+        position:absolute;
+        left:28px; right:30px; top:50%;
+        height:3px;
+        margin-top:-1.5px;
+        border-radius:999px;
+        background:linear-gradient(90deg, rgba(255,223,102,0), rgba(255,223,102,0.42), rgba(255,118,70,0.58));
+        box-shadow:0 0 8px rgba(255,116,48,0.24);
+        animation: tagLinePulse 1.28s ease-in-out infinite;
+      }
+      #tutoAttackGuide .tag-comet {
+        position:absolute;
+        left:12px; top:50%;
+        width:18px; height:18px;
+        margin:-9px 0 0 -9px;
+        border-radius:50%;
+        background:radial-gradient(circle at 34% 30%, #fff9d0 0 18%, #ffd75a 50%, #ff9d45 100%);
+        box-shadow:0 0 0 4px rgba(255,211,64,0.12), 0 0 12px rgba(255,106,38,0.36);
+        animation: tagCometMove 1.28s cubic-bezier(.2,.82,.22,1) infinite;
+      }
+      #tutoAttackGuide .tag-arrow {
+        position:absolute;
+        right:14px; top:50%;
+        width:0; height:0;
+        margin-top:-8px;
+        border-top:8px solid transparent;
+        border-bottom:8px solid transparent;
+        border-left:13px solid rgba(255,96,56,0.68);
+        filter:drop-shadow(0 0 5px rgba(255,80,38,0.34));
+        animation: tagArrowPulse 1.28s ease-in-out infinite;
+      }
+      #tutoAttackGuide .tag-start,
+      #tutoAttackGuide .tag-target {
+        position:fixed;
+        width:66px; height:66px;
+        margin:-33px 0 0 -33px;
+        border-radius:50%;
+      }
+      #tutoAttackGuide .tag-start {
+        left:var(--tag-x1, 0px); top:var(--tag-y1, 0px);
+        border:3px solid rgba(255,224,112,0.64);
+        box-shadow:0 0 0 1px rgba(56,28,0,0.32), 0 0 14px rgba(255,218,68,0.26);
+        animation: tagStartPulse 1.28s ease-in-out infinite;
+      }
+      #tutoAttackGuide .tag-target {
+        left:var(--tag-x2, 0px); top:var(--tag-y2, 0px);
+        border:3px solid rgba(255,91,54,0.70);
+        box-shadow:0 0 0 1px rgba(42,8,2,0.42), 0 0 16px rgba(255,64,35,0.30);
+        animation: tagTargetPulse 1.28s ease-in-out infinite;
+      }
+      #tutoAttackGuide .tag-target::before,
+      #tutoAttackGuide .tag-target::after {
+        content:'';
+        position:absolute;
+        left:50%; top:50%;
+        background:rgba(255,91,54,0.64);
+        transform:translate(-50%, -50%);
+        border-radius:999px;
+      }
+      #tutoAttackGuide .tag-target::before { width:42px; height:3px; }
+      #tutoAttackGuide .tag-target::after { width:3px; height:42px; }
+      @keyframes tagCometMove {
+        0%, 12% { transform:translateX(0) scale(0.82); opacity:0; }
+        22% { opacity:0.82; }
+        76%, 100% { transform:translateX(calc(var(--tag-dist, 120px) - 24px)) scale(1); opacity:0.86; }
+      }
+      @keyframes tagLinePulse {
+        0%, 100% { opacity:0.42; }
+        50% { opacity:0.72; }
+      }
+      @keyframes tagArrowPulse {
+        0%, 100% { transform:translateX(0) scale(0.92); opacity:0.48; }
+        50% { transform:translateX(4px) scale(1.02); opacity:0.78; }
+      }
+      @keyframes tagStartPulse {
+        0%, 100% { transform:scale(0.96); opacity:0.58; }
+        50% { transform:scale(1.02); opacity:0.86; }
+      }
+      @keyframes tagTargetPulse {
+        0%, 100% { transform:scale(0.98); filter:brightness(1); opacity:0.68; }
+        50% { transform:scale(1.04); filter:brightness(1.08); opacity:0.94; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  return g;
+}
+function hideTutoAttackGuide() {
+  const g = document.getElementById('tutoAttackGuide');
+  if (g) g.style.opacity = '0';
+}
 function showTutoDrag(ax, ay, bx, by) {
-  const f = ensureTutoFinger();
-  const ring = ensureTutoRing();
-  ring.classList.remove('show');
-  // 30% 속도 (이전 0.011 → 0.0033) + 2회 반복 후 정지
-  if (_tutoDragLoopCount >= 2) {
-    f.style.opacity = '0';
-    return;
-  }
-  _tutoDragT += 0.0033;
-  if (_tutoDragT >= 1) {
-    _tutoDragT = 0;
-    _tutoDragLoopCount++;
-    if (_tutoDragLoopCount >= 2) {
-      f.style.opacity = '0';
-      return;
-    }
-  }
-  const tt = Math.min(1, _tutoDragT / 0.88);
-  const e = tt < 0.5 ? 2*tt*tt : 1 - Math.pow(-2*tt+2, 2)/2;
-  const sx = ax + (bx - ax) * e;
-  const sy = ay + (by - ay) * e;
-  const cx = sx / DPR(), cy = sy / DPR();
-  f.style.left = (cx - 16) + 'px';
-  f.style.top = (cy - 6) + 'px';
-  f.style.opacity = (_tutoDragT < 0.04 || _tutoDragT > 0.94) ? '0.35' : '1';
-  f.classList.remove('tap');
+  const f = document.getElementById('tutoFinger');
+  if (f) { f.style.opacity = '0'; f.classList.remove('tap', 'drag'); f.style.transform = 'none'; }
+  const ring = document.getElementById('tutoFingerRing');
+  if (ring) ring.classList.remove('show', 'aim');
+  const g = ensureTutoAttackGuide();
+  const x1 = ax / DPR(), y1 = ay / DPR();
+  const x2 = bx / DPR(), y2 = by / DPR();
+  const dx = x2 - x1, dy = y2 - y1;
+  const dist = Math.max(80, Math.hypot(dx, dy));
+  g.style.setProperty('--tag-x1', x1 + 'px');
+  g.style.setProperty('--tag-y1', y1 + 'px');
+  g.style.setProperty('--tag-x2', x2 + 'px');
+  g.style.setProperty('--tag-y2', y2 + 'px');
+  g.style.setProperty('--tag-dist', dist + 'px');
+  g.style.setProperty('--tag-angle', (Math.atan2(dy, dx) * 180 / Math.PI) + 'deg');
+  g.style.opacity = '1';
 }
 function hideTutoFinger() {
   const f = document.getElementById('tutoFinger');
-  if (f) { f.style.opacity = '0'; f.classList.remove('tap'); }
+  if (f) { f.style.opacity = '0'; f.classList.remove('tap', 'drag'); f.style.transform = 'none'; }
   const r = document.getElementById('tutoFingerRing');
-  if (r) r.classList.remove('show');
+  if (r) r.classList.remove('show', 'aim');
+  hideTutoAttackGuide();
+}
+// === 두 손가락 핀치(확대/축소) 가이드 ===
+function ensureTutoPinch() {
+  let p = document.getElementById('tutoPinch');
+  if (p && (p.querySelector('.tp-one-hand') || p.querySelector('.tp-hand-img'))) {
+    p.remove();
+    p = null;
+  }
+  if (!p) {
+    p = document.createElement('div');
+    p.id = 'tutoPinch';
+    p.style.cssText = 'position:fixed; left:50%; top:50%; width:0; height:0; pointer-events:none; z-index:6500; opacity:0; transition:opacity 0.22s;';
+    p.innerHTML = `
+      <div class="tp-stage">
+        <i class="tp-center-pulse"></i>
+        <i class="tp-guide-line"></i>
+        <i class="tp-arrow tp-arrow-a"></i>
+        <i class="tp-arrow tp-arrow-b"></i>
+        <i class="tp-trail tp-trail-a1"></i>
+        <i class="tp-trail tp-trail-a2"></i>
+        <i class="tp-trail tp-trail-b1"></i>
+        <i class="tp-trail tp-trail-b2"></i>
+        <i class="tp-dot tp-dot-a"></i>
+        <i class="tp-dot tp-dot-b"></i>
+      </div>`;
+    document.body.appendChild(p);
+    const st = document.createElement('style');
+    st.textContent = `
+      #tutoPinch .tp-stage {
+        position:absolute;
+        left:0; top:0;
+        width:230px; height:170px;
+        margin:-85px 0 0 -115px;
+      }
+      #tutoPinch .tp-center-pulse {
+        position:absolute;
+        left:50%; top:50%;
+        width:72px; height:72px;
+        margin:-36px 0 0 -36px;
+        border-radius:50%;
+        border:2px dashed rgba(255,232,121,0.42);
+        box-shadow:0 0 18px rgba(255,210,63,0.20) inset, 0 0 18px rgba(255,210,63,0.18);
+        opacity:0;
+      }
+      #tutoPinch .tp-guide-line {
+        position:absolute;
+        left:50%; top:50%;
+        width:176px; height:7px;
+        margin:-3.5px 0 0 -88px;
+        border-radius:999px;
+        background:
+          repeating-linear-gradient(90deg, rgba(255,249,184,0.95) 0 13px, rgba(255,205,55,0.35) 13px 23px),
+          linear-gradient(90deg, rgba(255,229,118,0), rgba(255,229,118,0.88), rgba(255,229,118,0));
+        box-shadow:0 0 0 1px rgba(69,39,0,0.28), 0 0 18px rgba(255,210,63,0.58);
+        transform:rotate(30deg) scaleX(0.18);
+        transform-origin:50% 50%;
+        opacity:0;
+      }
+      #tutoPinch .tp-trail {
+        position:absolute;
+        left:50%; top:50%;
+        width:22px; height:22px;
+        margin:-11px 0 0 -11px;
+        border-radius:50%;
+        border:3px solid rgba(255,226,96,0.36);
+        background:rgba(255,218,80,0.12);
+        box-shadow:0 0 12px rgba(255,210,63,0.20);
+        opacity:0;
+      }
+      #tutoPinch .tp-arrow {
+        position:absolute;
+        left:50%; top:50%;
+        width:0; height:0;
+        margin:-7px 0 0 -7px;
+        border-top:7px solid transparent;
+        border-bottom:7px solid transparent;
+        border-left:13px solid rgba(255,246,173,0.95);
+        filter:drop-shadow(0 0 5px rgba(255,198,45,0.8));
+        opacity:0;
+      }
+      #tutoPinch .tp-dot {
+        position:absolute;
+        left:50%; top:50%;
+        width:32px; height:32px;
+        margin:-16px 0 0 -16px;
+        border-radius:50%;
+        display:block;
+        background:
+          radial-gradient(circle at 34% 28%, #fffbe0 0 16%, #ffeb80 35%, #ffc43b 68%, #d88b15 100%);
+        border:2px solid rgba(74,42,0,0.78);
+        box-shadow:
+          0 0 0 5px rgba(255,232,108,0.24),
+          0 0 0 13px rgba(255,232,108,0.11),
+          0 0 20px rgba(255,198,35,0.52),
+          0 8px 13px rgba(0,0,0,0.34);
+      }
+      #tutoPinch .tp-dot::after {
+        content:'';
+        position:absolute;
+        inset:-15px;
+        border:3px solid rgba(255,218,80,0.45);
+        border-radius:50%;
+        opacity:0;
+      }
+      #tutoPinch.mode-in .tp-dot-a { animation: tpDotAOpen 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-in .tp-dot-b { animation: tpDotBOpen 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-in .tp-guide-line { animation: tpLineOpen 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-in .tp-center-pulse { animation: tpCenterOpen 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-in .tp-trail-a1 { animation: tpTrailA1Open 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-in .tp-trail-a2 { animation: tpTrailA2Open 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-in .tp-trail-b1 { animation: tpTrailB1Open 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-in .tp-trail-b2 { animation: tpTrailB2Open 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-in .tp-arrow-a { animation: tpArrowAOpen 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-in .tp-arrow-b { animation: tpArrowBOpen 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-out .tp-dot-a { animation: tpDotAClose 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-out .tp-dot-b { animation: tpDotBClose 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-out .tp-guide-line { animation: tpLineClose 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-out .tp-center-pulse { animation: tpCenterClose 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-out .tp-trail-a1 { animation: tpTrailA1Close 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-out .tp-trail-a2 { animation: tpTrailA2Close 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-out .tp-trail-b1 { animation: tpTrailB1Close 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-out .tp-trail-b2 { animation: tpTrailB2Close 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-out .tp-arrow-a { animation: tpArrowAClose 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-out .tp-arrow-b { animation: tpArrowBClose 1.42s ease-in-out infinite; }
+      #tutoPinch.mode-in .tp-dot::after,
+      #tutoPinch.mode-out .tp-dot::after { animation: tpTouchRipple 1.42s ease-in-out infinite; }
+      @keyframes tpDotAOpen {
+        0%, 14% { transform:translate(-22px, -14px) scale(0.92); opacity:0.92; }
+        64%, 100% { transform:translate(-82px, -52px) scale(1); opacity:1; }
+      }
+      @keyframes tpDotBOpen {
+        0%, 14% { transform:translate(22px, 14px) scale(0.92); opacity:0.92; }
+        64%, 100% { transform:translate(82px, 52px) scale(1); opacity:1; }
+      }
+      @keyframes tpLineOpen {
+        0%, 14% { opacity:0.28; transform:rotate(30deg) scaleX(0.18); }
+        64%, 100% { opacity:0.82; transform:rotate(30deg) scaleX(1); }
+      }
+      @keyframes tpCenterOpen {
+        0%, 14% { opacity:0.72; transform:scale(0.55) rotate(0deg); }
+        64%, 100% { opacity:0.12; transform:scale(1.28) rotate(28deg); }
+      }
+      @keyframes tpTrailA1Open {
+        0%, 14% { opacity:0; transform:translate(-22px, -14px) scale(0.6); }
+        42%, 100% { opacity:0.48; transform:translate(-48px, -30px) scale(0.92); }
+      }
+      @keyframes tpTrailA2Open {
+        0%, 30% { opacity:0; transform:translate(-22px, -14px) scale(0.55); }
+        64%, 100% { opacity:0.32; transform:translate(-66px, -42px) scale(0.82); }
+      }
+      @keyframes tpTrailB1Open {
+        0%, 14% { opacity:0; transform:translate(22px, 14px) scale(0.6); }
+        42%, 100% { opacity:0.48; transform:translate(48px, 30px) scale(0.92); }
+      }
+      @keyframes tpTrailB2Open {
+        0%, 30% { opacity:0; transform:translate(22px, 14px) scale(0.55); }
+        64%, 100% { opacity:0.32; transform:translate(66px, 42px) scale(0.82); }
+      }
+      @keyframes tpArrowAOpen {
+        0%, 26% { opacity:0; transform:translate(-44px, -28px) rotate(210deg) scale(0.76); }
+        64%, 100% { opacity:0.9; transform:translate(-94px, -60px) rotate(210deg) scale(1); }
+      }
+      @keyframes tpArrowBOpen {
+        0%, 26% { opacity:0; transform:translate(44px, 28px) rotate(30deg) scale(0.76); }
+        64%, 100% { opacity:0.9; transform:translate(94px, 60px) rotate(30deg) scale(1); }
+      }
+      @keyframes tpDotAClose {
+        0%, 14% { transform:translate(-82px, -52px) scale(1); opacity:1; }
+        64%, 100% { transform:translate(-22px, -14px) scale(0.92); opacity:0.92; }
+      }
+      @keyframes tpDotBClose {
+        0%, 14% { transform:translate(82px, 52px) scale(1); opacity:1; }
+        64%, 100% { transform:translate(22px, 14px) scale(0.92); opacity:0.92; }
+      }
+      @keyframes tpLineClose {
+        0%, 14% { opacity:0.82; transform:rotate(30deg) scaleX(1); }
+        64%, 100% { opacity:0.28; transform:rotate(30deg) scaleX(0.18); }
+      }
+      @keyframes tpCenterClose {
+        0%, 14% { opacity:0.12; transform:scale(1.28) rotate(28deg); }
+        64%, 100% { opacity:0.72; transform:scale(0.55) rotate(0deg); }
+      }
+      @keyframes tpTrailA1Close {
+        0%, 14% { opacity:0.48; transform:translate(-48px, -30px) scale(0.92); }
+        64%, 100% { opacity:0; transform:translate(-22px, -14px) scale(0.6); }
+      }
+      @keyframes tpTrailA2Close {
+        0%, 14% { opacity:0.32; transform:translate(-66px, -42px) scale(0.82); }
+        64%, 100% { opacity:0; transform:translate(-22px, -14px) scale(0.55); }
+      }
+      @keyframes tpTrailB1Close {
+        0%, 14% { opacity:0.48; transform:translate(48px, 30px) scale(0.92); }
+        64%, 100% { opacity:0; transform:translate(22px, 14px) scale(0.6); }
+      }
+      @keyframes tpTrailB2Close {
+        0%, 14% { opacity:0.32; transform:translate(66px, 42px) scale(0.82); }
+        64%, 100% { opacity:0; transform:translate(22px, 14px) scale(0.55); }
+      }
+      @keyframes tpArrowAClose {
+        0%, 14% { opacity:0.9; transform:translate(-94px, -60px) rotate(30deg) scale(1); }
+        64%, 100% { opacity:0; transform:translate(-44px, -28px) rotate(30deg) scale(0.76); }
+      }
+      @keyframes tpArrowBClose {
+        0%, 14% { opacity:0.9; transform:translate(94px, 60px) rotate(210deg) scale(1); }
+        64%, 100% { opacity:0; transform:translate(44px, 28px) rotate(210deg) scale(0.76); }
+      }
+      @keyframes tpTouchRipple {
+        0%, 18% { opacity:0; transform:scale(0.6); }
+        48% { opacity:0.85; transform:scale(0.92); }
+        100% { opacity:0; transform:scale(1.2); }
+      }
+    `;
+    document.head.appendChild(st);
+  }
+  return p;
+}
+function showTutoPinch(mode) {
+  const p = ensureTutoPinch();
+  p.classList.toggle('mode-out', mode === 'out');
+  p.classList.toggle('mode-in', mode !== 'out');
+  p.style.opacity = '1';
+}
+function hideTutoPinch() { const p = document.getElementById('tutoPinch'); if (p) p.style.opacity = '0'; }
+// 줌 페이즈 UI(상단 문구 + 가이드 모드) 갱신
+function setZoomPhaseUI(mode) {
+  showTutoPinch(mode === 'out' ? 'out' : 'in');
+  const el = document.getElementById('tutoPrompt');
+  if (!el) return;
+  const title = mode === 'out' ? '1단계 — 이제 오므려서 축소' : '1단계 — 두 손가락을 펴서 확대';
+  const sub = mode === 'out' ? '손가락을 모으면 지도가 축소됩니다' : '손가락을 벌리면 지도가 확대됩니다';
+  el.innerHTML = `<div style="font-size:14px; font-weight:900; letter-spacing:1px;">${title}</div><div style="font-size:10px; color:#c0a060; margin-top:2px; font-weight:400;">${sub}</div>`;
+}
+function prepareTutorialZoomStep() {
+  if (!tutorialState || tutorialState._zoomPrepared || cinematic) return;
+  const roomyZoom = Math.max(minZoom(), Math.min(zoom, ZOOM_MAX / 1.35));
+  if (zoom > roomyZoom + 0.01) {
+    zoom = roomyZoom;
+    clampCamera();
+    window._targetCamX = camX;
+    window._targetCamY = camY;
+    window._targetZoom = zoom;
+  }
+  tutorialState._zoomRef = zoom;
+  tutorialState._zoomPrepared = true;
+}
+// 사용자 줌 입력(핀치/휠)으로 2페이즈(확대→축소) 진행 — 자동 줌 보간엔 영향 없음(핸들러에서만 호출)
+function tutoNoteUserZoom(z) {
+  if (!tutorialState) return;
+  const cur = TUTO_STEPS[tutorialState.stepIdx];
+  if (!cur || cur.id !== 'zoom') return;
+  const s = tutorialState;
+  if (s._zoomRef == null) { s._zoomRef = z; return; }
+  if ((s._zoomPhase || 'in') === 'in') {
+    if (z > s._zoomRef * 1.15) {          // 확대 15% 달성 → 축소 페이즈
+      s._zoomPhase = 'out';
+      s._zoomRef = z;                      // 축소 기준 = 확대된 현재 줌
+      setZoomPhaseUI('out');
+    } else if (z < s._zoomRef) {
+      s._zoomRef = z;                      // 더 작아지면 기준 갱신(확대 폭 확보)
+    }
+  } else {
+    if (z < s._zoomRef * 0.85) {           // 축소 15% 달성 → 완료
+      tutorialAdvance('zoom');
+      rewardTutorial(500);
+    } else if (z > s._zoomRef) {
+      s._zoomRef = z;                      // 더 커지면 기준 갱신(축소 폭 확보)
+    }
+  }
 }
 function tutorialAdvance(fromId) {
   if (!tutorialState) return;
@@ -14477,7 +15039,17 @@ function rewardTutorial(amount) {
   SAVE.gold = (SAVE.gold || 0) + amount;
   saveProgress();
   refreshTopStats();
-  showSelectToast(`+${amount}G`, '#ffd23f');
+}
+function tutorialAllowsUnitMenu() {
+  if (cinematic || window._introDialogActive || msgShown) return false;
+  if (!tutorialState) return true;
+  const cur = TUTO_STEPS[tutorialState.stepIdx];
+  return !!cur && cur.id === 'select';
+}
+function tutorialAllowsCastleCommand() {
+  if (!tutorialState) return true;
+  const cur = TUTO_STEPS[tutorialState.stepIdx];
+  return !!cur && (cur.id === 'select' || cur.id === 'intercept' || cur.id === 'finish');
 }
 // 게임 루프에서 호출 — 단계별 진행 체크
 function checkTutorialProgress() {
@@ -14487,14 +15059,23 @@ function checkTutorialProgress() {
   const myCastle = castles.find(c => c.owner === 1);
   const enemyCastle = castles.find(c => c.owner === 2);
   // === 손가락 가이드 ===
-  if (cur.id === 'select' && myCastle) {
+  hideTutoPinch();   // 기본 숨김 (줌 단계에서만 표시)
+  if (cur.id === 'zoom') {
+    menuCastle = null;
+    armedUnit = null;
+    hideTutoFinger();
+    if (!cinematic) {
+      prepareTutorialZoomStep();
+      showTutoPinch(tutorialState._zoomPhase === 'out' ? 'out' : 'in');   // 인트로 연출 후 핀치 가이드(페이즈별)
+    }
+  } else if (cur.id === 'select' && myCastle) {
     if (!menuCastle) {
       // 성 탭 단계
       showTutoFingerAt(cx(myCastle), cy(myCastle), 'tap');
     } else {
-      // 창 아이콘 위치 (성 위쪽 반원의 첫 번째 = 창)
-      const iconY = cy(myCastle) - CASTLE_R() * 1.6;
-      showTutoFingerAt(cx(myCastle), iconY, 'tap');
+      // 창 아이콘 위치: 실제 병종 버튼 좌표를 그대로 조준
+      const spearPos = iconPos(myCastle, 0);
+      showTutoFingerAt(spearPos.x, spearPos.y, 'tap');
     }
   } else if (cur.id === 'intercept' && myCastle) {
     const foe = armies.find(a => a.owner === 2 && !a.dying);
@@ -14502,17 +15083,19 @@ function checkTutorialProgress() {
       resetTutoDrag('intercept');
       const fsx = (foe.x - camX) * zoom + W / 2;
       const fsy = (foe.y - camY) * zoom + H / 2;
-      showTutoDrag(cx(myCastle), cy(myCastle), fsx, fsy);
+      if ((dragUnit || dragSourceArmy) && dragMoved) hideTutoFinger();
+      else showTutoDrag(cx(myCastle), cy(myCastle), fsx, fsy);
     } else {
       hideTutoFinger();
     }
   } else if (cur.id === 'finish' && myCastle && enemyCastle) {
     resetTutoDrag('finish');
-    showTutoDrag(cx(myCastle), cy(myCastle), cx(enemyCastle), cy(enemyCastle));
+    if ((dragUnit || dragSourceArmy) && dragMoved) hideTutoFinger();
+    else showTutoDrag(cx(myCastle), cy(myCastle), cx(enemyCastle), cy(enemyCastle));
   } else {
     hideTutoFinger();
   }
-  // === 진행 체크 ===
+  // === 진행 체크 === (줌 단계는 tutoNoteUserZoom 에서 처리)
   if (cur.id === 'select') {
     // 어떤 병종이든 한 번이라도 선택하면 다음 단계로
     if (myCastle && myCastle._tutoSelected) {
@@ -14590,8 +15173,8 @@ function startOpeningCinematic() {
   const avgE = enemies.reduce((a, c) => ({ x: a.x + c.x, y: a.y + c.y }), { x: 0, y: 0 });
   avgE.x /= enemies.length; avgE.y /= enemies.length;
   const startN = {
-    nx: mine.x + (avgE.x - mine.x) * 0.35,
-    ny: mine.y + (avgE.y - mine.y) * 0.35,
+    nx: mine.x,                              // 좌우는 아군을 정확히 중앙에
+    ny: mine.y + (avgE.y - mine.y) * 0.35,   // 상하만 적군 쪽으로 살짝(아군이 약간 아래)
   };
   phases.push({ d: 1.0, name: 'start',   n: startN, z: baseZoom, label: 'START!' });
   cinematic = { phases, idx: 0, phaseT: 0, baseZoom };
@@ -14777,21 +15360,45 @@ function updateCinematic(dt) {
       const me = castles.find(c => c.owner === 1);
       const enemiesEnd = castles.filter(c => c.owner === 2);
       if (me && enemiesEnd.length) {
+        const baseZoom = zoom;   // START 시점(아군 포커스) 줌 — 이 값에서 서서히 줌아웃
         const avg = enemiesEnd.reduce((a, c) => ({ x: a.x + c.x, y: a.y + c.y }), { x: 0, y: 0 });
         avg.x /= enemiesEnd.length; avg.y /= enemiesEnd.length;
-        camX = (me.x + (avg.x - me.x) * 0.35) * worldPxW();
-        camY = (me.y + (avg.y - me.y) * 0.35) * worldPxH();
+        camX = me.x * worldPxW();                            // 좌우: 아군을 정확히 중앙에 고정
+        camY = (me.y + (avg.y - me.y) * 0.35) * worldPxH();  // 상하: 적군 쪽으로 살짝(아군이 약간 아래)
         clampCamera();
-        // 아군이 시야에 들어오는지 확인 — 안 들어오면 아군 쪽으로 더 당김
-        const halfW = W / (2 * zoom), halfH = H / (2 * zoom);
-        const myPx = me.x * worldPxW(), myPy = me.y * worldPxH();
-        const r = 80 * DPR();
-        if (myPx - r < camX - halfW) camX = myPx - halfW + r;
-        if (myPx + r > camX + halfW) camX = myPx + halfW - r;
-        if (myPy - r < camY - halfH) camY = myPy - halfH + r;
-        if (myPy + r > camY + halfH) camY = myPy + halfH - r;
-        clampCamera();
+        const dispX = camX, dispY = camY;   // 이징 시작 중심(START 위치) — 스냅 방지용
+        // 목표: 아군을 화면 하단에 두고 가장 가까운 적을 상단에 담는 '바운딩박스 핏'.
+        // 둘 사이 세로 거리에 딱 맞는 만큼만 줌아웃 → 과한 줌아웃/빈 공간 제거.
+        {
+          const hostiles = castles.filter(c => c.owner !== 1 && c.owner !== 0);
+          const allyPx = me.x * worldPxW(), allyPy = me.y * worldPxH();
+          let near = null, bestD = Infinity;
+          for (const c of hostiles) {
+            const dx = c.x * worldPxW() - allyPx, dy = c.y * worldPxH() - allyPy;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < bestD) { bestD = d2; near = c; }
+          }
+          if (near) {
+            const enPx = near.x * worldPxW(), enPy = near.y * worldPxH();
+            const mTop = 110 * DPR();   // 위(보통 적) 여백
+            const mBot = 110 * DPR();   // 아래(보통 아군) 여백
+            const mSide = 100 * DPR();  // 좌우 여백
+            const minX = Math.min(allyPx, enPx), maxX = Math.max(allyPx, enPx);
+            const minY = Math.min(allyPy, enPy), maxY = Math.max(allyPy, enPy);
+            const needZX = W / ((maxX - minX) + mSide * 2);
+            const needZY = H / ((maxY - minY) + mTop + mBot);
+            const pad = 0.86;  // 1.0=딱 맞게, <1=살짝 더 줌아웃(여유)
+            zoom = Math.max(minZoom(), Math.min(baseZoom, needZX, needZY) * pad);  // 줌인 금지 + 맵 커버
+            // 두 성의 바운딩박스 중심으로 — 둘을 대각선으로 함께 담아 줌아웃 최소화
+            camX = (minX + maxX) / 2;
+            camY = (minY + maxY) / 2;
+            clampCamera();
+          }
+        }
+        // 목표(줌아웃 후 클램프된 중심/줌) 확정. 표시는 START 위치/줌으로 되돌려 update()가
+        // 팬+줌을 함께 부드럽게 이징 → 중심이 한 프레임에 튀는 '순간이동' 제거.
         window._targetCamX = camX; window._targetCamY = camY; window._targetZoom = zoom;
+        camX = dispX; camY = dispY; zoom = baseZoom;
       }
       return false;
     }
@@ -14992,6 +15599,33 @@ function _getIntroPlayerInst() {
   if (Array.isArray(SAVE.generals) && SAVE.generals.length) return SAVE.generals[0];
   return null;
 }
+// VS 컷씬 일러스트 facing 맵.
+// L/R은 원본 이미지에서 장수가 보는 방향, F는 정면형이다.
+// 태그가 없는 이미지는 오른쪽을 보는 원본으로 간주하고, 오른쪽 슬롯에서 미러링한다.
+// 여기에 슬롯별 inward yaw를 더해 정면형 반신도 대화 구도로 보이게 만든다.
+const INTRO_FACING_OVERRIDES = {
+  xin_ping: 'L',
+};
+function introGeneralFacing(id) {
+  const v = INTRO_FACING_OVERRIDES[id] || 'R';
+  return (v === 'L' || v === 'F' || v === 'R') ? v : 'R';
+}
+function introPortraitFlipForSlot(id, slot) {
+  const facing = introGeneralFacing(id);
+  if (facing === 'F') return 1;
+  if (slot === 'left') return facing === 'L' ? -1 : 1;
+  return facing === 'R' ? -1 : 1;
+}
+function applyIntroPortraitFacing(el, id, slot) {
+  if (!el) return;
+  const flip = introPortraitFlipForSlot(id, slot);
+  const targetLook = slot === 'left' ? 'right' : 'left';
+  el.dataset.facing = introGeneralFacing(id);
+  el.dataset.look = targetLook;
+  el.style.setProperty('--idg-face-flip', String(flip));
+  el.classList.toggle('flipx', flip < 0);
+}
+
 function startIntroDialog() {
   // 튜토리얼은 컷씬 생략 — 튜토리얼 UI와 충돌 방지
   if (STAGES[currentStage] && STAGES[currentStage].isTutorial) return;
@@ -15016,6 +15650,8 @@ function startIntroDialog() {
   // VS 도발 컷씬은 반신(bust=halfbody) 사용 — 전장 뱃지(war 얼굴 아이콘)와 구분
   lImg.src = eDef.bust || `./assets/generals/faces/${eDef.id}.png`;
   rImg.src = pDef.bust || `./assets/generals/faces/${pDef.id}.png`;
+  applyIntroPortraitFacing(document.getElementById('idgLeft'), eDef.id, 'left');
+  applyIntroPortraitFacing(document.getElementById('idgRight'), pDef.id, 'right');
   lNm.textContent = `적장 · ${eDef.name}`;
   rNm.textContent = `아군 · ${pDef.name}`;
   // 상태 초기화
@@ -15794,7 +16430,7 @@ function resetStage() {
     if (enemyCastles.length > 0 && !st.isTutorial) {
       // 0~5명 랜덤. 보스 스테이지(20장)는 모든 적성에 보장.
       const localStage = ((currentStage % 20) + 1);
-      const isBoss = localStage === 20;
+      const isBoss = !!st._boss || localStage === 20;
       if (isBoss) {
         desired = enemyCastles.length;
       } else {
@@ -15854,6 +16490,7 @@ function resetStage() {
   buildEdges();
   stageStartTime = performance.now();
   window._winHandled = false; // 스테이지 시작 시 승리 처리 가드 초기화
+  window._resumeVictoryModal = null; // 이전 전투의 승리 모달 복귀 핸들러 잔존 제거
   // 다진영 진영 소개 카드 + 범례 갱신
   try { showFactionIntroIfNeeded(); } catch(_) {}
   try { updateFactionLegend(); } catch(_) {}
@@ -15942,8 +16579,8 @@ window.addEventListener('DOMContentLoaded', () => {
 	    setTimeout(() => goToMenu(), 1500);
 	  }
 
-  bindTap(document.getElementById('btnCampaign'), goToStageSelect);
-  bindTap(document.getElementById('btnCampaign2'), goToStageSelect);
+  bindTap(document.getElementById('btnCampaign'), onCampaignButton);
+  bindTap(document.getElementById('btnCampaign2'), onCampaignButton);
   bindTap(document.getElementById('btnGeneralManage'), showGeneralManage);
   bindTap(document.getElementById('btnEnhance'), showEnhanceScreen);
   bindTap(document.getElementById('btnPowerManage'), () => { _postUpgradeStage = null; goToUpgrade(); });
@@ -15965,7 +16602,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnTut = document.getElementById('btnTutorial');
   if (btnTut) bindTap(btnTut, launchTutorialStage);
   const stageTut = document.getElementById('stageTutorialBtn');
-  if (stageTut) bindTap(stageTut, launchTutorialStage);
+  if (stageTut) bindTap(stageTut, () => showTutorialOfferModal('replay'));
   const stageToolsBtn = document.getElementById('stageToolsBtn');
   if (stageToolsBtn) bindTap(stageToolsBtn, (ev) => {
     ev.stopPropagation();
@@ -16215,8 +16852,8 @@ function drawCastleCommanderBadge(c, x, y, r) {
   const z = Math.max(0.82, Math.min(1.25, zoom));
   const size = r * 0.98; // +20% 가독성 향상
   const rad = size / 2;
-  const bx = x - r * 0.95;     // 성 좌측 위
-  const by = y - r * 1.55;
+  const bx = x - r * 1.05;     // 성 좌측 위 (살짝 왼쪽)
+  const by = y - r * 1.30;     // 창/기/궁 칩 줄을 피해 살짝 아래로
   ctx.save();
   ctx.translate(bx, by);
   // 그림자
@@ -16389,6 +17026,8 @@ const UNITS = {
   cavalry: { label: '기', full: '기병', color: '#8a5a30', accent: '#c89060', speed: 1.5 },
   archer:  { label: '궁', full: '궁병', color: '#5a8a4a', accent: '#90c070', speed: 0.9 },
 };
+// 병종 표시 색 — 성 위 카운트 칩과 동일(창=초록/기=주황/궁=파랑). 배지·선택버튼 공통.
+const UNIT_BADGE_COLOR = { spear: '#5b9bd5', cavalry: '#e8c83a', archer: '#5fb86a' }; // 창=파랑 기=노랑 궁=녹색
 const UNIT_KEYS = ['spear','cavalry','archer'];
 
 function counters(atk, def) {
@@ -16430,252 +17069,15 @@ const STAGES = [
     ],
     edges: [E('성도', '낙양', 'curve', -1)],
   },
-  // === 1챕터: 1~20장 (쉬움, AI Lv1) ===
-  // 1~3: 1대1 기본
-  // 1~4장: 입문 구간 — 상성만 맞추면 무투자로 클리어 (게임 손에 익히기)
-  {
-    name: '1장 - 첫 출진', aiLevel: 1,
-    castles: [
-      C(0.5, 0.78, 1, '성도', 'spear', T(25,5,5), {size:1.1, trait:'prod'}),
-      C(0.5, 0.22, 2, '낙양', 'spear', T(14,2,0), {size:1.0, trait:'def'}),
-    ],
-    edges: [E('성도', '낙양', 'curve', -1)],
-  },
-  {
-    name: '2장 - 산길', aiLevel: 1,
-    castles: [
-      C(0.3, 0.8, 1, '성도', 'spear', T(20,8,2), {size:1.05}),
-      C(0.7, 0.2, 2, '낙양', 'cavalry', T(2,14,0), {size:1.0}),  // 창>기 유리
-    ],
-    edges: [E('성도', '낙양', 'curve', 1)],
-  },
-  {
-    name: '3장 - 활의 길', aiLevel: 1,
-    castles: [
-      C(0.5, 0.85, 1, '성도', 'archer', T(5,5,18), {size:1.1, trait:'atk'}),
-      C(0.5, 0.15, 2, '낙양', 'spear', T(16,0,0), {size:1.0}),  // 궁>창 유리
-    ],
-    edges: [E('성도', '낙양', 'curve', -1)],
-  },
-  {
-    name: '4장 - 빈 성', aiLevel: 1,
-    castles: [
-      C(0.5, 0.85, 1, '성도', 'spear', T(20,6,5)),
-      C(0.5, 0.5, 0, '형주', 'archer', T(0,0,0), {size:0.9}),  // 빈 성 거점 학습
-      C(0.5, 0.15, 2, '낙양', 'cavalry', T(3,15,2)),
-    ],
-    edges: [E('성도', '형주'), E('형주', '낙양')],
-  },
-  // 5장: 첫 난이도 벽 — 적 궁수가 아군 창을 카운터 + 동등 병력 + AI↑.
-  // 무투자면 손해 누적 → "전투력 관리(업그레이드)"를 처음 신경쓰게 됨.
-  {
-    name: '5장 - 활잡이 관문', aiLevel: 2,
-    castles: [
-      C(0.5, 0.85, 1, '성도', 'spear', T(22,8,5)),
-      C(0.5, 0.15, 2, '낙양', 'archer', T(5,4,27), {size:1.08, trait:'def'}),
-    ],
-    edges: [E('성도', '낙양', 'curve', -1)],
-  },
-  {
-    name: '6장 - 형주 점령', aiLevel: 1,
-    castles: [
-      C(0.5, 0.85, 1, '성도', 'spear', T(20,5,8)),
-      C(0.5, 0.5, 0, '형주', 'archer', T(0,0,0), {trait:'atk'}),
-      C(0.25, 0.2, 2, '낙양', 'cavalry', T(2,10,0), {size:0.95}),
-      C(0.75, 0.2, 2, '허창', 'spear', T(8,2,0), {size:0.9}),
-    ],
-    edges: [E('성도', '형주'), E('형주', '낙양', 'curve', -1), E('형주', '허창', 'curve', 1)],
-  },
-  {
-    name: '7장 - 좁은 통로', aiLevel: 1,
-    castles: [
-      C(0.5, 0.88, 1, '성도', 'spear', T(25,8,5)),
-      C(0.5, 0.6, 0, '한중', 'cavalry', T(0,0,0), {size:0.85}),
-      C(0.5, 0.35, 0, '형주', 'archer', T(0,0,0), {size:0.85}),
-      C(0.5, 0.12, 2, '낙양', 'cavalry', T(5,12,0), {size:1.0, trait:'def'}),
-    ],
-    edges: [E('성도', '한중'), E('한중', '형주'), E('형주', '낙양')],
-  },
-  // 8~12: 1대2 (적 둘)
-  {
-    name: '8장 - 협공', aiLevel: 2,
-    castles: [
-      C(0.5, 0.85, 1, '성도', 'spear', T(28,10,8), {size:1.15}),
-      C(0.25, 0.2, 2, '낙양', 'cavalry', T(2,10,0)),
-      C(0.75, 0.2, 2, '허창', 'archer', T(0,2,8)),
-    ],
-    edges: [E('성도', '낙양', 'curve', -1), E('성도', '허창', 'curve', 1),
-            E('낙양', '허창', 'straight')],
-  },
-  {
-    name: '9장 - 두 영지', aiLevel: 2,
-    castles: [
-      C(0.5, 0.88, 1, '성도', 'spear', T(25,8,10)),
-      C(0.3, 0.5, 0, '강동', 'spear', T(0,0,0)),
-      C(0.7, 0.5, 0, '오군', 'cavalry', T(0,0,0)),
-      C(0.3, 0.15, 2, '낙양', 'cavalry', T(2,12,0)),
-      C(0.7, 0.15, 2, '허창', 'archer', T(0,2,8)),
-    ],
-    edges: [E('성도', '강동', 'curve', -1), E('성도', '오군', 'curve', 1),
-            E('강동', '낙양'), E('오군', '허창'), E('강동', '오군', 'straight')],
-  },
-  {
-    name: '10장 - 보급선', aiLevel: 2,
-    castles: [
-      C(0.5, 0.88, 1, '성도', 'spear', T(20,12,8), {size:1.1}),
-      C(0.5, 0.62, 0, '형주', 'archer', T(0,0,0), {trait:'atk'}),
-      C(0.25, 0.35, 2, '낙양', 'cavalry', T(3,10,0)),
-      C(0.75, 0.35, 2, '허창', 'spear', T(10,2,0)),
-      C(0.5, 0.12, 2, '업성', 'archer', T(0,3,10), {size:0.95}),
-    ],
-    edges: [E('성도', '형주'), E('형주', '낙양', 'curve', -1),
-            E('형주', '허창', 'curve', 1), E('낙양', '업성'), E('허창', '업성')],
-  },
-  {
-    name: '11장 - 산악 요새', aiLevel: 2,
-    castles: [
-      C(0.5, 0.88, 1, '성도', 'spear', T(25,10,10)),
-      C(0.2, 0.5, 0, '한중', 'cavalry', T(0,0,0)),
-      C(0.8, 0.5, 0, '강동', 'spear', T(0,0,0), {trait:'def'}),
-      C(0.5, 0.15, 2, '낙양', 'cavalry', T(5,15,5), {size:1.1, trait:'def'}),
-    ],
-    edges: [E('성도', '한중', 'curve', -1), E('성도', '강동', 'curve', 1),
-            E('한중', '낙양', 'curve', -1), E('강동', '낙양', 'curve', 1)],
-  },
-  {
-    name: '12장 - 옆구리', aiLevel: 2,
-    castles: [
-      C(0.3, 0.88, 1, '성도', 'spear', T(30,10,8)),
-      C(0.7, 0.7, 0, '오군', 'archer', T(0,0,0)),
-      C(0.3, 0.5, 0, '한중', 'cavalry', T(0,0,0)),
-      C(0.7, 0.3, 2, '허창', 'cavalry', T(2,12,0)),
-      C(0.3, 0.12, 2, '낙양', 'spear', T(12,2,2), {size:1.0}),
-    ],
-    edges: [E('성도', '한중'), E('성도', '오군', 'curve', 1),
-            E('오군', '허창'), E('한중', '낙양'), E('한중', '허창', 'straight')],
-  },
-  // 13~16: 5~6개 성, 좀 더 복잡
-  {
-    name: '13장 - 사방 적', aiLevel: 3,
-    castles: [
-      C(0.5, 0.85, 1, '성도', 'spear', T(28,12,10), {size:1.15}),
-      C(0.2, 0.6, 0, '한중', 'cavalry', T(0,0,0)),
-      C(0.8, 0.6, 0, '강동', 'archer', T(0,0,0)),
-      C(0.5, 0.45, 2, '형주', 'archer', T(0,2,8)),
-      C(0.2, 0.18, 2, '낙양', 'cavalry', T(3,10,0)),
-      C(0.8, 0.18, 2, '허창', 'spear', T(10,0,0)),
-    ],
-    edges: [E('성도', '한중', 'curve', -1), E('성도', '강동', 'curve', 1),
-            E('한중', '형주'), E('강동', '형주'),
-            E('형주', '낙양', 'curve', -1), E('형주', '허창', 'curve', 1),
-            E('낙양', '허창', 'straight')],
-  },
-  {
-    name: '14장 - 장군의 길', aiLevel: 3,
-    castles: [
-      C(0.5, 0.88, 1, '성도', 'cavalry', T(8,22,5), {size:1.1, primary:'cavalry'}),
-      C(0.25, 0.6, 0, '한중', 'spear', T(0,0,0), {trait:'def'}),
-      C(0.75, 0.6, 0, '강동', 'archer', T(0,0,0)),
-      C(0.5, 0.35, 2, '형주', 'spear', T(15,0,3), {size:1.0, trait:'def'}),
-      C(0.5, 0.1, 2, '낙양', 'cavalry', T(5,12,5)),
-    ],
-    edges: [E('성도', '한중', 'curve', -1), E('성도', '강동', 'curve', 1),
-            E('한중', '형주'), E('강동', '형주'), E('형주', '낙양')],
-  },
-  {
-    name: '15장 - 양면전선', aiLevel: 3,
-    castles: [
-      C(0.3, 0.88, 1, '성도', 'spear', T(20,8,5), {size:1.05}),
-      C(0.7, 0.88, 1, '강동', 'archer', T(5,2,15), {size:1.0, trait:'atk'}),
-      C(0.5, 0.55, 0, '형주', 'cavalry', T(0,0,0)),
-      C(0.3, 0.12, 2, '낙양', 'cavalry', T(3,12,0)),
-      C(0.7, 0.12, 2, '허창', 'archer', T(0,3,12)),
-    ],
-    edges: [E('성도', '형주', 'curve', -1), E('강동', '형주', 'curve', 1),
-            E('형주', '낙양', 'curve', -1), E('형주', '허창', 'curve', 1),
-            E('성도', '강동', 'curve', 1), E('낙양', '허창', 'curve', -1)],
-  },
-  {
-    name: '16장 - 십자포화', aiLevel: 3,
-    castles: [
-      C(0.5, 0.88, 1, '성도', 'spear', T(30,12,10), {size:1.15}),
-      C(0.2, 0.55, 0, '한중', 'cavalry', T(0,0,0)),
-      C(0.8, 0.55, 0, '강동', 'archer', T(0,0,0)),
-      C(0.5, 0.55, 2, '형주', 'spear', T(12,0,3), {trait:'def'}),
-      C(0.5, 0.12, 2, '낙양', 'cavalry', T(5,15,5), {size:1.05}),
-    ],
-    edges: [E('성도', '한중', 'curve', -1), E('성도', '강동', 'curve', 1),
-            E('성도', '형주'),
-            E('한중', '낙양', 'curve', -1), E('강동', '낙양', 'curve', 1),
-            E('형주', '낙양')],
-  },
-  // 17~19: 6~7개 성
-  {
-    name: '17장 - 적의 본거지', aiLevel: 3,
-    castles: [
-      C(0.5, 0.9, 1, '성도', 'spear', T(28,12,12), {size:1.1}),
-      C(0.2, 0.7, 0, '한중', 'cavalry', T(0,0,0)),
-      C(0.8, 0.7, 0, '강동', 'archer', T(0,0,0)),
-      C(0.2, 0.4, 2, '형주', 'cavalry', T(2,10,0)),
-      C(0.8, 0.4, 2, '오군', 'archer', T(0,2,10)),
-      C(0.5, 0.1, 2, '낙양', 'spear', T(15,5,5), {size:1.1, trait:'def'}),
-    ],
-    edges: [E('성도', '한중', 'curve', -1), E('성도', '강동', 'curve', 1),
-            E('한중', '형주'), E('강동', '오군'),
-            E('형주', '낙양', 'curve', -1), E('오군', '낙양', 'curve', 1)],
-  },
-  {
-    name: '18장 - 동맹 격파', aiLevel: 4,
-    castles: [
-      C(0.5, 0.9, 1, '성도', 'spear', T(25,12,12), {size:1.1}),
-      C(0.25, 0.65, 0, '한중', 'cavalry', T(0,0,0)),
-      C(0.75, 0.65, 0, '강동', 'archer', T(0,0,0)),
-      C(0.5, 0.45, 0, '형주', 'spear', T(0,0,0)),
-      C(0.25, 0.15, 2, '낙양', 'cavalry', T(3,12,0)),
-      C(0.75, 0.15, 2, '허창', 'archer', T(0,3,12)),
-    ],
-    edges: [E('성도', '한중', 'curve', -1), E('성도', '강동', 'curve', 1),
-            E('한중', '형주'), E('강동', '형주'),
-            E('형주', '낙양', 'curve', -1), E('형주', '허창', 'curve', 1),
-            E('낙양', '허창', 'straight')],
-  },
-  {
-    name: '19장 - 변방의 위기', aiLevel: 4,
-    castles: [
-      C(0.5, 0.9, 1, '성도', 'spear', T(28,15,10), {size:1.1}),
-      C(0.18, 0.65, 0, '한중', 'cavalry', T(0,0,0)),
-      C(0.82, 0.65, 0, '강동', 'archer', T(0,0,0)),
-      C(0.35, 0.4, 2, '형주', 'cavalry', T(3,10,0)),
-      C(0.65, 0.4, 2, '오군', 'archer', T(0,3,10)),
-      C(0.18, 0.15, 2, '낙양', 'spear', T(12,0,0)),
-      C(0.82, 0.15, 2, '허창', 'cavalry', T(0,12,0)),
-    ],
-    edges: [E('성도', '한중', 'curve', -1), E('성도', '강동', 'curve', 1),
-            E('한중', '형주'), E('강동', '오군'),
-            E('형주', '낙양', 'curve', -1), E('오군', '허창', 'curve', 1),
-            E('형주', '오군', 'straight')],
-  },
-  // 20: 1챕터 보스 — 거대 적 진영
-  {
-    name: '20장 - 1챕터 보스: 함곡관', aiLevel: 4, growthMult: 1.2,
-    castles: [
-      C(0.5, 0.9, 1, '성도', 'spear', T(35,15,15), {size:1.2}),
-      C(0.2, 0.65, 0, '한중', 'cavalry', T(0,0,0)),
-      C(0.8, 0.65, 0, '강동', 'archer', T(0,0,0)),
-      C(0.5, 0.5, 2, '형주', 'spear', T(15,3,3), {trait:'def'}),
-      C(0.25, 0.25, 2, '낙양', 'cavalry', T(3,15,0)),
-      C(0.75, 0.25, 2, '허창', 'archer', T(0,3,15)),
-      C(0.5, 0.08, 2, '함곡관', 'spear', T(20,5,5), {size:1.25, trait:'def'}),
-    ],
-    edges: [E('성도', '한중', 'curve', -1), E('성도', '강동', 'curve', 1),
-            E('한중', '형주'), E('강동', '형주'),
-            E('한중', '낙양'), E('강동', '허창'),
-            E('형주', '함곡관'),
-            E('낙양', '함곡관', 'curve', -1), E('허창', '함곡관', 'curve', 1)],
-  },
 ];
 
 const GENERATED_CHAPTERS = {
+  1: {
+    theme: '출진',
+    home: '성도',
+    boss: '함곡관',
+    places: ['낙양', '형주', '한중', '강동', '오군', '허창', '업성', '신야', '완성', '강릉'],
+  },
   2: {
     theme: '중원',
     home: '강릉',
@@ -16894,129 +17296,157 @@ function generatedStageName(ch, local, def) {
   return `${absolute}장 - ${title}`;
 }
 
-function makeGeneratedStage(ch, local) {
-  const def = GENERATED_CHAPTERS[ch];
-  const p = (offset) => def.places[(local + offset) % def.places.length];
-  const phase = Math.ceil(local / 5);
-  const variant = (local - 1) % 5;
-  // 난이도 곡선(실플레이 반영 완화): 챕터당 적 +16%, 챕터 내 +2.8%, 아군 +1.8%. 보스 스파이크 하향.
-  const enemyMult = 0.74 + ((ch - 1) * 0.16) + ((local - 1) * 0.028);
-  const playerMult = 1.0 + ((ch - 1) * 0.018);
-  const neutralMult = 0.40 + (phase * 0.08);
-  // AI 최고 5까지: 챕터 비례 + 후반 스테이지 가산
-  const aiLevel = Math.min(5, Math.max(1, Math.round(1 + (ch - 1) * 0.5) + (local > 15 ? 1 : 0) - (local < 5 ? 1 : 0)));
-  const primary = ['spear', 'cavalry', 'archer'][(local + ch) % 3];
-  const enemyPrimary = ['cavalry', 'archer', 'spear'][(local + phase) % 3];
-  const boss = local === STAGES_PER_CHAPTER;
+// === 난이도 곡선 (2축 분리) ==========================================
+// 챕터 내부(1→20장): 성 개수/공성으로 난이도 ↑ (1:1 → 3:1 → 4:1), 적 스탯은 평탄.
+// 챕터 간(1→10장): 적 기본 스탯이 단계적으로 ↑, 매 챕터 1:1로 리셋.
+// 10장은 의도적으로 극악(스탯 폭등 + 동맹 협공 + 공성 다수 + AI 최대).
+// 챕터별 적 기본배율 — 챕터 간 성장 일부를 "보이는 축(성 개수)"으로 옮겼기에(stagePlan floor/ceiling 상승)
+// 스탯 축은 이전보다 완만하게 재배분. 총 보스 난이도는 이전 곡선과 거의 동일하게 페깅.
+const CH_ENEMY_BASE = { 1:0.55, 2:0.60, 3:0.70, 4:0.83, 5:0.98, 6:1.18, 7:1.45, 8:1.74, 9:2.15, 10:2.95 };
+function chEnemyBase(ch){ return (CH_ENEMY_BASE[ch] != null) ? CH_ENEMY_BASE[ch] : (2.95 + (ch - 10) * 0.6); }
+function chAiLevel(ch){ return Math.max(1, Math.min(5, Math.round(1 + (ch - 1) * 0.5))); }
 
-  if (boss) {
-    const L = genStageLayout(ch * 1000 + local, 7);
-    const castles = [
-      C(L[0].x, L[0].y, 1, def.home, primary, scaleTroops(T(42,18,18), playerMult), {size:1.2, trait:'prod'}),
-      C(L[1].x, L[1].y, 0, p(0), 'spear', scaleTroops(T(8,4,3), neutralMult), {trait:'def'}),
-      C(L[2].x, L[2].y, 0, p(1), 'archer', scaleTroops(T(3,4,8), neutralMult), {trait:'atk'}),
-      C(L[3].x, L[3].y, 2, p(2), enemyPrimary, scaleTroops(T(18,10,10), enemyMult), {size:1.05}),
-      C(L[4].x, L[4].y, 2, p(3), 'cavalry', scaleTroops(T(5,18,6), enemyMult), {trait:'prod'}),
-      C(L[5].x, L[5].y, 2, p(4), 'archer', scaleTroops(T(6,5,18), enemyMult), {trait:'atk'}),
-      C(L[6].x, L[6].y, 2, def.boss, 'spear', scaleTroops(T(28,12,12), enemyMult + 0.12), {size:1.3, trait:'def'}),
-    ];
-    return {
-      name: generatedStageName(ch, local, def),
-      aiLevel: Math.min(5, ch + 1),
-      growthMult: 1.05 + (ch * 0.05),
-      castles,
-      edges: [
-        E(def.home, p(0), 'curve', -1), E(def.home, p(1), 'curve', 1),
-        E(p(0), p(2)), E(p(1), p(2)), E(p(2), p(3), 'curve', -1), E(p(2), p(4), 'curve', 1),
-        E(p(3), def.boss, 'curve', -1), E(p(4), def.boss, 'curve', 1), E(p(2), def.boss),
-      ],
-    };
+// 스테이지별 성 구성 곡선 (모든 챕터 공통) — local 1~20
+function stagePlan(ch, local){
+  // 챕터 내부 기본 곡선(원본 모양) — 적 성 1~4
+  let enemies, neutrals, fort;
+  if (local <= 1)        { enemies = 1; neutrals = 0; fort = 0; }   // 1:1
+  else if (local <= 3)   { enemies = 2; neutrals = 0; fort = 0; }   // 다대일 시작
+  else if (local <= 6)   { enemies = 2; neutrals = 1; fort = (local >= 5) ? 1 : 0; }
+  else if (local <= 9)   { enemies = 3; neutrals = 1; fort = 1; }
+  else if (local === 10) { enemies = 3; neutrals = 1; fort = 2; }   // 3:1 + 공성2
+  else if (local <= 14)  { enemies = 3; neutrals = 1; fort = 1; }
+  else if (local <= 17)  { enemies = 4; neutrals = 1; fort = 2; }
+  else if (local <= 19)  { enemies = 4; neutrals = 2; fort = 2; }
+  else                   { enemies = 4; neutrals = 2; fort = 3; }   // 보스 4:1 + 공성3
+  // 챕터 간 "보이는 축" 성장 — 적 성 floor/ceiling을 챕터별로 올려 톱니 리셋(챕터=다시 1:1) 완화.
+  // 오프너(원본 1)는 floorE로, 보스(원본 4)는 ceilE로 보간. 1장은 원본 유지(체감 좋았음).
+  // 오프너는 모든 챕터 2성으로 부드럽게, 보스 천장만 4→5→6으로 상승. 후반 강함은 스탯+연출(B)이 담당.
+  const floorE = (ch === 1) ? 1 : 2;
+  const ceilE  = (ch === 1) ? 4 : (ch >= 5 ? 6 : 5);
+  const frac = (enemies - 1) / 3;                 // 원본 1..4 → 0..1
+  enemies = Math.round(floorE + frac * (ceilE - floorE));
+  enemies = Math.max(floorE, Math.min(ceilE, enemies));
+  return { enemies, neutrals, fort };
+}
+
+// 좌표(genStageLayout 순서: y 큰=본진 하단)로 연결 그래프(엣지) 생성.
+// 각 성을 자기보다 아래(본진 쪽) 가장 가까운 성과 연결 → 본진 루트 트리(항상 연결).
+function genGraphEdges(list){
+  const n = list.length;
+  const edges = [];
+  if (n < 2) return edges;
+  const seen = new Set();
+  const add = (a, b, type, sign) => {
+    if (a === b) return;
+    const key = a < b ? (a + '_' + b) : (b + '_' + a);
+    if (seen.has(key)) return;
+    seen.add(key);
+    edges.push(E(list[a].name, list[b].name, type, sign));
+  };
+  for (let a = 0; a < n; a++){
+    let best = -1, bestD = Infinity;
+    for (let m = 0; m < n; m++){
+      if (m === a || list[m].y <= list[a].y) continue;   // 본진 쪽(아래)만
+      const dx = list[m].x - list[a].x, dy = list[m].y - list[a].y;
+      const d = dx * dx + dy * dy;
+      if (d < bestD){ bestD = d; best = m; }
+    }
+    if (best >= 0) add(a, best, 'curve', list[a].x < list[best].x ? -1 : 1);
+  }
+  // 가까운 성끼리 가로 연결 한두 개 — 전선이 단조롭지 않게
+  for (let a = 0; a < n; a++){
+    let best = -1, bestD = Infinity;
+    for (let m = 0; m < n; m++){
+      if (m === a) continue;
+      const key = a < m ? (a + '_' + m) : (m + '_' + a);
+      if (seen.has(key)) continue;
+      const dx = list[m].x - list[a].x, dy = list[m].y - list[a].y;
+      const d = dx * dx + dy * dy;
+      if (d < bestD){ bestD = d; best = m; }
+    }
+    if (best >= 0 && bestD < 0.10) add(a, best, 'straight', 1);
+  }
+  return edges;
+}
+
+function makeGeneratedStage(ch, local){
+  const def = GENERATED_CHAPTERS[ch];
+  const boss = (local === STAGES_PER_CHAPTER);
+  const plan = stagePlan(ch, local);
+  const eBase = chEnemyBase(ch);
+  // 챕터 내부 스탯은 거의 평탄(난이도는 성 개수로). 챕터당 base가 점프.
+  const enemyMult   = eBase * (1 + (local - 1) * 0.012);
+  const playerMult  = 1.0 + (ch - 1) * 0.04;
+  const neutralMult = 0.40 + Math.ceil(local / 5) * 0.06;
+  // 적 생산속도(>1이라야 효과): 후반 챕터/스테이지일수록 빠르게 충원
+  let growthMult = 0.90 + (ch - 1) * 0.06 + local * 0.004;
+  // AI: 챕터 내부 고정, 챕터 간 +1. 보스/후반 가산.
+  let aiLevel = chAiLevel(ch) + (boss ? 1 : 0) + (local > 16 ? 1 : 0);
+  // 10장 — 극악: 스탯 폭등 + 생산 폭증 + AI 최대 + 동맹 협공
+  const brutal = (ch >= 10);
+  let emEff = enemyMult;
+  if (brutal){ emEff = enemyMult * 1.18; growthMult += 0.35; aiLevel = 5; }
+  if (boss) growthMult += 0.15;
+  aiLevel = Math.max(1, Math.min(5, aiLevel));
+
+  const homeName = def.home;
+  const usedNames = new Set([homeName, def.boss]);
+  let _pk = 0;
+  const pickPlace = () => {
+    for (let t = 0; t < def.places.length; t++){
+      const nm = def.places[(_pk++) % def.places.length];
+      if (!usedNames.has(nm)){ usedNames.add(nm); return nm; }
+    }
+    const nm = def.places[(_pk++) % def.places.length] + '_' + _pk;
+    usedNames.add(nm); return nm;
+  };
+
+  const totalEnemies = plan.enemies;             // 보스 포함 적 성 수
+  const neutrals = plan.neutrals;
+  const fort = Math.min(plan.fort, totalEnemies);
+  const total = 1 + neutrals + totalEnemies;
+  const L = genStageLayout(ch * 1000 + local, total);
+
+  const primary      = ['spear','cavalry','archer'][(local + ch) % 3];
+  const enemyPrimary = ['cavalry','archer','spear'][(local + ch) % 3];
+
+  const castles = [];
+  let li = 0;
+  // 본진
+  castles.push(C(L[li].x, L[li].y, 1, homeName, primary, scaleTroops(T(28,12,10), playerMult), { size:1.15, trait:'prod' }));
+  li++;
+  // 중립(빈/약체) 성 — 본진과 적 사이 완충
+  for (let k = 0; k < neutrals; k++, li++){
+    const nm = pickPlace();
+    const np = ['spear','cavalry','archer'][(k + ch) % 3];
+    castles.push(C(L[li].x, L[li].y, 0, nm, np, scaleTroops(T(4,3,3), neutralMult), { size:0.92, trait: (k === 0 ? 'def' : 'atk') }));
+  }
+  // 적 성 — 마지막(상단)이 보스/주적
+  for (let k = 0; k < totalEnemies; k++, li++){
+    const isBossCastle = boss && (k === totalEnemies - 1);
+    const isFort = (k < fort) && !isBossCastle;
+    if (isBossCastle){
+      castles.push(C(L[li].x, L[li].y, 2, def.boss, 'spear', scaleTroops(T(26,12,12), emEff + 0.15), { size:1.32, trait:'def' }));
+    } else if (isFort){
+      const fp = ['spear','archer','cavalry'][(k + local) % 3];
+      castles.push(C(L[li].x, L[li].y, 2, pickPlace(), fp, scaleTroops(T(16,7,7), emEff), { size:1.18, trait:'def' }));
+    } else {
+      const ep = (k % 2 === 0) ? enemyPrimary : ['cavalry','archer','spear'][(k + local + 1) % 3];
+      castles.push(C(L[li].x, L[li].y, 2, pickPlace(), ep, scaleTroops(T(10,8,8), emEff), { size:1.0, trait: (k % 2 ? 'atk' : 'prod') }));
+    }
   }
 
-  const base = {
+  const stage = {
     name: generatedStageName(ch, local, def),
     aiLevel,
-    growthMult: 0.95 + ((ch - 1) * 0.06) + (local * 0.005),
+    growthMult,
+    castles,
+    edges: genGraphEdges(castles),
   };
-
-  const seed = ch * 1000 + local;
-
-  if (variant === 0) {
-    const L = genStageLayout(seed, 5);
-    return {
-      ...base,
-      castles: [
-        C(L[0].x, L[0].y, 1, def.home, primary, scaleTroops(T(30,12,10), playerMult), {size:1.12, trait:'prod'}),
-        C(L[1].x, L[1].y, 0, p(0), 'spear', scaleTroops(T(4,2,2), neutralMult), {trait:'def'}),
-        C(L[2].x, L[2].y, 2, p(1), 'cavalry', scaleTroops(T(4,13,4), enemyMult)),
-        C(L[3].x, L[3].y, 2, p(2), 'archer', scaleTroops(T(5,4,13), enemyMult)),
-        C(L[4].x, L[4].y, 2, p(3), enemyPrimary, scaleTroops(T(13,8,8), enemyMult), {size:1.08}),
-      ],
-      edges: [E(def.home, p(0)), E(p(0), p(1), 'curve', -1), E(p(0), p(2), 'curve', 1), E(p(1), p(3)), E(p(2), p(3)), E(p(1), p(2), 'straight')],
-    };
-  }
-
-  if (variant === 1) {
-    const L = genStageLayout(seed, 5);
-    return {
-      ...base,
-      castles: [
-        C(L[0].x, L[0].y, 1, def.home, primary, scaleTroops(T(28,14,10), playerMult), {size:1.1}),
-        C(L[1].x, L[1].y, 0, p(0), 'archer', scaleTroops(T(2,2,5), neutralMult), {trait:'atk'}),
-        C(L[2].x, L[2].y, 0, p(1), 'cavalry', scaleTroops(T(2,5,2), neutralMult)),
-        C(L[3].x, L[3].y, 2, p(2), 'spear', scaleTroops(T(14,5,5), enemyMult), {trait:'def'}),
-        C(L[4].x, L[4].y, 2, p(3), enemyPrimary, scaleTroops(T(10,10,10), enemyMult), {size:1.05}),
-      ],
-      edges: [E(def.home, p(0), 'curve', 1), E(def.home, p(1), 'curve', -1), E(p(0), p(2)), E(p(1), p(2)), E(p(2), p(3)), E(p(1), p(3), 'curve', -1)],
-    };
-  }
-
-  if (variant === 2) {
-    const L = genStageLayout(seed, 6);
-    return {
-      ...base,
-      castles: [
-        C(L[0].x, L[0].y, 1, def.home, primary, scaleTroops(T(32,12,12), playerMult), {size:1.12}),
-        C(L[1].x, L[1].y, 0, p(0), 'spear', scaleTroops(T(5,2,2), neutralMult), {trait:'def'}),
-        C(L[2].x, L[2].y, 0, p(1), 'archer', scaleTroops(T(2,2,5), neutralMult), {trait:'atk'}),
-        C(L[3].x, L[3].y, 2, p(2), enemyPrimary, scaleTroops(T(12,9,9), enemyMult), {trait:'prod'}),
-        C(L[4].x, L[4].y, 2, p(3), 'cavalry', scaleTroops(T(4,15,4), enemyMult)),
-        C(L[5].x, L[5].y, 2, p(4), 'archer', scaleTroops(T(5,4,15), enemyMult)),
-      ],
-      edges: [E(def.home, p(0), 'curve', -1), E(def.home, p(1), 'curve', 1), E(p(0), p(2)), E(p(1), p(2)), E(p(2), p(3), 'curve', -1), E(p(2), p(4), 'curve', 1), E(p(3), p(4), 'straight')],
-    };
-  }
-
-  if (variant === 3) {
-    const L = genStageLayout(seed, 6);
-    return {
-      ...base,
-      castles: [
-        C(L[0].x, L[0].y, 1, def.home, primary, scaleTroops(T(34,12,12), playerMult), {size:1.14, trait:'prod'}),
-        C(L[1].x, L[1].y, 0, p(0), 'cavalry', scaleTroops(T(2,6,2), neutralMult)),
-        C(L[2].x, L[2].y, 2, p(1), 'spear', scaleTroops(T(15,4,5), enemyMult), {trait:'def'}),
-        C(L[3].x, L[3].y, 2, p(2), 'archer', scaleTroops(T(4,5,15), enemyMult), {trait:'atk'}),
-        C(L[4].x, L[4].y, 0, p(3), 'spear', scaleTroops(T(7,3,3), neutralMult), {trait:'prod'}),
-        C(L[5].x, L[5].y, 2, p(4), enemyPrimary, scaleTroops(T(14,10,10), enemyMult), {size:1.08}),
-      ],
-      edges: [E(def.home, p(0)), E(p(0), p(1), 'curve', -1), E(p(0), p(2), 'curve', 1), E(p(1), p(3)), E(p(2), p(3)), E(p(3), p(4)), E(p(1), p(2), 'straight')],
-    };
-  }
-
-  const L = genStageLayout(seed, 6);
-  return {
-    ...base,
-    aiLevel: Math.min(5, aiLevel + 1),
-    castles: [
-      C(L[0].x, L[0].y, 1, def.home, primary, scaleTroops(T(36,14,12), playerMult), {size:1.15}),
-      C(L[1].x, L[1].y, 0, p(0), 'spear', scaleTroops(T(5,3,3), neutralMult), {trait:'def'}),
-      C(L[2].x, L[2].y, 0, p(1), 'archer', scaleTroops(T(3,3,5), neutralMult), {trait:'atk'}),
-      C(L[3].x, L[3].y, 2, p(2), 'cavalry', scaleTroops(T(5,16,5), enemyMult)),
-      C(L[4].x, L[4].y, 2, p(3), 'spear', scaleTroops(T(16,5,5), enemyMult), {trait:'def'}),
-      C(L[5].x, L[5].y, 2, p(4), enemyPrimary, scaleTroops(T(14,10,10), enemyMult), {size:1.08, trait:'prod'}),
-    ],
-    edges: [E(def.home, p(0), 'curve', -1), E(def.home, p(1), 'curve', 1), E(p(0), p(2)), E(p(1), p(3)), E(p(2), p(4), 'curve', -1), E(p(3), p(4), 'curve', 1), E(p(0), p(1), 'straight'), E(p(2), p(3), 'straight')],
-  };
+  if (boss) stage._boss = true;
+  if (brutal) stage.alliance = true;  // 적이 서로 안 싸우고 플레이어만 협공
+  return stage;
 }
 
 // === 카메라 / 월드 ===
@@ -17099,30 +17529,31 @@ function applyExtraCastles(stage, ch) {
     });
   }
 }
-function applyChapterCurve(stage, ch, local) {
-  // 맵 크기 — 챕터별 점진 확대
+function applyChapterCurve(stage, ch, local){
+  // 맵 크기 — 챕터별 점진 확대 (성 수 증가분을 담을 공간)
   const s = chapterMapScale(ch);
-  if (s !== 1.0) {
-    stage.world = { w: DEFAULT_WORLD.w * s, h: DEFAULT_WORLD.h * s };
-  }
-  // 1v1v1 도입
-  if (isThreeFactionStage(ch, local)) {
-    applyThreeFaction(stage, ch * 100 + local);
-    // 동맹 모드 표식 (적끼리 안 싸우고 플레이어만 협공)
-    if (isAllianceStage(ch, local)) stage.alliance = true;
-    // 4진영 추가
-    if (isFourFactionStage(ch, local)) applyFourFaction(stage);
-  }
-  // 성 수 점진 확대
-  applyExtraCastles(stage, ch);
+  if (s !== 1.0) stage.world = { w: DEFAULT_WORLD.w * s, h: DEFAULT_WORLD.h * s };
 }
-for (let ch = 2; ch <= 10; ch++) {
-  for (let local = 1; local <= STAGES_PER_CHAPTER; local++) {
+for (let ch = 1; ch <= 10; ch++){
+  for (let local = 1; local <= STAGES_PER_CHAPTER; local++){
     const st = makeGeneratedStage(ch, local);
     applyChapterCurve(st, ch, local);
     STAGES.push(st);
   }
 }
+// 밸런스 점검표 — URL에 ?balance=1 이면 콘솔에 챕터별 곡선 출력
+try {
+  if (typeof location !== 'undefined' && /[?&]balance=1/.test(location.search)) {
+    const eSum = (st) => st.castles.filter(x => x.owner === 2)
+      .reduce((a, x) => a + x.troops.spear + x.troops.cavalry + x.troops.archer, 0);
+    const home = (st) => { const h = st.castles.find(x => x.owner === 1); return h ? (h.troops.spear + h.troops.cavalry + h.troops.archer) : 0; };
+    console.table(Array.from({ length: 10 }, (_, c) => {
+      const ch = c + 1;
+      const s1 = makeGeneratedStage(ch, 1), s10 = makeGeneratedStage(ch, 10), s20 = makeGeneratedStage(ch, 20);
+      return { 챕터: ch, 적병_1: eSum(s1), 적병_10: eSum(s10), 적병_20: eSum(s20), 본진병: home(s1), 성수_20: s20.castles.length, 적성_20: s20.castles.filter(x=>x.owner===2).length, AI_20: s20.aiLevel };
+    }));
+  }
+} catch (_) {}
 
 // === 무한 모드 (엔드게임) — 10챕터 이후로 무한 상승하는 도전 ===
 function makeInfiniteStage(floor) {
@@ -17255,7 +17686,11 @@ let camX = 0, camY = 0;          // 카메라 중심 (월드 픽셀)
 let zoom = 1.0;
 window._targetCamX = 0; window._targetCamY = 0; window._targetZoom = 1.0;
 const ZOOM_MIN = 0.55, ZOOM_MAX = 2.2;
-function worldPxW() { return worldW * W; }
+// 좁은 화면(접은 폴드폰 등)에서 성이 겹치지 않도록 배치 계산용 폭에 하한(360 CSS px)을 둔다.
+// 실제 화면이 더 좁으면 월드가 상대적으로 넓어져 자동 줌아웃 → 성은 더 작게, 간격 비율은 유지.
+// 성 위치·병력·클릭·미니맵·카메라가 모두 worldPxW를 거치므로 일관되게 따라온다(성 크기 CASTLE_R만 고정).
+const MIN_LAYOUT_CSS_W = 360;
+function worldPxW() { return worldW * Math.max(W, MIN_LAYOUT_CSS_W * DPR()); }
 function worldPxH() { return worldH * H; }
 // 축소(zoom-out) 한계 = 화면 전체가 전장 배경으로 덮이는 줌.
 // 폴드 펼침처럼 화면 비율이 월드보다 넓을 때 contain(min)을 쓰면 양옆에 풀색 바탕이 보이므로 cover(max)를 사용한다.
@@ -17390,14 +17825,22 @@ function getPos(e) {
   return { x: (t.clientX - rect.left) * sx, y: (t.clientY - rect.top) * sy };
 }
 
-// 메뉴 아이콘 위치 (성 위쪽 반원에 3개) - 거리 더 멀리, 각도 더 벌림
+// 메뉴 아이콘 위치: 접힌 폴드/일반폰에서도 겹치지 않는 가로 3버튼 행.
 function iconPos(c, idx) {
   const r = CASTLE_R() * c.size;
-  const angles = [Math.PI * 1.10, Math.PI * 1.5, Math.PI * 1.90]; // 좌상/위/우상
-  const a = angles[idx];
-  return { x: cx(c) + Math.cos(a) * r * 2.1, y: cy(c) + Math.sin(a) * r * 2.1 };
+  const ir = ICON_R();
+  const spacing = Math.max(ir * 2.28, Math.min(W * 0.24, ir * 2.72));
+  const rowHalf = spacing + ir;
+  const margin = 10 * DPR();
+  const centerX = Math.max(margin + rowHalf, Math.min(W - margin - rowHalf, cx(c)));
+  const belowY = cy(c) + r * 1.52 + ir * 0.74;
+  const aboveY = cy(c) - r * 1.90 - ir * 0.32;
+  const y = (belowY + ir + margin <= H)
+    ? belowY
+    : Math.max(ir + margin, aboveY);
+  return { x: centerX + (idx - 1) * spacing, y };
 }
-const ICON_R = () => 36 * DPR();
+const ICON_R = () => Math.max(26 * DPR(), Math.min(34 * DPR(), W * 0.072));
 
 function iconAt(c, p) {
   // 가장 가까운 아이콘 우선 (히트 영역 넉넉)
@@ -18006,6 +18449,8 @@ function pruneArmySpeechGroup(target, kind, maxCount = MAX_ARMY_SPEECHES_PER_GRO
 }
 function showSpeech(target, text, opts = {}) {
   if (!target) return;
+  // 전투 중 잡담(ambient) 30% 누락 — 말풍선이 전투를 가리는 문제 완화. 중요 피드백(명령/회유/함락/위기)은 태그 없어 항상 노출.
+  if (opts.ambient && Math.random() < 0.30) return;
   const kind = opts.kind || (target.isArmy || (typeof target.troops === 'number' && target.unit) ? 'army' : 'castle');
   const armyGroupKey = speechArmyGroupKey(target, kind);
   // 동일 대상에 같은 문구 도배 방지
@@ -18287,6 +18732,14 @@ function pointerDown(e) {
     if (best) c = best;
   }
   if (c && c.owner === 1 && totalTroops(c) > 0) {
+    if (tutorialState && !tutorialAllowsCastleCommand()) {
+      menuCastle = null;
+      dragUnit = null;
+      dragStart = null;
+      dragMoved = false;
+      dragSourceCastle = null;
+      return;
+    }
     // 누르는 즉시 메뉴를 띄우지 않음 — 탭(이동 거의 없이 손 뗌)일 때만 토글
     dragSourceCastle = c;
     dragUnit = 'all';
@@ -18323,6 +18776,7 @@ function pointerMove(e) {
     // 핀치 중심점이 화면상 같은 월드 위치를 가리키도록 보정
     const before = screenToWorld(pinch.cx, pinch.cy);
     zoom = newZoom;
+    tutoNoteUserZoom(newZoom);   // 튜토리얼 줌 2페이즈(확대→축소) 진행
     const after = screenToWorld(pinch.cx, pinch.cy);
     camX += before.x - after.x;
     camY += before.y - after.y;
@@ -18388,13 +18842,13 @@ function pointerUp(e) {
     const members = gid ? armies.filter(x => x.groupId === gid && !x.dying && x.troops > 0) : [src];
     if (tgtFoe) {
       for (const m of members) { m.pursuingArmy = tgtFoe; if (!m.target || m.target.isArmy) m.target = m.homeCastle || m.target; m._returnAnnounced = false; }
-      showSpeech(src, pickRandom(['요격하라!', '적을 친다!', '돌격!']), { life: 1.4 });
+      showSpeech(src, pickRandom(['요격하라!', '적을 친다!', '돌격!']), { life: 1.4, ambient: true });
     } else if (tgtCastle && tgtCastle.owner !== 1) {
       for (const m of members) { m.pursuingArmy = null; m.target = tgtCastle; m._returnAnnounced = false; }
-      showSpeech(src, pickRandom(['저 성을 친다!', '진격하라!', '공성!']), { life: 1.4 });
+      showSpeech(src, pickRandom(['저 성을 친다!', '진격하라!', '공성!']), { life: 1.4, ambient: true });
     } else if (tgtCastle && tgtCastle.owner === 1) {
       for (const m of members) { m.pursuingArmy = null; m.target = tgtCastle; m.homeCastle = tgtCastle; }
-      showSpeech(src, '복귀합니다!', { life: 1.2 });
+      showSpeech(src, '복귀합니다!', { life: 1.2, ambient: true });
     }
     dragStart = null; dragMoved = false;
     return;
@@ -18409,13 +18863,22 @@ function pointerUp(e) {
     dragUnit = null; dragStart = null; dragMoved = false; dragSourceCastle = null;
     return;
   }
-  // 드래그(공격 조준): 성 halo 우선 → 그 밖에서만 적 부대 정밀 조준 가능
-  let directCastle = castleAtHalo(p.x, p.y);
-  let directFoe = directCastle ? null : enemyArmyAt(p.x, p.y, dragSourceCastle.owner);
+  // 튜토리얼 단계별 액션 제한
+  const tutoCur = tutorialState && TUTO_STEPS[tutorialState.stepIdx];
+  const tutoBlock = tutoCur && tutoCur.id;
+  // 드래그(공격 조준): 일반 전투는 성 halo 우선. 튜토리얼 요격 단계는 적 부대만 조준.
+  let directCastle = null;
+  let directFoe = null;
+  if (tutoBlock === 'intercept') {
+    directFoe = enemyArmyAt(p.x, p.y, dragSourceCastle.owner);
+  } else {
+    directCastle = castleAtHalo(p.x, p.y);
+    directFoe = directCastle ? null : enemyArmyAt(p.x, p.y, dragSourceCastle.owner);
+  }
   // 아군 부대(장수 포함) 위에 드롭하면 보강군으로 합류
-  let directFriend = (!directCastle && !directFoe) ? friendlyArmyAt(p.x, p.y, dragSourceCastle.owner) : null;
+  let directFriend = (tutoBlock !== 'intercept' && !directCastle && !directFoe) ? friendlyArmyAt(p.x, p.y, dragSourceCastle.owner) : null;
   let target = directCastle;
-  if (!target && !directFoe) {
+  if (tutoBlock !== 'intercept' && !target && !directFoe) {
     // 빈 곳: 가까운 성(80px 이내)을 흡착
     let bestD = 80 * DPR(), best = null;
     for (const c of castles) {
@@ -18427,9 +18890,6 @@ function pointerUp(e) {
     }
     if (best) target = best;
   }
-  // 튜토리얼 단계별 액션 제한
-  const tutoCur = tutorialState && TUTO_STEPS[tutorialState.stepIdx];
-  const tutoBlock = tutoCur && tutoCur.id;
   if (tutoBlock === 'select' || tutoBlock === 'reward1' || tutoBlock === 'reward2') {
     // 1단계: 출진 금지 (병종 선택만 허용)
     showSelectToast('지금은 병종을 선택하세요', '#c1121f');
@@ -18649,7 +19109,7 @@ function sendArmy(from, to, unit, homeCastle, withCommander, opts = {}) {
           ? ['적 부대 요격!', '추격하라!', '돌격!', '쳐내라!']
           : ['돌격 앞으로!', '진군!', '출진!', `${to.name}으로!`, '전 부대 앞으로!'])
       : ['공격 개시', '진군 명령', '돌파한다', '진격하라'];
-    showSpeech(a, pickRandom(phrases), { life: 1.6 });
+    showSpeech(a, pickRandom(phrases), { life: 1.6, ambient: true });
   }
   document.getElementById('dbg').textContent = `debug: 출진 ${UNITS[unit].label}병 ${send}명 → ${to && to.name ? to.name : '적 부대'}`;
 }
@@ -19021,7 +19481,7 @@ function resolveEngagements(dt) {
           const phr = a.owner === 1
             ? pickRandom(['적군이다!', '교전 시작!', '맞붙는다', '돌파한다!'])
             : pickRandom(['적이 나타났다', '맞서라', '제압하라']);
-          showSpeech(a, phr, { life: 1.4 });
+          showSpeech(a, phr, { life: 1.4, ambient: true });
         }
       }
       if (!b._engagedOnce) {
@@ -19030,7 +19490,7 @@ function resolveEngagements(dt) {
           const phr = b.owner === 1
             ? pickRandom(['적이다!', '대응하라', '버텨라!'])
             : pickRandom(['아군 부대 발견', '저들을 베어라']);
-          showSpeech(b, phr, { life: 1.4 });
+          showSpeech(b, phr, { life: 1.4, ambient: true });
         }
       }
       const aCnt = counters(a.unit, b.unit) ? 1.5 : (counters(b.unit, a.unit) ? 1/1.5 : 1);
@@ -19100,7 +19560,7 @@ function resolveEngagements(dt) {
         ? pickRandom(['전멸…', '쓰러진다!', '아…!'])
         : pickRandom(['적 격퇴!', '제압!', '쓸어버렸다']);
       const ghost = { x: dead.x, y: dead.y, owner: dead.owner, isArmy: true, troops: 0 };
-      showSpeech(ghost, phr, { life: 1.4, kind: 'army' });
+      showSpeech(ghost, phr, { life: 1.4, kind: 'army', ambient: true });
       // 사망 먼지 (갈색, 천천히 fade)
       spawnBurst(dead.x, dead.y, '#7a6648', { dust: true, count: 18, life: 1.4 });
       spawnBattleStain(dead.x, dead.y, {
@@ -19372,6 +19832,8 @@ function update(dt) {
   camX += (window._targetCamX - camX) * 0.15;
   camY += (window._targetCamY - camY) * 0.15;
   zoom += (window._targetZoom - zoom) * 0.1;
+  // 줌 전환(예: START 줌아웃) 중에는 매 프레임 클램프 — 팬+줌 동시 이징 시 배경 노출 방지
+  if (!inCinematic && Math.abs(window._targetZoom - zoom) > 0.0008) clampCamera();
   if (inCinematic) return;
   if (window._hitstop > 0) { window._hitstop -= dt; if (window._hitstop > 0) dt *= 0.15; }
   growth(dt);
@@ -19447,7 +19909,7 @@ function update(dt) {
           // 복귀 시작 대사 (한 번만)
           if (!a._returnAnnounced) {
             a._returnAnnounced = true;
-            showSpeech(a, pickRandom(['복귀합니다. 명령만 주세요!', '임무 완수! 다음 명령은?', '돌아갑니다, 주공!', '적을 베었습니다. 어디로 갈까요?']), { life: 1.9 });
+            showSpeech(a, pickRandom(['복귀합니다. 명령만 주세요!', '임무 완수! 다음 명령은?', '돌아갑니다, 주공!', '적을 베었습니다. 어디로 갈까요?']), { life: 1.9, ambient: true });
           }
         }
         // 홈이 전혀 없으면 그 자리 야전 유지 (target 그대로)
@@ -19890,7 +20352,7 @@ function checkWin() {
       saveProgress();
       vibrate([90, 70, 90, 70, 140]);
       showVictoryFlash(() => {
-        showMsg(`무한 ${floor}층 돌파! (최고 ${SAVE.infiniteBest}층) +${goldGain}G ★${starGain}`, 3, [
+        showMsg(`무한 ${floor}층 돌파! (최고 ${SAVE.infiniteBest}층) +${goldGain}G · 별 ${starGain}개 획득`, 3, [
           { text: '다음 층', variant: 'primary', action: () => { window._infiniteFloor = floor + 1; startInfiniteMode(); } },
           { text: '그만두기', variant: 'tertiary', action: () => goToStageSelectAt(campaignOffset()) },
         ], undefined, 'victory');
@@ -19914,10 +20376,10 @@ function checkWin() {
     const isReclear = prevStars > 0;
     const goldGain = Math.floor(baseGain * (isReclear ? 0.25 : 1));
     SAVE.gold = (SAVE.gold || 0) + goldGain;
-    // 재클리어 별 — 후반 스테이지일수록 많이(파밍 가치↑). 1 + 전역idx/40 → ch1≈1, ch10≈5~6
+    // 재클리어 별 — 클리어 등급만큼 지급(1~3). 화면의 '클리어 등급'과 보상 별을 일치시켜 혼동 제거
     let bonusStar = 0;
     if (isReclear) {
-      bonusStar = 1 + Math.floor(currentStage / 40);
+      bonusStar = stars;
       SAVE.starsAvailable = (SAVE.starsAvailable || 0) + bonusStar;
     }
     // 챕터 클리어 보너스 — 보스(각 챕터 20장) 최초 클리어 시 묶음 보상
@@ -19962,10 +20424,12 @@ function checkWin() {
     showVictoryFlash(() => {
       const proceedToVictoryModal = () => {
         if (isTuto) {
-          // 튜토리얼 클리어 → 시작 장수 선택
-          // [테스트] 현재는 튜토 클리어할 때마다 항상 노출. 출시 시 아래 한 줄로 복원:
-          //   if (!SAVE.starterPicked) { showStarterPick(() => goToStageSelectAt(nextIdx)); return; }
-          showStarterPick(() => goToStageSelectAt(nextIdx));
+          // 튜토리얼 클리어 보상(원하는 장수 선택)은 최초 1회만. 재플레이 시 보상 없음.
+          if (!SAVE.starterPicked) {
+            showStarterPick(() => goToStageSelectAt(nextIdx));
+          } else {
+            goToStageSelectAt(nextIdx);
+          }
           return;
         } else {
           const _cb = window._chapterBonus; window._chapterBonus = null;
@@ -19978,31 +20442,37 @@ function checkWin() {
           })();
           const _isAlliance = !!(_curStage && _curStage.alliance);
           let _winTitle = _cb
-            ? `${_cb.ch}챕터 클리어! 보너스 +${_cb.gold.toLocaleString()}G ★${_cb.stars} +장수${_cb.gens || 0}명`
+            ? `${_cb.ch}챕터 클리어! 보너스 +${_cb.gold.toLocaleString()}G · 별 ${_cb.stars}개 획득 · 장수 ${_cb.gens || 0}명`
             : (isReclear
-                ? `${STAGES[currentStage].name} 재클리어! +${goldGain.toLocaleString()}G ★${bonusStar}`
+                ? `${STAGES[currentStage].name} 재클리어! +${goldGain.toLocaleString()}G · 별 ${bonusStar}개 획득`
                 : (_isAlliance ? `동맹 협공을 깨고 승리! · ${STAGES[currentStage].name}`
                    : (_multiFactionCount >= 3 ? `四國 평정! · ${STAGES[currentStage].name}`
                       : (_multiFactionCount >= 2 ? `三國 평정! · ${STAGES[currentStage].name}`
                          : `${STAGES[currentStage].name} 승리!`))));
           if (dailyReward) {
             const mTxt = dailyReward.results.map(r => `${r.ok ? '✓' : '✗'} ${r.label}(+${r.bonus})`).join(' / ');
-            _winTitle += `\n⭐ 오늘의 별 도전 보상: ★${dailyReward.total} (기본 ${dailyReward.base} + 미션 ${dailyReward.missionBonus})\n${mTxt}`;
+            _winTitle += `\n⭐ 오늘의 별 도전 보상: 별 ${dailyReward.total}개 획득 (기본 ${dailyReward.base} + 미션 ${dailyReward.missionBonus})\n${mTxt}`;
           }
-          showMsg(_winTitle, stars, [
-            { text: '다음 장', variant: 'primary', action: () => {
-              if (currentStage + 1 < STAGES.length) {
-                selectedStage = currentStage + 1;
-                openGeneralSelect(selectedStage);
-              } else {
-                showMsg('천 하 통 일', 3, [{ text: '스테이지로 이동', variant: 'primary', action: () => goToStageSelectAt(STAGES.length - 1) }], undefined, 'unify');
-              }
-            }},
-            { text: '장수관리', variant: 'secondary', action: () => openPostBattleUtility('generals', nextIdx) },
-            { text: '장수강화', variant: 'secondary', action: () => openPostBattleUtility('enhance', nextIdx) },
-            { text: '전투력강화', variant: 'secondary', action: () => openPostBattleUtility('power', nextIdx) },
-            { text: '스테이지', variant: 'stage', action: () => goToStageSelectAt(nextIdx) },
-          ], goldGain, 'victory');
+          // 승리 모달을 닫지 않고 보존 — 유틸 화면(장수관리/강화/전투력)에서 뒤로가기 시 동일 모달 재표시
+          const _showVictoryModal = () => {
+            window._resumeVictoryModal = _showVictoryModal;
+            showMsg(_winTitle, stars, [
+              { text: '다음 장', variant: 'primary', action: () => {
+                window._resumeVictoryModal = null;
+                if (currentStage + 1 < STAGES.length) {
+                  selectedStage = currentStage + 1;
+                  openGeneralSelect(selectedStage);
+                } else {
+                  showMsg('천 하 통 일', 3, [{ text: '스테이지로 이동', variant: 'primary', action: () => goToStageSelectAt(STAGES.length - 1) }], undefined, 'unify');
+                }
+              }},
+              { text: '장수관리', variant: 'secondary', action: () => openPostBattleUtility('generals', nextIdx) },
+              { text: '장수강화', variant: 'secondary', action: () => openPostBattleUtility('enhance', nextIdx) },
+              { text: '전투력강화', variant: 'secondary', action: () => openPostBattleUtility('power', nextIdx) },
+              { text: '스테이지', variant: 'stage', action: () => { window._resumeVictoryModal = null; goToStageSelectAt(nextIdx); } },
+            ], goldGain, 'victory');
+          };
+          _showVictoryModal();
         }
       };
       // 테스트 중: 무조건 포로등용 페이지 노출
@@ -20164,16 +20634,28 @@ function showStarterPick(onDone) {
   roster.innerHTML = '';
   GENERAL_ROSTER.forEach(def => {
     const g = { ...def, stars: 3, lv: 1 };
-    const card = document.createElement('button');
-    card.type = 'button';
+    const card = document.createElement('div');
+    card.tabIndex = 0;
     card.style.position = 'relative';
-    card.className = 'deploy-card tier-' + getGeneralRarity(g).tier;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `${g.name} 선택`);
+    card.className = 'deploy-card has-detail tier-' + getGeneralRarity(g).tier;
     card.innerHTML = `
       ${rarityBadgeHTML(g)}
       <div class="deploy-face"><img src="${def.bust || def.face}" alt=""></div>
-      <div class="deploy-name">${def.name}</div>
+      <div class="deploy-name"><span class="dn-text">${def.name}</span><button type="button" class="general-detail-btn" title="상세보기" aria-label="${htmlSafe(def.name)} 상세보기"></button></div>
       <div class="deploy-stat">${formatGeneralBuffsChips({ ...def, lv: 1, stars: 3 })}</div>
     `;
+    const detailBtn = card.querySelector('.general-detail-btn');
+    if (detailBtn) {
+      detailBtn.addEventListener('touchstart', ev => ev.stopPropagation(), { passive: true });
+      detailBtn.addEventListener('touchmove', ev => ev.stopPropagation(), { passive: true });
+      bindTap(detailBtn, (ev) => {
+        if (ev && ev.preventDefault) ev.preventDefault();
+        if (ev && ev.stopPropagation) ev.stopPropagation();
+        showGeneralDetail(g);
+      });
+    }
     bindTap(card, () => {
       chosenId = def.id;
       roster.querySelectorAll('.deploy-card').forEach(c => c.classList.remove('sp-selected'));
@@ -20252,7 +20734,11 @@ function showPrisonerScreen(prisoners, onContinue) {
     buttons.forEach((b) => {
       const btn = document.createElement('button');
       btn.className = b.className || '';
-      btn.textContent = b.text;
+      if (b.sub) {
+        btn.innerHTML = `${b.text} <span style="font-size:0.82em; font-weight:800; letter-spacing:0; opacity:0.92; color:#ffd86b; white-space:nowrap;">${b.sub}</span>`;
+      } else {
+        btn.textContent = b.text;
+      }
       bindTap(btn, b.action);
       choice.appendChild(btn);
     });
@@ -20286,7 +20772,7 @@ function showPrisonerScreen(prisoners, onContinue) {
       line.textContent = p.quote;
       meta.textContent = `등용 비용 ★${p.cost} · 충성심 ${p.loyalty} · 성공 확률 ${Math.round(recruitChance(p) * 100)}%`;
       renderButtons([
-        { text: '등용한다', className: 'yes', action: () => attemptRecruit(p) },
+        { text: '등용한다', sub: `(★${p.cost} 차감)`, className: 'yes', action: () => attemptRecruit(p) },
         { text: '처단한다', className: 'no', action: () => executePrisoner(p) },
       ]);
     }
@@ -20364,6 +20850,20 @@ function showMsg(text, stars, buttons, gold, result) {
       ? Array.from({ length: 3 }, (_, i) => `<span class="${i < stars ? 'star-on' : 'star-off'}" aria-label="${i < stars ? '획득 별' : '미획득 별'}"></span>`).join('')
       : '';
   } else { starsEl.innerHTML = ''; }
+  // 클리어 등급(평가) 캡션 — 가운데 큰 별이 '받은 별'이 아니라 '평가 점수'임을 명확히 (재화 별과 혼동 방지)
+  let starsCapEl = document.getElementById('msgStarsCap');
+  if (!starsCapEl) {
+    starsCapEl = document.createElement('div');
+    starsCapEl.id = 'msgStarsCap';
+    starsCapEl.style.cssText = 'position:relative; z-index:1; text-align:center; font-size:13px; font-weight:700; letter-spacing:1px; color:#b8975a; margin-top:12px;';
+    starsEl.parentNode.insertBefore(starsCapEl, starsEl);
+  }
+  if (stars !== undefined && stars > 0 && result !== 'defeat') {
+    starsCapEl.style.display = 'block';
+    starsCapEl.textContent = `클리어 등급 ${stars}/3`;
+  } else {
+    starsCapEl.style.display = 'none';
+  }
   // 골드 라벨
   let goldEl = document.getElementById('msgGold');
   if (!goldEl) {
@@ -23122,102 +23622,7 @@ function drawCastle(c) {
 
   // 병사 도열 제거 — 성은 건축물만, 병사는 출진 후만 보임
 
-  const showCastleDetail = menuCastle === c && !dragMoved;
-  if (showCastleDetail) {
-    // 주력 병종 배지 (좌측)
-    const u = UNITS[c.primary];
-    const bx = x - r * 1.1 - 15 * DPR(), by = y - r * 0.34, br = 14 * DPR();
-    ctx.fillStyle = 'rgba(20,12,6,0.85)'; ctx.strokeStyle = u.accent; ctx.lineWidth = 2 * DPR();
-    ctx.beginPath(); ctx.arc(bx, by, br, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-    ctx.font = `bold ${15 * DPR()}px 'Noto Serif KR', serif`;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 3 * DPR();
-    ctx.fillStyle = u.accent; ctx.fillText(u.label, bx, by + 1*DPR());
-    ctx.restore();
-
-    // 특성 배지 (우측)
-    const tr = TRAITS[c.trait];
-    const tx2 = x + r * 1.1 + 15 * DPR();
-    ctx.fillStyle = 'rgba(20,12,6,0.85)'; ctx.strokeStyle = tr.color; ctx.lineWidth = 2 * DPR();
-    ctx.beginPath(); ctx.arc(tx2, by, br, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-    ctx.font = `bold ${15 * DPR()}px 'Noto Serif KR', serif`;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 3 * DPR();
-    ctx.fillStyle = tr.color; ctx.fillText(tr.label, tx2, by + 1*DPR());
-    ctx.restore();
-    ctx.textBaseline = 'alphabetic';
-
-    // 병종별 보유 수 (선택한 성에서만 표시)
-    const pillH = 22 * DPR();
-    const pillW = 56 * DPR();
-    const gap = 8 * DPR();
-    const totalW = pillW * 3 + gap * 2;
-    const ly = y + r * 1.55;
-    const startX = x - totalW / 2;
-    const radius = 10 * DPR();
-    for (let i = 0; i < UNIT_KEYS.length; i++) {
-      const k = UNIT_KEYS[i];
-      const cnt = c.troops[k];
-      const u2 = UNITS[k];
-      const px = startX + i * (pillW + gap);
-      const py = ly;
-      const isPrimary = c.primary === k;
-      // 0개 병종은 흐릿하게
-      ctx.save();
-      if (cnt <= 0) ctx.globalAlpha = 0.5;
-      // 배경 알약 (fill만)
-      ctx.fillStyle = cnt > 0 ? '#ffffff' : '#e0d8c8';
-      roundRect(px, py, pillW, pillH, radius);
-      ctx.fill();
-      // 좌측 색 띠 (병종 accent → 어둡게 그라디언트)
-      ctx.save();
-      roundRect(px, py, pillW * 0.36, pillH, radius);
-      ctx.clip();
-      const grad = ctx.createLinearGradient(px, py, px + pillW * 0.36, py);
-      const accent = cnt > 0 ? u2.accent : '#a0a0a0';
-      grad.addColorStop(0, accent);
-      grad.addColorStop(1, 'rgba(0,0,0,0.55)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(px, py, pillW * 0.36, pillH);
-      ctx.restore();
-      // 외곽 stroke (한 번만, 띠 위에)
-      ctx.strokeStyle = '#1a0a08';
-      ctx.lineWidth = 2.5 * DPR();
-      roundRect(px, py, pillW, pillH, radius);
-      ctx.stroke();
-      // 좌측 한자
-      ctx.save();
-      ctx.shadowColor = 'rgba(255,255,255,0.5)'; ctx.shadowBlur = 2 * DPR();
-      ctx.fillStyle = '#1a0a08';
-      ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
-      ctx.font = `900 ${15 * DPR()}px 'Noto Serif KR', serif`;
-      ctx.fillText(u2.label, px + pillW * 0.20, py + pillH / 2 + 1*DPR());
-      // 우측 숫자
-      ctx.font = `900 ${17 * DPR()}px 'Noto Serif KR', serif`;
-      ctx.fillStyle = cnt > 0 ? '#1a0a08' : '#888';
-      ctx.fillText(cnt, px + pillW * 0.62, py + pillH / 2 + 1*DPR());
-      ctx.restore();
-      // 진영 색 dot (우측 상단 — 알약 바깥쪽으로 살짝 빼서 글자 영역 침범 방지)
-      ctx.fillStyle = f.flag;
-      ctx.strokeStyle = '#1a0a08';
-      ctx.lineWidth = 1.2 * DPR();
-      ctx.beginPath();
-      ctx.arc(px + pillW - 2.5*DPR(), py + 2.5*DPR(), 2.6*DPR(), 0, Math.PI*2);
-      ctx.fill(); ctx.stroke();
-      // 주력 표시 (별)
-      if (isPrimary) {
-        ctx.fillStyle = '#ffb800';
-        ctx.strokeStyle = '#1a0a08';
-        ctx.lineWidth = 2 * DPR();
-        ctx.font = `900 ${11 * DPR()}px serif`;
-        ctx.textBaseline = 'middle';
-        ctx.strokeText('★', px + 4*DPR(), py - 1*DPR());
-        ctx.fillText('★', px + 4*DPR(), py - 1*DPR());
-      }
-      ctx.textBaseline = 'alphabetic';
-      ctx.restore();
-    }
-  }
+  // (구) 선택 시 좌/우 병종·특성 배지 제거 — 이름 옆 상시 병종 배지로 대체됨
 
   // 이름 + 총 병력 (인라인 통합 pill)
   ctx.textAlign = 'center';
@@ -23231,7 +23636,10 @@ function drawCastle(c) {
   const npadX = 8 * DPR(), npadY = 4 * DPR();
   const innerGap = 6 * DPR();
   const badgeR = Math.max(totW/2 + 5*DPR(), 9*DPR());
-  const pillInnerW = nameW + innerGap + badgeR*2;
+  const uBadgeR = 9 * DPR();
+  const uClr = UNIT_BADGE_COLOR[c.primary] || '#cfd6dd';
+  const uLabel = (UNITS[c.primary] && UNITS[c.primary].label) || '?';
+  const pillInnerW = uBadgeR*2 + innerGap + nameW + innerGap + badgeR*2;
   const pillX = x - pillInnerW/2 - npadX;
   const pillY = nameY - 9*DPR() - npadY;
   const pillH = 18*DPR() + npadY*2;
@@ -23248,7 +23656,7 @@ function drawCastle(c) {
   ctx.fillRect(pillX, pillY, 5 * DPR(), pillH);
   ctx.restore();
   // 이름 (좌측)
-  const nameCx = pillX + npadX + nameW/2;
+  const nameCx = pillX + npadX + uBadgeR*2 + innerGap + nameW/2;
   ctx.font = `bold ${15 * DPR()}px 'Noto Serif KR', serif`;
   ctx.lineJoin = 'round';
   ctx.strokeStyle = 'rgba(0,0,0,0.6)';
@@ -23256,8 +23664,16 @@ function drawCastle(c) {
   ctx.strokeText(c.name, nameCx, nameY);
   ctx.fillStyle = '#f4e4b8';
   ctx.fillText(c.name, nameCx, nameY);
+  // 병종 배지 (이름 왼쪽) — 현재 주력/선택 병종, 항상 표시(아군·적군·중립)
+  const uBadgeCx = pillX + npadX + uBadgeR;
+  ctx.fillStyle = uClr;
+  ctx.strokeStyle = 'rgba(20,10,6,0.95)'; ctx.lineWidth = 1.4 * DPR();
+  ctx.beginPath(); ctx.arc(uBadgeCx, nameY, uBadgeR, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.font = `900 ${12 * DPR()}px 'Noto Serif KR', serif`;
+  ctx.fillStyle = '#15243a';
+  ctx.fillText(uLabel, uBadgeCx, nameY + 0.5*DPR());
   // 총 병력 배지 (진영색)
-  const badgeCx = pillX + npadX + nameW + innerGap + badgeR;
+  const badgeCx = pillX + npadX + uBadgeR*2 + innerGap + nameW + innerGap + badgeR;
   ctx.fillStyle = c.owner === 0 ? 'rgba(120,84,44,0.95)' : (f.main || 'rgba(180,40,40,0.95)');
   ctx.strokeStyle = '#1a0a08'; ctx.lineWidth = 1.2 * DPR();
   ctx.beginPath();
@@ -23292,9 +23708,9 @@ function drawCastle(c) {
   // === 병종별 인원 (창/기/궁) — pill 아래 작은 칩 ===
   {
     const chips = [
-      { label: '창', val: c.troops.spear   || 0, color: '#5fb86a' },
-      { label: '기', val: c.troops.cavalry || 0, color: '#e8a838' },
-      { label: '궁', val: c.troops.archer  || 0, color: '#7faad8' },
+      { label: '창', val: c.troops.spear   || 0, color: UNIT_BADGE_COLOR.spear },
+      { label: '기', val: c.troops.cavalry || 0, color: UNIT_BADGE_COLOR.cavalry },
+      { label: '궁', val: c.troops.archer  || 0, color: UNIT_BADGE_COLOR.archer },
     ];
     ctx.font = `900 ${10 * DPR()}px 'Noto Serif KR', serif`;
     ctx.textBaseline = 'middle';
@@ -23919,7 +24335,6 @@ function drawMenu(c) {
   const pulse = 1 + Math.sin(t * 5) * 0.08;
   for (let i = 0; i < 3; i++) {
     const u = UNIT_KEYS[i];
-    const cnt = c.troops[u];
     const ip = iconPos(c, i);
     const isPrimary = u === c.primary;
     const ir = ICON_R() * (isPrimary ? pulse : 1);
@@ -23927,7 +24342,7 @@ function drawMenu(c) {
     // 글로우 (현재 주력만 강조)
     if (isPrimary) {
       const g = ctx.createRadialGradient(ip.x, ip.y, ir*0.5, ip.x, ip.y, ir*1.8);
-      g.addColorStop(0, UNITS[u].accent + 'ff');
+      g.addColorStop(0, (UNIT_BADGE_COLOR[u] || UNITS[u].accent) + 'ff');
       g.addColorStop(1, 'transparent');
       ctx.fillStyle = g;
       ctx.beginPath(); ctx.arc(ip.x, ip.y, ir*1.8, 0, Math.PI*2); ctx.fill();
@@ -23938,20 +24353,19 @@ function drawMenu(c) {
 
     // 배경
     ctx.fillStyle = isPrimary ? 'rgba(30,18,8,0.96)' : 'rgba(40,28,14,0.45)';
-    ctx.strokeStyle = isPrimary ? UNITS[u].accent : '#555';
+    ctx.strokeStyle = isPrimary ? (UNIT_BADGE_COLOR[u] || UNITS[u].accent) : '#555';
     ctx.lineWidth = isPrimary ? 3 * DPR() : 2 * DPR();
     ctx.beginPath(); ctx.arc(ip.x, ip.y, ir, 0, Math.PI*2);
     ctx.fill(); ctx.stroke();
 
-    // 한글 라벨
-    ctx.font = `bold ${22 * DPR()}px 'Noto Serif KR', serif`;
+    // 병종 선택 버튼: 수량은 성 위 현황 칩에서 이미 보여주므로 버튼에는 병종만 크게 표시.
+    ctx.font = `900 ${24 * DPR()}px 'Noto Serif KR', serif`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = isPrimary ? UNITS[u].accent : '#888';
-    ctx.fillText(UNITS[u].label, ip.x, ip.y - 4*DPR());
-    // 숫자
-    ctx.font = `bold ${13 * DPR()}px 'Noto Serif KR', serif`;
-    ctx.fillStyle = isPrimary ? '#f0e0c0' : '#777';
-    ctx.fillText(cnt, ip.x, ip.y + 14*DPR());
+    ctx.lineWidth = 3 * DPR();
+    ctx.strokeStyle = 'rgba(18,8,3,0.92)';
+    ctx.fillStyle = isPrimary ? (UNIT_BADGE_COLOR[u] || UNITS[u].accent) : 'rgba(205,210,200,0.72)';
+    ctx.strokeText(UNITS[u].label, ip.x, ip.y + 1*DPR());
+    ctx.fillText(UNITS[u].label, ip.x, ip.y + 1*DPR());
     ctx.textBaseline = 'alphabetic';
   }
 }
@@ -24342,11 +24756,19 @@ function render(dt) {
   drawBattleStains();
 
   if (dragUnit && dragSourceCastle && dragTo) {
-    // 조준 대상 탐색 — drop 로직과 100% 동기화 (성 halo 우선, 그 밖에서만 적 부대 정밀)
-    let hoverCastle = castleAtHalo(dragTo.x, dragTo.y);
-    let hoverArmy = hoverCastle ? null : enemyArmyAt(dragTo.x, dragTo.y, dragSourceCastle.owner);
-    let hoverFriend = (!hoverCastle && !hoverArmy) ? friendlyArmyAt(dragTo.x, dragTo.y, dragSourceCastle.owner) : null;
-    if (!hoverCastle && !hoverArmy && !hoverFriend) {
+    // 조준 대상 탐색 — drop 로직과 동기화. 튜토리얼 요격 단계는 적 부대만 조준.
+    const tutoCur = tutorialState && TUTO_STEPS[tutorialState.stepIdx];
+    const tutoBlock = tutoCur && tutoCur.id;
+    let hoverCastle = null;
+    let hoverArmy = null;
+    if (tutoBlock === 'intercept') {
+      hoverArmy = enemyArmyAt(dragTo.x, dragTo.y, dragSourceCastle.owner);
+    } else {
+      hoverCastle = castleAtHalo(dragTo.x, dragTo.y);
+      hoverArmy = hoverCastle ? null : enemyArmyAt(dragTo.x, dragTo.y, dragSourceCastle.owner);
+    }
+    let hoverFriend = (tutoBlock !== 'intercept' && !hoverCastle && !hoverArmy) ? friendlyArmyAt(dragTo.x, dragTo.y, dragSourceCastle.owner) : null;
+    if (tutoBlock !== 'intercept' && !hoverCastle && !hoverArmy && !hoverFriend) {
       let bestD = 80 * DPR(), best = null;
       for (const c of castles) {
         if (c === dragSourceCastle) continue;
@@ -24565,7 +24987,7 @@ function render(dt) {
   }
 
   // 메뉴
-  if (menuCastle && !armedUnit) drawMenu(menuCastle);
+  if (menuCastle && !armedUnit && tutorialAllowsUnitMenu()) drawMenu(menuCastle);
 
   // 선택된 병종 큰 표시
   if (armedUnit) {
@@ -25038,6 +25460,25 @@ window.addEventListener('touchstart', pointerDownWrap, { passive: false });
 window.addEventListener('touchmove', pointerMove, { passive: false });
 window.addEventListener('touchend', pointerUp, { passive: false });
 
+// 마우스 휠 줌 (데스크톱/웹) — 모바일 터치엔 영향 없음. 커서 위치 기준 확대/축소.
+window.addEventListener('wheel', (e) => {
+  if (!document.body.classList.contains('in-game')) return;
+  if (cinematic || msgShown || window._introDialogActive) return;
+  e.preventDefault();
+  const prev = zoom;
+  const factor = Math.exp(-e.deltaY * 0.0015);
+  const nz = Math.max(minZoom(), Math.min(ZOOM_MAX, prev * factor));
+  if (nz === prev) return;
+  const p = getPos(e);
+  const before = screenToWorld(p.x, p.y);
+  zoom = nz;
+  const after = screenToWorld(p.x, p.y);
+  camX += before.x - after.x; camY += before.y - after.y;
+  clampCamera();
+  window._targetCamX = camX; window._targetCamY = camY; window._targetZoom = zoom;
+  tutoNoteUserZoom(nz);   // 튜토리얼 줌 2페이즈(확대→축소) 진행
+}, { passive: false });
+
 kickLoop();
 </script>
 <div id="bpDetailModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
@@ -25049,7 +25490,7 @@ kickLoop();
 </div>
 <div id="tutorialOfferModal" style="display:none; position:fixed; inset:0; background:rgba(10,5,2,0.78); z-index:10000; align-items:center; justify-content:center; padding:18px;">
   <div class="sx-card" style="max-width:420px;">
-    <div class="sx-seal">안 내</div>
+    <div class="sx-seal">안내</div>
     <div class="sx-title">튜토리얼</div>
     <div class="sx-body">
       처음이신가요?<br>
@@ -25058,12 +25499,27 @@ kickLoop();
     </div>
     <div class="sx-buttons" style="gap:8px;">
       <button class="sx-btn sx-btn-q" onclick="closeTutorialOffer(false)" style="flex:1;">아니오</button>
-      <button class="sx-btn sx-btn-all" onclick="closeTutorialOffer(true)" style="flex:1.4; letter-spacing:6px;">진 행</button>
+      <button class="sx-btn sx-btn-all" onclick="closeTutorialOffer(true)" style="flex:1.4; letter-spacing:6px;">진행</button>
     </div>
   </div>
 </div>
 <script>
-function showTutorialOfferModal() { document.getElementById('tutorialOfferModal').style.display = 'flex'; }
+function showTutorialOfferModal(mode) {
+  const modal = document.getElementById('tutorialOfferModal');
+  if (!modal) return;
+  const title = modal.querySelector('.sx-title');
+  const body = modal.querySelector('.sx-body');
+  const ok = modal.querySelector('.sx-btn-all');
+  const isReplay = mode === 'replay';
+  if (title) title.textContent = isReplay ? '튜토리얼 다시 보기' : '튜토리얼';
+  if (body) {
+    body.innerHTML = isReplay
+      ? '기본 조작을 다시 익혀볼까요?<br>튜토리얼 전투로 이동해 조작법을 안내합니다.'
+      : '처음이신가요?<br>간단한 조작 가이드를 진행할 수 있습니다.<br><span style="display:inline-block; margin-top:8px; padding:6px 14px; background:linear-gradient(180deg,#fff5d8,#f3c663 60%,#d89d36); border:2px solid #1a0a04; border-radius:4px; box-shadow:0 3px 0 #1a0a04; color:#1a0a04; font-weight:900; font-size:15px;">진행 보상: <span style="color:#b91c1c">+1,500 G</span></span>';
+  }
+  if (ok) ok.textContent = isReplay ? '시작' : '진행';
+  modal.style.display = 'flex';
+}
 function closeTutorialOffer(accept) {
   document.getElementById('tutorialOfferModal').style.display = 'none';
   SAVE.tutorialPrompted = true;
@@ -29349,6 +29805,81 @@ function closeTutorialOffer(accept) {
       0 26px 70px rgba(0,0,0,0.62),
       inset 0 1px 0 rgba(255,255,255,0.10) !important;
   }
+  /* 튜토리얼 안내 팝업 — 별교환 모달과 동일한 금장 디자인 (중앙 정렬) */
+  #tutorialOfferModal .sx-card {
+    position: relative !important;
+    width: min(360px, calc(100vw - 32px)) !important;
+    max-width: 360px !important;
+    padding: 40px 24px 22px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 14px !important;
+  }
+  #tutorialOfferModal .sx-seal {
+    position: absolute !important;
+    top: -22px !important; left: 50% !important;
+    transform: translateX(-50%) rotate(-2deg) !important;
+    width: 90px !important; height: 66px !important;
+    display: flex !important; align-items: center !important; justify-content: center !important;
+    padding: 0 0 4px !important;
+    background: url('./assets/ui/sx_header_badge.png') center / 100% 100% no-repeat !important;
+    color: #fff7d6 !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 26px !important; font-weight: 900 !important; line-height: 1 !important;
+    letter-spacing: 2px !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.62), 0 0 11px rgba(255,224,118,0.42) !important;
+  }
+  #tutorialOfferModal .sx-title {
+    height: 48px !important; margin: 6px auto 2px !important; padding: 0 20px 4px !important;
+    display: flex !important; align-items: center !important; justify-content: center !important;
+    background: url('./assets/ui/sx_title_plate.png') center / 100% 100% no-repeat !important;
+    color: #fff4b8 !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 19px !important; font-weight: 900 !important; line-height: 1 !important;
+    letter-spacing: 3px !important; text-align: center !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.64), 0 0 12px rgba(255,224,118,0.36) !important;
+  }
+  #tutorialOfferModal .sx-body {
+    width: 100% !important;
+    min-height: 104px !important; margin: 0 !important; padding: 20px 18px 18px !important;
+    display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important;
+    background: url('./assets/ui/sx_info_panel.png') center / 100% 100% no-repeat !important;
+    color: #142137 !important;
+    font-family: 'Noto Sans KR', system-ui, sans-serif !important;
+    text-align: center !important;
+    font-size: 14px !important; font-weight: 700 !important; line-height: 1.65 !important;
+    word-break: keep-all !important;
+  }
+  #tutorialOfferModal .sx-buttons {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important; margin: 2px 0 0 !important;
+  }
+  #tutorialOfferModal .sx-btn {
+    width: 100% !important; height: 54px !important; min-width: 0 !important;
+    margin: 0 !important; padding: 0 6px 5px !important;
+    display: inline-flex !important; align-items: center !important; justify-content: center !important;
+    border: 0 !important; border-radius: 0 !important;
+    background: url('./assets/ui/sx_btn_gold.png') center / 100% 100% no-repeat !important;
+    box-shadow: none !important;
+    color: #2a1600 !important;
+    font-family: 'Noto Serif KR', serif !important;
+    font-size: 17px !important; font-weight: 900 !important; line-height: 1 !important;
+    letter-spacing: 3px !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.65) !important;
+    cursor: pointer !important;
+    transition: transform 0.08s ease, filter 0.08s ease !important;
+  }
+  #tutorialOfferModal .sx-btn:active { transform: translateY(2px) scale(0.99) !important; filter: brightness(0.96) !important; }
+  #tutorialOfferModal .sx-btn-all {
+    background-image: url('./assets/ui/sx_btn_red.png') !important;
+    color: #fff7d6 !important;
+    letter-spacing: 3px !important;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.58) !important;
+  }
   #msgText {
     color: #fff1b8 !important;
     text-shadow: 0 2px 0 rgba(0,0,0,0.68) !important;
@@ -29570,16 +30101,18 @@ function closeTutorialOffer(accept) {
     object-fit: cover !important;
     filter: drop-shadow(0 9px 10px rgba(0,0,0,0.65)) !important;
   }
+  /* 좌우 반전은 JS가 캐릭터별 facing 맵으로 .flipx 토글 (서로 마주보게) */
   #introDialog .idg-left img {
     left: -12% !important;
-    transform: scaleX(1) !important;
+    transform: scaleX(var(--idg-face-flip, 1)) !important;
     transform-origin: center !important;
   }
   #introDialog .idg-right img {
     left: -8% !important;
-    transform: scaleX(-1) !important;
+    transform: scaleX(var(--idg-face-flip, 1)) !important;
     transform-origin: center !important;
   }
+  #introDialog .idg-portrait.flipx img { transform: scaleX(var(--idg-face-flip, -1)) !important; }
   #introDialog .idg-name {
     left: 8px !important;
     right: 8px !important;
@@ -30659,7 +31192,7 @@ function closeTutorialOffer(accept) {
     font-size: 0 !important;
     line-height: 0 !important;
     text-shadow: none !important;
-    pointer-events: none !important;
+    pointer-events: auto !important;
   }
   .formation-slot.filled {
     overflow: visible !important;
@@ -31504,14 +32037,14 @@ function closeTutorialOffer(accept) {
     animation: idgPortraitStrikeRight 0.46s cubic-bezier(.18,1.45,.24,1) !important;
   }
   #introDialog.enemy-speaking .idg-left.active img {
-    transform: scaleX(1) scale(1.13) translateY(-2%) !important;
+    transform: scaleX(var(--idg-face-flip, 1)) scale(1.13) translateY(-2%) !important;
     filter:
       drop-shadow(0 11px 12px rgba(0,0,0,0.70))
       saturate(1.14)
       contrast(1.06) !important;
   }
   #introDialog.player-speaking .idg-right.active img {
-    transform: scaleX(-1) scale(1.13) translateY(-2%) !important;
+    transform: scaleX(var(--idg-face-flip, 1)) scale(1.13) translateY(-2%) !important;
     filter:
       drop-shadow(0 11px 12px rgba(0,0,0,0.70))
       saturate(1.14)
@@ -34370,7 +34903,7 @@ function closeTutorialOffer(accept) {
     text-overflow: ellipsis;
     z-index: 7 !important;
   }
-  :is(.manage-roster,.deploy-roster) .general-detail-btn {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .general-detail-btn {
     top: 7px !important;
     right: 7px !important;
     width: 28px !important;
@@ -34382,12 +34915,12 @@ function closeTutorialOffer(accept) {
     box-shadow: none !important;
     z-index: 8 !important;
   }
-  :is(.manage-roster,.deploy-roster) .general-detail-btn::before,
-  :is(.manage-roster,.deploy-roster) .general-detail-btn::after {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .general-detail-btn::before,
+  :is(.manage-roster,.deploy-roster,.sp-roster) .general-detail-btn::after {
     content: none !important;
     display: none !important;
   }
-  :is(.manage-roster,.deploy-roster) .general-detail-btn:active {
+  :is(.manage-roster,.deploy-roster,.sp-roster) .general-detail-btn:active {
     transform: translateY(1px) scale(0.94);
     filter: brightness(1.08);
   }
@@ -37939,7 +38472,7 @@ function closeTutorialOffer(accept) {
 	    grid-row: 1 !important;
 	    align-self: center !important;
 	    justify-self: start !important;
-	    background: url('./assets/ui/upg_icon_castle_atk.png') center / 100% 100% no-repeat !important;
+	    background: url('./assets/ui/stage_btn_home.svg?v=home-thin-20260620') center / 100% 100% no-repeat !important;
 	  }
 	  #stageSelect .topbar .back::before,
 	  #stageSelect .topbar .back::after,
@@ -39590,6 +40123,8 @@ function doStarExchange(n) {
   SAVE.gold = (SAVE.gold || 0) + gain;
   saveProgress();
   refreshTopStats();
+  // 강화 화면/의식 결과창이 열려 있으면 버튼·힌트 상태를 즉시 갱신
+  if (typeof window.__enhResourceHook === 'function') { try { window.__enhResourceHook(); } catch (_) {} }
   showSelectToast(`★${amt} → ${gain.toLocaleString()}G`, '#ffd23f');
   const card = document.querySelector('#starExchangeModal .sx-card');
   if (card) {
@@ -40105,6 +40640,19 @@ function renderEnhance() {
   } else if ((SAVE.gold || 0) < ENHANCE_COST_GOLD) {
     goBtn.textContent = '골드 부족';
   }
+
+  // 골드만 부족하고 별이 있으면 → 별 교환 유도 힌트 노출
+  const goldHint = document.getElementById('enhGoldHint');
+  if (goldHint) {
+    const stars = SAVE.starsAvailable || 0;
+    const goldShort = !!target && curLv < ENHANCE_MAX_LV && (SAVE.gold || 0) < ENHANCE_COST_GOLD;
+    const showHint = goldShort && stars >= 1;
+    goldHint.classList.toggle('show', showHint);
+    const gainEl = document.getElementById('enhGoldHintGain');
+    if (gainEl) gainEl.textContent = `★${stars}→${(stars * STAR_TO_GOLD).toLocaleString()}G`;
+  }
+  // 교환 후 자원 변동 시 이 화면을 다시 평가하도록 훅 등록
+  window.__enhResourceHook = renderEnhance;
 
   // 로스터
   renderEnhanceRoster();
@@ -40803,14 +41351,31 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
     });
 
     sched(actionDelay, () => {
-      const canRetry = newLv < ENHANCE_MAX_LV
-        && (SAVE.starsAvailable || 0) >= ENHANCE_COST_STARS
-        && (SAVE.gold || 0) >= ENHANCE_COST_GOLD;
-      retryBtn.disabled = !canRetry;
-      retryBtn.textContent = canRetry ? '다시 강화' : (newLv >= ENHANCE_MAX_LV ? '최대 레벨' : '자원 부족');
+      applyResultActionState();
       doneBtn.textContent = '완료';
       actions.classList.add('show');
+      // 교환소에서 골드를 채우면 이 결과창 버튼/힌트를 다시 평가
+      window.__enhResourceHook = applyResultActionState;
     });
+  }
+
+  // 재시도 버튼 + 골드부족 힌트 상태를 (재)평가 — 별 교환 후에도 호출됨
+  function applyResultActionState() {
+    const enough = (SAVE.starsAvailable || 0) >= ENHANCE_COST_STARS
+      && (SAVE.gold || 0) >= ENHANCE_COST_GOLD;
+    const canRetry = newLv < ENHANCE_MAX_LV && enough;
+    retryBtn.disabled = !canRetry;
+    retryBtn.textContent = canRetry ? '다시 강화'
+      : (newLv >= ENHANCE_MAX_LV ? '최대 레벨'
+         : ((SAVE.gold || 0) < ENHANCE_COST_GOLD ? '골드 부족' : '별 부족'));
+    const hint = document.getElementById('erGoldHint');
+    if (hint) {
+      const stars = SAVE.starsAvailable || 0;
+      const goldShort = newLv < ENHANCE_MAX_LV && (SAVE.gold || 0) < ENHANCE_COST_GOLD;
+      hint.classList.toggle('show', goldShort && stars >= 1);
+      const gainEl = document.getElementById('erGoldHintGain');
+      if (gainEl) gainEl.textContent = `★${stars}→${(stars * STAR_TO_GOLD).toLocaleString()}G`;
+    }
   }
 
   function close() {
@@ -40820,6 +41385,10 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
     root.className = 'enh-ritual';
     document.body.classList.remove('enh-ritual-active');
     if (cancelBtn) cancelBtn.className = 'er-cancel';
+    const hint = document.getElementById('erGoldHint');
+    if (hint) hint.classList.remove('show');
+    // 결과창 전용 훅 해제 (강화 시작 화면이 다시 자기 훅을 등록함)
+    if (window.__enhResourceHook === applyResultActionState) window.__enhResourceHook = null;
     clearEnhanceRitualFx(root);
     onDone && onDone();
   }

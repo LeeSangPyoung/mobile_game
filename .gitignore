@@ -4,6 +4,15 @@ app/android/build/
 app/android/.gradle/
 app/android/local.properties
 app/android/app/src/main/assets/
+app/android/build_log.txt
+
+# 난이도 재설계 롤백 백업 (대용량 사본)
+prototype.html.bak_difficulty
+app/www/index.html.bak_difficulty
+app/www/index.html.bak_stale_1229
+
+# 미사용 자산 격리 보관소 (702MB, 복구용 — 게임 미참조)
+app/_unused_assets_quarantine/
 app/node_modules/
 app/www/
 

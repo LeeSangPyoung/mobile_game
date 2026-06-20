@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>장수 일러스트 Facing 태깅</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #15181e; color: #e6e8ee; font-family: 'Noto Sans KR', system-ui, sans-serif; }
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: #1b1f27; border-bottom: 1px solid #333a47;
+    padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  }
+  header h1 { font-size: 15px; margin: 0 8px 0 0; font-weight: 800; }
+  .stat { font-size: 12px; color: #9aa3b2; }
+  .stat b.l { color: #ff8a6a; } .stat b.f { color: #ffd86b; } .stat b.r { color: #6fc0ff; }
+  .guide { font-size: 11px; color: #7f8a9b; }
+  button.tool {
+    background: #2a3140; color: #dfe4ee; border: 1px solid #3c4658; border-radius: 7px;
+    padding: 6px 11px; font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+  button.tool:hover { background: #343d50; }
+  button.tool.active { background: #3a6df0; border-color: #3a6df0; color: #fff; }
+  #grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px; padding: 14px;
+  }
+  .card {
+    background: #1d2129; border: 1px solid #2c333f; border-radius: 10px; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .card .imgwrap {
+    height: 170px; background: #11141a center / contain no-repeat;
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .card img { max-width: 100%; max-height: 170px; object-fit: contain; display: block; }
+  .card .nm { padding: 5px 8px 2px; font-size: 12px; font-weight: 700; }
+  .card .sl { padding: 0 8px 6px; font-size: 10px; color: #6f7889; }
+  .card .btns { display: flex; border-top: 1px solid #2c333f; }
+  .card .btns button {
+    flex: 1; border: 0; background: #232934; color: #aeb6c4; padding: 8px 0;
+    font-size: 14px; font-weight: 800; cursor: pointer; border-right: 1px solid #2c333f;
+  }
+  .card .btns button:last-child { border-right: 0; }
+  .card .btns button:hover { background: #2c3340; }
+  .card[data-tag="L"] .btns button.l { background: #c2410c; color: #fff; }
+  .card[data-tag="F"] .btns button.f { background: #b08a00; color: #fff; }
+  .card[data-tag="R"] .btns button.r { background: #1d63c9; color: #fff; }
+  .card[data-tag="L"] { border-color: #c2410c; }
+  .card[data-tag="F"] { border-color: #b08a00; }
+  .card[data-tag="R"] { border-color: #2c333f; }
+  .card .dirhint { position: absolute; top: 6px; font-size: 18px; opacity: .5; }
+  .card .dirhint.left { left: 6px; } .card .dirhint.right { right: 6px; }
+  #exportPane {
+    display: none; position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.7);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  #exportPane .box { background: #1b1f27; border: 1px solid #3c4658; border-radius: 12px; padding: 16px; width: min(640px, 100%); }
+  #exportPane textarea { width: 100%; height: 320px; background: #11141a; color: #cfe; border: 1px solid #2c333f; border-radius: 8px; font-family: monospace; font-size: 12px; padding: 10px; }
+  #exportPane .row { display: flex; gap: 8px; margin-top: 10px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>장수 일러스트 Facing 태깅</h1>
+  <span class="guide">◀ = 캐릭터가 <b>왼쪽</b>을 봄 · ● = <b>정면</b> · ▶ = <b>오른쪽</b>을 봄 &nbsp;|&nbsp; 기본값 ▶(오른쪽). 다른 것만 클릭하면 됩니다.</span>
+  <span class="stat" id="stat"></span>
+  <button class="tool" data-filter="all">전체</button>
+  <button class="tool" data-filter="notR">▶ 외</button>
+  <button class="tool" data-filter="untouched">미검토</button>
+  <button class="tool" id="exportBtn" style="margin-left:auto;background:#1f7a3f;border-color:#1f7a3f;color:#fff;">JSON 내보내기</button>
+  <button class="tool" id="resetBtn" style="background:#7a1f1f;border-color:#7a1f1f;color:#fff;">초기화</button>
+</header>
+<div id="grid"></div>
+
+<div id="exportPane">
+  <div class="box">
+    <div style="font-weight:800;margin-bottom:8px;">facing 맵 JSON — 복사해서 전달해 주세요</div>
+    <textarea id="exportText" readonly></textarea>
+    <div class="row">
+      <button class="tool" id="copyBtn" style="background:#1f7a3f;border-color:#1f7a3f;color:#fff;">복사</button>
+      <button class="tool" id="closeExport">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script src="./assets/generals/roster_200.js"></script>
+<script>
+  const LIST = (window.GENERALS_200 || []).map(([id, name]) => ({ id, name }));
+  const KEY = 'bustFacingTags';
+  let tags = {};
+  try { tags = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (_) { tags = {}; }
+  const touched = new Set(Object.keys(tags));   // 명시적으로 클릭한 것
+  let filter = 'all';
+
+  const grid = document.getElementById('grid');
+  const statEl = document.getElementById('stat');
+
+  // 이미지 후보 (게임과 동일: halfbody_v6 우선 → busts png → faces)
+  function srcCandidates(id) {
+    return [
+      `./assets/generals/halfbody_v6/${id}.webp`,
+      `./assets/generals/busts/${id}.png`,
+      `./assets/generals/busts/real_${id}.png`,
+      `./assets/generals/faces/${id}.png`,
+    ];
+  }
+
+  function tagOf(id) { return tags[id] || 'R'; }   // 기본 오른쪽
+
+  function save() { localStorage.setItem(KEY, JSON.stringify(tags)); updateStat(); }
+
+  function setTag(id, val) {
+    tags[id] = val; touched.add(id); save();
+    const card = grid.querySelector(`.card[data-id="${id}"]`);
+    if (card) card.setAttribute('data-tag', val);
+    if (filter !== 'all') applyFilter();
+  }
+
+  function updateStat() {
+    let l = 0, f = 0, r = 0;
+    LIST.forEach(g => { const t = tagOf(g.id); if (t === 'L') l++; else if (t === 'F') f++; else r++; });
+    statEl.innerHTML = `총 ${LIST.length} · <b class="l">◀ ${l}</b> · <b class="f">● ${f}</b> · <b class="r">▶ ${r}</b> · 검토 ${touched.size}/${LIST.length}`;
+  }
+
+  function makeCard(g) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.id = g.id;
+    card.setAttribute('data-tag', tagOf(g.id));
+    const cands = srcCandidates(g.id);
+    card.innerHTML = `
+      <div class="imgwrap">
+        <span class="dirhint left">◀</span><span class="dirhint right">▶</span>
+        <img loading="lazy" alt="${g.name}" data-i="0">
+      </div>
+      <div class="nm">${g.name}</div>
+      <div class="sl">${g.id}</div>
+      <div class="btns">
+        <button class="l" title="왼쪽을 봄">◀</button>
+        <button class="f" title="정면">●</button>
+        <button class="r" title="오른쪽을 봄">▶</button>
+      </div>`;
+    const img = card.querySelector('img');
+    img.src = cands[0];
+    img.onerror = () => { let i = +img.dataset.i + 1; if (i < cands.length) { img.dataset.i = i; img.src = cands[i]; } else { img.style.opacity = .2; } };
+    card.querySelector('.l').onclick = () => setTag(g.id, 'L');
+    card.querySelector('.f').onclick = () => setTag(g.id, 'F');
+    card.querySelector('.r').onclick = () => setTag(g.id, 'R');
+    return card;
+  }
+
+  function render() {
+    grid.innerHTML = '';
+    LIST.forEach(g => grid.appendChild(makeCard(g)));
+    applyFilter();
+    updateStat();
+  }
+
+  function applyFilter() {
+    LIST.forEach(g => {
+      const card = grid.querySelector(`.card[data-id="${g.id}"]`);
+      if (!card) return;
+      let show = true;
+      if (filter === 'notR') show = tagOf(g.id) !== 'R';
+      else if (filter === 'untouched') show = !touched.has(g.id);
+      card.style.display = show ? '' : 'none';
+    });
+  }
+
+  document.querySelectorAll('header [data-filter]').forEach(b => {
+    b.onclick = () => {
+      filter = b.dataset.filter;
+      document.querySelectorAll('header [data-filter]').forEach(x => x.classList.toggle('active', x === b));
+      applyFilter();
+    };
+  });
+
+  document.getElementById('exportBtn').onclick = () => {
+    const out = {};
+    LIST.forEach(g => { out[g.id] = tagOf(g.id); });
+    document.getElementById('exportText').value = JSON.stringify(out);
+    document.getElementById('exportPane').style.display = 'flex';
+  };
+  document.getElementById('copyBtn').onclick = async () => {
+    const ta = document.getElementById('exportText');
+    ta.select();
+    try { await navigator.clipboard.writeText(ta.value); document.getElementById('copyBtn').textContent = '복사됨!'; }
+    catch (_) { document.execCommand('copy'); }
+  };
+  document.getElementById('closeExport').onclick = () => { document.getElementById('exportPane').style.display = 'none'; };
+  document.getElementById('resetBtn').onclick = () => {
+    if (!confirm('모든 태그를 초기화할까요?')) return;
+    tags = {}; touched.clear(); localStorage.removeItem(KEY); render();
+  };
+
+  if (!LIST.length) { grid.innerHTML = '<p style="padding:20px;color:#f88;">roster_200.js 로드 실패 — 같은 서버(127.0.0.1:5173)에서 열어주세요.</p>'; }
+  else render();
+</script>
+</body>
+</html>
