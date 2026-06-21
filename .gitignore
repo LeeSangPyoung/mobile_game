@@ -64,3 +64,6 @@ assets/generals/style_refs/
 
 # 폰트 서브셋 작업용 원본 TTF (대용량, 산출물 아님)
 _fonttmp/
+
+# 마케팅 작업용 폰트(Google Fonts에서 재다운로드 가능, 대용량)
+marketing*/_fonts/

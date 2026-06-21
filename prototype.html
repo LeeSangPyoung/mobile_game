@@ -12549,6 +12549,24 @@ function buildGeneralRoster() {
 }
 const GENERAL_ROSTER = buildGeneralRoster();
 const GENERAL_BY_ID = new Map(GENERAL_ROSTER.map(g => [g.id, g]));
+// ?unlock=1 — 개발/스크린샷용: 1장 20스테이지 해금 + 명장 30명(3성) + 자원. 끝나면 클린 URL로 리로드.
+if (new URLSearchParams(location.search).get('unlock') === '1') {
+  SAVE.unlocked = Math.max(SAVE.unlocked | 0, 21);   // 1장(인덱스1~20) 전부 해금
+  SAVE.tutorialDone = true; SAVE.tutorialPrompted = true; SAVE.starterPicked = true;
+  SAVE.gold = Math.max(SAVE.gold | 0, 100000);
+  SAVE.starsAvailable = Math.max(SAVE.starsAvailable | 0, 300);
+  if (!Array.isArray(SAVE.generals)) SAVE.generals = [];
+  let _uu = (SAVE.nextGeneralUid | 0) || 1;
+  const _haveU = new Set(SAVE.generals.map(g => g && g.id));
+  for (const g of GENERAL_ROSTER.slice(0, 30)) {
+    if (_haveU.has(g.id)) continue;
+    SAVE.generals.push({ uid: _uu++, id: g.id, lv: 1, stars: 3 });
+    _haveU.add(g.id);
+  }
+  SAVE.nextGeneralUid = _uu;
+  saveProgress();
+  location.replace(location.pathname);
+}
 MANUAL_GENERAL_DEFS.forEach((g, index) => {
   if (!GENERAL_BY_ID.has(g.id)) GENERAL_BY_ID.set(g.id, completeGeneralDef(g, -1 - index));
 });
@@ -13383,6 +13401,9 @@ function openGeneralSelect(idx) {
   deploySelectedSlotIndex = null;
   showScreen('generalSelectScreen');
   renderGeneralSelect();
+  // 진입 시 하단 로스터는 항상 맨 위부터 (화면 내 재렌더는 위치 유지, 재진입만 리셋)
+  const _dr = document.getElementById('deployRoster');
+  if (_dr) _dr.scrollTop = 0;
 }
 function renderGeneralSelect() {
   const roster = getDeployableGenerals();
@@ -13592,6 +13613,9 @@ function showGeneralManage() {
   showScreen('generalManageScreen');
   renderGeneralManage();
   refreshTopStats();
+  // 진입 시 하단 로스터는 항상 맨 위부터 (화면 내 재렌더는 위치 유지, 재진입만 리셋)
+  const _mr = document.getElementById('manageRoster');
+  if (_mr) _mr.scrollTop = 0;
 }
 const FORMATION_KEYS = ['天','地','人'];
 const FORMATION_SUBS  = { '天': '하늘', '地': '땅', '人': '사람' };
@@ -16388,6 +16412,24 @@ function changeChapter(delta) {
 
 // 스테이지 리셋 (현재 currentStage 기준 castles/edges 새로 로드)
 function resetStage() {
+  // ?perfdbg=1 — 전투 시작마다 누적 가능 객체 카운트 로그 (성능 누수 진단용)
+  if (window._perfdbg === undefined) try { window._perfdbg = /[?&]perfdbg=1/.test(location.search); } catch(_) { window._perfdbg = false; }
+  if (window._perfdbg) {
+    window._battleN = (window._battleN || 0) + 1;
+    const _h = (performance.memory && performance.memory.usedJSHeapSize) ? Math.round(performance.memory.usedJSHeapSize/1048576) + 'MB' : 'n/a';
+    console.log(`[perf] 전투#${window._battleN}`, {
+      DOM노드: document.getElementsByTagName('*').length,
+      heap: _h,
+      particles: (typeof particles!=='undefined'?particles.length:0),
+      armies: (typeof armies!=='undefined'?armies.length:0),
+      battleFx: (typeof battleFx!=='undefined'?battleFx.length:0),
+      speeches: (typeof speeches!=='undefined'?speeches.length:0),
+      footprints: (window._footprints?window._footprints.length:0),
+      spriteCache: (typeof _soldierSpriteCache!=='undefined'?_soldierSpriteCache.size:0),
+      posCache: (typeof _soldierPosCache!=='undefined'?_soldierPosCache.size:0),
+      hitCooldown: (typeof battleHitCooldown!=='undefined'?battleHitCooldown.size:0),
+    });
+  }
   msgShown = false;
   const st = STAGES[currentStage];
   // 월드 크기: 스테이지 옵션 > 글로벌 기본값
@@ -24870,7 +24912,13 @@ function render(dt) {
     ctx.setLineDash([]);
   }
 
-  for (const c of castles) drawCastle(c);
+  // 화면 밖 성은 그리지 않음 — 핀치 줌인 시 부하·발열↓ (전체 보일 땐 변화 없음)
+  const _cullMx = 260 * DPR(), _cullMy = 340 * DPR();
+  for (const c of castles) {
+    const _csx = cx(c), _csy = cy(c);
+    if (_csx < -_cullMx || _csx > W + _cullMx || _csy < -_cullMy || _csy > H + _cullMy) continue;
+    drawCastle(c);
+  }
 
   // === 부대 발자국 잔존 효과 ===
   if (!window._footprints) window._footprints = [];
@@ -24905,6 +24953,9 @@ function render(dt) {
   const _hiUntil = window._highlightOwnUntil || 0;
   const _highlightActive = _hiUntil > performance.now();
   for (const a of armies) {
+    // 화면 밖 부대는 그리지 않음 (소대 스프라이트 묶음 = 가장 무거운 그리기)
+    const _asx = w2sx(a.x), _asy = w2sy(a.y);
+    if (_asx < -200 * DPR() || _asx > W + 200 * DPR() || _asy < -240 * DPR() || _asy > H + 240 * DPR()) continue;
     const f = FACTION[a.owner];
     const marchAngle = a.shooting ? undefined : (a._marchAngle ?? Math.atan2(a.target.y * worldPxH() - a.y, a.target.x * worldPxW() - a.x));
     // 하이라이트: 내 부대는 100%, 다른 진영은 35%로 어둡게
@@ -25025,6 +25076,8 @@ function render(dt) {
     const shrink = (p.kind && !p.fire && !p.smoke) ? (0.35 + 0.65 * lifeRatio) : 1;
     const r = (p.size || (3 * DPR() / zoom)) * zoom * shrink;
     const sx = w2sx(p.x), sy = w2sy(p.y);
+    // 화면 밖 파티클은 스킵 (그라디언트 생성 비용 절약)
+    if (sx < -140 * DPR() || sx > W + 140 * DPR() || sy < -140 * DPR() || sy > H + 140 * DPR()) continue;
     const alpha = Math.min(1, p.life * (p.smoke ? 0.5 : (p.kind === 'dust' ? 0.55 : 1)));
     if (p.kind === 'breachSmoke' || p.kind === 'siegeDust') {
       const age = 1 - lifeRatio;

@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Current Game Capture</title>
+<style>
+  html, body {
+    margin: 0;
+    width: 500px;
+    height: 888px;
+    overflow: hidden;
+    background: #06080d;
+  }
+  iframe {
+    display: block;
+    width: 500px;
+    height: 888px;
+    border: 0;
+    background: #06080d;
+  }
+</style>
+</head>
+<body>
+<iframe id="gameFrame" title="game capture"></iframe>
+<script>
+  const params = new URLSearchParams(location.search);
+  const scene = params.get('scene') || 'home';
+  const chapter = Math.max(1, Math.min(10, Number(params.get('chapter') || 1)));
+  const localStage = Math.max(1, Math.min(20, Number(params.get('stage') || 12)));
+  const frame = document.getElementById('gameFrame');
+
+  localStorage.setItem('devCheats', '1');
+  frame.src = '../prototype.html?cheat=1&reset=1&capture=1';
+
+  const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  async function waitForGame() {
+    for (let i = 0; i < 120; i++) {
+      const w = frame.contentWindow;
+      if (w && typeof w.showScreen === 'function' && typeof w.goToStageSelectAt === 'function') return w;
+      await wait(100);
+    }
+    throw new Error('game did not initialize');
+  }
+
+  function inject(w, code) {
+    const s = w.document.createElement('script');
+    s.textContent = code;
+    w.document.body.appendChild(s);
+    s.remove();
+  }
+
+  async function prep() {
+    const w = await waitForGame();
+    await wait(2600);
+    try {
+      const chStart = w.campaignStartIndex ? w.campaignStartIndex(chapter) : 1;
+      const stageIdx = chStart + localStage - 1;
+      if (scene === 'home') {
+        w.showScreen('menu');
+      } else if (scene === 'stage') {
+        w.goToStageSelectAt(chStart);
+      } else if (scene === 'stage6') {
+        const idx = w.campaignStartIndex ? w.campaignStartIndex(6) : chStart;
+        w.goToStageSelectAt(idx);
+      } else if (scene === 'deploy') {
+        w.openGeneralSelect(stageIdx);
+        await wait(300);
+        if (w.autoFillDeploy) w.autoFillDeploy();
+      } else if (scene === 'battle') {
+        w.openGeneralSelect(stageIdx);
+        await wait(250);
+        if (w.autoFillDeploy) w.autoFillDeploy();
+        await wait(250);
+        if (w.confirmDeployGenerals) w.confirmDeployGenerals();
+        await wait(1600);
+        if (w.endIntroDialog) w.endIntroDialog();
+        const msg = frame.contentDocument && frame.contentDocument.getElementById('msg');
+        if (msg) msg.style.display = 'none';
+        inject(w, `
+          try {
+            const own = castles.find(c => c.owner === 1) || castles[0];
+            const enemies = castles.filter(c => c && c.owner === 2);
+            const neutrals = castles.filter(c => c && c.owner === 0);
+            const targets = enemies.concat(neutrals).slice(0, 6);
+            if (own && targets.length) {
+              own.troops.spear = Math.max(own.troops.spear || 0, 42);
+              own.troops.cavalry = Math.max(own.troops.cavalry || 0, 36);
+              own.troops.archer = Math.max(own.troops.archer || 0, 32);
+              targets.forEach((t, i) => {
+                t.troops.spear = Math.max(t.troops.spear || 0, 18 + i * 3);
+                t.troops.cavalry = Math.max(t.troops.cavalry || 0, 16 + i * 2);
+                t.troops.archer = Math.max(t.troops.archer || 0, 15 + i * 2);
+              });
+              const groupId = 'capture-main-war';
+              sendArmy(own, targets[0], 'spear', own, true, { groupId });
+              own.troops.cavalry = Math.max(own.troops.cavalry || 0, 36);
+              sendArmy(own, targets[1] || targets[0], 'cavalry', own, false, { groupId });
+              own.troops.archer = Math.max(own.troops.archer || 0, 32);
+              sendArmy(own, targets[2] || targets[0], 'archer', own, false, { groupId });
+              enemies.slice(0, 3).forEach((e, i) => {
+                const dest = i % 2 === 0 ? own : (neutrals[0] || own);
+                e.troops.cavalry = Math.max(e.troops.cavalry || 0, 24 + i * 5);
+                sendArmy(e, dest, 'cavalry', e, false);
+              });
+              const routeCastles = [own].concat(targets).filter(Boolean);
+              const ownedUids = (SAVE.generals || []).filter(g => g && g.uid).map(g => g.uid);
+              armies.forEach((a, i) => {
+                const to = a.pursuingArmy || a.target;
+                if (!to) return;
+                const tx = (to.x || 0) * worldPxW();
+                const ty = (to.y || 0) * worldPxH();
+                a.x = a.x * 0.34 + tx * 0.66 + (i % 3 - 1) * 22;
+                a.y = a.y * 0.34 + ty * 0.66 + (i % 2 ? 18 : -18);
+                a._marchAngle = Math.atan2(ty - a.y, tx - a.x);
+                a._engaged = true;
+                a._sieging = true;
+                if (ownedUids.length && a.owner === 1 && a.commanderUid == null) {
+                  a.commanderUid = ownedUids[i % ownedUids.length];
+                  a.commanderRank = i + 1;
+                }
+                if (i < 4 && typeof showSpeech === 'function') {
+                  showSpeech(a, ['돌격!', '성문으로!', '기병 전진!', '지원하라!'][i] || '진군!', { life: 9, ambient: true });
+                }
+              });
+              const capturePairs = routeCastles.slice(1, 7).map((t, i) => ({
+                from: i % 2 === 0 ? own : (enemies[i % Math.max(1, enemies.length)] || t),
+                to: i % 2 === 0 ? t : (targets[(i + 1) % targets.length] || own),
+                idx: i
+              }));
+              window.__captureArmies = [];
+              function keepCaptureArmies() {
+                capturePairs.forEach(({ from, to, idx }) => {
+                  if (!from || !to) return;
+                  let a = window.__captureArmies[idx];
+                  const anchors = [
+                    [255, 438], [332, 405], [288, 500],
+                    [398, 360], [222, 548], [430, 465]
+                  ];
+                  const anchor = anchors[idx % anchors.length];
+                  const px = camX + (anchor[0] - W / 2) / zoom;
+                  const py = camY + (anchor[1] - H / 2) / zoom;
+                  if (!a) {
+                    a = {
+                      owner: idx % 2 === 0 ? 1 : 2,
+                      troops: 34 + idx * 6,
+                      unit: ['spear','cavalry','archer'][idx % 3],
+                      atkBonus: 1,
+                      x: px,
+                      y: py,
+                      _sx: from.x * worldPxW(),
+                      _sy: from.y * worldPxH(),
+                      target: to,
+                      homeCastle: from,
+                      commanderOriginCastle: from,
+                      commanderOriginX: from.x * worldPxW(),
+                      commanderOriginY: from.y * worldPxH(),
+                      path: null,
+                      seed: 100 + idx * 37,
+                      shooting: false,
+                      shootTimer: 0,
+                      isArmy: true,
+                      _captureArmy: true,
+                      _engaged: true,
+                      _sieging: true,
+                      commanderUid: ownedUids.length ? ownedUids[idx % ownedUids.length] : null,
+                      commanderRank: idx + 1
+                    };
+                    window.__captureArmies[idx] = a;
+                    armies.push(a);
+                    if (typeof showSpeech === 'function' && idx < 4) {
+                      showSpeech(a, ['돌격!', '막아라!', '기병 전진!', '성문으로!'][idx], { life: 99, ambient: true });
+                    }
+                  }
+                  a.x = px;
+                  a.y = py;
+                  a.troops = 34 + idx * 6;
+                  a.target = to;
+                  a.homeCastle = from;
+                  a.dying = false;
+                  a._engaged = true;
+                  a._sieging = true;
+                  a._marchAngle = Math.atan2(to.y - from.y, to.x - from.x);
+                  if (!armies.includes(a)) armies.push(a);
+                });
+              }
+              keepCaptureArmies();
+              window.__captureArmyTimer = setInterval(keepCaptureArmies, 120);
+              const xs = [own].concat(targets).map(c => c.x * worldPxW());
+              const ys = [own].concat(targets).map(c => c.y * worldPxH());
+              const mx = (Math.min(...xs) + Math.max(...xs)) / 2;
+              const my = (Math.min(...ys) + Math.max(...ys)) / 2;
+              camX = mx; camY = my;
+              zoom = Math.max(minZoom(), Math.min(0.62, ZOOM_MAX));
+              window._targetCamX = camX;
+              window._targetCamY = camY;
+              window._targetZoom = zoom;
+              clampCamera();
+              if (!window.__captureRenderPatched && typeof render === 'function' && typeof drawSoldierGroup === 'function') {
+                window.__captureRenderPatched = true;
+                const __origRender = render;
+                render = function(dt) {
+                  __origRender(dt);
+                  try {
+                    const anchors = [
+                      [252, 442, 1, 'spear', 42, -0.55],
+                      [326, 410, 2, 'cavalry', 46, 2.55],
+                      [288, 502, 1, 'archer', 38, -0.35],
+                      [396, 365, 2, 'spear', 44, 2.75],
+                      [224, 548, 1, 'cavalry', 34, -0.2],
+                      [430, 466, 2, 'archer', 40, 2.95]
+                    ];
+                    anchors.forEach((p, i) => {
+                      const sx = p[0] * DPR();
+                      const sy = p[1] * DPR();
+                      const owner = p[2];
+                      const unit = p[3];
+                      const troops = p[4];
+                      const angle = p[5];
+                      const f = FACTION[owner] || FACTION[1];
+                      const fake = {
+                        owner,
+                        unit,
+                        troops,
+                        seed: 500 + i * 47,
+                        commanderUid: ownedUids.length ? ownedUids[i % ownedUids.length] : null,
+                        commanderRank: i + 1,
+                        _engaged: true,
+                        _sieging: true
+                      };
+                      drawSoldierGroup(sx, sy, troops, unit, f.flag, 14 * DPR() * zoom, fake.seed, angle, true);
+                      drawCommanderBadge(fake, sx, sy, angle);
+                      drawArmyTroopCount(fake, sx, sy, angle);
+                    });
+                  } catch (e) {}
+                };
+              }
+            }
+          } catch (e) {}
+        `);
+        await wait(1200);
+      } else if (scene === 'upgrade') {
+        w.goToUpgrade();
+      } else if (scene === 'enhance') {
+        w.showEnhanceScreen();
+        await wait(400);
+        inject(w, `
+          try {
+            const gs = (SAVE.generals || []).filter(g => g && g.uid);
+            __ENH.targetUid = gs[0] && gs[0].uid;
+            __ENH.fodderUids = gs.slice(1, 4).map(g => g.uid);
+            renderEnhance();
+          } catch (e) {}
+        `);
+      } else if (scene === 'enhance_result') {
+        w.showEnhanceScreen();
+        await wait(400);
+        inject(w, `
+          try {
+            const gs = (SAVE.generals || []).filter(g => g && g.uid);
+            const target = gs[0];
+            const fodders = gs.slice(1, 4);
+            if (target) {
+              __ENH.targetUid = target.uid;
+              __ENH.fodderUids = fodders.map(g => g.uid);
+              renderEnhance();
+              playEnhanceRitual(target, fodders, true, 1, 2, function(){}, {});
+              setTimeout(function(){
+                const btn = document.getElementById('erTrigger');
+                if (btn) btn.click();
+              }, 500);
+            }
+          } catch (e) {}
+        `);
+        await wait(5600);
+      } else if (scene === 'aura') {
+        w.showGeneralManage();
+        await wait(500);
+        inject(w, `
+          try {
+            const ids = ['lu_bu','guan_yu','cao_cao','zhao_yun'];
+            let inst = (SAVE.generals || []).find(g => ids.includes(g.id)) || (SAVE.generals || [])[0];
+            if (inst) {
+              const def = getGeneralById(inst.id);
+              showGeneralDetail({ ...def, uid: inst.uid, lv: inst.lv || 5, stars: inst.stars || 5 });
+            }
+          } catch (e) {}
+        `);
+      } else if (scene === 'exchange') {
+        w.showScreen('menu');
+        await wait(300);
+        w.showStarExchange();
+      } else if (scene === 'prisoner') {
+        w.showPrisonerScreen([{
+          id: 'lu_bu',
+          name: '여포',
+          stars: 5,
+          cost: 5,
+          loyalty: 32,
+          quote: '천하의 강자를 원한다면 나를 시험해 보아라.',
+          successCutin: '여포 등용 성공!'
+        }], () => w.showScreen('menu'));
+      }
+    } catch (err) {
+      document.body.dataset.error = String(err && err.message || err);
+    }
+    document.body.dataset.ready = '1';
+  }
+
+  prep();
+</script>
+</body>
+</html>
