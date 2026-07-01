@@ -19904,6 +19904,22 @@ function update(dt) {
         if (stillAlive) {
           const ddx = p.x - a.x, ddy = p.y - a.y;
           if (Math.hypot(ddx, ddy) <= (a._reinforceCatchupDist || 32 * DPR())) {
+            // 진짜 통합: 같은 그룹·같은 병종 부대가 있으면 병력을 합치고 이 보강군 객체는 제거 → 한 부대.
+            // 별개 부대로 남지 않으니 전투 후 따로 복귀하는 분기 자체가 사라짐.
+            let _mergeInto = null;
+            if (a.groupId != null) {
+              for (const m of armies) {
+                if (m !== a && m.groupId === a.groupId && m.unit === a.unit && !m.dying && m.troops > 0) { _mergeInto = m; break; }
+              }
+            }
+            if (_mergeInto) {
+              _mergeInto._start = (_mergeInto._start || _mergeInto.troops) + (a._start || a.troops);
+              _mergeInto.troops += a.troops;
+              if (_mergeInto._warned && _mergeInto._start && _mergeInto.troops / _mergeInto._start >= 0.35) _mergeInto._warned = false;
+              armies.splice(i, 1); // 보강군 제거 (백워드 루프라 안전)
+              continue;
+            }
+            // 같은 병종이 없으면: 리더와 동일 상태의 정식 그룹원으로 전환 (원래 sub-army와 동일하게 행동 → 따로 안 놂)
             a.pursuingArmy = p.pursuingArmy || null; // 리더가 적 부대 추격 중이었다면 인계
             a.target = p.target;
             a.homeCastle = p.homeCastle || a.homeCastle;
