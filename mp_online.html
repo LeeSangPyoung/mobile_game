@@ -941,10 +941,11 @@ function makeLoopbackPair() {
   }
 
   let role=null, host=null, guest=null, mySide=null, map=null, raf=null, acc=0, lastT=0, selected=-1, over=false;
+  let guestWallMax=[]; // 게스트: 미러 엔진에서 계산한 성벽최대치(정적)
   // 렌더 소스: 호스트는 host.eng(권위), 게스트는 guest.snap+guest.map
   function castlesView(){
     if (role==='host') return host.eng.castles;
-    if (guest && guest.snap && guest.map) return guest.map.castles.map((mc,i)=>({ x:mc.x,y:mc.y,isHome:mc.isHome,size:mc.size,owner:guest.snap.castles[i].owner,troops:guest.snap.castles[i].troops,wallHP:guest.snap.castles[i].wallHP,wallMax:host?0:0 }));
+    if (guest && guest.snap && guest.map) return guest.map.castles.map((mc,i)=>({ x:mc.x,y:mc.y,isHome:mc.isHome,size:mc.size,owner:guest.snap.castles[i].owner,troops:guest.snap.castles[i].troops,wallHP:guest.snap.castles[i].wallHP,wallMax:guestWallMax[i]||1 }));
     return [];
   }
   function pxW(){ return role==='host'? host.eng._pxW : (mapPx.w); }
@@ -972,7 +973,7 @@ function makeLoopbackPair() {
     role='guest';
     const ch=bcChannel('samgukgi-mp');
     guest=new GuestMatch(ch, {
-      onStart:(m)=>{ mySide=m.youSide; map=m.map; const e=new SimEngine(map,0); mapPx={w:e._pxW,h:e._pxH};
+      onStart:(m)=>{ mySide=m.youSide; map=m.map; const e=new SimEngine(map,0); mapPx={w:e._pxW,h:e._pxH}; guestWallMax=e.castles.map(c=>c.wallMax);
         enterGame('🔴 게스트 (진영'+m.youSide+')', 'rguest'); $('conn').textContent='연결됨'; },
       onEnd:(m)=>{ endBanner(m.winner); },
     });
@@ -989,7 +990,7 @@ function makeLoopbackPair() {
 
   function loop(){
     raf=requestAnimationFrame(loop);
-    const now=performance.now(); let dt=Math.min((now-lastT)/1000,0.1); lastT=now;
+    const now=performance.now(); let dt=Math.min((now-lastT)/1000,0.5); lastT=now; // 백그라운드 스로틀 시 최대 0.5s 따라잡기
     if (role==='host' && !host.over){
       acc+=dt; const STEP=1/15;
       while(acc>=STEP){ host.tick(); acc-=STEP; if(host.over)break; }
