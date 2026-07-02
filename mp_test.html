@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>손가락삼국지 — 멀티 2뷰 테스트 (한 창 = 감속 없음)</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b0f16; overflow: hidden; font: 13px system-ui, sans-serif; color: #cbd5e1; }
+  .bar { height: 30px; display: flex; align-items: center; gap: 10px; padding: 0 12px; background: #131a24; border-bottom: 1px solid #263041; }
+  .bar b { color: #ffd24a; }
+  .wrap { display: flex; height: calc(100vh - 31px); gap: 3px; background: #263041; }
+  .pane { flex: 1; height: 100%; position: relative; min-width: 0; }
+  .pane .tag { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); z-index: 5; background: rgba(0,0,0,.55); color: #cbd5e1; padding: 2px 10px; border-radius: 6px; font-size: 11px; pointer-events: none; }
+  iframe { width: 100%; height: 100%; border: 0; background: #000; display: block; }
+</style>
+</head>
+<body>
+  <div class="bar">
+    <b>MP 2뷰 테스트</b>
+    <span>두 게임이 <b>한 창 안</b>에 있어 둘 다 계속 돌아갑니다(브라우저 감속 없음).</span>
+    <span style="margin-left:auto;color:#8b949e">각 화면에서 <b>출정 → 멀티 대전</b> 하면 서로 자동 매칭됩니다.</span>
+  </div>
+  <div class="wrap">
+    <div class="pane"><div class="tag">화면 A</div><iframe src="prototype_mp.html" title="A" allow="autoplay"></iframe></div>
+    <div class="pane"><div class="tag">화면 B</div><iframe src="prototype_mp.html" title="B" allow="autoplay"></iframe></div>
+  </div>
+</body>
+</html>
