@@ -86,14 +86,14 @@ export class SimEngine {
 
 ## 6. 마이그레이션 순서 (증분 — 매 단계 싱글 동작 유지)
 
-1. **상수 감사(4-1)**: 픽셀/줌 의존 상수·수식 전수 목록화(속도, aggro, 충돌반경, worldPx 사용처).
-2. **좌표 전환**: 부대 x/y 월드단위화 + aggro 등 zoom 제거. **이 단계에서 싱글 QA 통과 확인**(가장 위험, 먼저 격리).
-3. **파일 골격**: `engine.js` 생성, mulberry32/상태 컨테이너 정의. prototype는 스크립트 import.
-4. **함수 이관**: §3 시뮬 함수를 SimEngine 메서드로 이동. UI 가드·렌더 호출은 `events` push로 치환.
-5. **명령 경유**: 입력 핸들러가 `sendArmy` 직접 대신 `engine.enqueue()` 호출. 렌더는 `engine.snapshot()`/상태를 읽어 그림.
-6. **RNG/시계 주입**: 시뮬분 교체.
-7. **결정론 self-test**: seed+스크립트 명령열로 200틱 2회 실행 → 상태 해시 동일 검증(§7).
-8. **싱글 리그레션 QA**: 튜토리얼~수 개 스테이지 플레이, 이전과 체감 동일 확인.
+1. ✅ **상수 감사(4-1)**: 완료(`phase0_coupling_audit.md`).
+2. ✅ **좌표 전환**: Step 1(기기독립)·Step 2(줌독립) 완료 — 단, **싱글 QA 대기**(오피스 사정으로 검증 일괄 예정).
+3. ✅ **파일 골격**: `engine.js` 생성 — `mulberry32`/`hashSnapshot`/`SimEngine`(constructor·enqueue·step·snapshot·applySnapshot) 계약 정의 + 상태 컨테이너. prototype import는 5단계(브라우저 배선)로 보류.
+4. 🔨 **함수 이관(진행중)**: **성 생산 `growth` 이관 완료**(엔진 `_growth`, 하네스 검증). 남은 §3 함수(enemyAI/resolveEngagements/resolveSieges/wallRegen/move/sendArmy/huoyu)는 `engine.js` 하단 TODO 로드맵에 라인 매핑.
+5. ⏭ **명령 경유**: 입력 핸들러 → `engine.enqueue()`. 렌더는 `engine.snapshot()` 소비. (브라우저 배선 필요 → 일괄 QA 시)
+6. ✅/🔨 **RNG/시계 주입**: in-place 부분완료(prototype `simRng`/`simTime`, coupling_audit Step 3). 엔진 측은 `this.rng`/`this.simTime`로 계약화.
+7. 🔨 **결정론 self-test**: `test/sim_determinism.mjs` **가동(6/6 통과)** — RNG 스트림·생산 상태 결정론 검증. 함수 이관될수록 커버 확대.
+8. ⏭ **싱글 리그레션 QA**: 일괄 예정(체크리스트: `phase0_coupling_audit.md` Step 1~3).
 
 ---
 
