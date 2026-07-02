@@ -41928,6 +41928,7 @@ function __startRenderLoop() {
   var _origUpdate = update;
   update = function(dt){
     if(MP.role==='host'){
+      MP._cH=(MP._cH||0)+1;
       // rAF(활성 시)·워커(비활성 시) 아무나 부르되, 타임스탬프 게이트로 1회만 시뮬(중복 방지)
       var now = performance.now();
       var gap = now - (MP._lastSim||0);
@@ -41935,9 +41936,9 @@ function __startRenderLoop() {
       var sdt = Math.min(gap/1000, 0.1); MP._lastSim = now;
       _origUpdate(sdt);
       if(now - MP.lastBcast > 80){ MP.lastBcast = now; try{ BC.postMessage({t:'S', s:MP.serialize()}); MP.tx++; }catch(_){}}
-      if((MP.tx & 15)===0) setChip('🔵 <b>호스트</b> · 방송중 (부대 '+armies.length+')', '#58a6ff');
     } else if(MP.role==='guest'){
-      if(!document.body.classList.contains('in-game')){ setChip('🔴 게스트 · 인게임 아님','#f85149'); return; }
+      MP._cG=(MP._cG||0)+1;
+      if(!document.body.classList.contains('in-game')){ return; }
       try{ MP.apply(MP.last); }catch(err){ if(window._mpErr) window._mpErr('apply: '+(err&&err.message)); }
       // 카메라: 컷씬 무시하고 매 프레임 전체 성이 보이게 fit (게스트는 자기 시점)
       try{
@@ -41945,9 +41946,8 @@ function __startRenderLoop() {
         for(var _i=0;_i<castles.length;_i++){ var _px=castles[_i].x*worldPxW(), _py=castles[_i].y*worldPxH(); if(_px<mnx)mnx=_px; if(_py<mny)mny=_py; if(_px>mxx)mxx=_px; if(_py>mxy)mxy=_py; }
         if(isFinite(mnx)){ camX=(mnx+mxx)/2; camY=(mny+mxy)/2; var _bw=(mxx-mnx)+120*DPR(), _bh=(mxy-mny)+200*DPR(); var _z=Math.min(W/_bw,H/_bh); zoom=Math.min(2.2,Math.max(0.3,_z*0.92)); }
       }catch(_){}
-      // 상태 칩 (자주 갱신하면 깜빡여 보이므로 드물게)
-      if((MP.rx % 30)===0) setChip('🔴 <b>게스트</b> · 동기화중 (성 '+castles.length+')', '#f85149');
     } else {
+      MP._cO=(MP._cO||0)+1;
       _origUpdate(dt);
     }
   };
@@ -41966,9 +41966,12 @@ function __startRenderLoop() {
   // ---- 게임이 blur(포커스 상실) 시 _appHidden=true로 루프를 멈추는 걸 무력화. ----
   //   멀티 중에는 포커스와 무관하게 항상 돌아야 함(2뷰/2창). 화면에 보이면 rAF는 정상.
   setInterval(function(){
-    if(!MP.role) return;
-    try{ window._appHidden = false; if(typeof kickLoop==='function') kickLoop(); }catch(_){}
-  }, 150);
+    if(MP.role){ try{ window._appHidden = false; if(typeof kickLoop==='function') kickLoop(); }catch(_){} }
+    // 진단: 0.5초간 각 분기 실행횟수 + 성도 병력 + 워커유무
+    var t0='-'; try{ if(castles[0]) t0=(castles[0].troops.spear+castles[0].troops.cavalry+castles[0].troops.archer); }catch(_){}
+    setChip('['+(MP.role||'-')+'] H'+(MP._cH||0)+' G'+(MP._cG||0)+' O'+(MP._cO||0)+' 성도'+t0+' last='+(MP.last?'Y':'N'), MP.role==='guest'?'#f85149':'#58a6ff');
+    MP._cH=MP._cG=MP._cO=0;
+  }, 500);
 
   // ---- 매칭 큐 (먼저 들어온 쪽=호스트) ----
   function pvpStageIndex(){ try{ return (typeof campaignOffset==='function') ? campaignOffset() : 0; }catch(_){ return 0; } }
