@@ -116,7 +116,7 @@ export class SimEngine {
       const wallMax = c.wallMax != null ? c.wallMax
         : Math.floor((45 + 20 * (size - 0.9) + (c.trait === 'def' ? 25 : 0)) * (c.defMul || 1));
       return {
-        x: c.x, y: c.y, owner: c.owner, name: c.name || '',
+        x: c.x, y: c.y, owner: c.owner, name: c.name || '', isHome: !!c.isHome,
         size, trait: c.trait || 'prod',
         primary: c.primary, troops: { spear: 0, cavalry: 0, archer: 0, ...c.troops },
         wallMax, wallHP: wallMax,
@@ -130,6 +130,9 @@ export class SimEngine {
     this.arrows = [];
     this.events = [];
     this._cmdQueue = [];
+    // 본진(isHome) 원소유자 기록 — 함락 즉시승 판정용(MP 대전). 미지정 맵은 소멸 판정만.
+    this._homes = [];
+    (mapDef.castles || []).forEach((c, i) => { if (c.isHome) this._homes.push({ idx: i, owner: c.owner }); });
   }
 
   // ── 좌표 변환 (렌더 아님 — 시뮬 내부 정규화→월드픽셀) ──
@@ -702,6 +705,15 @@ export class SimEngine {
   // ── 승리 판정 (checkWin 20451 시뮬분: 비-플레이어 적성 0 → 승) ──
   _checkWin() {
     if (this.winner != null) return;
+    // 본진 함락 즉시승 (isHome 지정 시) — 상대 본진이 원소유자 손을 떠나면 즉시 결착
+    if (this._homes.length) {
+      const defeated = new Set();
+      for (const h of this._homes) if (this.castles[h.idx].owner !== h.owner) defeated.add(h.owner);
+      if (defeated.size >= 1) {
+        const alive = [...new Set(this._homes.map(h => h.owner))].filter(o => !defeated.has(o));
+        if (alive.length === 1) { this.winner = alive[0]; this.events.push({ type: 'win', winner: this.winner, reason: 'homeCapture' }); return; }
+      }
+    }
     const owners = new Set();
     for (const c of this.castles) if (c.owner !== 0) owners.add(c.owner);
     for (const a of this.armies) if (a.owner !== 0 && !a.dying && a.troops > 0) owners.add(a.owner);
