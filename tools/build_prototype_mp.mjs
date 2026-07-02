@@ -148,12 +148,14 @@ const MP = `
       var AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
       var ac = new AC(); MP._ac = ac;
       var osc = ac.createOscillator(), g = ac.createGain();
-      g.gain.value = 0.0000015;                 // 사실상 무음
-      osc.frequency.value = 30; osc.type='sine';
+      g.gain.value = 0.0006;                    // 사실상 무음(들리지 않음)이지만 '재생중'으로 인식됨
+      osc.frequency.value = 40; osc.type='sine';
       osc.connect(g); g.connect(ac.destination); osc.start();
       if(ac.state==='suspended') ac.resume();
     }catch(_){}
   }
+  // 어떤 클릭에서든 오디오 재개(정지 상태 방지) — 비활성 창 감속 방지의 핵심
+  document.addEventListener('pointerdown', function(){ if(MP.role) keepAlive(); }, true);
 
   function enterQueue(){
     keepAlive();
@@ -165,7 +167,7 @@ const MP = `
   }
   function cancelQueue(){ leaveQueue(); MP.role=null; hideChip(); }   // 모달은 취소버튼이 닫음
   function becomeHost(peerId){
-    leaveQueue(); MP.role='host'; MP.peer=peerId; MP._lastSim=performance.now();
+    keepAlive(); leaveQueue(); MP.role='host'; MP.peer=peerId; MP._lastSim=performance.now();
     var stage = pvpStageIndex();
     closeModal(); setChip('🔵 <b>호스트</b> · 대전 시작','#58a6ff');
     var send=function(){ try{ BC.postMessage({t:'START_MP', stage:stage, host:MP.qid, guest:peerId}); }catch(_){}};
