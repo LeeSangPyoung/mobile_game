@@ -6171,18 +6171,19 @@
     font-size: 13px; font-weight: 800; letter-spacing: 0;
     text-align: center;
     background:
-      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.76), transparent 34%),
-      linear-gradient(180deg, #f8fbff 0%, #d9e0ea 58%, #9aa8b8 100%);
-    color: #101722;
-    border: 1px solid rgba(68,82,99,0.74);
+      radial-gradient(circle at 50% 0%, rgba(255,214,120,0.20), transparent 48%),
+      linear-gradient(180deg, rgba(32,24,15,0.95) 0%, rgba(17,12,8,0.97) 100%);
+    color: var(--toast-accent, #ffd96a);
+    border: 1px solid rgba(255,208,96,0.52);
     border-radius: 999px;
     box-shadow:
-      0 6px 16px rgba(0,0,0,0.4),
-      inset 0 1px 0 rgba(255,255,255,0.72);
+      0 8px 22px rgba(0,0,0,0.52),
+      0 0 18px rgba(255,196,74,0.12),
+      inset 0 1px 0 rgba(255,226,152,0.32);
     z-index: 10001; pointer-events: none;
     opacity: 0; transition: opacity 0.18s;
     white-space: nowrap;
-    text-shadow: 0 1px 0 rgba(255,255,255,0.72);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.62);
   }
   #selectToast::before {
     content: none;
@@ -17767,8 +17768,16 @@ const ZOOM_MIN = 0.55, ZOOM_MAX = 2.2;
 // 실제 화면이 더 좁으면 월드가 상대적으로 넓어져 자동 줌아웃 → 성은 더 작게, 간격 비율은 유지.
 // 성 위치·병력·클릭·미니맵·카메라가 모두 worldPxW를 거치므로 일관되게 따라온다(성 크기 CASTLE_R만 고정).
 const MIN_LAYOUT_CSS_W = 360;
-function worldPxW() { return worldW * Math.max(W, MIN_LAYOUT_CSS_W * DPR()); }
-function worldPxH() { return worldH * H; }
+// [MP/Phase0] 시뮬 좌표계를 '기기 독립'으로 고정.
+//   부대 위치·거리·카메라·미니맵·클릭이 모두 worldPxW/H를 경유하므로, 여기만 고정하면
+//   DPR·뷰포트·캔버스 크기와 무관하게 모든 기기가 동일한 월드좌표를 갖는다(멀티 결정론 전제).
+//   렌더(cx/cy/minZoom)는 실측 W/H로 이 고정 월드를 화면에 자동 맞춤(zoom)한다.
+//   ※ 아직 사거리의 /zoom 은 남아 있음(줌-독립은 Step 2). 지금은 '기기 변수'만 제거.
+const SIM_DPR = 1.5;    // 기준 DPR(캡값과 동일) — 사거리/속도 상수 기준
+const SIM_VW  = 617;    // 기준 캔버스 폭 (≈411css × 1.5) — 에뮬레이터/기준기기 보존
+const SIM_VH  = 1371;   // 기준 캔버스 높이(≈914css × 1.5)
+function worldPxW() { return worldW * Math.max(SIM_VW, MIN_LAYOUT_CSS_W * SIM_DPR); }
+function worldPxH() { return worldH * SIM_VH; }
 // 축소(zoom-out) 한계 = 화면 전체가 전장 배경으로 덮이는 줌.
 // 폴드 펼침처럼 화면 비율이 월드보다 넓을 때 contain(min)을 쓰면 양옆에 풀색 바탕이 보이므로 cover(max)를 사용한다.
 function minZoom() {
@@ -19013,7 +19022,7 @@ function sendReinforcement(from, targetArmy) {
   const gid = targetArmy.groupId || (targetArmy.groupId = _armyGroupSeq++);
   const cmdUid = targetArmy.groupCommanderUid != null ? targetArmy.groupCommanderUid : targetArmy.commanderUid;
   const cmdRank = targetArmy.groupCommanderRank != null ? targetArmy.groupCommanderRank : targetArmy.commanderRank;
-  const CATCHUP = 32 * DPR();
+  const CATCHUP = 32 * SIM_DPR;
   let firstSent = null;
   for (const unit of UNIT_KEYS) {
     const send = from.troops[unit] || 0;
@@ -19326,11 +19335,11 @@ function growth(dt) {
   }
 }
 
-const SHOOT_RANGE = () => 90 * DPR();
+const SHOOT_RANGE = () => 90 * SIM_DPR;
 const SHOOT_DURATION = 2.5;
 
-const ENGAGE_DIST = () => 60 * DPR();   // 교전 시작(맞붙어 데미지) 반경
-const AGGRO_DIST  = () => 100 * DPR();  // 감지(자동 끌림) 반경 — 이 안에 적이 들면 진로 휨
+const ENGAGE_DIST = () => 60 * SIM_DPR;   // 교전 시작(맞붙어 데미지) 반경
+const AGGRO_DIST  = () => 100 * SIM_DPR;  // 감지(자동 끌림) 반경 — 이 안에 적이 들면 진로 휨
 const DMG_RATE = 0.18; // 초당 데미지 계수 (저글링 정도 교전 시간)
 const ENGAGE_WARMUP = 1.2; // 첫 접촉 후 데미지 시작까지 (초)
 
@@ -19448,7 +19457,7 @@ function splitEnemyArmyByHuoyu(ea, byArmy, leader, count) {
   const turn = Math.max(1, Math.min(count | 0, ea.troops - 1));
   ea.troops -= turn;
   const splitAng = Math.random() * Math.PI * 2;
-  const splitDist = (26 + Math.random() * 18) * DPR() / zoom;
+  const splitDist = (26 + Math.random() * 18) * SIM_DPR / zoom;
   const ox = Math.cos(splitAng) * splitDist;
   const oy = Math.sin(splitAng) * splitDist * 0.72;
   const ally = {
@@ -19649,7 +19658,7 @@ function resolveEngagements(dt) {
   }
 }
 
-const ATTACK_RANGE = () => 80 * DPR() / zoom; // 월드 단위 (성 외곽 둘러싸기)
+const ATTACK_RANGE = () => 80 * SIM_DPR / zoom; // 월드 단위 (성 외곽 둘러싸기)
 
 function resolveSieges(dt) {
   // 분쟁 해제 전역 패스: 출진 수비대가 모두 사라지면 분쟁 종료(공성군 유무 무관)
@@ -19935,7 +19944,7 @@ function update(dt) {
         // 아군 부대 합류 보강군: 리더가 살아있고 가까이 붙으면 합류 완료(그룹 멤버로 전환)
         if (stillAlive) {
           const ddx = p.x - a.x, ddy = p.y - a.y;
-          if (Math.hypot(ddx, ddy) <= (a._reinforceCatchupDist || 32 * DPR())) {
+          if (Math.hypot(ddx, ddy) <= (a._reinforceCatchupDist || 32 * SIM_DPR)) {
             // 진짜 통합: 같은 그룹·같은 병종 부대가 있으면 병력을 합치고 이 보강군 객체는 제거 → 한 부대.
             // 별개 부대로 남지 않으니 전투 후 따로 복귀하는 분기 자체가 사라짐.
             let _mergeInto = null;
@@ -20103,7 +20112,7 @@ function update(dt) {
     if (a._sieging || a._engaged) continue;
 
     // 아군 성에 합류 (행군 복귀 도착 포함)
-    if (!a.pursuingArmy && a.target.owner === a.owner && d < 10 * DPR() / zoom) {
+    if (!a.pursuingArmy && a.target.owner === a.owner && d < 10 * SIM_DPR / zoom) {
       addTroopsToCastle(a.target, a.unit, a.troops);
       // 출진 수비대가 복귀해 재수성 → 분쟁 해제 + 성벽 절반 복구
       if (a._defendCastle === a.target) {
@@ -20114,7 +20123,7 @@ function update(dt) {
       continue;
     }
     // 빈 성(owner=0)은 도착하면 그냥 점령
-    if (a.target.owner === 0 && d < 12 * DPR() / zoom) {
+    if (a.target.owner === 0 && d < 12 * SIM_DPR / zoom) {
       const prevOwner = a.target.owner;
       a.target.owner = a.owner;
       releaseCastleCommander(a.target);
@@ -20131,7 +20140,7 @@ function update(dt) {
       continue;
     }
 
-    let speed = 18 * DPR() * (UNITS[a.unit]?.speed || 1) / zoom;
+    let speed = 18 * SIM_DPR * (UNITS[a.unit]?.speed || 1) / zoom;
     // 도착 직전 가속 — 러시 연출
     if (a._sx !== undefined) {
       const totD = Math.hypot(tx - a._sx, ty - a._sy);
@@ -20147,7 +20156,7 @@ function update(dt) {
           if (c === a.target) continue;
           const ex = a.x - c.x * worldPxW(), ey = a.y - c.y * worldPxH();
           const ed = Math.hypot(ex, ey);
-          const rr = 53 * DPR() * (c.size || 1) + 18 * DPR(); // 월드 반경 + 여유
+          const rr = 53 * SIM_DPR * (c.size || 1) + 18 * SIM_DPR; // 월드 반경 + 여유
           if (ed < rr && ed > 0.01) {
             const push = (rr - ed) / rr;
             mvx += (ex / ed) * push * 1.4;
