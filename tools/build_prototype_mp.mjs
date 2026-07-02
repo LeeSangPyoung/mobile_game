@@ -1,6 +1,7 @@
 // tools/build_prototype_mp.mjs — prototype.html(원본 무수정)에 멀티 훅을 덧붙여 prototype_mp.html 생성.
-//   방식: 전역(update/castles/armies/camX/zoom/showMsg/onCampaignButton…)을 몽키패치·인터셉트만 함.
-//   UX: 출정 → showMsg 모달[싱글 대전 / 멀티 대전] → (멀티) 호스트/게스트.
+//   방식: 전역(update/castles/armies/camX/zoom/showMsg/onCampaignButton/startStage…)을 몽키패치·인터셉트.
+//   UX: 출정 → 모달[싱글 대전 / 멀티 대전(1v1)]. 멀티 → 큐 입장 → "상대방 찾는 중(취소)"
+//       → 먼저 들어온 쪽=호스트, 뒤=게스트 자동배정 → 매칭 시 자동 전투 시작.
 //   미러(1단계): 호스트=정상 시뮬+상태 방송, 게스트=시뮬 생략+호스트 상태를 진짜 렌더러로 그림.
 //   전송=BroadcastChannel(같은 브라우저 창 2개). 이후 게스트 조작·AI오프·WebRTC로 확장.
 //   실행: node tools/build_prototype_mp.mjs → prototype_mp.html
@@ -14,8 +15,8 @@ const src = fs.readFileSync(path.join(root, 'prototype.html'), 'utf8');
 const MP = `
 <!-- ===== [MP] 멀티 훅 (build_prototype_mp.mjs 주입 — prototype.html 원본 무수정) ===== -->
 <style>
-  /* 대전 모드 선택 모달 — 승패 모달(showMsg) 재사용하되 배지="모드" + 버튼 확대 */
-  #msg[data-result="mpmode"]::before {
+  /* 대전 모드 모달 — 승패 모달(showMsg) 재사용, 배지="모드" + 버튼 확대 */
+  #msg[data-result="mpmode"]::before, #msg[data-result="mpwait"]::before {
     content: "모드";
     top: -24px !important; width: 138px !important; height: 74px !important;
     padding: 0 0 4px !important; border-radius: 16px !important; clip-path: none !important;
@@ -26,14 +27,17 @@ const MP = `
     text-shadow: 0 2px 0 rgba(255,236,180,0.72) !important; border: 3px solid #2a1206 !important;
     box-shadow: 0 4px 0 #8a5a13, 0 11px 18px rgba(0,0,0,0.36), inset 0 2px 0 rgba(255,250,220,0.55), inset 0 -9px 16px rgba(80,40,4,0.18) !important;
   }
-  #msg[data-result="mpmode"] #msgText {
+  #msg[data-result="mpwait"]::before { content: "매칭" !important; letter-spacing: 4px !important; }
+  #msg[data-result="mpmode"] #msgText, #msg[data-result="mpwait"] #msgText {
     color: #f4ead3 !important; font-size: 22px !important; font-weight: 800 !important;
     line-height: 1.5 !important; margin: 6px 0 4px !important;
   }
-  #msg[data-result="mpmode"] #msgButtons {
+  #msg[data-result="mpwait"] #msgText { animation: mpPulse 1.15s ease-in-out infinite !important; }
+  @keyframes mpPulse { 0%,100%{opacity:.55} 50%{opacity:1} }
+  #msg[data-result="mpmode"] #msgButtons, #msg[data-result="mpwait"] #msgButtons {
     display: flex !important; flex-direction: column !important; gap: 18px !important; margin-top: 14px !important;
   }
-  #msg[data-result="mpmode"] #msgButtons button {
+  #msg[data-result="mpmode"] #msgButtons button, #msg[data-result="mpwait"] #msgButtons button {
     min-height: 78px !important; font-size: 22px !important; font-weight: 800 !important; letter-spacing: 1px !important;
   }
 </style>
@@ -41,9 +45,9 @@ const MP = `
 (function(){
   if (window._mpInstalled) return; window._mpInstalled = true;
   var BC = new BroadcastChannel('samgukgi-realmp');
-  var MP = window.MP = { role:null, last:null, lastBcast:0, tx:0, rx:0 };
+  var MP = window.MP = { role:null, last:null, lastBcast:0, tx:0, rx:0, qid:null, inQueue:false, qTimer:null, peer:null };
 
-  // ---- 상태 칩(좌하단, 역할 선택 후 표시) ----
+  // ---- 상태 칩(좌하단) ----
   var chip;
   function setChip(html, color){
     if(!chip){ chip=document.createElement('div');
@@ -52,6 +56,7 @@ const MP = `
     chip.style.display='block'; chip.innerHTML=html; if(color) chip.style.color=color;
   }
   function hideChip(){ if(chip) chip.style.display='none'; }
+  function closeModal(){ try{ msgShown=false; var el=document.getElementById('msg'); if(el){el.classList.remove('show'); el.style.display='none';} var bd=document.getElementById('msgBackdrop'); if(bd) bd.classList.remove('show'); }catch(_){} }
 
   // ---- 상태 직렬화/적용 (전역 castles/armies) ----
   MP.serialize = function(){
@@ -91,36 +96,69 @@ const MP = `
       _origUpdate(dt);
     }
   };
+
+  // ---- 매칭 큐 (먼저 들어온 쪽=호스트) ----
+  function pvpStageIndex(){ try{ return (typeof campaignOffset==='function') ? campaignOffset() : 0; }catch(_){ return 0; } }
+  function broadcastQ(){ if(MP.inQueue) try{ BC.postMessage({t:'Q', id:MP.qid}); }catch(_){}}
+  function leaveQueue(){ MP.inQueue=false; if(MP.qTimer){ clearInterval(MP.qTimer); MP.qTimer=null; } }
+  function enterQueue(){
+    MP.qid = (Math.random()*2000000000)>>>0;
+    MP.inQueue = true; MP.role=null; MP.peer=null;
+    waitingModal();
+    broadcastQ();
+    MP.qTimer = setInterval(broadcastQ, 400);
+  }
+  function cancelQueue(){ leaveQueue(); MP.role=null; hideChip(); }   // 모달은 취소버튼이 닫음
+  function becomeHost(peerId){
+    leaveQueue(); MP.role='host'; MP.peer=peerId;
+    var stage = pvpStageIndex();
+    closeModal(); setChip('🔵 <b>호스트</b> · 대전 시작','#58a6ff');
+    var send=function(){ try{ BC.postMessage({t:'START_MP', stage:stage, host:MP.qid, guest:peerId}); }catch(_){}};
+    send(); setTimeout(send,140); setTimeout(send,380);
+    selectedStage = stage; startStage();
+  }
+  function onPeerQ(peerId){
+    if(!MP.inQueue || MP.role || peerId===MP.qid) return;
+    MP.peer = peerId;
+    if(MP.qid < peerId) becomeHost(peerId);   // 작은 id = 먼저 온 것으로 간주 → 호스트
+    // 큰 id면 대기 → 호스트의 START_MP 수신 시 게스트로
+  }
+  function becomeGuest(stage){
+    if(MP.role==='host') return;
+    leaveQueue(); MP.role='guest';
+    if(!document.body.classList.contains('in-game')){ closeModal(); setChip('🔴 <b>게스트</b> · 연결중...','#f85149'); selectedStage=stage; startStage(); }
+  }
+
   BC.onmessage = function(e){
     var m = e.data; if(!m) return;
-    if(m.t==='S'){ MP.last = m.s; MP.rx++;
+    if(m.t==='Q'){ onPeerQ(m.id); }
+    else if(m.t==='START_MP'){ becomeGuest(m.stage); }
+    else if(m.t==='S'){ MP.last = m.s; MP.rx++;
       if(MP.role==='guest' && (MP.rx & 7)===0) setChip('🔴 <b>게스트</b> · 수신중 (부대 '+m.s.a.length+')', '#f85149'); }
   };
 
-  // ---- 출정 → 대전 방식 선택 모달 (showMsg = 튜토리얼 팝업과 동일 스타일) ----
+  // ---- 모달 ----
   function deployMenu(){
     showMsg('대전 방식을 선택하세요', undefined, [
       { text:'싱글 대전', variant:'primary', action:function(){ MP.role=null; hideChip(); onCampaignButton(); } },
-      { text:'멀티 대전 (1 vs 1)', variant:'secondary', action:function(){ multiMenu(); } },
+      { text:'멀티 대전 (1 vs 1)', variant:'secondary', action:function(){ enterQueue(); } },
     ], undefined, 'mpmode');
   }
-  function multiMenu(){
-    showMsg('역할을 선택하세요', undefined, [
-      { text:'🔵 방 만들기 (호스트)', variant:'primary', action:function(){ MP.role='host'; setChip('🔵 <b>호스트</b> 준비 — 스테이지를 시작하세요','#58a6ff'); goToStageSelect(); } },
-      { text:'🔴 참가하기 (게스트·관전)', variant:'secondary', action:function(){ MP.role='guest'; setChip('🔴 <b>게스트</b> 준비 — 호스트와 같은 스테이지를 시작','#f85149'); goToStageSelect(); } },
-      { text:'← 뒤로', variant:'tertiary', action:function(){ deployMenu(); } },
-    ], undefined, 'mpmode');
+  function waitingModal(){
+    showMsg('상대방을 찾는 중입니다...', undefined, [
+      { text:'취소', variant:'tertiary', action:function(){ cancelQueue(); } },
+    ], undefined, 'mpwait');
   }
 
-  // ---- 출정 버튼(btnCampaign/btnCampaign2)을 캡처 단계에서 가로채 우리 모달로 ----
+  // ---- 출정 버튼 캡처 인터셉트 ----
   function isDeploy(t){ return t && ((t.id==='btnCampaign'||t.id==='btnCampaign2') || (t.closest && t.closest('#btnCampaign,#btnCampaign2'))); }
   ['click','touchend'].forEach(function(type){
     document.addEventListener(type, function(e){
       if(!isDeploy(e.target)) return;
-      if(typeof msgShown!=='undefined' && msgShown) return; // 모달 떠있으면 무시
+      if(typeof msgShown!=='undefined' && msgShown) return;
       e.stopImmediatePropagation(); e.preventDefault();
       deployMenu();
-    }, true); // capture: 원본 bindTap 핸들러보다 먼저 잡아 차단
+    }, true);
   });
 })();
 </script>
