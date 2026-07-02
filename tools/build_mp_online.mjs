@@ -45,7 +45,7 @@ const html = `<!doctype html>
     <span id="roleTag" class="role"></span>
     <div class="spacer"></div>
     <span id="conn" style="color:#8b949e">대기</span>
-    <span id="ping" style="color:#6e7681"></span>
+    <span id="ping" style="color:#ffd24a;font-weight:600"></span>
   </header>
   <div id="hud">
     <div style="color:#58a6ff">🔵 진영1 성 <b id="c1">-</b> 병력 <b id="t1">-</b></div>
@@ -162,26 +162,32 @@ ${netSrc}
   }
 
   function castleAt(px,py){
-    const cs=castlesView(); let best=-1,bd=26;
+    const cs=castlesView(); let best=-1,bd=34;
     cs.forEach((c,i)=>{ const d=Math.hypot(px-SX(WX(c)),py-SY(WY(c))); if(d<bd){bd=d;best=i;} });
     return best;
   }
+  function dbg(msg){ $('ping').textContent = msg; try{ console.log('[tap]', msg); }catch(_){}}
   function onTap(e){
-    if(over||!role)return;
+    if(over||!role){ dbg('대기중(역할 없음)'); return; }
     const r=cv.getBoundingClientRect();
     const px=(e.clientX-r.left)*(cv.width/r.width), py=(e.clientY-r.top)*(cv.height/r.height);
     const hit=castleAt(px,py); const cs=castlesView();
-    if(hit<0){ selected=-1; return; }
-    if(selected<0){ if(cs[hit].owner===mySide) selected=hit; }
-    else if(hit===selected){ selected=-1; }
+    if(hit<0){ selected=-1; dbg('빈 곳 탭 (성 아님)'); return; }
+    if(selected<0){
+      if(cs[hit].owner===mySide){ selected=hit; dbg('선택: 성'+hit+' (내 성) → 목표 탭'); }
+      else dbg('성'+hit+'은 내 성 아님 (내 색 성부터 탭)');
+    }
+    else if(hit===selected){ selected=-1; dbg('선택 취소'); }
     else {
-      const src=cs[selected];
+      const src=cs[selected]; let sent=0;
       for(const u of ['spear','cavalry','archer']){
         if((src.troops[u]|0)>0){
           const cmd={ type:'SEND_ARMY', fromId:selected, toId:hit, unit:u };
           if(role==='host') host.hostCommand(cmd); else guest.command(cmd);
+          sent++;
         }
       }
+      dbg('▶ 출진! 성'+selected+'→성'+hit+' ('+sent+'부대)');
       selected=-1;
     }
   }
