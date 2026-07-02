@@ -13,6 +13,30 @@ const src = fs.readFileSync(path.join(root, 'prototype.html'), 'utf8');
 
 const MP = `
 <!-- ===== [MP] 멀티 훅 (build_prototype_mp.mjs 주입 — prototype.html 원본 무수정) ===== -->
+<style>
+  /* 대전 모드 선택 모달 — 승패 모달(showMsg) 재사용하되 배지="모드" + 버튼 확대 */
+  #msg[data-result="mpmode"]::before {
+    content: "모드";
+    top: -24px !important; width: 138px !important; height: 74px !important;
+    padding: 0 0 4px !important; border-radius: 16px !important; clip-path: none !important;
+    background:
+      radial-gradient(ellipse at 50% 13%, rgba(255,255,255,0.5), transparent 42%),
+      linear-gradient(180deg, #ffe58d 0%, #f2b536 58%, #d58716 100%) !important;
+    color: #2a1206 !important; font-size: 33px !important; letter-spacing: 6px !important; line-height: 1 !important;
+    text-shadow: 0 2px 0 rgba(255,236,180,0.72) !important; border: 3px solid #2a1206 !important;
+    box-shadow: 0 4px 0 #8a5a13, 0 11px 18px rgba(0,0,0,0.36), inset 0 2px 0 rgba(255,250,220,0.55), inset 0 -9px 16px rgba(80,40,4,0.18) !important;
+  }
+  #msg[data-result="mpmode"] #msgText {
+    color: #f4ead3 !important; font-size: 22px !important; font-weight: 800 !important;
+    line-height: 1.5 !important; margin: 6px 0 4px !important;
+  }
+  #msg[data-result="mpmode"] #msgButtons {
+    display: flex !important; flex-direction: column !important; gap: 18px !important; margin-top: 14px !important;
+  }
+  #msg[data-result="mpmode"] #msgButtons button {
+    min-height: 78px !important; font-size: 22px !important; font-weight: 800 !important; letter-spacing: 1px !important;
+  }
+</style>
 <script>
 (function(){
   if (window._mpInstalled) return; window._mpInstalled = true;
@@ -75,17 +99,17 @@ const MP = `
 
   // ---- 출정 → 대전 방식 선택 모달 (showMsg = 튜토리얼 팝업과 동일 스타일) ----
   function deployMenu(){
-    showMsg('⚔ 출정 — 대전 방식을 선택하세요', undefined, [
-      { text:'싱글 대전 (캠페인)', variant:'primary', action:function(){ MP.role=null; hideChip(); onCampaignButton(); } },
-      { text:'멀티 대전 (실시간 1v1)', variant:'secondary', action:function(){ multiMenu(); } },
-    ], undefined, undefined);
+    showMsg('대전 방식을 선택하세요', undefined, [
+      { text:'싱글 대전', variant:'primary', action:function(){ MP.role=null; hideChip(); onCampaignButton(); } },
+      { text:'멀티 대전 (1 vs 1)', variant:'secondary', action:function(){ multiMenu(); } },
+    ], undefined, 'mpmode');
   }
   function multiMenu(){
-    showMsg('🌐 멀티 대전 — 역할을 선택하세요', undefined, [
+    showMsg('역할을 선택하세요', undefined, [
       { text:'🔵 방 만들기 (호스트)', variant:'primary', action:function(){ MP.role='host'; setChip('🔵 <b>호스트</b> 준비 — 스테이지를 시작하세요','#58a6ff'); goToStageSelect(); } },
       { text:'🔴 참가하기 (게스트·관전)', variant:'secondary', action:function(){ MP.role='guest'; setChip('🔴 <b>게스트</b> 준비 — 호스트와 같은 스테이지를 시작','#f85149'); goToStageSelect(); } },
       { text:'← 뒤로', variant:'tertiary', action:function(){ deployMenu(); } },
-    ], undefined, undefined);
+    ], undefined, 'mpmode');
   }
 
   // ---- 출정 버튼(btnCampaign/btnCampaign2)을 캡처 단계에서 가로채 우리 모달로 ----
