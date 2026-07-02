@@ -41962,7 +41962,23 @@ function __startRenderLoop() {
   function pvpStageIndex(){ try{ return (typeof campaignOffset==='function') ? campaignOffset() : 0; }catch(_){ return 0; } }
   function broadcastQ(){ if(MP.inQueue) try{ BC.postMessage({t:'Q', id:MP.qid}); }catch(_){}}
   function leaveQueue(){ MP.inQueue=false; if(MP.qTimer){ clearInterval(MP.qTimer); MP.qTimer=null; } }
+  // 무음 오디오 킵얼라이브 — 크롬은 오디오 재생 중인 페이지를 백그라운드에서도 감속하지 않음.
+  //   (버튼 클릭=유저 제스처에서 시작해야 autoplay 정책 통과)
+  function keepAlive(){
+    try{
+      if(MP._ac){ if(MP._ac.state==='suspended') MP._ac.resume(); return; }
+      var AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
+      var ac = new AC(); MP._ac = ac;
+      var osc = ac.createOscillator(), g = ac.createGain();
+      g.gain.value = 0.0000015;                 // 사실상 무음
+      osc.frequency.value = 30; osc.type='sine';
+      osc.connect(g); g.connect(ac.destination); osc.start();
+      if(ac.state==='suspended') ac.resume();
+    }catch(_){}
+  }
+
   function enterQueue(){
+    keepAlive();
     MP.qid = (Math.random()*2000000000)>>>0;
     MP.inQueue = true; MP.role=null; MP.peer=null;
     waitingModal();
