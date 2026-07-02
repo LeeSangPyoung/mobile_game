@@ -17772,10 +17772,15 @@ const MIN_LAYOUT_CSS_W = 360;
 //   부대 위치·거리·카메라·미니맵·클릭이 모두 worldPxW/H를 경유하므로, 여기만 고정하면
 //   DPR·뷰포트·캔버스 크기와 무관하게 모든 기기가 동일한 월드좌표를 갖는다(멀티 결정론 전제).
 //   렌더(cx/cy/minZoom)는 실측 W/H로 이 고정 월드를 화면에 자동 맞춤(zoom)한다.
-//   ※ 아직 사거리의 /zoom 은 남아 있음(줌-독립은 Step 2). 지금은 '기기 변수'만 제거.
+//   ※ Step 2 완료: 시뮬 사거리/속도/거리의 /zoom 제거 → 줌-독립(고정 월드상수). 남은 /zoom은 연출입자·렌더 전용.
 const SIM_DPR = 1.5;    // 기준 DPR(캡값과 동일) — 사거리/속도 상수 기준
 const SIM_VW  = 617;    // 기준 캔버스 폭 (≈411css × 1.5) — 에뮬레이터/기준기기 보존
 const SIM_VH  = 1371;   // 기준 캔버스 높이(≈914css × 1.5)
+// [MP/Phase0 Step2] 줌 독립 튜닝 노브. 옛 코드는 사거리·속도를 '/zoom'으로 화면고정했으나
+//   이제 고정 월드상수로 전환. 1.0 = 상수를 zoom=1 화면픽셀 값 그대로 사용(중립).
+//   QA에서 옛 체감(보통 fit-zoom≈0.6~0.9에서 플레이)과 어긋나면 이 값 하나만 조정:
+//   값을 낮추면(예 0.7) 전 사거리·이동속도가 1/0.7배로 커져 옛 줌아웃 체감을 재현.
+const SIM_REF_ZOOM = 1.0;
 function worldPxW() { return worldW * Math.max(SIM_VW, MIN_LAYOUT_CSS_W * SIM_DPR); }
 function worldPxH() { return worldH * SIM_VH; }
 // 축소(zoom-out) 한계 = 화면 전체가 전장 배경으로 덮이는 줌.
@@ -19310,7 +19315,8 @@ function enemyAI(dt) {
   for (const a of armies) if (a.owner !== 1 && a.owner !== 0 && !a.dying) present.add(a.owner);
   for (const f of present) aiTurn(f, dt);
 }
-function dist(a,b){ const dx=cx(a)-cx(b),dy=cy(a)-cy(b); return Math.sqrt(dx*dx+dy*dy); }
+// [MP/Phase0 Step2] 월드픽셀 거리(줌·카메라 독립). 성-성 비교(정규화 좌표) 전용.
+function dist(a,b){ const dx=(a.x-b.x)*worldPxW(), dy=(a.y-b.y)*worldPxH(); return Math.hypot(dx,dy); }
 
 function growth(dt) {
   const now = performance.now();
@@ -19335,11 +19341,11 @@ function growth(dt) {
   }
 }
 
-const SHOOT_RANGE = () => 90 * SIM_DPR;
+const SHOOT_RANGE = () => 90 * SIM_DPR / SIM_REF_ZOOM;
 const SHOOT_DURATION = 2.5;
 
-const ENGAGE_DIST = () => 60 * SIM_DPR;   // 교전 시작(맞붙어 데미지) 반경
-const AGGRO_DIST  = () => 100 * SIM_DPR;  // 감지(자동 끌림) 반경 — 이 안에 적이 들면 진로 휨
+const ENGAGE_DIST = () => 60 * SIM_DPR / SIM_REF_ZOOM;   // 교전 시작(맞붙어 데미지) 반경
+const AGGRO_DIST  = () => 100 * SIM_DPR / SIM_REF_ZOOM;  // 감지(자동 끌림) 반경 — 이 안에 적이 들면 진로 휨
 const DMG_RATE = 0.18; // 초당 데미지 계수 (저글링 정도 교전 시간)
 const ENGAGE_WARMUP = 1.2; // 첫 접촉 후 데미지 시작까지 (초)
 
@@ -19457,7 +19463,7 @@ function splitEnemyArmyByHuoyu(ea, byArmy, leader, count) {
   const turn = Math.max(1, Math.min(count | 0, ea.troops - 1));
   ea.troops -= turn;
   const splitAng = Math.random() * Math.PI * 2;
-  const splitDist = (26 + Math.random() * 18) * SIM_DPR / zoom;
+  const splitDist = (26 + Math.random() * 18) * SIM_DPR / SIM_REF_ZOOM; // [MP/Step2] 줌 독립 스폰 오프셋(월드)
   const ox = Math.cos(splitAng) * splitDist;
   const oy = Math.sin(splitAng) * splitDist * 0.72;
   const ally = {
@@ -19538,7 +19544,7 @@ function resolveEngagements(dt) {
       if (a.owner === b.owner) continue;
       if (a.troops <= 0 || b.troops <= 0) continue;
       const d = Math.hypot(a.x - b.x, a.y - b.y);
-      if (d > ENGAGE_DIST() / zoom) continue;
+      if (d > ENGAGE_DIST()) continue; // [MP/Step2] 줌 독립 — 고정 월드 사거리
       engaged.add(a); engaged.add(b);
       // 첫 접촉 히트스탑 — 한 번만
       const firstContact = !a._engagedFlash && !b._engagedFlash;
@@ -19658,7 +19664,7 @@ function resolveEngagements(dt) {
   }
 }
 
-const ATTACK_RANGE = () => 80 * SIM_DPR / zoom; // 월드 단위 (성 외곽 둘러싸기)
+const ATTACK_RANGE = () => 80 * SIM_DPR / SIM_REF_ZOOM; // [MP/Step2] 고정 월드 단위 (성 외곽 둘러싸기, 줌 독립)
 
 function resolveSieges(dt) {
   // 분쟁 해제 전역 패스: 출진 수비대가 모두 사라지면 분쟁 종료(공성군 유무 무관)
@@ -20026,7 +20032,7 @@ function update(dt) {
     a._aggroCool = (a._aggroCool || 0) - dt;
     if (a._aggroCool <= 0 && !a.pursuingArmy && !a._isReinforcement && !a.dying && a.target) {
       a._aggroCool = 0.15 + Math.random() * 0.05; // 스태거
-      const aggroR = AGGRO_DIST() / zoom;
+      const aggroR = AGGRO_DIST(); // [MP/Step2] 줌 독립 — 고정 월드 감지반경
       const aggroR2 = aggroR * aggroR;
       let castleNear = false;
       if (a.target && !a.target.isArmy && typeof a.target.x === 'number' && typeof a.target.y === 'number') {
@@ -20072,7 +20078,7 @@ function update(dt) {
         const bd = Math.hypot(b.x - a.x, b.y - a.y);
         if (bd < foeD) { foeD = bd; foe = b; }
       }
-      const range = SHOOT_RANGE() / zoom;
+      const range = SHOOT_RANGE(); // [MP/Step2] 줌 독립 — 고정 월드 사거리
       const targetingFoe = foe && foeD < range;
       const targetingCastle = !targetingFoe && d < range;
       if (targetingFoe || targetingCastle) {
@@ -20112,7 +20118,7 @@ function update(dt) {
     if (a._sieging || a._engaged) continue;
 
     // 아군 성에 합류 (행군 복귀 도착 포함)
-    if (!a.pursuingArmy && a.target.owner === a.owner && d < 10 * SIM_DPR / zoom) {
+    if (!a.pursuingArmy && a.target.owner === a.owner && d < 10 * SIM_DPR / SIM_REF_ZOOM) { // [MP/Step2] 줌 독립 합류거리
       addTroopsToCastle(a.target, a.unit, a.troops);
       // 출진 수비대가 복귀해 재수성 → 분쟁 해제 + 성벽 절반 복구
       if (a._defendCastle === a.target) {
@@ -20123,7 +20129,7 @@ function update(dt) {
       continue;
     }
     // 빈 성(owner=0)은 도착하면 그냥 점령
-    if (a.target.owner === 0 && d < 12 * SIM_DPR / zoom) {
+    if (a.target.owner === 0 && d < 12 * SIM_DPR / SIM_REF_ZOOM) { // [MP/Step2] 줌 독립 점령거리
       const prevOwner = a.target.owner;
       a.target.owner = a.owner;
       releaseCastleCommander(a.target);
@@ -20140,7 +20146,7 @@ function update(dt) {
       continue;
     }
 
-    let speed = 18 * SIM_DPR * (UNITS[a.unit]?.speed || 1) / zoom;
+    let speed = 18 * SIM_DPR * (UNITS[a.unit]?.speed || 1) / SIM_REF_ZOOM; // [MP/Step2] 줌 독립 — 고정 월드 이동속도
     // 도착 직전 가속 — 러시 연출
     if (a._sx !== undefined) {
       const totD = Math.hypot(tx - a._sx, ty - a._sy);
@@ -20148,7 +20154,7 @@ function update(dt) {
     }
 
     // 목표로 진군하되, 목표가 아닌 성은 비껴 간다(가벼운 회피 스티어링)
-    if (!a.pursuingArmy && d < 6 / zoom) { arrive(a); armies.splice(i, 1); }
+    if (!a.pursuingArmy && d < 6 / SIM_REF_ZOOM) { arrive(a); armies.splice(i, 1); } // [MP/Step2] 줌 독립 도착거리(zoom=1 동작 보존)
     else {
       if (d > 0) {
         let mvx = dx / d, mvy = dy / d;
