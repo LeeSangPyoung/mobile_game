@@ -100,5 +100,83 @@ console.log('── 5) 생산 결정론 (단일 성, rng 무관 확정) ──')
   check(`생산은 seed 무관 동일 (${t1}==${t2}), 10→증가`, t1 === t2 && t1 > 10);
 }
 
+console.log('── 6) 화공(회유) 결정론 — 주입된 huoyuChance로 발동 ──');
+{
+  // 아군 강한 부대가 적 부대를 요격 → 첫 접촉 시 회유 시도(chance=1 → 항상 발동)
+  function huoyuMap() {
+    return { world: { w: 1, h: 1 }, aiLevel: 0, castles: [
+      { x: 0.2, y: 0.5, owner: 1, primary: 'spear', troops: { spear: 80, cavalry: 0, archer: 0 }, trait: 'atk' },
+      { x: 0.8, y: 0.5, owner: 2, primary: 'spear', troops: { spear: 80, cavalry: 0, archer: 0 }, trait: 'atk' },
+    ]};
+  }
+  function runHuoyu(seed) {
+    const eng = new SimEngine(huoyuMap(), seed);
+    const ev = [];
+    for (let t = 0; t < 800; t++) {
+      if (t === 2) {
+        // 양쪽 출진, 아군엔 회유능력 주입
+        eng.enqueue('p1', { type: 'SEND_ARMY', fromId: 0, toId: 1, unit: 'spear', muls: { huoyuChance: 1.0, huoyuIntel: 95 } });
+        eng.enqueue('ai', { type: 'SEND_ARMY', fromId: 1, toId: 0, unit: 'spear' });
+      }
+      for (const e of eng.step(1 / 15)) ev.push({ t, ...e });
+      if (eng.winner != null) break;
+    }
+    return { hash: hashSnapshot(eng.snapshot()), huoyu: ev.filter(e => e.type === 'huoyu').length, used: eng.huoyuUsed };
+  }
+  const a = runHuoyu(55), b = runHuoyu(55);
+  check('회유 실제 발동(huoyu 이벤트)', a.huoyu >= 1);
+  check('회유 결정론(동일 해시)', a.hash === b.hash);
+  check('스테이지당 1회 제한(huoyuUsed)', a.used === true);
+}
+
+console.log('── 7) 다진영(1v1v1) 결정론 ──');
+{
+  function m3() {
+    return { world: { w: 1.4, h: 1.4 }, aiLevel: 4, castles: [
+      { x: 0.5, y: 0.12, owner: 1, primary: 'spear',   troops: { spear: 35, cavalry: 8, archer: 8 }, size: 1.1, trait: 'prod' },
+      { x: 0.12, y: 0.85, owner: 2, primary: 'cavalry', troops: { spear: 35, cavalry: 8, archer: 8 }, size: 1.1, trait: 'prod' },
+      { x: 0.88, y: 0.85, owner: 3, primary: 'archer',  troops: { spear: 35, cavalry: 8, archer: 8 }, size: 1.1, trait: 'prod' },
+      { x: 0.5, y: 0.5, owner: 0, primary: 'spear', troops: { spear: 6, cavalry: 6, archer: 6 }, size: 1.0, trait: 'def' },
+    ]};
+  }
+  function run3(seed) {
+    const eng = new SimEngine(m3(), seed);
+    for (let t = 0; t < 8000; t++) { eng.step(1 / 15); if (eng.winner != null) break; }
+    return { hash: hashSnapshot(eng.snapshot()), winner: eng.winner, tick: eng.tick };
+  }
+  const a = run3(2024), b = run3(2024);
+  check(`다진영 결정론 (winner=${a.winner}, tick=${a.tick})`, a.hash === b.hash && a.winner === b.winner);
+  check('다진영도 승자 결정', a.winner != null);
+}
+
+console.log('── 8) 후퇴 부대 생성 경로 (arrive 실패측 비례손실 / 성공측 후퇴) ──');
+{
+  // 약한 공격군이 강한 성에 도착 → 함락 실패(비례손실) 확정 경로
+  const map = { world: { w: 1, h: 1 }, aiLevel: 0, castles: [
+    { x: 0.5, y: 0.5, owner: 2, primary: 'spear', troops: { spear: 60, cavalry: 0, archer: 0 }, trait: 'def' },
+    { x: 0.5, y: 0.48, owner: 1, primary: 'cavalry', troops: { spear: 0, cavalry: 3, archer: 0 }, trait: 'atk' },
+  ]};
+  function runArr(seed) {
+    const eng = new SimEngine(JSON.parse(JSON.stringify(map)), seed);
+    for (let t = 0; t < 400; t++) {
+      if (t === 1) eng.enqueue('p1', { type: 'SEND_ARMY', fromId: 1, toId: 0, unit: 'cavalry' });
+      eng.step(1 / 15);
+    }
+    return hashSnapshot(eng.snapshot());
+  }
+  check('arrive 경로 결정론', runArr(9) === runArr(9));
+}
+
+console.log('── 9) 장기 안정성 (10000틱 무예외) ──');
+{
+  let ok = true;
+  try {
+    const r1 = runMatch(31337, 10000);
+    const r2 = runMatch(31337, 10000);
+    ok = r1.hash === r2.hash;
+  } catch (e) { ok = false; console.log('     예외:', e.message); }
+  check('10000틱 결정론·무예외', ok);
+}
+
 console.log(`\n결과: ${pass} 통과 / ${fail} 실패`);
 process.exit(fail ? 1 : 0);

@@ -173,6 +173,7 @@ export class SimEngine {
       // 메타 보정(기본 1/0 = 중립/적)
       atkMul: m.atkMul || 1, defMul: m.defMul || 1, arriveAtkMul: m.arriveAtkMul || 1,
       critChance: m.critChance || 0, critMult: m.critMult || 1, _critCD: 0,
+      huoyuChance: m.huoyuChance || 0, huoyuIntel: m.huoyuIntel || 0, // 회유 능력(플레이어 선봉)
       _defendCastle: opts._defendCastle || null,
     };
     this.armies.push(a);
