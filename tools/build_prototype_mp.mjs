@@ -95,6 +95,12 @@ const MP = `
   //  호스트: 시뮬+방송은 '워커 하트비트'가 전담(포커스/가려짐 무관하게 항상 구동).
   //          rAF가 부르는 update는 시뮬을 스킵(중복 방지) → loop이 이어서 render만 수행.
   //  게스트: 시뮬 생략 + 호스트 상태 적용(진짜 렌더러로 미러).
+  // ---- 근본 방어: 게스트일 때 sim 함수를 전부 무력화(원인 불문 자기 게임 진행 차단) ----
+  //   update가 어떤 경로로 _origUpdate를 부르든, 게스트에선 생산·AI·전투·공성·성벽이 아무것도 안 함.
+  ['growth','enemyAI','resolveEngagements','resolveSieges','wallRegenAndFire','aiTurn'].forEach(function(fn){
+    try{ if(typeof window[fn]==='function'){ var _o=window[fn]; window[fn]=function(){ if(MP.role==='guest') return; return _o.apply(this, arguments); }; } }catch(_){}
+  });
+
   var _origUpdate = update;
   update = function(dt){
     if(MP.role==='host'){
@@ -198,7 +204,7 @@ const MP = `
     if(m.t==='Q'){ onPeerQ(m.id); }
     else if(m.t==='START_MP'){ becomeGuest(m.stage); }
     else if(m.t==='S'){ MP.last = m.s; MP.rx++;
-      if(MP.role==='guest' && (MP.rx & 7)===0) setChip('🔴 <b>게스트</b> · 수신중 (부대 '+m.s.a.length+')', '#f85149'); }
+      if(MP.role==='guest'){ try{ MP.apply(m.s); }catch(err){ if(window._mpErr) window._mpErr('apply(rx): '+(err&&err.message)); } } }
   };
 
   // ---- 모달 ----
