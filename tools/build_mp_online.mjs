@@ -113,9 +113,12 @@ ${netSrc}
   function pxH(){ return role==='host'? host.eng._pxH : (mapPx.h); }
   let mapPx = { w:1, h:1 };
 
+  let flip=false; // 내 본진이 위(y<0.5)면 화면을 180° 회전해 '내 진영이 아래'로 보이게
+  function setFlip(){ const h=map&&map.castles.find(c=>c.isHome&&c.owner===mySide); flip=!!(h&&h.y<0.5); }
   function fitScale(){ const pad=30; return { s:Math.min((cv.width-pad*2)/pxW(),(cv.height-pad*2)/pxH()), pad }; }
-  const SX=(wx)=>{const{s,pad}=fitScale();return pad+wx*s;};
-  const SY=(wy)=>{const{s,pad}=fitScale();return pad+wy*s;};
+  // flip 시 x·y 모두 반전(180° 회전). castleAt·render 모두 이 SX/SY를 쓰므로 입력도 자동 일치.
+  const SX=(wx)=>{const{s,pad}=fitScale();return pad+(flip?(pxW()-wx):wx)*s;};
+  const SY=(wy)=>{const{s,pad}=fitScale();return pad+(flip?(pxH()-wy):wy)*s;};
   const WX=(c)=>c.x*pxW(), WY=(c)=>c.y*pxH();
 
   function startHost(){
@@ -143,6 +146,7 @@ ${netSrc}
     lastT=performance.now(); loop();
   }
   function enterGame(label, cls){
+    setFlip(); // 내 진영이 아래로 오도록 시점 결정
     $('lobby').style.display='none';
     $('roleTag').textContent=label; $('roleTag').className='role '+cls;
     $('surrender').style.display='inline-block';
