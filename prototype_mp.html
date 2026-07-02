@@ -41966,6 +41966,13 @@ function __startRenderLoop() {
     };
   } catch(_){}
 
+  // ---- 게임이 blur(포커스 상실) 시 _appHidden=true로 루프를 멈추는 걸 무력화. ----
+  //   멀티 중에는 포커스와 무관하게 항상 돌아야 함(2뷰/2창). 화면에 보이면 rAF는 정상.
+  setInterval(function(){
+    if(!MP.role) return;
+    try{ window._appHidden = false; if(typeof kickLoop==='function') kickLoop(); }catch(_){}
+  }, 150);
+
   // ---- 매칭 큐 (먼저 들어온 쪽=호스트) ----
   function pvpStageIndex(){ try{ return (typeof campaignOffset==='function') ? campaignOffset() : 0; }catch(_){ return 0; } }
   function broadcastQ(){ if(MP.inQueue) try{ BC.postMessage({t:'Q', id:MP.qid}); }catch(_){}}
