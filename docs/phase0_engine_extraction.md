@@ -89,11 +89,17 @@ export class SimEngine {
 1. ✅ **상수 감사(4-1)**: 완료(`phase0_coupling_audit.md`).
 2. ✅ **좌표 전환**: Step 1(기기독립)·Step 2(줌독립) 완료 — 단, **싱글 QA 대기**(오피스 사정으로 검증 일괄 예정).
 3. ✅ **파일 골격**: `engine.js` 생성 — `mulberry32`/`hashSnapshot`/`SimEngine`(constructor·enqueue·step·snapshot·applySnapshot) 계약 정의 + 상태 컨테이너. prototype import는 5단계(브라우저 배선)로 보류.
-4. 🔨 **함수 이관(진행중)**: **성 생산 `growth` 이관 완료**(엔진 `_growth`, 하네스 검증). 남은 §3 함수(enemyAI/resolveEngagements/resolveSieges/wallRegen/move/sendArmy/huoyu)는 `engine.js` 하단 TODO 로드맵에 라인 매핑.
-5. ⏭ **명령 경유**: 입력 핸들러 → `engine.enqueue()`. 렌더는 `engine.snapshot()` 소비. (브라우저 배선 필요 → 일괄 QA 시)
-6. ✅/🔨 **RNG/시계 주입**: in-place 부분완료(prototype `simRng`/`simTime`, coupling_audit Step 3). 엔진 측은 `this.rng`/`this.simTime`로 계약화.
-7. 🔨 **결정론 self-test**: `test/sim_determinism.mjs` **가동(6/6 통과)** — RNG 스트림·생산 상태 결정론 검증. 함수 이관될수록 커버 확대.
-8. ⏭ **싱글 리그레션 QA**: 일괄 예정(체크리스트: `phase0_coupling_audit.md` Step 1~3).
+4. ✅ **함수 이관(전장 완료)**: 전장 전 시스템을 `SimEngine` 메서드로 이관 —
+   `_growth`·`_enemyAI/_aiTurn`·`_resolveEngagements`(크리티컬 `_rollCrit`)·`_resolveSieges`(성벽·반격·출진·분쟁·점령)·`_wallRegen`·`_moveArmies`(aggro·사격·합류·점령·도착·회피)·`_arrive`·`_moveArrows`·`_tryHuoyu`(회유 분열/전향)·`_checkWin`.
+   UI/연출/오디오 제거, 의미있는 사건만 `events[]`(capture/wallBreach/armyDead/huoyu/win)로 방출.
+   **메타 보정(장수·업그레이드)은 부대·성의 숫자 필드로 주입**(기본 1/0 = 중립·적) — 배선층이 owner=1에 계산해 실어줌.
+5. ⏭ **명령 경유**: 엔진 계약 완료(`enqueue({type:'SEND_ARMY',fromId,toId,unit,muls})` → `_applyCommands`/`_spawnArmy`). **prototype↔engine 실배선은 브라우저 필요 → 일괄 QA 시**.
+6. ✅ **RNG/시계 주입**: 엔진은 `this.rng`(mulberry32)/`this.simTime` 단일 소스. prototype in-place도 부분완료(coupling_audit Step 3).
+7. ✅ **결정론 self-test**: `test/sim_determinism.mjs` **10/10 통과** — 같은 seed+명령열 4000틱 2회 → **최종해시·이벤트열 완전 동일**. 전투·공성·점령·승리 실제 발생 검증.
+8. ⏭ **싱글 리그레션 QA**: 일괄 예정. **엔진은 prototype와 병렬 구현이라 체감 파리티는 배선+브라우저 QA에서 확정**(체크리스트: `phase0_coupling_audit.md` Step 1~3).
+
+> **현재 상태 요약**: 순수 결정론 전장 엔진(`engine.js`)이 **headless로 완주·검증**됨. 남은 것은 (a) prototype.html이 자체 시뮬 대신 이 엔진에 위임하도록 배선, (b) 배선 후 브라우저 리그레션 QA. 둘 다 브라우저 필요 → "검증 일괄" 항목.
+> **미이관(의도)**: 보강군 합류(`sendReinforcement`, 플레이어 편의), 보상/포로/별점(메타), 초기 맵 생성 난수 — 엔진엔 고정 mapDef 주입.
 
 ---
 
