@@ -115,11 +115,8 @@ const MP = `
         for(var _i=0;_i<castles.length;_i++){ var _px=castles[_i].x*worldPxW(), _py=castles[_i].y*worldPxH(); if(_px<mnx)mnx=_px; if(_py<mny)mny=_py; if(_px>mxx)mxx=_px; if(_py>mxy)mxy=_py; }
         if(isFinite(mnx)){ camX=(mnx+mxx)/2; camY=(mny+mxy)/2; var _bw=(mxx-mnx)+120*DPR(), _bh=(mxy-mny)+200*DPR(); var _z=Math.min(W/_bw,H/_bh); zoom=Math.min(2.2,Math.max(0.3,_z*0.92)); }
       }catch(_){}
-      // 진단 칩
-      var _c0 = castles[0];
-      var _lc = MP.last ? MP.last.c.length : -1;
-      var _mt = _c0 ? (_c0.troops.spear+_c0.troops.cavalry+_c0.troops.archer) : -1;
-      setChip('🔴 게스트 rx'+MP.rx+' last성'+_lc+' 내성'+castles.length+' c0.o='+(_c0?_c0.owner:'-')+' t'+_mt, '#f85149');
+      // 상태 칩 (자주 갱신하면 깜빡여 보이므로 드물게)
+      if((MP.rx % 30)===0) setChip('🔴 <b>게스트</b> · 동기화중 (성 '+castles.length+')', '#f85149');
     } else {
       _origUpdate(dt);
     }
