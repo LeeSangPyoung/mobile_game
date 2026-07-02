@@ -96,13 +96,15 @@ const MP = `
   //          rAF가 부르는 update는 시뮬을 스킵(중복 방지) → loop이 이어서 render만 수행.
   //  게스트: 시뮬 생략 + 호스트 상태 적용(진짜 렌더러로 미러).
   var _origUpdate = update;
-  var _fromWorker = false;
   update = function(dt){
     if(MP.role==='host'){
-      if(!_fromWorker) return;                      // rAF 호출 → 시뮬 스킵(워커가 전담)
-      _origUpdate(dt);
+      // rAF(활성 시)·워커(비활성 시) 아무나 부르되, 타임스탬프 게이트로 1회만 시뮬(중복 방지)
       var now = performance.now();
-      if(now - MP.lastBcast > 90){ MP.lastBcast = now; try{ BC.postMessage({t:'S', s:MP.serialize()}); MP.tx++; }catch(_){}}
+      var gap = now - (MP._lastSim||0);
+      if(gap < 28) return;
+      var sdt = Math.min(gap/1000, 0.1); MP._lastSim = now;
+      _origUpdate(sdt);
+      if(now - MP.lastBcast > 80){ MP.lastBcast = now; try{ BC.postMessage({t:'S', s:MP.serialize()}); MP.tx++; }catch(_){}}
       if((MP.tx & 15)===0) setChip('🔵 <b>호스트</b> · 방송중 (부대 '+armies.length+')', '#58a6ff');
     } else if(MP.role==='guest'){
       if(!document.body.classList.contains('in-game')){ setChip('🔴 게스트 · 인게임 아님','#f85149'); return; }
@@ -130,9 +132,7 @@ const MP = `
       if(MP.role!=='host') return;
       if(!document.body.classList.contains('in-game')) return;
       if(typeof msgShown!=='undefined' && msgShown) return;
-      var now = performance.now();
-      var dt = Math.min((now-(MP._lastDrive||now))/1000, 0.1); MP._lastDrive = now;
-      if(dt>0){ _fromWorker=true; try{ update(dt); }catch(err){ try{console.error('[mp host tick]',err);}catch(_){}} _fromWorker=false; }
+      try{ update(0); }catch(err){ if(window._mpErr) window._mpErr('host tick: '+(err&&err.message)); }  // 게이트가 중복/간격 처리
     };
   } catch(_){}
 
@@ -165,7 +165,7 @@ const MP = `
   }
   function cancelQueue(){ leaveQueue(); MP.role=null; hideChip(); }   // 모달은 취소버튼이 닫음
   function becomeHost(peerId){
-    leaveQueue(); MP.role='host'; MP.peer=peerId; MP._lastDrive=performance.now();
+    leaveQueue(); MP.role='host'; MP.peer=peerId; MP._lastSim=performance.now();
     var stage = pvpStageIndex();
     closeModal(); setChip('🔵 <b>호스트</b> · 대전 시작','#58a6ff');
     var send=function(){ try{ BC.postMessage({t:'START_MP', stage:stage, host:MP.qid, guest:peerId}); }catch(_){}};
