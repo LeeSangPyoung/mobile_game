@@ -97,6 +97,21 @@ const MP = `
     }
   };
 
+  // ---- 백그라운드 스로틀 대응: 창이 숨겨지면 rAF가 멈추므로,
+  //      호스트는 Web Worker 하트비트로 시뮬+방송을 계속 돌린다(창 비활성에도 유지). ----
+  try {
+    var _wk = new Worker(URL.createObjectURL(new Blob(['setInterval(function(){postMessage(1)},33)'], {type:'text/javascript'})));
+    _wk.onmessage = function(){
+      if(!document.hidden) return;                 // 창이 보이면 rAF가 구동 → 중복 방지
+      if(MP.role!=='host') return;
+      if(!document.body.classList.contains('in-game')) return;
+      if(typeof msgShown!=='undefined' && msgShown) return;
+      var now = performance.now();
+      var dt = Math.min((now-(MP._lastDrive||now))/1000, 0.1); MP._lastDrive = now;
+      if(dt>0){ try{ update(dt); }catch(_){} }
+    };
+  } catch(_){}
+
   // ---- 매칭 큐 (먼저 들어온 쪽=호스트) ----
   function pvpStageIndex(){ try{ return (typeof campaignOffset==='function') ? campaignOffset() : 0; }catch(_){ return 0; } }
   function broadcastQ(){ if(MP.inQueue) try{ BC.postMessage({t:'Q', id:MP.qid}); }catch(_){}}
@@ -110,7 +125,7 @@ const MP = `
   }
   function cancelQueue(){ leaveQueue(); MP.role=null; hideChip(); }   // 모달은 취소버튼이 닫음
   function becomeHost(peerId){
-    leaveQueue(); MP.role='host'; MP.peer=peerId;
+    leaveQueue(); MP.role='host'; MP.peer=peerId; MP._lastDrive=performance.now();
     var stage = pvpStageIndex();
     closeModal(); setChip('🔵 <b>호스트</b> · 대전 시작','#58a6ff');
     var send=function(){ try{ BC.postMessage({t:'START_MP', stage:stage, host:MP.qid, guest:peerId}); }catch(_){}};
