@@ -78,14 +78,19 @@ const MP = `
     }
   };
 
-  // ---- update 몽키패치: 호스트=정상시뮬+방송 / 게스트=시뮬생략+상태적용 / 그외=원본 ----
+  // ---- update 몽키패치 ----
+  //  호스트: 시뮬+방송은 '워커 하트비트'가 전담(포커스/가려짐 무관하게 항상 구동).
+  //          rAF가 부르는 update는 시뮬을 스킵(중복 방지) → loop이 이어서 render만 수행.
+  //  게스트: 시뮬 생략 + 호스트 상태 적용(진짜 렌더러로 미러).
   var _origUpdate = update;
+  var _fromWorker = false;
   update = function(dt){
     if(MP.role==='host'){
+      if(!_fromWorker) return;                      // rAF 호출 → 시뮬 스킵(워커가 전담)
       _origUpdate(dt);
       var now = performance.now();
       if(now - MP.lastBcast > 90){ MP.lastBcast = now; try{ BC.postMessage({t:'S', s:MP.serialize()}); MP.tx++; }catch(_){}}
-      if((MP.tx & 7)===0) setChip('🔵 <b>호스트</b> · 방송중 (부대 '+armies.length+')', '#58a6ff');
+      if((MP.tx & 15)===0) setChip('🔵 <b>호스트</b> · 방송중 (부대 '+armies.length+')', '#58a6ff');
     } else if(MP.role==='guest'){
       if(!document.body.classList.contains('in-game')) return;
       MP.apply(MP.last);
@@ -97,18 +102,16 @@ const MP = `
     }
   };
 
-  // ---- 백그라운드 스로틀 대응: 창이 숨겨지면 rAF가 멈추므로,
-  //      호스트는 Web Worker 하트비트로 시뮬+방송을 계속 돌린다(창 비활성에도 유지). ----
+  // ---- 워커 하트비트: 호스트 시뮬 클럭(창 비활성/가려짐에도 계속). ~30Hz ----
   try {
     var _wk = new Worker(URL.createObjectURL(new Blob(['setInterval(function(){postMessage(1)},33)'], {type:'text/javascript'})));
     _wk.onmessage = function(){
-      if(!document.hidden) return;                 // 창이 보이면 rAF가 구동 → 중복 방지
       if(MP.role!=='host') return;
       if(!document.body.classList.contains('in-game')) return;
       if(typeof msgShown!=='undefined' && msgShown) return;
       var now = performance.now();
       var dt = Math.min((now-(MP._lastDrive||now))/1000, 0.1); MP._lastDrive = now;
-      if(dt>0){ try{ update(dt); }catch(_){} }
+      if(dt>0){ _fromWorker=true; try{ update(dt); }catch(err){ try{console.error('[mp host tick]',err);}catch(_){}} _fromWorker=false; }
     };
   } catch(_){}
 
