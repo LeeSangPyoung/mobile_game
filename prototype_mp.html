@@ -41874,6 +41874,19 @@ function __startRenderLoop() {
 <script>
 (function(){
   if (window._mpInstalled) return; window._mpInstalled = true;
+
+  // ---- 화면 에러 오버레이 (F12 없이 스샷으로 진단) ----
+  function mpErr(msg){
+    var box = document.getElementById('_mpErr');
+    if(!box){ box=document.createElement('div'); box.id='_mpErr';
+      box.style.cssText='position:fixed;right:8px;bottom:8px;max-width:48vw;max-height:42vh;overflow:auto;z-index:2147483647;background:rgba(60,8,8,.95);color:#ffd2d2;font:11px/1.4 monospace;padding:8px 10px;border:1px solid #b44;border-radius:6px;white-space:pre-wrap;box-shadow:0 4px 16px rgba(0,0,0,.6)';
+      (document.body||document.documentElement).appendChild(box); }
+    box.textContent = ('▶ '+msg+'\n\n'+box.textContent).slice(0,1400);
+  }
+  window.addEventListener('error', function(ev){ try{ mpErr((ev.message||'')+'  @'+String(ev.filename||'').split('/').pop()+':'+ev.lineno+':'+ev.colno); }catch(_){}});
+  window.addEventListener('unhandledrejection', function(ev){ try{ mpErr('Promise: '+((ev.reason&&ev.reason.message)||ev.reason)); }catch(_){}});
+  window._mpErr = mpErr;
+
   var BC = new BroadcastChannel('samgukgi-realmp');
   var MP = window.MP = { role:null, last:null, lastBcast:0, tx:0, rx:0, qid:null, inQueue:false, qTimer:null, peer:null };
 
