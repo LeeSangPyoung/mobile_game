@@ -41901,23 +41901,31 @@ function __startRenderLoop() {
   function hideChip(){ if(chip) chip.style.display='none'; }
   function closeModal(){ try{ msgShown=false; var el=document.getElementById('msg'); if(el){el.classList.remove('show'); el.style.display='none';} var bd=document.getElementById('msgBackdrop'); if(bd) bd.classList.remove('show'); }catch(_){} }
 
-  // ---- 상태 직렬화/적용 (전역 castles/armies) ----
+  // ---- 상태 직렬화/적용 (전역 castles/armies). 성은 위치(cx,cy)로 매칭 → 순서 무관 ----
+  var _ckey = function(x,y){ return Math.round(x*10000)+','+Math.round(y*10000); };
   MP.serialize = function(){
     return {
-      c: castles.map(function(c){ return { o:c.owner, p:c.primary, w:Math.round(c.wallHP), t:[c.troops.spear|0,c.troops.cavalry|0,c.troops.archer|0], x:!!c._contested }; }),
-      a: armies.map(function(a){ return { o:a.owner, u:a.unit, r:a.troops, x:Math.round(a.x), y:Math.round(a.y), s:a.seed, m:a._marchAngle, d:a.dying?1:0, fa:a.fallAngle, dt:a.deathT, dr:a._deathTroops, sh:a.shooting?1:0, st:a._start, tg:(a.target?castles.indexOf(a.target):-1) }; }),
+      c: castles.map(function(c){ return { o:c.owner, p:c.primary, w:Math.round(c.wallHP), t:[c.troops.spear|0,c.troops.cavalry|0,c.troops.archer|0], ct:!!c._contested, cx:c.x, cy:c.y }; }),
+      a: armies.map(function(a){ return { o:a.owner, u:a.unit, r:a.troops, x:Math.round(a.x), y:Math.round(a.y), s:a.seed, m:a._marchAngle, d:a.dying?1:0, fa:a.fallAngle, dt:a.deathT, dr:a._deathTroops, sh:a.shooting?1:0, st:a._start }; }),
       ck: castles.length
     };
   };
   MP.apply = function(s){
     if(!s || !castles.length) return;
-    var n = Math.min(s.c.length, castles.length);
-    for(var i=0;i<n;i++){ var sc=s.c[i], c=castles[i]; c.owner=sc.o; c.primary=sc.p; c.wallHP=sc.w; c.troops={spear:sc.t[0],cavalry:sc.t[1],archer:sc.t[2]}; c._contested=sc.x; }
+    // 게스트 성을 위치키로 인덱싱
+    var byKey = {};
+    for(var i=0;i<castles.length;i++) byKey[_ckey(castles[i].x, castles[i].y)] = castles[i];
+    for(var k=0;k<s.c.length;k++){ var sc=s.c[k];
+      var c = byKey[_ckey(sc.cx, sc.cy)];
+      if(!c) continue;  // 위치 매칭 안되면 스킵(스테이지 어긋남)
+      c.owner=sc.o; c.primary=sc.p; c.wallHP=sc.w; c.troops={spear:sc.t[0],cavalry:sc.t[1],archer:sc.t[2]}; c._contested=sc.ct;
+    }
+    // 부대는 호스트 목록으로 재구성. target은 위치가 없으니 첫 성으로(렌더 marchAngle fallback용)
     armies.length = 0;
     for(var j=0;j<s.a.length;j++){ var sa=s.a[j];
       armies.push({ owner:sa.o, unit:sa.u, troops:sa.r, x:sa.x, y:sa.y, seed:sa.s, _marchAngle:sa.m,
         dying:!!sa.d, fallAngle:sa.fa, deathT:sa.dt, _deathTroops:sa.dr, shooting:!!sa.sh, _start:sa.st,
-        target:(sa.tg>=0?castles[sa.tg]:castles[0])||castles[0], isArmy:true, atkBonus:1 });
+        target:castles[0], isArmy:true, atkBonus:1 });
     }
   };
 
@@ -41982,7 +41990,7 @@ function __startRenderLoop() {
 
   // ---- 매칭 큐 (먼저 들어온 쪽=호스트) ----
   function pvpStageIndex(){ try{ return (typeof campaignOffset==='function') ? campaignOffset() : 0; }catch(_){ return 0; } }
-  function broadcastQ(){ if(MP.inQueue) try{ BC.postMessage({t:'Q', id:MP.qid}); }catch(_){}}
+  function broadcastQ(){ if(MP.inQueue) try{ BC.postMessage({t:'Q', id:MP.qid, jt:MP.qtime}); }catch(_){}}
   function leaveQueue(){ MP.inQueue=false; if(MP.qTimer){ clearInterval(MP.qTimer); MP.qTimer=null; } }
   // 무음 오디오 킵얼라이브 — 크롬은 오디오 재생 중인 페이지를 백그라운드에서도 감속하지 않음.
   //   (버튼 클릭=유저 제스처에서 시작해야 autoplay 정책 통과)
@@ -42004,6 +42012,7 @@ function __startRenderLoop() {
   function enterQueue(){
     keepAlive();
     MP.qid = (Math.random()*2000000000)>>>0;
+    MP.qtime = Date.now();                 // 큐 입장 시각 — 빠른 쪽이 호스트
     MP.inQueue = true; MP.role=null; MP.peer=null;
     waitingModal();
     broadcastQ();
@@ -42018,11 +42027,13 @@ function __startRenderLoop() {
     send(); setTimeout(send,140); setTimeout(send,380);
     selectedStage = stage; startStage();
   }
-  function onPeerQ(peerId){
+  function onPeerQ(peerId, peerTime){
     if(!MP.inQueue || MP.role || peerId===MP.qid) return;
     MP.peer = peerId;
-    if(MP.qid < peerId) becomeHost(peerId);   // 작은 id = 먼저 온 것으로 간주 → 호스트
-    // 큰 id면 대기 → 호스트의 START_MP 수신 시 게스트로
+    // 먼저 큐 들어온 쪽(=qtime 작은 쪽)이 호스트. 동시면 qid로 타이브레이크.
+    var iAmHost = (MP.qtime < peerTime) || (MP.qtime===peerTime && MP.qid < peerId);
+    if(iAmHost) becomeHost(peerId);
+    // 아니면 대기 → 호스트의 START_MP 수신 시 게스트로
   }
   function becomeGuest(stage){
     if(MP.role==='host') return;
@@ -42032,7 +42043,7 @@ function __startRenderLoop() {
 
   BC.onmessage = function(e){
     var m = e.data; if(!m) return;
-    if(m.t==='Q'){ onPeerQ(m.id); }
+    if(m.t==='Q'){ onPeerQ(m.id, m.jt); }
     else if(m.t==='START_MP'){ becomeGuest(m.stage); }
     else if(m.t==='S'){ MP.last = m.s; MP.rx++;
       if(MP.role==='guest'){ try{ MP.apply(m.s); }catch(err){ if(window._mpErr) window._mpErr('apply(rx): '+(err&&err.message)); } } }
