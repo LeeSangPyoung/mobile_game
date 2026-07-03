@@ -1,0 +1,4 @@
+node_modules/
+*.db
+mp.db
+.test_mp.db
