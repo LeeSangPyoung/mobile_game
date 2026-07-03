@@ -64,7 +64,7 @@ const MP = `
   var chip;
   function setChip(html, color){
     if(!chip){ chip=document.createElement('div');
-      chip.style.cssText='position:fixed;left:8px;bottom:8px;z-index:2147483647;background:rgba(10,15,22,.88);border:1px solid #2b3543;border-radius:8px;color:#e6edf3;font:12px system-ui;padding:5px 9px;pointer-events:none;box-shadow:0 3px 12px rgba(0,0,0,.5)';
+      chip.style.cssText='position:fixed;left:8px;bottom:8px;z-index:2147483647;background:rgba(10,15,22,.92);border:1px solid #2b3543;border-radius:8px;color:#e6edf3;font:13px/1.3 monospace;padding:6px 10px;pointer-events:none;box-shadow:0 3px 12px rgba(0,0,0,.5)';
       (document.body||document.documentElement).appendChild(chip); }
     chip.style.display='block'; chip.innerHTML=html; if(color) chip.style.color=color;
   }
@@ -97,8 +97,9 @@ const MP = `
   //  게스트: 시뮬 생략 + 호스트 상태 적용(진짜 렌더러로 미러).
   // ---- 근본 방어: 게스트일 때 sim 함수를 전부 무력화(원인 불문 자기 게임 진행 차단) ----
   //   update가 어떤 경로로 _origUpdate를 부르든, 게스트에선 생산·AI·전투·공성·성벽이 아무것도 안 함.
+  MP._wrapped = 0;
   ['growth','enemyAI','resolveEngagements','resolveSieges','wallRegenAndFire','aiTurn'].forEach(function(fn){
-    try{ if(typeof window[fn]==='function'){ var _o=window[fn]; window[fn]=function(){ if(MP.role==='guest') return; return _o.apply(this, arguments); }; } }catch(_){}
+    try{ if(typeof window[fn]==='function'){ var _o=window[fn]; window[fn]=function(){ if(MP.role==='guest'){ MP._simBlk=(MP._simBlk||0)+1; return; } return _o.apply(this, arguments); }; MP._wrapped++; } }catch(_){}
   });
 
   var _origUpdate = update;
@@ -145,8 +146,8 @@ const MP = `
     if(MP.role){ try{ window._appHidden = false; if(typeof kickLoop==='function') kickLoop(); }catch(_){} }
     // 진단: 0.5초간 각 분기 실행횟수 + 성도 병력 + 워커유무
     var t0='-'; try{ if(castles[0]) t0=(castles[0].troops.spear+castles[0].troops.cavalry+castles[0].troops.archer); }catch(_){}
-    setChip('['+(MP.role||'-')+'] H'+(MP._cH||0)+' G'+(MP._cG||0)+' O'+(MP._cO||0)+' 성도'+t0+' last='+(MP.last?'Y':'N'), MP.role==='guest'?'#f85149':'#58a6ff');
-    MP._cH=MP._cG=MP._cO=0;
+    setChip('['+(MP.role||'-')+'] wrap'+(MP._wrapped||0)+' · H'+(MP._cH||0)+' G'+(MP._cG||0)+' O'+(MP._cO||0)+' blk'+(MP._simBlk||0)+' · 성도'+t0+' last='+(MP.last?'Y':'N'), MP.role==='guest'?'#f85149':'#58a6ff');
+    MP._cH=MP._cG=MP._cO=MP._simBlk=0;
   }, 500);
 
   // ---- 매칭 큐 (먼저 들어온 쪽=호스트) ----
