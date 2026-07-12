@@ -1,0 +1,274 @@
+<title>로비 매칭 버튼 — 현재 → 개선안</title>
+<style>
+  :root{
+    --bg:#e9e4d9; --bg2:#f3efe6; --panel:#ffffff; --ink:#22201b; --muted:#726d61;
+    --line:rgba(30,26,18,.12); --gold:#b8862a; --stage:#141210; --stage2:#0c0b09;
+    --tag:#efe9dc; --tag-ink:#7a5e1e;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#100f0c; --bg2:#17150f; --panel:#1b1913; --ink:#ece7db; --muted:#9c968a;
+      --line:rgba(255,255,255,.09); --gold:#e8b84b; --stage:#100f0c; --stage2:#080705;
+      --tag:#231f16; --tag-ink:#e8c675;
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#e9e4d9; --bg2:#f3efe6; --panel:#ffffff; --ink:#22201b; --muted:#726d61;
+    --line:rgba(30,26,18,.12); --gold:#b8862a; --stage:#141210; --stage2:#0c0b09;
+    --tag:#efe9dc; --tag-ink:#7a5e1e;
+  }
+  :root[data-theme="dark"]{
+    --bg:#100f0c; --bg2:#17150f; --panel:#1b1913; --ink:#ece7db; --muted:#9c968a;
+    --line:rgba(255,255,255,.09); --gold:#e8b84b; --stage:#100f0c; --stage2:#080705;
+    --tag:#231f16; --tag-ink:#e8c675;
+  }
+
+  *{box-sizing:border-box;}
+  .wrap{
+    font-family:'Apple SD Gothic Neo','Malgun Gothic',system-ui,-apple-system,'Segoe UI',sans-serif;
+    color:var(--ink); background:
+      radial-gradient(120% 80% at 50% -10%, var(--bg2), var(--bg) 60%);
+    min-height:100%; padding:40px 22px 56px; line-height:1.5;
+  }
+  .page{max-width:1080px; margin:0 auto;}
+
+  /* ---- header ---- */
+  .eyebrow{font-size:12px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold); margin:0 0 10px;}
+  h1{font-size:clamp(26px,4.2vw,40px); font-weight:900; letter-spacing:-.01em; margin:0;
+    text-wrap:balance; display:flex; align-items:baseline; gap:.4em; flex-wrap:wrap;}
+  h1 .arw{color:var(--gold); font-weight:700;}
+  h1 .now{color:var(--muted);}
+  .lede{margin:12px 0 0; max-width:56ch; color:var(--muted); font-size:15px;}
+  .hint{margin-top:14px; display:inline-flex; align-items:center; gap:8px;
+    font-size:12.5px; font-weight:700; color:var(--ink);
+    background:var(--tag); border:1px solid var(--line); padding:7px 13px; border-radius:999px;}
+  .hint .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);
+    box-shadow:0 0 0 4px color-mix(in srgb,var(--gold) 25%,transparent);}
+
+  /* ---- stage: 두 폰 비교 ---- */
+  .stage{margin-top:30px; border-radius:24px; padding:34px 26px;
+    background:radial-gradient(130% 90% at 50% 0%, var(--stage) 0%, var(--stage2) 78%);
+    border:1px solid rgba(255,255,255,.06);
+    box-shadow:0 26px 60px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.05);}
+  .phones{display:grid; grid-template-columns:1fr 1fr; gap:30px; justify-items:center;}
+  @media (max-width:640px){ .phones{grid-template-columns:1fr; gap:38px;} }
+
+  .col{display:flex; flex-direction:column; align-items:center; gap:14px; width:100%;}
+  .col-head{display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;}
+  .badge{font-size:11.5px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+    padding:5px 12px; border-radius:999px;}
+  .badge.before{color:#c9c3b6; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);}
+  .badge.after{color:#1a140a; background:linear-gradient(180deg,#ffdd7a,#e8b84b);
+    box-shadow:0 3px 12px rgba(232,184,75,.4);}
+  .col-note{font-size:12px; color:#8f897c; max-width:26ch; min-height:2.2em;}
+  .col-note.hot{color:#e8c675;}
+
+  /* ---- phone frame ---- */
+  .phone{width:100%; max-width:300px; border-radius:34px; padding:10px;
+    background:linear-gradient(160deg,#2a2925,#131210); border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 18px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);}
+  .screen{border-radius:26px; overflow:hidden; position:relative;
+    background:linear-gradient(180deg,#161821 0%,#0e0d12 44%,#0a0a0e 100%);
+    padding:0 13px 30px;}
+  .statusbar{display:flex; align-items:center; justify-content:space-between;
+    padding:11px 8px 4px; font-size:11px; font-weight:700; color:rgba(255,255,255,.5);}
+  .statusbar .sig{letter-spacing:2px;}
+  .notch{position:absolute; top:8px; left:50%; transform:translateX(-50%);
+    width:78px; height:16px; border-radius:0 0 12px 12px; background:#000; opacity:.55;}
+  .scr-title{text-align:center; font-family:'Noto Serif KR',serif; font-weight:900;
+    font-size:16px; letter-spacing:.06em; color:#f3ecd6; margin:6px 0 3px;}
+  .scr-title small{display:block; font-family:inherit; font-weight:600; font-size:10.5px;
+    letter-spacing:.02em; color:#8b93a3; margin-top:2px;}
+  .infoline{text-align:center; font-family:'Noto Serif KR',serif; font-size:11px; font-weight:700;
+    color:#d8c9a8; margin:9px 2px 4px;}
+  .infoline b{color:#ffd23f;}
+
+  /* ======= 공통 버튼 구조 ======= */
+  .mpo-btn2{display:flex; align-items:center; gap:12px; width:100%; padding:14px 46px 14px 12px;
+    margin-top:11px; border-radius:15px; cursor:pointer; font-family:'Noto Serif KR',serif;
+    position:relative; text-align:left; color:#fff; overflow:hidden; box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;}
+  .mpo-btn2 .mpo-txt{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px; z-index:2;}
+  .mpo-btn2 .mpo-txt b{font-size:17px; font-weight:900; letter-spacing:.4px; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.45);}
+  .mpo-btn2 .mpo-txt em{font-style:normal; font-size:11px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .mpo-btn2 .mpo-ic{flex:0 0 auto; width:44px; height:44px; display:grid; place-items:center;
+    border-radius:12px; font-size:22px; z-index:2;}
+
+  /* ======= BEFORE (현재 v4) ======= */
+  .scr-old .mpo-btn2{background:linear-gradient(180deg,#2f4c7c,#20355a 55%,#16243f);
+    border:1.5px solid #5a90e0; box-shadow:0 4px 16px rgba(70,130,220,.26), inset 0 1px 0 rgba(190,216,255,.34);
+    transition:transform .09s, box-shadow .18s, filter .18s;}
+  .scr-old .mpo-btn2::before{content:''; position:absolute; left:0; right:0; top:0; height:50%; pointer-events:none;
+    background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0)); border-radius:15px 15px 0 0;}
+  .scr-old .mpo-btn2::after{content:'\203A'; position:absolute; right:10px; top:50%; transform:translateY(-50%);
+    z-index:2; width:25px; height:25px; display:grid; place-items:center; border-radius:50%;
+    font-size:17px; font-weight:700; line-height:1; color:#fff; background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.26); pointer-events:none;}
+  .scr-old .mpo-btn2:active{transform:translateY(1px) scale(.99); filter:brightness(1.09);}
+  .scr-old .mpo-btn2 .mpo-ic{background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.05));
+    border:1px solid rgba(255,255,255,.32); box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 2px 6px rgba(0,0,0,.3);}
+  .scr-old .mpo-btn2 .mpo-txt em{color:rgba(255,255,255,.84);}
+  .scr-old .mpo-btn2#oFind{padding:17px 46px 17px 12px; border-color:#f2c644;
+    background:linear-gradient(180deg,#7c6024,#553e15 55%,#3d2c0d);
+    box-shadow:0 5px 20px rgba(235,175,45,.34), inset 0 1px 0 rgba(255,235,150,.45);
+    animation:oGlow 2.2s ease-in-out infinite;}
+  .scr-old .mpo-btn2#oFind .mpo-ic{width:48px; height:48px; font-size:24px;}
+  .scr-old .mpo-btn2#oFind .mpo-txt b{font-size:20px; color:#fff7df;}
+  .scr-old .mpo-btn2#oFind .mpo-txt em{color:rgba(255,240,190,.92);}
+  .scr-old .mpo-btn2#oFind::after{background:rgba(255,225,140,.24); border-color:rgba(255,225,140,.55); color:#fff2c0;}
+  .scr-old .mpo-btn2.friend{border-color:#4bbd85; background:linear-gradient(180deg,#2d6549,#1e4834 55%,#143224);
+    box-shadow:0 4px 16px rgba(60,185,125,.24), inset 0 1px 0 rgba(190,245,215,.3);}
+  @keyframes oGlow{0%,100%{box-shadow:0 5px 18px rgba(235,175,45,.3),inset 0 1px 0 rgba(255,235,150,.45)}
+    50%{box-shadow:0 6px 24px rgba(245,195,60,.5),inset 0 1px 0 rgba(255,235,150,.5)}}
+
+  /* ======= AFTER (개선안 v5) ======= */
+  .scr-new .mpo-btn2{background:linear-gradient(180deg,#3a5c92,#24406e 55%,#182a49);
+    border:1.5px solid #6ba0ec;
+    box-shadow:0 4px 0 #12233f, 0 8px 18px rgba(70,130,220,.30), inset 0 1px 0 rgba(200,224,255,.5), inset 0 -1px 0 rgba(0,0,0,.3);
+    transition:transform .08s ease, box-shadow .12s ease, filter .18s ease;}
+  .scr-new .mpo-btn2::before{content:''; position:absolute; left:0; right:0; top:0; height:52%; pointer-events:none; z-index:1;
+    background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0)); border-radius:14px 14px 0 0;}
+  .scr-new .mpo-btn2::after{content:'\203A'; position:absolute; right:10px; top:50%; transform:translateY(-50%);
+    z-index:3; width:28px; height:28px; display:grid; place-items:center; border-radius:50%;
+    font-size:20px; font-weight:700; line-height:1; color:#fff;
+    background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,.1)); border:1px solid rgba(255,255,255,.4);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 1px 3px rgba(0,0,0,.3); pointer-events:none;
+    animation:nNudge 1.9s ease-in-out infinite;}
+  .scr-new .mpo-btn2:active{transform:translateY(3px); filter:brightness(1.06);
+    box-shadow:0 1px 0 #12233f, 0 3px 8px rgba(0,0,0,.35), inset 0 1px 0 rgba(200,224,255,.4);}
+  .scr-new .mpo-btn2 .mpo-ic{background:linear-gradient(160deg,rgba(120,170,255,.5),rgba(40,80,150,.25));
+    border:1px solid rgba(255,255,255,.4);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.55), inset 0 -2px 4px rgba(0,0,0,.25), 0 2px 6px rgba(0,0,0,.35);
+    text-shadow:0 0 6px rgba(255,255,255,.35),0 1px 2px rgba(0,0,0,.5);}
+  .scr-new .mpo-btn2 .mpo-txt em{color:rgba(255,255,255,.9);}
+
+  .scr-new .mpo-btn2#nFind{padding:17px 46px 17px 12px; border-color:#ffd257;
+    background:linear-gradient(105deg,transparent 32%,rgba(255,248,210,.38) 46%,transparent 60%),
+               linear-gradient(180deg,#9a7320,#6a4d13 55%,#48340c);
+    background-size:220% 100%,100% 100%; background-position:200% 0,0 0;
+    box-shadow:0 4px 0 #3a2a09, 0 8px 24px rgba(240,185,50,.5), inset 0 1px 0 rgba(255,240,170,.6), inset 0 -1px 0 rgba(0,0,0,.3);
+    animation:nGlow 2.4s ease-in-out infinite, nShine 3.4s linear infinite;}
+  .scr-new .mpo-btn2#nFind .mpo-ic{width:48px; height:48px; font-size:24px;
+    background:linear-gradient(160deg,rgba(255,225,130,.55),rgba(150,110,30,.3)); border-color:rgba(255,235,160,.55);
+    text-shadow:0 0 8px rgba(255,220,120,.7),0 1px 2px rgba(0,0,0,.5);}
+  .scr-new .mpo-btn2#nFind .mpo-txt b{font-size:20px; color:#fff7df;}
+  .scr-new .mpo-btn2#nFind .mpo-txt em{color:rgba(255,240,190,.94);}
+  .scr-new .mpo-btn2#nFind::after{background:linear-gradient(180deg,rgba(255,235,150,.4),rgba(255,210,110,.18));
+    border-color:rgba(255,225,140,.6); color:#fff2c0;}
+  .scr-new .mpo-btn2#nFind:active{transform:translateY(3px); animation:none; filter:brightness(1.07);
+    box-shadow:0 1px 0 #3a2a09, 0 4px 12px rgba(240,185,50,.4), inset 0 1px 0 rgba(255,240,170,.5);}
+  .scr-new .mpo-btn2.friend{border-color:#5fd39a; background:linear-gradient(180deg,#2f7a56,#1f5a3e 55%,#16402c);
+    box-shadow:0 4px 0 #0f3323, 0 8px 18px rgba(60,185,125,.30), inset 0 1px 0 rgba(200,250,220,.45), inset 0 -1px 0 rgba(0,0,0,.3);}
+  .scr-new .mpo-btn2.friend .mpo-ic{background:linear-gradient(160deg,rgba(120,235,175,.5),rgba(30,110,70,.25)); border-color:rgba(190,245,215,.45);}
+  .scr-new .mpo-btn2.friend:active{transform:translateY(3px); filter:brightness(1.06);
+    box-shadow:0 1px 0 #0f3323, 0 3px 8px rgba(0,0,0,.35), inset 0 1px 0 rgba(200,250,220,.4);}
+  @media (hover:hover){ .scr-new .mpo-btn2:hover{filter:brightness(1.05);} }
+
+  @keyframes nNudge{0%,88%,100%{transform:translateY(-50%) translateX(0)} 94%{transform:translateY(-50%) translateX(3px)}}
+  @keyframes nGlow{0%,100%{box-shadow:0 4px 0 #3a2a09,0 8px 22px rgba(240,185,50,.38),inset 0 1px 0 rgba(255,240,170,.6),inset 0 -1px 0 rgba(0,0,0,.3)}
+    50%{box-shadow:0 4px 0 #3a2a09,0 10px 32px rgba(250,205,70,.66),inset 0 1px 0 rgba(255,240,170,.66),inset 0 -1px 0 rgba(0,0,0,.3)}}
+  @keyframes nShine{0%{background-position:200% 0,0 0} 42%,100%{background-position:-90% 0,0 0}}
+
+  /* ---- 개선 포인트 ---- */
+  .points{margin-top:34px;}
+  .points h2{font-size:13px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--muted); margin:0 0 16px;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(178px,1fr)); gap:14px;}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px 16px 17px;
+    box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .card .tag{display:inline-block; font-size:11px; font-weight:800; letter-spacing:.02em;
+    color:var(--tag-ink); background:var(--tag); padding:4px 10px; border-radius:999px; margin-bottom:10px;}
+  .card p{margin:0; font-size:13.5px; color:var(--ink);}
+  .card p .b4{color:var(--muted);}
+
+  footer{margin-top:26px; font-size:12px; color:var(--muted); text-align:center;}
+  @media (prefers-reduced-motion:reduce){
+    .mpo-btn2,.mpo-btn2::after,.scr-old .mpo-btn2#oFind,.scr-new .mpo-btn2#nFind{animation:none !important;}
+  }
+</style>
+
+<div class="wrap">
+  <div class="page">
+
+    <header>
+      <p class="eyebrow">손가락 삼국지 · 로비 UI 개선 제안</p>
+      <h1>로비 매칭 버튼 <span class="now">현재</span><span class="arw">→</span><span>개선안</span></h1>
+      <p class="lede">유저 피드백은 "버튼인지 정보 카드인지 헷갈린다"였습니다. 눌러보고 싶은 버튼으로 다듬은 개선안을 아래에서 직접 눌러 비교할 수 있습니다.</p>
+      <span class="hint"><span class="dot"></span>두 화면 모두 실제로 눌러볼 수 있습니다 — 버튼을 눌러보세요</span>
+    </header>
+
+    <section class="stage" aria-label="현재와 개선안 비교">
+      <div class="phones">
+
+        <!-- BEFORE -->
+        <div class="col">
+          <div class="col-head">
+            <span class="badge before">현재</span>
+            <span class="col-note">평평해서 정보 카드처럼 보이고, 그냥 지나치기 쉬움</span>
+          </div>
+          <div class="phone">
+            <div class="screen scr-old">
+              <div class="notch"></div>
+              <div class="statusbar"><span>9:41</span><span class="sig">● ● ▮</span></div>
+              <div class="scr-title">멀티 대전<small>상대를 선택하세요</small></div>
+              <div class="infoline">⚔ 참가 <b>무료</b> · 승리 시 ★ +1 · 골드 등용</div>
+              <div class="mpo-btn2" id="oFind"><span class="mpo-ic">⚔</span><span class="mpo-txt"><b>전투력 매칭</b><em>승리 +150골드 · ★ +1 · 등용 기회</em></span></div>
+              <div class="mpo-btn2 rand"><span class="mpo-ic">🎲</span><span class="mpo-txt"><b>랜덤 매칭</b><em>승리 ★ +1 · 즉시 매칭</em></span></div>
+              <div class="mpo-btn2 friend"><span class="mpo-ic">🤝</span><span class="mpo-txt"><b>친구 매칭</b><em>캐주얼 · 보상 없음</em></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AFTER -->
+        <div class="col">
+          <div class="col-head">
+            <span class="badge after">개선안 v5</span>
+            <span class="col-note hot">전투력 매칭이 유일하게 빛나는 '주 버튼'</span>
+          </div>
+          <div class="phone">
+            <div class="screen scr-new">
+              <div class="notch"></div>
+              <div class="statusbar"><span>9:41</span><span class="sig">● ● ▮</span></div>
+              <div class="scr-title">멀티 대전<small>상대를 선택하세요</small></div>
+              <div class="infoline">⚔ 참가 <b>무료</b> · 승리 시 ★ +1 · 골드 등용</div>
+              <div class="mpo-btn2" id="nFind"><span class="mpo-ic">⚔</span><span class="mpo-txt"><b>전투력 매칭</b><em>승리 +150골드 · ★ +1 · 등용 기회</em></span></div>
+              <div class="mpo-btn2 rand"><span class="mpo-ic">🎲</span><span class="mpo-txt"><b>랜덤 매칭</b><em>승리 ★ +1 · 즉시 매칭</em></span></div>
+              <div class="mpo-btn2 friend"><span class="mpo-ic">🤝</span><span class="mpo-txt"><b>친구 매칭</b><em>캐주얼 · 보상 없음</em></span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="points">
+      <h2>무엇이 달라졌나</h2>
+      <div class="grid">
+        <div class="card">
+          <span class="tag">두께</span>
+          <p><span class="b4">평평한 판 →</span> 버튼에 두께가 생겨, 누르면 실제로 쑥 들어갑니다. '눌렀다'는 느낌이 확실해집니다.</p>
+        </div>
+        <div class="card">
+          <span class="tag">빛</span>
+          <p>주 버튼 위로 빛이 스윽 지나가고 은은하게 빛나, 시선이 자연스럽게 전투력 매칭으로 모입니다.</p>
+        </div>
+        <div class="card">
+          <span class="tag">화살표</span>
+          <p>오른쪽 화살표가 또렷해지고 살짝 까딱여, "누르면 다음으로 넘어간다"를 알려줍니다.</p>
+        </div>
+        <div class="card">
+          <span class="tag">아이콘</span>
+          <p><span class="b4">흐릿하던 아이콘 →</span> 배경에 색과 광이 들어가 또렷해지고, 살아 있는 느낌을 줍니다.</p>
+        </div>
+        <div class="card">
+          <span class="tag">색</span>
+          <p>랜덤·친구 버튼도 색이 살아나 다크 배경에 묻히지 않고, 각각 버튼으로 분명히 보입니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>순수 CSS로만 구현 · 버튼 구조 변경 없음 · 모바일 세로 화면 기준</footer>
+
+  </div>
+</div>

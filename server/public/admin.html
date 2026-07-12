@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>운영 콘솔 · 손가락삼국지</title>
+<style>
+  :root, :root[data-theme="dark"]{
+    --bg:#0f1216; --surface:#161b22; --surface2:#1b212b; --hover:#1e2530;
+    --sidebar:#12161c; --topbar:rgba(15,18,22,.9); --row:#1c222b;
+    --border:#232a34; --border2:#2d3540;
+    --text:#e3e7ec; --dim:#9aa3af; --mute:#646e7b;
+    --accent:#5b8def; --accent-soft:rgba(91,141,239,.12); --accent-bd:#33507e;
+    --green:#4ea373; --green-soft:rgba(78,163,115,.12);
+    --red:#d0625f; --red-soft:rgba(208,98,95,.12);
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.14);
+    --r:10px;
+  }
+  :root[data-theme="light"]{
+    --bg:#f4f6f9; --surface:#ffffff; --surface2:#eef1f5; --hover:#f2f4f7;
+    --sidebar:#ffffff; --topbar:rgba(255,255,255,.9); --row:#edf0f4;
+    --border:#e4e8ee; --border2:#d5dbe3;
+    --text:#1a222c; --dim:#586472; --mute:#8791a0;
+    --accent:#3b7ae0; --accent-soft:rgba(59,122,224,.10); --accent-bd:#bcd3f6;
+    --green:#2f9e5f; --green-soft:rgba(47,158,95,.12);
+    --red:#d6473f; --red-soft:rgba(214,71,63,.10);
+    --shadow:0 1px 2px rgba(30,40,60,.05), 0 4px 16px rgba(30,40,60,.06);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; min-height:100%; }
+  body{ background:var(--bg); color:var(--text); font:13.5px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Malgun Gothic","Apple SD Gothic Neo",sans-serif; -webkit-font-smoothing:antialiased; }
+  ::-webkit-scrollbar{ width:10px; height:10px; } ::-webkit-scrollbar-thumb{ background:var(--border2); border-radius:8px; border:2px solid transparent; background-clip:padding-box; } ::-webkit-scrollbar-track{ background:transparent; }
+  button{ font-family:inherit; cursor:pointer; } a{ color:inherit; text-decoration:none; }
+  .num{ font-variant-numeric:tabular-nums; }
+  svg{ display:block; }
+
+  /* 로그인 */
+  #login{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; padding:20px; background:var(--bg); z-index:100; }
+  .loginCard{ width:100%; max-width:360px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:32px 28px 26px; box-shadow:var(--shadow); }
+  .lock{ width:44px; height:44px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:var(--surface2); border:1px solid var(--border2); color:var(--dim); margin-bottom:18px; }
+  .loginCard h1{ margin:0 0 3px; font-size:17px; font-weight:700; } .loginCard .sub{ color:var(--dim); font-size:12.5px; margin-bottom:22px; }
+  .lbl{ font-size:12px; color:var(--dim); margin-bottom:6px; }
+  .field input{ width:100%; background:var(--bg); border:1px solid var(--border2); color:var(--text); border-radius:8px; padding:11px 12px; font-size:14px; outline:none; transition:border-color .15s, box-shadow .15s; }
+  .field input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  .btn-login{ width:100%; margin-top:16px; padding:11px; border:none; border-radius:8px; font-size:14px; font-weight:600; color:#fff; background:var(--accent); transition:filter .15s; }
+  .btn-login:hover{ filter:brightness(1.08); } .btn-login:disabled{ opacity:.6; }
+  .loginErr{ color:var(--red); font-size:12.5px; min-height:18px; margin-top:12px; } .loginFoot{ color:var(--mute); font-size:11.5px; margin-top:16px; }
+
+  /* 레이아웃 */
+  #app{ display:none; }
+  .layout{ display:flex; min-height:100vh; }
+  .sidebar{ width:224px; flex-shrink:0; background:var(--sidebar); border-right:1px solid var(--border); position:sticky; top:0; height:100vh; display:flex; flex-direction:column; }
+  .sbrand{ height:56px; flex-shrink:0; display:flex; align-items:center; gap:10px; padding:0 16px; border-bottom:1px solid var(--border); }
+  .sbrand .bi{ width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:var(--accent-soft); border:1px solid var(--accent-bd); color:var(--accent); font-weight:700; font-size:14px; }
+  .sbrand .bt{ font-weight:700; font-size:13.5px; line-height:1.2; } .sbrand .bt small{ display:block; color:var(--mute); font-weight:500; font-size:11px; }
+  .navsec{ padding:12px 12px 0; color:var(--mute); font-size:11px; font-weight:600; letter-spacing:.4px; text-transform:uppercase; margin:4px 0; padding-left:16px; }
+  .nav{ display:flex; flex-direction:column; gap:1px; padding:4px 10px; }
+  .nav a{ display:flex; align-items:center; gap:11px; padding:9px 12px; border-radius:8px; color:var(--dim); font-weight:500; font-size:13.5px; transition:.12s; }
+  .nav a svg{ width:17px; height:17px; opacity:.85; } .nav a:hover{ background:var(--hover); color:var(--text); }
+  .nav a.active{ background:var(--accent-soft); color:var(--text); } .nav a.active svg{ color:var(--accent); opacity:1; }
+  .nav a .badge{ margin-left:auto; font-size:11px; font-weight:600; background:var(--surface2); border:1px solid var(--border2); color:var(--dim); border-radius:20px; padding:0 7px; min-width:20px; text-align:center; }
+  .sbfoot{ margin-top:auto; padding:12px 14px; border-top:1px solid var(--border); display:flex; align-items:center; gap:8px; }
+  .live{ display:flex; align-items:center; gap:7px; color:var(--dim); font-size:12px; }
+  .live .dot{ width:7px; height:7px; border-radius:50%; background:var(--mute); } .live.on .dot{ background:var(--green); }
+  .btn-out{ margin-left:auto; background:transparent; color:var(--dim); border:1px solid var(--border2); border-radius:7px; padding:6px 10px; font-size:12px; font-weight:500; } .btn-out:hover{ color:var(--text); border-color:#3a434f; }
+
+  .main{ flex:1; min-width:0; display:flex; flex-direction:column; }
+  .topbar{ height:56px; display:flex; align-items:center; gap:14px; padding:0 32px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--topbar); backdrop-filter:blur(8px); z-index:10; }
+  .topbar h1{ font-size:16px; font-weight:700; margin:0; } .topbar .sub{ color:var(--mute); font-size:12px; }
+  .grow{ flex:1; } .clock{ color:var(--mute); font-size:12.5px; }
+  .iconbtn{ width:34px; height:34px; display:flex; align-items:center; justify-content:center; background:transparent; border:1px solid var(--border2); border-radius:8px; color:var(--dim); }
+  .iconbtn:hover{ color:var(--text); background:var(--hover); } .iconbtn svg{ width:17px; height:17px; }
+  .view{ padding:24px 32px 56px; max-width:1320px; width:100%; margin:0 auto; }
+
+  /* KPI */
+  .kpis{ display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:12px; margin-bottom:20px; }
+  .kpi{ background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:15px 16px; }
+  .kpi .top{ display:flex; align-items:center; justify-content:space-between; color:var(--mute); }
+  .kpi .l{ font-size:12px; font-weight:500; } .kpi .ic{ width:16px; height:16px; opacity:.6; }
+  .kpi .v{ font-size:26px; font-weight:700; line-height:1.1; margin-top:10px; letter-spacing:-.3px; }
+  .kpi .v.accent{ color:var(--accent); }
+
+  /* 카드 */
+  .card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; margin-bottom:16px; }
+  .card > h2{ margin:0; padding:13px 16px; font-size:13px; font-weight:600; color:var(--text); display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border); }
+  .card > h2 .cnt{ color:var(--dim); background:var(--surface2); border:1px solid var(--border2); border-radius:6px; font-size:11.5px; font-weight:600; padding:1px 7px; }
+  .card > h2 .more{ margin-left:auto; font-weight:500; color:var(--accent); font-size:12px; }
+  .cols{ display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; } .cols .card{ margin-bottom:0; }
+
+  .toolbar{ display:flex; align-items:center; gap:10px; padding:10px 16px; border-bottom:1px solid var(--border); color:var(--dim); font-size:12.5px; flex-wrap:wrap; }
+  .toolbar .hint{ color:var(--mute); }
+  .sel{ margin-left:auto; color:var(--dim); }
+  .search{ display:flex; align-items:center; gap:8px; background:var(--bg); border:1px solid var(--border2); border-radius:7px; padding:0 4px 0 10px; }
+  .search svg{ width:15px; height:15px; color:var(--mute); } .search input{ background:transparent; border:none; outline:none; color:var(--text); font-size:13px; padding:8px 0; width:210px; }
+  select.inp{ background:var(--bg); border:1px solid var(--border2); color:var(--text); border-radius:7px; padding:8px 10px; font-size:12.5px; outline:none; }
+  .btn{ border:1px solid var(--border2); background:var(--surface2); color:var(--text); border-radius:7px; padding:6px 12px; font-size:12.5px; font-weight:500; transition:.13s; }
+  .btn:hover:not(:disabled){ border-color:#3a434f; background:var(--hover); } .btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .btn-primary{ background:var(--accent); border-color:var(--accent); color:#fff; } .btn-primary:hover:not(:disabled){ filter:brightness(1.08); }
+  .btn-danger{ background:transparent; border-color:var(--border2); color:var(--red); } .btn-danger:hover:not(:disabled){ background:var(--red-soft); border-color:var(--red); }
+
+  .scroll{ overflow:auto; } .scroll.max{ max-height:400px; }
+  table{ width:100%; border-collapse:collapse; }
+  th,td{ text-align:left; padding:9px 16px; white-space:nowrap; }
+  th{ position:sticky; top:0; z-index:1; background:var(--surface); color:var(--mute); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--border); }
+  tbody tr{ border-bottom:1px solid var(--row); transition:background .1s; } tbody tr:last-child{ border-bottom:none; } tbody tr:hover{ background:var(--hover); }
+  tr.clk{ cursor:pointer; } .n{ text-align:right; } .tar{ text-align:right; } .tal{ text-align:left; } .flex{ width:100%; } .rank{ color:var(--mute); width:48px; }
+  th.n, th.tar, th.tal{ } /* 헤더도 동일 정렬 상속 */
+  input[type=checkbox]{ width:15px; height:15px; accent-color:var(--accent); cursor:pointer; }
+  .rating{ font-weight:600; color:var(--text); }
+  .tag{ display:inline-block; font-size:11px; font-weight:500; padding:1px 8px; border-radius:5px; border:1px solid var(--border2); color:var(--dim); }
+  .tag.on{ color:var(--green); border-color:var(--green-soft); background:var(--green-soft); }
+  .tag.off{ color:var(--mute); }
+  .tag.ban{ color:var(--red); border-color:var(--red-soft); background:var(--red-soft); }
+  .tag.win{ color:var(--green); border-color:var(--green-soft); background:var(--green-soft); }
+  .tag.lose{ color:var(--red); border-color:var(--red-soft); background:var(--red-soft); }
+  .vs{ color:var(--mute); font-size:12px; text-align:center; }
+  .winner{ color:var(--text); font-weight:600; }
+
+  .empty{ padding:32px 16px; text-align:center; color:var(--mute); font-size:13px; }
+  .pager{ display:flex; align-items:center; gap:12px; justify-content:flex-end; padding:11px 16px; color:var(--dim); font-size:12.5px; border-top:1px solid var(--border); }
+
+  /* 유저 상세 */
+  .back{ color:var(--dim); font-size:13px; margin-bottom:14px; display:inline-flex; gap:6px; align-items:center; } .back:hover{ color:var(--text); }
+  .uhead{ display:flex; align-items:center; gap:16px; padding:18px; flex-wrap:wrap; }
+  .uava{ width:48px; height:48px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:700; background:var(--surface2); border:1px solid var(--border2); color:var(--dim); }
+  .uname{ font-size:18px; font-weight:700; } .umeta{ color:var(--dim); font-size:12px; margin-top:3px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; } .umeta .mono{ color:var(--mute); font-family:ui-monospace,Menlo,monospace; font-size:11px; white-space:nowrap; }
+  .ustats{ display:flex; gap:22px; margin-left:auto; } .ustat{ text-align:center; } .ustat .v{ font-size:20px; font-weight:700; } .ustat .l{ color:var(--mute); font-size:11px; margin-top:1px; }
+  .hidden{ display:none !important; }
+
+  @media(max-width:860px){ .kpis{ grid-template-columns:repeat(2,1fr);} .cols{ grid-template-columns:1fr; }
+    .layout{ flex-direction:column; } .sidebar{ width:100%; height:auto; flex-direction:row; align-items:center; overflow-x:auto; position:sticky; top:0; z-index:20; padding:0; }
+    .sbrand{ border:none; border-right:1px solid var(--border); white-space:nowrap; } .navsec{ display:none; } .nav{ flex-direction:row; padding:6px; } .nav a{ white-space:nowrap; } .sbfoot{ margin:0 8px 0 auto; border:none; } }
+  @media(max-width:560px){ .view{ padding:16px 14px 40px; } .kpis{ grid-template-columns:1fr 1fr; } .clock{ display:none; } .search input{ width:130px; } }
+</style>
+</head>
+<body>
+
+<!-- 로그인 -->
+<div id="login">
+  <form class="loginCard" id="loginForm" autocomplete="off">
+    <div class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+    <h1>운영 콘솔</h1>
+    <div class="sub">손가락삼국지 · 관리자 인증</div>
+    <div class="lbl">비밀번호</div>
+    <div class="field"><input id="pw" type="password" placeholder="관리자 비밀번호" autocomplete="current-password"></div>
+    <button class="btn-login" id="loginBtn" type="submit">로그인</button>
+    <div class="loginErr" id="loginErr"></div>
+    <div class="loginFoot">인가된 운영자 전용입니다.</div>
+  </form>
+</div>
+
+<!-- 앱 -->
+<div id="app">
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sbrand"><span class="bi">S</span><span class="bt">손가락삼국지<small>운영 콘솔</small></span></div>
+      <div class="navsec">모니터링</div>
+      <nav class="nav">
+        <a href="#/dashboard" data-nav="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> 대시보드</a>
+        <a href="#/live" data-nav="live"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> 실시간 운영 <span class="badge" id="nbLive">0</span></a>
+      </nav>
+      <div class="navsec">데이터</div>
+      <nav class="nav">
+        <a href="#/users" data-nav="users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 유저</a>
+        <a href="#/matches" data-nav="matches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8"/></svg> 대전 기록</a>
+      </nav>
+      <div class="sbfoot">
+        <div class="live" id="live"><span class="dot"></span><span id="liveTxt">연결 대기</span></div>
+        <button class="btn-out" id="logoutBtn">로그아웃</button>
+      </div>
+    </aside>
+    <div class="main">
+      <div class="topbar">
+        <div><h1 id="ptitle">대시보드</h1></div>
+        <div class="grow"></div>
+        <button class="iconbtn" id="themeBtn" title="테마 전환"></button>
+        <span class="clock num" id="clock">--:--:--</span>
+      </div>
+      <div class="view" id="view"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $=function(s,r){ return (r||document).querySelector(s); };
+  // ─── 테마(다크/라이트) ───
+  var SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  var MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>';
+  function applyTheme(t){ document.documentElement.setAttribute('data-theme', t); localStorage.setItem('adminTheme', t); var b=document.getElementById('themeBtn'); if(b){ b.innerHTML = (t==='dark') ? SUN : MOON; b.title = (t==='dark')?'라이트 모드':'다크 모드'; } }
+  applyTheme(localStorage.getItem('adminTheme') || 'dark');
+  document.getElementById('themeBtn').addEventListener('click', function(){ applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); });
+
+  var token = localStorage.getItem('adminToken') || '';
+  var state = { view:'dashboard', api:null, selected:new Set(), uQ:'', uSort:'power', uPage:1, mQ:'', mPage:1 };
+  var nickCache = {}, pollTimer=null, lastAt=0;
+  var ICO={ users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>',
+    wait:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    swords:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/></svg>',
+    flag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>',
+    dot:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/></svg>' };
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function fmtDur(ms){ ms=Math.max(0,ms|0); var s=Math.floor(ms/1000); if(s<60) return s+'초'; var m=Math.floor(s/60); if(m<60) return m+'분 '+(s%60)+'초'; var h=Math.floor(m/60); return h+'시간 '+(m%60)+'분'; }
+  function fmtAgo(ms){ if(ms<0) ms=0; if(ms<60000) return Math.floor(ms/1000)+'초 전'; if(ms<3600000) return Math.floor(ms/60000)+'분 전'; if(ms<86400000) return Math.floor(ms/3600000)+'시간 전'; return Math.floor(ms/86400000)+'일 전'; }
+  function fmtDate(ms){ if(!ms) return '–'; var d=new Date(ms); var p=function(n){return(n<10?'0':'')+n;}; return (d.getFullYear()+'').slice(2)+'.'+p(d.getMonth()+1)+'.'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes()); }
+
+  // ─── 인증 ───
+  function showLogin(msg){ $('#app').style.display='none'; $('#login').style.display='flex'; if(pollTimer){clearInterval(pollTimer);pollTimer=null;} $('#loginErr').textContent=msg||''; $('#loginBtn').disabled=false; $('#pw').focus(); }
+  function showApp(){ $('#login').style.display='none'; $('#app').style.display='block'; if(!pollTimer) pollTimer=setInterval(poll,1500); route(); }
+  $('#loginForm').addEventListener('submit', async function(e){ e.preventDefault();
+    var pw=$('#pw').value; if(!pw){ $('#loginErr').textContent='비밀번호를 입력하세요'; return; }
+    $('#loginBtn').disabled=true; $('#loginErr').textContent='';
+    try{ var r=await fetch('/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})}); var d=await r.json();
+      if(d.ok&&d.token){ token=d.token; localStorage.setItem('adminToken',token); $('#pw').value=''; showApp(); } else showLogin(d.err||'로그인 실패');
+    }catch(_){ showLogin('서버에 연결할 수 없습니다'); } });
+  $('#logoutBtn').addEventListener('click', function(){ fetch('/admin/logout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token})}).catch(function(){}); localStorage.removeItem('adminToken'); token=''; showLogin(''); });
+
+  async function api(path){ var sep=path.indexOf('?')<0?'?':'&'; var r; try{ r=await fetch(path+sep+'token='+encodeURIComponent(token)); }catch(e){ setLive(false); throw e; } if(r.status===403||r.status===401){ localStorage.removeItem('adminToken'); token=''; showLogin('세션이 만료되었습니다. 다시 로그인하세요.'); throw new Error('auth'); } setLive(true); return r.json(); }
+  async function action(payload){ try{ await fetch('/admin/action?token='+encodeURIComponent(token),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }catch(_){ } }
+  function setLive(on){ var el=$('#live'); el.classList.toggle('on',on); $('#liveTxt').textContent=on?'실시간 연결됨':'연결 끊김'; }
+
+  // ─── 라우팅 ───
+  var TITLES={ dashboard:'대시보드', live:'실시간 운영', users:'유저', matches:'대전 기록' };
+  function route(){
+    var h=(location.hash||'#/dashboard').replace(/^#\//,''); var parts=h.split('/'); var v=parts[0]||'dashboard';
+    state.view=v;
+    document.querySelectorAll('.nav a').forEach(function(a){ a.classList.toggle('active', a.getAttribute('data-nav')===v); });
+    $('#ptitle').textContent=(v==='users'&&parts[1])?'유저 상세':(TITLES[v]||TITLES.dashboard);
+    if(v==='dashboard'||v==='live') poll();
+    else if(v==='users'){ if(parts[1]) loadUserDetail(parts[1]); else loadUsers(); }
+    else if(v==='matches') loadMatches();
+    else location.hash='#/dashboard';
+  }
+  window.addEventListener('hashchange', route);
+
+  // ─── 폴링(대시보드/운영) ───
+  async function poll(){ if(state.view!=='dashboard'&&state.view!=='live') return;
+    try{ var d=await api('/admin/api'); if(d.botMatches&&d.botMatches.length){ d.matches=(d.matches||[]).concat(d.botMatches.map(function(b){return {id:null,durMs:null,host:b.host,guest:b.guest,bot:true};})); } state.api=d; lastAt=Date.now(); setLive(true); $('#nbLive').textContent=d.queue.length+d.matches.length;
+      d.users.forEach(function(u){ if(u.uid) nickCache[u.uid]=u.nick; }); d.queue.forEach(function(q){ nickCache[q.uid]=q.nick; }); d.matches.forEach(function(m){ nickCache[m.host.uid]=m.host.nick; nickCache[m.guest.uid]=m.guest.nick; });
+      if(state.view==='dashboard') renderDashboard(d); else renderLive(d);
+    }catch(e){ if(e.message!=='auth') setLive(false); } }
+
+  function kpi(l,ic,v,accent){ return '<div class="kpi"><div class="top"><span class="l">'+l+'</span><span class="ic">'+ic+'</span></div><div class="v'+(accent?' accent':'')+' num">'+v+'</div></div>'; }
+  function kpiRow(d){ return '<div class="kpis">'+
+      kpi('온라인 접속',ICO.dot,d.online,true)+ kpi('매칭 대기',ICO.wait,d.queue.length)+ kpi('진행중 대전',ICO.swords,d.matches.length,true)+
+      kpi('가입 유저',ICO.users,(d.userCount!=null?d.userCount:d.users.length))+ kpi('봇',ICO.users,(d.botCount!=null?d.botCount:'–'))+ kpi('누적 대전',ICO.flag,(d.matchCount!=null?d.matchCount:'–'))+
+      kpi('앱 설치',ICO.users,(d.appInstalls!=null?d.appInstalls:'–'),true)+ kpi('웹 방문',ICO.dot,(d.webDevices!=null?d.webDevices:'–'))+ kpi('오늘 실행',ICO.wait,(d.activeToday!=null?d.activeToday:'–'))+'</div>'; }
+
+  function matchRows(matches){
+    return '<div class="scroll"><table><thead><tr><th class="rank">#</th><th class="tar">호스트</th><th class="n">전투력</th><th class="vs"></th><th>게스트</th><th class="n">전투력</th><th class="flex"></th><th class="n">경과</th><th style="width:72px"></th></tr></thead><tbody>'+
+      matches.map(function(m){ var isBot=m.bot; return '<tr><td class="rank">'+(isBot?'봇':m.id)+'</td><td class="tar">'+esc(m.host.nick)+'</td><td class="n rating">'+(m.host.power||'–')+'</td><td class="vs">vs</td><td>'+esc(m.guest.nick)+(isBot?' <span class="tag" style="background:rgba(90,120,200,0.22);color:#9db8e8;border:1px solid rgba(120,150,220,0.4)">BOT</span>':'')+'</td><td class="n rating">'+(m.guest.power||'–')+'</td><td class="flex"></td><td class="n" style="color:var(--dim)">'+(isBot?'–':fmtDur(m.durMs))+'</td><td class="n">'+(isBot?'<span style="color:var(--mute)">봇전</span>':'<button class="btn btn-danger" data-end="'+m.id+'">종료</button>')+'</td></tr>'; }).join('')+
+      '</tbody></table></div>'; }
+  function recentRows(recent){ if(!recent.length) return '<div class="empty">기록된 대전이 없습니다.</div>';
+    var now=Date.now();
+    var h='<div class="scroll max"><table><thead><tr><th class="rank">#</th><th class="flex">대진</th><th>승자</th><th class="n">종료</th></tr></thead><tbody>';
+    var BOT='<span class="tag" style="background:rgba(90,120,200,0.22);color:#9db8e8;border:1px solid rgba(120,150,220,0.4);margin-left:3px">BOT</span>';
+    recent.forEach(function(r){ var hn=r.host_nick||nickCache[r.host_uid]||(r.host_uid||'').slice(0,7), gn=r.guest_nick||nickCache[r.guest_uid]||(r.guest_uid||'').slice(0,7); var wn=r.winner_side===1?hn:gn, wbot=r.winner_side===1?r.host_bot:r.guest_bot;
+      var hd=esc(hn)+(r.host_bot?BOT:''), gd=esc(gn)+(r.guest_bot?BOT:''), wd=esc(wn)+(wbot?BOT:'');
+      h+='<tr><td class="rank">'+r.id+'</td><td class="flex">'+hd+' <span class="vs" style="margin:0 4px">vs</span> '+gd+'</td><td class="winner">'+wd+' <span class="tag win">승</span></td><td class="n" style="color:var(--mute)">'+fmtAgo(now-r.ended)+'</td></tr>'; });
+    return h+'</tbody></table></div>'; }
+
+  function renderDashboard(d){
+    var qprev = d.queue.slice(0,8).map(function(q){ return '<tr><td class="flex">'+esc(q.nick)+'</td><td class="n rating">'+q.power+'</td><td class="n" style="color:var(--dim)">'+fmtDur(q.waitMs)+'</td></tr>'; }).join('');
+    $('#view').innerHTML = kpiRow(d)+
+      '<div class="card"><h2>진행중 대전 <span class="cnt">'+d.matches.length+'</span><a class="more" href="#/live">전체</a></h2>'+
+        (d.matches.length?matchRows(d.matches.slice(0,6)):'<div class="empty">진행중인 대전이 없습니다.</div>')+'</div>'+
+      '<div class="cols">'+
+        '<div class="card"><h2>대기 큐 <span class="cnt">'+d.queue.length+'</span><a class="more" href="#/live">전체</a></h2>'+
+          (d.queue.length?'<div class="scroll max"><table><thead><tr><th class="flex">닉네임</th><th class="n">전투력</th><th class="n">대기</th></tr></thead><tbody>'+qprev+'</tbody></table></div>':'<div class="empty">대기중인 플레이어가 없습니다.</div>')+'</div>'+
+        '<div class="card"><h2>최근 결과 <a class="more" href="#/matches">전체 기록</a></h2>'+recentRows(d.recent)+'</div>'+
+      '</div>';
+  }
+
+  function renderLive(d){
+    var live=new Set(d.queue.map(function(q){return q.uid;})); state.selected.forEach(function(u){ if(!live.has(u)) state.selected.delete(u); });
+    var qrows=d.queue.map(function(q){ return '<tr><td><input type="checkbox" data-uid="'+esc(q.uid)+'" '+(state.selected.has(q.uid)?'checked':'')+'></td><td class="flex">'+esc(q.nick)+'</td><td class="n rating">'+q.power+'</td><td class="n" style="color:var(--dim)">'+fmtDur(q.waitMs)+'</td><td class="n"><button class="btn btn-danger" data-kick="'+esc(q.uid)+'">추방</button></td></tr>'; }).join('');
+    $('#view').innerHTML =
+      '<div class="card"><h2>대기 큐 <span class="cnt">'+d.queue.length+'</span></h2>'+
+        '<div class="toolbar"><span class="hint">전투력이 비슷한 순으로 자동 매칭. 대기가 길수록 허용 전투력차가 넓어집니다.</span><span class="sel">선택 <b id="selCnt">'+state.selected.size+'</b>/2</span><button class="btn btn-primary" id="fmBtn" '+(state.selected.size!==2?'disabled':'')+'>선택 강제 매칭</button></div>'+
+        (d.queue.length?'<div class="scroll"><table><thead><tr><th style="width:42px"></th><th class="flex">닉네임</th><th class="n">전투력</th><th class="n">대기시간</th><th style="width:72px"></th></tr></thead><tbody>'+qrows+'</tbody></table></div>':'<div class="empty">대기중인 플레이어가 없습니다.</div>')+'</div>'+
+      '<div class="card"><h2>진행중 대전 <span class="cnt">'+d.matches.length+'</span></h2>'+
+        (d.matches.length?matchRows(d.matches):'<div class="empty">진행중인 대전이 없습니다.</div>')+'</div>';
+    var fm=$('#fmBtn'); if(fm) fm.onclick=function(){ if(state.selected.size!==2) return; var a=[...state.selected]; state.selected.clear(); action({act:'forceMatch',a:a[0],b:a[1]}).then(poll); };
+  }
+
+  // ─── 유저 목록 ───
+  async function loadUsers(){
+    $('#view').innerHTML='<div class="card"><h2>유저 <span class="cnt" id="uTot">…</span></h2>'+
+      '<div class="toolbar"><div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="uSearch" placeholder="닉네임 검색" value="'+esc(state.uQ)+'"></div>'+
+      '<select class="inp" id="uSort"><option value="power">전투력순</option><option value="wins">승수순</option><option value="losses">패수순</option><option value="recent">가입순</option><option value="nick">이름순</option></select></div>'+
+      '<div class="scroll" id="uBody"><div class="empty">불러오는 중…</div></div><div class="pager" id="uPager"></div></div>';
+    $('#uSort').value=state.uSort;
+    var si=$('#uSearch'); si.oninput=debounce(function(){ state.uQ=si.value.trim(); state.uPage=1; fetchUsers(); },300);
+    $('#uSort').onchange=function(){ state.uSort=$('#uSort').value; state.uPage=1; fetchUsers(); };
+    fetchUsers();
+  }
+  async function fetchUsers(){
+    try{ var d=await api('/admin/users?q='+encodeURIComponent(state.uQ)+'&sort='+state.uSort+'&page='+state.uPage);
+      $('#uTot').textContent=d.total;
+      var body=$('#uBody'); if(!d.rows.length){ body.innerHTML='<div class="empty">'+(state.uQ?'검색 결과가 없습니다.':'가입한 유저가 없습니다.')+'</div>'; $('#uPager').innerHTML=''; return; }
+      var offset=(d.page-1)*d.pageSize;
+      var rows=d.rows.map(function(u,i){ var tot=u.wins+u.losses, wr=tot?Math.round(u.wins/tot*100):0; var status=u.banned?' <span class="tag ban">차단</span>':''; if(u.is_bot) status+=' <span class="tag" style="background:rgba(90,120,200,0.22);color:#9db8e8;border:1px solid rgba(120,150,220,0.4)">BOT</span>';
+        return '<tr class="clk" data-open="'+esc(u.uid)+'"><td class="rank">'+(offset+i+1)+'</td><td class="flex">'+esc(u.nick)+status+'</td><td class="n rating">'+u.power+'</td><td class="n" style="color:var(--green)">'+u.wins+'</td><td class="n" style="color:var(--red)">'+u.losses+'</td><td class="n" style="color:var(--dim)">'+(tot?wr+'%':'–')+'</td><td class="n" style="color:var(--mute)">'+fmtDate(u.created)+'</td></tr>'; }).join('');
+      body.innerHTML='<table><thead><tr><th class="rank">#</th><th class="flex">닉네임</th><th class="n">전투력</th><th class="n">승</th><th class="n">패</th><th class="n">승률</th><th class="n">가입일</th></tr></thead><tbody>'+rows+'</tbody></table>';
+      renderPager('#uPager', d, function(p){ state.uPage=p; fetchUsers(); });
+    }catch(e){ if(e.message!=='auth') $('#uBody').innerHTML='<div class="empty">불러오기 실패</div>'; }
+  }
+
+  // ─── 유저 상세 ───
+  async function loadUserDetail(uid){
+    $('#view').innerHTML='<a class="back" href="#/users">← 유저 목록</a><div class="card"><div class="empty">불러오는 중…</div></div>';
+    try{ var d=await api('/admin/user?uid='+encodeURIComponent(uid));
+      if(!d.ok){ $('#view').innerHTML='<a class="back" href="#/users">← 유저 목록</a><div class="card"><div class="empty">유저를 찾을 수 없습니다.</div></div>'; return; }
+      var u=d.user, tot=u.wins+u.losses, wr=tot?Math.round(u.wins/tot*100):0;
+      var badges=(d.live.online?'<span class="tag on">온라인</span>':'<span class="tag off">오프라인</span>')+(d.live.inMatch?(' <span class="tag win">대전중'+(d.live.vsBot?'(봇)':'')+'</span>'):d.live.inQueue?' <span class="tag">대기중</span>':'')+(u.banned?' <span class="tag ban">차단됨</span>':'');
+      var mrows = d.matches.map(function(m){ var isHost=m.host_uid===u.uid; var opp=isHost?m.guest_nick:m.host_nick; var win=(m.winner_side===1?m.host_uid:m.guest_uid)===u.uid; var myP=isHost?m.host_power:m.guest_power, opP=isHost?m.guest_power:m.host_power;
+          return '<tr><td class="rank">'+m.id+'</td><td style="width:70px">'+(win?'<span class="tag win">승</span>':'<span class="tag lose">패</span>')+'</td><td class="flex">'+esc(opp||'—')+'</td><td class="n rating">'+(myP||'–')+'</td><td class="n" style="color:var(--mute)">'+(opP||'–')+'</td><td class="n" style="color:var(--dim)">'+(isHost?'호스트':'게스트')+'</td><td class="n" style="color:var(--mute)">'+fmtDate(m.ended)+'</td></tr>'; }).join('');
+      $('#view').innerHTML='<a class="back" href="#/users">← 유저 목록</a>'+
+        '<div class="card"><div class="uhead"><div class="uava">'+esc((u.nick||'?').slice(0,1))+'</div>'+
+          '<div><div class="uname">'+esc(u.nick)+'</div><div class="umeta">'+badges+'<span>가입 '+fmtDate(u.created)+'</span><span class="mono">'+esc(u.uid)+'</span></div></div>'+
+          '<div class="ustats"><div class="ustat"><div class="v rating">'+u.power+'</div><div class="l">전투력</div></div><div class="ustat"><div class="v" style="color:var(--green)">'+u.wins+'</div><div class="l">승</div></div><div class="ustat"><div class="v" style="color:var(--red)">'+u.losses+'</div><div class="l">패</div></div><div class="ustat"><div class="v">'+(tot?wr+'%':'–')+'</div><div class="l">승률</div></div></div>'+
+        '</div><div class="toolbar"><span class="hint">계정 관리</span><span class="sel">'+
+          (u.banned?'<button class="btn" data-unban="'+esc(u.uid)+'">차단 해제</button>':'<button class="btn btn-danger" data-ban="'+esc(u.uid)+'">계정 차단</button>')+'</span></div></div>'+
+        '<div class="card"><h2>전적 기록 <span class="cnt">'+d.matches.length+'</span></h2>'+
+          (d.matches.length?'<div class="scroll"><table><thead><tr><th class="rank">#</th><th style="width:70px">결과</th><th class="flex">상대</th><th class="n">내 전투력</th><th class="n">상대</th><th class="n">역할</th><th class="n">종료</th></tr></thead><tbody>'+mrows+'</tbody></table></div>':'<div class="empty">아직 완료한 대전이 없습니다.</div>')+'</div>';
+    }catch(e){ if(e.message!=='auth') $('#view').innerHTML='<a class="back" href="#/users">← 유저 목록</a><div class="card"><div class="empty">불러오기 실패</div></div>'; }
+  }
+
+  // ─── 대전 기록 ───
+  async function loadMatches(){
+    $('#view').innerHTML='<div class="card"><h2>대전 기록 <span class="cnt" id="mTot">…</span></h2>'+
+      '<div class="toolbar"><div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="mSearch" placeholder="닉네임으로 검색" value="'+esc(state.mQ)+'"></div><span class="hint" style="margin-left:auto">누가 vs 누가 · 승자만 기록 (게임 중 데이터는 저장하지 않음)</span></div>'+
+      '<div class="scroll" id="mBody"><div class="empty">불러오는 중…</div></div><div class="pager" id="mPager"></div></div>';
+    var si=$('#mSearch'); si.oninput=debounce(function(){ state.mQ=si.value.trim(); state.mPage=1; fetchMatches(); },300);
+    fetchMatches();
+  }
+  async function fetchMatches(){
+    try{ var d=await api('/admin/matches?q='+encodeURIComponent(state.mQ)+'&page='+state.mPage);
+      $('#mTot').textContent=d.total;
+      var body=$('#mBody'); if(!d.rows.length){ body.innerHTML='<div class="empty">'+(state.mQ?'검색 결과가 없습니다.':'기록된 대전이 없습니다.')+'</div>'; $('#mPager').innerHTML=''; return; }
+      var now=Date.now();
+      var MBOT='<span class="tag" style="background:rgba(90,120,200,0.22);color:#9db8e8;border:1px solid rgba(120,150,220,0.4);margin-left:3px">BOT</span>';
+      var rows=d.rows.map(function(m){ var hn=m.host_nick||'(탈퇴)', gn=m.guest_nick||'(탈퇴)'; var hw=m.winner_side===1;
+        return '<tr><td class="rank">'+m.id+'</td>'+
+          '<td class="tar '+(hw?'winner':'')+'">'+(hw?'<span class="tag win">승</span> ':'')+esc(hn)+(m.host_bot?MBOT:'')+'</td><td class="n rating">'+(m.host_power||'–')+'</td>'+
+          '<td class="vs">vs</td>'+
+          '<td class="'+(!hw?'winner':'')+'">'+esc(gn)+(m.guest_bot?MBOT:'')+(!hw?' <span class="tag win">승</span>':'')+'</td><td class="n rating">'+(m.guest_power||'–')+'</td>'+
+          '<td class="flex"></td><td class="n" style="color:var(--dim)">'+(m.dur?fmtDur(m.dur):'–')+'</td><td class="n" style="color:var(--mute)">'+fmtAgo(now-m.ended)+'</td></tr>'; }).join('');
+      body.innerHTML='<table><thead><tr><th class="rank">#</th><th class="tar">호스트</th><th class="n">전투력</th><th class="vs"></th><th>게스트</th><th class="n">전투력</th><th class="flex"></th><th class="n">소요</th><th class="n">종료</th></tr></thead><tbody>'+rows+'</tbody></table>';
+      renderPager('#mPager', d, function(p){ state.mPage=p; fetchMatches(); });
+    }catch(e){ if(e.message!=='auth') $('#mBody').innerHTML='<div class="empty">불러오기 실패</div>'; }
+  }
+
+  function renderPager(sel, d, go){
+    var pages=Math.max(1,Math.ceil(d.total/d.pageSize)); var el=$(sel);
+    el.innerHTML='<span>총 '+d.total+'건 · '+d.page+' / '+pages+' 페이지</span>'+
+      '<button class="btn" data-pg="prev" '+(d.page<=1?'disabled':'')+'>이전</button>'+
+      '<button class="btn" data-pg="next" '+(d.page>=pages?'disabled':'')+'>다음</button>';
+    el.querySelector('[data-pg=prev]').onclick=function(){ if(d.page>1) go(d.page-1); };
+    el.querySelector('[data-pg=next]').onclick=function(){ if(d.page<pages) go(d.page+1); };
+  }
+
+  // ─── 이벤트 ───
+  function debounce(fn,ms){ var t; return function(){ clearTimeout(t); t=setTimeout(fn,ms); }; }
+  document.addEventListener('click', function(e){
+    var t=e.target; var g=function(a){ return t.getAttribute&&t.getAttribute(a); };
+    var openEl=t.closest&&t.closest('[data-open]');
+    var k=g('data-kick'); if(k){ e.stopPropagation(); if(confirm('큐에서 추방할까요?')) action({act:'kick',uid:k}).then(poll); return; }
+    var en=g('data-end'); if(en){ if(confirm('진행중 대전 #'+en+'을 강제 종료할까요?')) action({act:'endMatch',id:parseInt(en,10)}).then(poll); return; }
+    var b=g('data-ban'); if(b){ if(confirm('이 계정을 차단할까요? (진행중이면 대전도 종료됩니다)')) action({act:'ban',uid:b}).then(function(){ loadUserDetail(b); }); return; }
+    var ub=g('data-unban'); if(ub){ action({act:'unban',uid:ub}).then(function(){ loadUserDetail(ub); }); return; }
+    if(openEl){ location.hash='#/users/'+openEl.getAttribute('data-open'); return; }
+  });
+  document.addEventListener('change', function(e){ var u=e.target.getAttribute&&e.target.getAttribute('data-uid'); if(u!=null){ if(e.target.checked){ if(state.selected.size>=2){ e.target.checked=false; return; } state.selected.add(u); } else state.selected.delete(u); var sc=$('#selCnt'); if(sc) sc.textContent=state.selected.size; var fm=$('#fmBtn'); if(fm) fm.disabled=state.selected.size!==2; } });
+
+  setInterval(function(){ var d=new Date(); var p=function(n){return(n<10?'0':'')+n;}; $('#clock').textContent=p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+    if(lastAt && $('#app').style.display!=='none' && (state.view==='dashboard'||state.view==='live')){ if(Date.now()-lastAt>6000) setLive(false); } }, 1000);
+
+  (async function(){ if(token){ try{ await api('/admin/api'); showApp(); return; }catch(_){ } } showLogin(''); })();
+})();
+</script>
+</body>
+</html>
