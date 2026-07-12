@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>손가락 삼국지</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+  html,body{width:100%;height:100%;overflow:hidden;background:#0b0816;font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR','Malgun Gothic',sans-serif;}
+  #c{display:block;width:100%;height:100%;touch-action:none;}
+  /* 안내 메시지 */
+  #msg{position:fixed;left:0;right:0;top:6%;text-align:center;color:#ffe9b0;font-size:clamp(17px,5.6vw,30px);font-weight:800;text-shadow:0 2px 8px #000,0 0 24px #b5502a;pointer-events:none;opacity:0;transform:translateY(-10px) scale(.96);transition:opacity .3s,transform .3s;padding:0 20px;z-index:6;letter-spacing:-.4px;}
+  #msg.show{opacity:1;transform:translateY(0) scale(1);}
+  /* 손가락 */
+  #finger{position:fixed;pointer-events:none;z-index:9;opacity:0;transition:opacity .22s;font-size:clamp(40px,12vw,58px);filter:drop-shadow(0 4px 6px rgba(0,0,0,.75));transform-origin:top left;}
+  #finger.show{opacity:1;animation:tap 1.05s cubic-bezier(.5,0,.5,1) infinite;}
+  @keyframes tap{0%,100%{transform:translate(-6px,-8px) rotate(-12deg) scale(1);}50%{transform:translate(3px,7px) rotate(-12deg) scale(.82);}}
+  /* 인트로 타이틀 */
+  #intro{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:15;pointer-events:none;background:radial-gradient(circle at 50% 45%,rgba(30,16,40,.5),rgba(8,6,16,.85));transition:opacity .5s;}
+  #intro.hide{opacity:0;}
+  #intro .t{color:#ffd76a;font-size:clamp(34px,12vw,68px);font-weight:900;letter-spacing:-2px;text-shadow:0 4px 16px #000,0 0 40px #d34;animation:pop .6s cubic-bezier(.2,1.4,.4,1);}
+  #intro .s{margin-top:10px;color:#ffcaa0;font-size:clamp(15px,4.6vw,24px);font-weight:700;text-shadow:0 2px 8px #000;animation:pop .6s .12s backwards cubic-bezier(.2,1.4,.4,1);}
+  @keyframes pop{from{opacity:0;transform:scale(.6);}to{opacity:1;transform:scale(1);}}
+  /* 승리 CTA */
+  #cta{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 38%,rgba(70,24,24,.82),rgba(7,5,14,.94));z-index:22;padding:24px;text-align:center;}
+  #cta.show{display:flex;animation:fade .5s;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  #cta .crown{font-size:clamp(44px,15vw,90px);margin-bottom:2px;animation:pop .6s cubic-bezier(.2,1.6,.4,1);filter:drop-shadow(0 4px 12px rgba(0,0,0,.6));}
+  #cta h1{color:#ffd76a;font-size:clamp(32px,11vw,64px);font-weight:900;text-shadow:0 3px 14px #000,0 0 38px #e33;margin-bottom:6px;letter-spacing:-1.5px;animation:pop .6s .1s backwards cubic-bezier(.2,1.5,.4,1);}
+  #cta .sub{color:#ecd9ad;font-size:clamp(14px,4.4vw,22px);margin-bottom:32px;font-weight:600;}
+  #install{position:relative;background:linear-gradient(#ffe27a,#f0a014);color:#3a2000;font-size:clamp(20px,6.6vw,30px);font-weight:900;padding:18px 50px;border:none;border-radius:18px;box-shadow:0 7px 0 #995800,0 14px 30px rgba(0,0,0,.55);animation:pulse 1.05s ease-in-out infinite;cursor:pointer;letter-spacing:-.5px;overflow:hidden;}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  #install::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);animation:shine 2.2s infinite;}
+  @keyframes shine{0%{left:-60%}55%,100%{left:130%}}
+  /* AD 뱃지 */
+  #badge{position:fixed;top:calc(env(safe-area-inset-top,0px) + 9px);right:11px;z-index:10;color:#b7afce;font-size:11px;font-weight:700;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:4px 11px;pointer-events:none;letter-spacing:.3px;}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="msg"></div>
+<div id="finger">👆</div>
+<div id="badge">AD</div>
+<div id="intro"><div class="t">손가락 삼국지</div><div class="s">탭 한 번으로 천하통일!</div></div>
+<div id="cta">
+  <div class="crown">👑</div>
+  <h1>천하통일!</h1>
+  <div class="sub">삼국의 명장들과 함께 · 지금 시작하세요</div>
+  <button id="install">무료로 설치하기 ▶</button>
+</div>
+<script>
+(function(){
+'use strict';
+var STORE='https://play.google.com/store/apps/details?id=com.leesp.samgukgi';
+
+var cv=document.getElementById('c'),ctx=cv.getContext('2d');
+var msgEl=document.getElementById('msg'),fingerEl=document.getElementById('finger');
+var W=0,H=0,DPR=1,MIN=0;
+function resize(){DPR=Math.min(2,window.devicePixelRatio||1);W=cv.clientWidth;H=cv.clientHeight;MIN=Math.min(W,H);cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);}
+window.addEventListener('resize',resize);resize();
+
+// ── 색상 (진영) ───────────────────────────────────────────
+var OWN={
+  0:{main:'#8a8a96',dark:'#565660',flag:'#c2c2cc',glow:'rgba(180,180,200,.5)'},
+  1:{main:'#4a90d9',dark:'#2c5c94',flag:'#8fc4ff',glow:'rgba(90,160,255,.55)'},
+  2:{main:'#c73a2b',dark:'#7e1d15',flag:'#ff9384',glow:'rgba(230,80,60,.55)'}
+};
+
+// ── 성/장수 배치 (좌표=화면비율) ─────────────────────────
+var castles={
+  home:{nx:.50,ny:.845,owner:1,troops:26,gen:'유비'},
+  mid :{nx:.50,ny:.575,owner:0,troops:12,gen:''},
+  e1  :{nx:.235,ny:.305,owner:2,troops:14,gen:'조조'},
+  e2  :{nx:.765,ny:.325,owner:2,troops:22,gen:'여포'}
+};
+var edges=[['home','mid'],['mid','e1'],['mid','e2'],['e1','e2']];
+function pos(c){return {x:c.nx*W,y:c.ny*H};}
+function cr(){return MIN*0.066;}
+
+// ── 가이드 스텝 (온레일 · 절대 못 짐) ────────────────────
+var steps=[
+  {from:'home',to:'mid',msg:'아군 성을 눌러 중원을 점령!',cap:'관우',lvl:1,
+     hero:'관우 회유!',cxt:'⚔ 관우가 합류했다!'},
+  {from:'mid', to:'e1', msg:'조조군을 공격하라!',cap:'',lvl:2,
+     hero:'장비 장팔사모!',cxt:'💥 조조군 격파!'},
+  {from:'e1',  to:'e2', msg:'여포를 무너뜨려라!',cap:'',lvl:3,
+     hero:'조자룡 일기당천!',cxt:'🔥 여포 격파 · 천하통일!'}
+];
+
+var phase='intro';        // intro | play | win
+var stepIdx=0,selected=null,cur=null;
+var assault=null;         // {step, remaining}
+var dots=[],parts=[],texts=[],embers=[];
+var shake=0,flash=0,slashFx=null,tPrev=0,arrowT=0,glowT=0;
+
+// ── 사운드 (절차생성 · 파일 없음) ────────────────────────
+var AC=null;
+function audio(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();}
+function tone(f,dur,type,vol,slideTo){if(!AC)return;try{var o=AC.createOscillator(),g=AC.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,AC.currentTime);if(slideTo)o.frequency.exponentialRampToValueAtTime(slideTo,AC.currentTime+dur);g.gain.setValueAtTime((vol||.2),AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+dur);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+dur+.02);}catch(e){}}
+function noise(dur,vol){if(!AC)return;try{var n=AC.createBufferSource(),b=AC.createBuffer(1,AC.sampleRate*dur,AC.sampleRate),d=b.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);n.buffer=b;var g=AC.createGain();g.gain.setValueAtTime(vol||.25,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+dur);n.connect(g);g.connect(AC.destination);n.start();}catch(e){}}
+function sfxTap(){tone(660,.08,'triangle',.14);}
+function sfxSelect(){tone(520,.09,'square',.12);tone(780,.11,'square',.09);}
+function sfxCapture(lvl){tone(523,.12,'sine',.2);setTimeout(function(){tone(784,.18,'sine',.2);},90);if(lvl>=2){noise(.25,.3);tone(160,.3,'sawtooth',.25,60);}if(lvl>=3){setTimeout(function(){tone(1046,.25,'sine',.2);},180);}}
+function sfxWin(){[523,659,784,1046,1318].forEach(function(f,i){setTimeout(function(){tone(f,.35,'triangle',.22);},i*110);});noise(.5,.2);}
+
+// ── 텍스트/파티클 유틸 ───────────────────────────────────
+function addText(x,y,t,col,size,vy){texts.push({x:x,y:y,t:t,col:col||'#fff',size:size||(MIN*0.055),life:1,vy:vy||-0.8});}
+function burst(x,y,n,col,spread){for(var i=0;i<n;i++){var a=Math.PI*2*i/n+Math.random()*.6,sp=(spread||5)*(0.4+Math.random());parts.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1,life:1,col:col,r:MIN*(0.006+Math.random()*0.01)});}}
+
+// ── 진행 ─────────────────────────────────────────────────
+function showMsg(t){msgEl.textContent=t;msgEl.classList.add('show');}
+function hideMsg(){msgEl.classList.remove('show');}
+function pointFinger(c,belowTarget){var p=pos(c);fingerEl.style.left=(p.x+MIN*0.03)+'px';fingerEl.style.top=(p.y+MIN*0.02)+'px';fingerEl.classList.add('show');}
+function hideFinger(){fingerEl.classList.remove('show');}
+
+function setStep(){
+  if(stepIdx>=steps.length){finish();return;}
+  cur=steps[stepIdx];selected=null;arrowT=0;
+  showMsg(cur.msg);pointFinger(castles[cur.from]);
+}
+
+function hit(x,y){var best=null,bd=1e9,R=MIN*0.11;for(var k in castles){var p=pos(castles[k]);var d=Math.hypot(p.x-x,p.y-y);if(d<bd){bd=d;best=k;}}return bd<R?best:null;}
+
+function onTap(x,y){
+  audio();
+  if(phase!=='play'||assault)return;
+  if(!cur)return;
+  var k=hit(x,y);
+  if(selected===null){
+    if(k===cur.from){selected=k;sfxSelect();pointFinger(castles[cur.to]);var p=pos(castles[k]);burst(p.x,p.y,10,OWN[1].flag,4);}
+    else if(k){sfxTap();var p2=pos(castles[k]);burst(p2.x,p2.y,4,'#888',2);} // 힌트: 다른 성 누르면 살짝만
+  }else{
+    if(k===cur.to){launch(cur);}
+    else if(k&&k!==cur.from){selected=null;setStep();} // 엉뚱한 성 누르면 리셋(빈 공간은 무시)
+  }
+}
+cv.addEventListener('pointerdown',function(e){e.preventDefault();var r=cv.getBoundingClientRect();onTap(e.clientX-r.left,e.clientY-r.top);},{passive:false});
+
+function launch(s){
+  hideFinger();hideMsg();selected=null;sfxTap();
+  var n=s.lvl>=2?16:10;
+  assault={step:s,remaining:n};
+  for(var i=0;i<n;i++)dots.push({from:s.from,to:s.to,t:-i*0.045,owner:1,assault:true});
+  castles[s.from].troops=Math.max(2,(castles[s.from].troops*0.45)|0);
+  // 필살기 슬래시 연출
+  var a=pos(castles[s.from]),b=pos(castles[s.to]);
+  slashFx={x1:a.x,y1:a.y,x2:b.x,y2:b.y,life:1,lvl:s.lvl};
+  if(s.lvl>=2){shake=6;}
+}
+
+function resolveCapture(s){
+  var to=castles[s.to],p=pos(to);
+  to.owner=1;
+  to.troops=Math.max(10,(to.troops*0.5)|0)+(s.lvl>=2?12:8);
+  if(s.cap)to.gen=s.cap;
+  sfxCapture(s.lvl);
+  // 연출 강도
+  if(s.lvl>=3){flash=1;shake=24;burst(p.x,p.y,48,'#ffb020',9);burst(p.x,p.y,24,'#fff',6);}
+  else if(s.lvl>=2){flash=.8;shake=15;burst(p.x,p.y,34,'#ff5a3a',7);burst(p.x,p.y,16,'#ffd76a',5);}
+  else{shake=7;burst(p.x,p.y,22,'#ffe07a',5);}
+  addText(p.x,p.y-cr()*1.4,s.hero,s.lvl>=3?'#ffd24a':(s.lvl>=2?'#ff8a5a':'#8fc4ff'),MIN*(s.lvl>=3?0.075:0.06),-1);
+  showMsg(s.cxt);
+  stepIdx++;
+  setTimeout(function(){if(phase==='play')setStep();},1250);
+}
+
+// 앰비언트 병력 증가(생동감)
+var amb=setInterval(function(){if(phase==='win')return;for(var k in castles){var c=castles[k];if(c.owner!==0&&c.troops<99)c.troops++;}},850);
+// 배경 불티
+for(var e=0;e<18;e++)embers.push({x:Math.random(),y:Math.random(),s:0.2+Math.random()*0.5,r:0.5+Math.random()*1.5});
+
+function finish(){
+  phase='win';hideFinger();hideMsg();
+  var p=pos(castles.e2);flash=1;shake=20;burst(p.x,p.y,54,'#ffd24a',10);
+  sfxWin();
+  // 폭죽
+  var fw=0,fwT=setInterval(function(){if(fw++>5){clearInterval(fwT);return;}burst(Math.random()*W,H*(0.2+Math.random()*0.4),22,['#ff5a5a','#ffd24a','#5affa0','#5ab0ff'][fw%4],7);},220);
+  setTimeout(function(){document.getElementById('cta').classList.add('show');},800);
+}
+document.getElementById('install').addEventListener('click',function(){audio();try{location.href=STORE;}catch(e){}});
+
+// ── 렌더 ─────────────────────────────────────────────────
+function rrect(x,y,w,h,rad){ctx.beginPath();ctx.moveTo(x+rad,y);ctx.arcTo(x+w,y,x+w,y+h,rad);ctx.arcTo(x+w,y+h,x,y+h,rad);ctx.arcTo(x,y+h,x,y,rad);ctx.arcTo(x,y,x+w,y,rad);ctx.closePath();}
+
+function drawCastle(c,key){
+  var p=pos(c),r=cr(),o=OWN[c.owner];
+  var isTarget=(phase==='play'&&cur&&((selected===null&&key===cur.from)||(selected===cur.from&&key===cur.to)));
+  ctx.save();ctx.translate(p.x,p.y);
+  // 타겟 글로우 링
+  if(isTarget){var pr=1+Math.sin(glowT*4)*0.12;ctx.strokeStyle=selected?'#ffd24a':'#8fc4ff';ctx.lineWidth=3.5;ctx.globalAlpha=.5+Math.sin(glowT*4)*.3;ctx.beginPath();ctx.arc(0,0,r*1.7*pr,0,7);ctx.stroke();ctx.globalAlpha=1;}
+  // 바닥 글로우
+  ctx.fillStyle=o.glow;ctx.beginPath();ctx.ellipse(0,r*0.9,r*1.1,r*0.4,0,0,7);ctx.fill();
+  // 성벽 본체
+  ctx.fillStyle=o.dark;rrect(-r,-r*0.12,r*2,r*1.02,7);ctx.fill();
+  ctx.fillStyle=o.main;rrect(-r*0.9,-r*0.2,r*1.8,r*0.96,6);ctx.fill();
+  // 성가퀴
+  ctx.fillStyle=o.dark;for(var i=-2;i<=2;i++){ctx.fillRect(i*r*0.34-r*0.1,-r*0.44,r*0.2,r*0.26);}
+  // 지붕 누각
+  ctx.fillStyle=o.dark;ctx.beginPath();ctx.moveTo(-r*0.52,-r*0.4);ctx.lineTo(0,-r*0.98);ctx.lineTo(r*0.52,-r*0.4);ctx.closePath();ctx.fill();
+  ctx.fillStyle=o.flag;ctx.beginPath();ctx.moveTo(-r*0.4,-r*0.44);ctx.lineTo(0,-r*0.86);ctx.lineTo(r*0.4,-r*0.44);ctx.closePath();ctx.fill();
+  // 깃발
+  ctx.strokeStyle='#3a2a1a';ctx.lineWidth=Math.max(1.5,r*0.05);ctx.beginPath();ctx.moveTo(0,-r*0.98);ctx.lineTo(0,-r*1.35);ctx.stroke();
+  var wv=Math.sin(glowT*3+p.x)*r*0.08;
+  ctx.fillStyle=o.flag;ctx.beginPath();ctx.moveTo(0,-r*1.33);ctx.lineTo(r*0.42+wv,-r*1.24);ctx.lineTo(0,-r*1.13);ctx.closePath();ctx.fill();
+  // 병력 수
+  ctx.fillStyle='#fff';ctx.font='900 '+(r*0.66)+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.shadowColor='rgba(0,0,0,.9)';ctx.shadowBlur=5;ctx.fillText(c.troops,0,r*0.2);ctx.shadowBlur=0;
+  ctx.restore();
+  // 장수 뱃지
+  if(c.gen){
+    ctx.save();ctx.translate(p.x,p.y+r*1.16);
+    var bw=Math.max(MIN*0.14,r*1.25),bh=MIN*0.052;
+    ctx.fillStyle='rgba(18,12,28,.92)';rrect(-bw/2,-bh/2,bw,bh,bh/2);ctx.fill();
+    ctx.strokeStyle=o.flag;ctx.lineWidth=1.6;rrect(-bw/2,-bh/2,bw,bh,bh/2);ctx.stroke();
+    ctx.fillStyle='#ffe9b0';ctx.font='800 '+(MIN*0.032)+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(c.gen,0,MIN*0.002);ctx.restore();
+  }
+}
+
+function frame(ts){
+  if(!tPrev)tPrev=ts;var dt=Math.min(50,ts-tPrev)/1000;tPrev=ts;glowT+=dt;arrowT+=dt;
+  ctx.save();
+  if(shake>0.4){ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);shake*=0.85;}else shake=0;
+  // 배경 그라디언트
+  var g=ctx.createRadialGradient(W*0.5,H*0.42,MIN*0.1,W*0.5,H*0.5,MIN*1.1);
+  g.addColorStop(0,'#1c1433');g.addColorStop(.5,'#130e26');g.addColorStop(1,'#080512');
+  ctx.fillStyle=g;ctx.fillRect(-60,-60,W+120,H+120);
+  // 불티
+  ctx.fillStyle='rgba(255,180,90,.35)';embers.forEach(function(m){m.y-=dt*m.s*0.04;if(m.y<-0.02)m.y=1.02;var ex=(m.x+Math.sin(glowT*m.s+m.x*10)*0.01)*W;ctx.globalAlpha=.15+Math.sin(glowT*2+m.x*20)*.1;ctx.beginPath();ctx.arc(ex,m.y*H,m.r,0,7);ctx.fill();});ctx.globalAlpha=1;
+  // 길
+  ctx.strokeStyle='rgba(210,190,150,.15)';ctx.lineWidth=Math.max(6,MIN*0.02);ctx.lineCap='round';
+  edges.forEach(function(ed){var a=pos(castles[ed[0]]),b=pos(castles[ed[1]]);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();});
+  // 슬래시 필살기
+  if(slashFx){slashFx.life-=dt*2.2;if(slashFx.life<=0)slashFx=null;else{var sf=slashFx,al=sf.life;ctx.strokeStyle=sf.lvl>=3?'rgba(255,200,80,'+al+')':(sf.lvl>=2?'rgba(255,90,60,'+al+')':'rgba(140,200,255,'+al+')');ctx.lineWidth=MIN*0.02*al*(sf.lvl>=2?1.6:1);ctx.lineCap='round';ctx.beginPath();ctx.moveTo(sf.x1,sf.y1);ctx.lineTo(sf.x2,sf.y2);ctx.stroke();ctx.strokeStyle='rgba(255,255,255,'+al*0.8+')';ctx.lineWidth=MIN*0.006*al;ctx.stroke();}}
+  // 이동 병력
+  for(var i=dots.length-1;i>=0;i--){var d=dots[i];d.t+=dt*1.4;if(d.t<0)continue;var a=pos(castles[d.from]),b=pos(castles[d.to]);var t=d.t;if(t>=1)t=1;var x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;ctx.fillStyle=OWN[d.owner].flag;ctx.shadowColor=OWN[d.owner].glow;ctx.shadowBlur=8;ctx.beginPath();ctx.arc(x,y,Math.max(4,MIN*0.014),0,7);ctx.fill();ctx.shadowBlur=0;
+    if(d.t>=1){dots.splice(i,1);if(d.assault&&assault){assault.remaining--;if(assault.remaining<=0){var s=assault.step;assault=null;resolveCapture(s);}}}}
+  // 성
+  for(var k in castles)drawCastle(castles[k],k);
+  // 타겟 화살표 (튕김)
+  if(phase==='play'&&cur&&!assault){var tk=selected?cur.to:cur.from,tp=pos(castles[tk]),by=Math.abs(Math.sin(arrowT*4))*MIN*0.02,r2=cr();ctx.fillStyle=selected?'#ffd24a':'#8fc4ff';ctx.beginPath();var ay=tp.y-r2*2.1-by;ctx.moveTo(tp.x-MIN*0.03,ay);ctx.lineTo(tp.x+MIN*0.03,ay);ctx.lineTo(tp.x,ay+MIN*0.035);ctx.closePath();ctx.fill();}
+  // 파티클
+  for(var j=parts.length-1;j>=0;j--){var pt=parts[j];pt.x+=pt.vx;pt.y+=pt.vy;pt.vy+=0.15;pt.vx*=0.98;pt.life-=dt*1.5;if(pt.life<=0){parts.splice(j,1);continue;}ctx.globalAlpha=Math.max(0,pt.life);ctx.fillStyle=pt.col;ctx.beginPath();ctx.arc(pt.x,pt.y,pt.r*(0.4+pt.life*0.6),0,7);ctx.fill();}ctx.globalAlpha=1;
+  // 플로팅 텍스트
+  for(var m2=texts.length-1;m2>=0;m2--){var tx=texts[m2];tx.y+=tx.vy;tx.life-=dt*0.9;if(tx.life<=0){texts.splice(m2,1);continue;}ctx.globalAlpha=Math.min(1,tx.life*1.6);ctx.font='900 '+tx.size+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#000';ctx.fillText(tx.t,tx.x+2,tx.y+2);ctx.fillStyle=tx.col;ctx.fillText(tx.t,tx.x,tx.y);ctx.globalAlpha=1;}
+  ctx.restore();
+  // 필살기 플래시(화면 전체)
+  if(flash>0.02){ctx.fillStyle='rgba(255,225,140,'+(flash*0.45)+')';ctx.fillRect(0,0,W,H);flash*=0.8;}else flash=0;
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// ── 인트로 → 플레이 ──────────────────────────────────────
+setTimeout(function(){document.getElementById('intro').classList.add('hide');},1300);
+setTimeout(function(){phase='play';setStep();},1750);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<script>
+/* 광고/쇼케이스: ?showcase=1(전투) / ?ad=1(전투+가이드+CTA). 메뉴·스플래시·인트로·미니맵·HUD 정리. */
+(function(){
+  var q; try{ q=new URLSearchParams(location.search); }catch(e){ return; }
+  var SHOW=q.get('showcase')==='1', AD=q.get('ad')==='1';
+  try{ window._adMode = AD || SHOW; }catch(_){}   // 광고/쇼케이스 모드 표식 — 본게임 튜토리얼 손가락 애니메이션 억제(광고 자체 손가락만 사용)
+  if(!SHOW&&!AD) return;
+  var STORE='https://play.google.com/store/apps/details?id=com.leesp.samgukgi';
+  var booted=false, startTs=Date.now();
+  try{ window._marchMul=1; }catch(e){}   // 게임 원래 속도 그대로 (속도 안 건드림)
+
+  try{ ['./assets/result/result_victory_bg.png','./assets/castles/castle_neutral.png','./assets/castles/castle_ally.png','./assets/castles/castle_enemy.png'].forEach(function(u){ try{ var _lk=document.createElement('link'); _lk.rel='preload'; _lk.as='image'; _lk.href=u; _lk.setAttribute('fetchpriority','high'); (document.head||document.documentElement).appendChild(_lk); }catch(_){} var _im=new Image(); try{ _im.fetchPriority='high'; }catch(_){} _im.src=u; }); }catch(e){}
+  if(AD){ try{ var _st=document.createElement('style'); _st.textContent='#objective,#timer,#gameBackBtn,#warning,#chapterTierBanner{display:none!important}'; document.head.appendChild(_st); }catch(e){}
+    setInterval(function(){ ['gameBackBtn','objective','timer','warning','chapterTierBanner'].forEach(function(id){ var el=document.getElementById(id); if(el) el.style.setProperty('display','none','important'); }); },400); }
+  // 브랜디드 로딩 화면 (시작 대기 커버)
+  try{
+    var _lo=document.createElement('div'); _lo.id='adLoading';
+    _lo.style.cssText='position:fixed;inset:0;z-index:99998;display:flex;align-items:center;justify-content:center;background-color:#0b0816;background-image:var(--advic,url(./assets/result/result_victory_bg.png)),radial-gradient(circle at 50% 58%,#4a1a16 0%,#26121e 46%,#0a0611 100%);background-size:cover,cover;background-position:center,center;background-repeat:no-repeat,no-repeat;transition:opacity .45s;';
+    _lo.innerHTML='<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,5,16,.5),rgba(8,5,16,.78))"></div><div style="position:relative;z-index:1;text-align:center;font-family:inherit"><div style="color:#ffe28c;font-size:clamp(42px,14vw,80px);font-weight:900;text-shadow:0 4px 16px #000,0 0 44px #e33,0 0 4px #7a1;letter-spacing:-2.5px;line-height:1">손가락 삼국지</div><div style="color:#e6d3a0;font-size:clamp(14px,4.2vw,20px);font-weight:700;margin-top:9px;letter-spacing:.5px;text-shadow:0 2px 8px #000">실시간 삼국 전략</div><div style="margin-top:24px;width:40px;height:40px;border:4px solid rgba(255,215,120,.25);border-top-color:#ffd76a;border-radius:50%;animation:adSpin .8s linear infinite;display:inline-block"></div></div>';
+    (document.body||document.documentElement).appendChild(_lo);
+    var _ls=document.createElement('style'); _ls.textContent='@keyframes adSpin{to{transform:rotate(360deg)}}'; (document.head||document.documentElement).appendChild(_ls);
+  }catch(e){}
+  function hideLoading(){ try{ var el=document.getElementById('adLoading'); if(el){ el.style.opacity='0'; setTimeout(function(){ if(el&&el.parentNode) el.parentNode.removeChild(el); },500); } }catch(e){} }
+
+  function fitCamera(){
+    try{
+      if(!castles||!castles.length) return;
+      var minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+      castles.forEach(function(c){ var x=c.x*worldPxW(), y=c.y*worldPxH(); if(x<minX)minX=x; if(x>maxX)maxX=x; if(y<minY)minY=y; if(y>maxY)maxY=y; });
+      var padX=55*DPR(), padTop=208*DPR(), padBot=118*DPR();
+      var availW=W-padX*2, availH=H-padTop-padBot;
+      var zx=availW/Math.max(1,(maxX-minX)), zy=availH/Math.max(1,(maxY-minY));
+      zoom=Math.max(minZoom(), Math.min(zx,zy));
+      camX=(minX+maxX)/2; camY=(minY+maxY)/2 - ((padTop-padBot)/2)/zoom; clampCamera();
+      try{ window._targetCamX=camX; window._targetCamY=camY; window._targetZoom=zoom; }catch(_){}
+      try{ _targetCamX=camX; _targetCamY=camY; _targetZoom=zoom; }catch(_){}
+    }catch(e){}
+  }
+  function spritesReady(){ try{ if(typeof castleSpriteImages!=='object'||!castleSpriteImages) return true; for(var k in castleSpriteImages){ var g=castleSpriteImages[k]; if(!(g&&g.complete)) return false; } return true; }catch(e){ return true; } }
+
+  var ovT=0;
+  (function ov(){
+    var ok=false;
+    try{ if(typeof goToMenu==='function'){ window.goToMenu=function(){}; ok=true; } }catch(e){}
+    try{ if(typeof startOpeningCinematic==='function'){ window.startOpeningCinematic=function(){ try{cinematic=null;}catch(_){} fitCamera(); }; } }catch(e){}
+    if(AD){ try{ if(typeof updateMinimap==='function'){ window.updateMinimap=function(){ try{ MM.w=0; }catch(_){} }; } }catch(e){} try{ if(typeof showChapterTierBanner==='function') window.showChapterTierBanner=function(){}; }catch(e){} }
+    if(!ok && ovT++<200) setTimeout(ov,20);
+  })();
+
+  function boot(){
+    if(booted) return;
+    if(typeof SAVE==='undefined'||typeof startStage!=='function'||typeof GENERAL_ROSTER==='undefined'||typeof MAX_DEPLOY_GENERALS==='undefined'||typeof STAGES==='undefined'){ return setTimeout(boot,50); }
+    if(!spritesReady() && (Date.now()-startTs)<4500){ return setTimeout(boot,60); }
+    booted=true;
+    try{ window.goToMenu=function(){}; }catch(e){}
+    try{ window.startOpeningCinematic=function(){ try{cinematic=null;}catch(_){} fitCamera(); }; }catch(e){}
+    try{ if(typeof updateMinimap==='function') window.updateMinimap=function(){ try{ MM.w=0; }catch(_){} }; }catch(e){}
+    try{
+      var adStage={ name:'광고', aiLevel:0, isTutorial:false, _sym:true,
+        castles:[
+          {x:0.50,y:0.62,owner:1,name:'성도',size:1.16,trait:'prod',primary:'spear',troops:{spear:95,cavalry:28,archer:24}},
+          {x:0.50,y:0.46,owner:0,name:'낙양',size:1.06,trait:'prod',primary:'spear',troops:{spear:6,cavalry:4,archer:4}},
+          {x:0.38,y:0.31,owner:2,name:'호뢰관',size:1.0,trait:'prod',primary:'cavalry',troops:{spear:2,cavalry:11,archer:3}},
+          {x:0.62,y:0.31,owner:2,name:'업성',size:1.0,trait:'prod',primary:'cavalry',troops:{spear:2,cavalry:11,archer:3}}
+        ],
+        edges:[
+          {a:'성도',b:'낙양',type:'straight',sign:1},
+          {a:'낙양',b:'호뢰관',type:'straight',sign:1},
+          {a:'낙양',b:'업성',type:'straight',sign:1},
+          {a:'호뢰관',b:'업성',type:'straight',sign:-1}
+        ] };
+      var _si;
+      try{ STAGES.push(adStage); _si=STAGES.length-1; }catch(_){}
+      try{ window._adStageRef=adStage; }catch(_){}
+      var want=['liu_bei','zhang_fei','guan_yu','zhao_yun','huang_zhong'];
+      var uid=900000;
+      SAVE.generals=want.map(function(id){ return {uid:uid++, id:id, lv:30, stars:3}; });
+      var uids=SAVE.generals.map(function(g){ return g.uid; });
+      SAVE.lastDeployGenerals=uids.slice(0,MAX_DEPLOY_GENERALS);
+      try{ if(SAVE.formations){ for(var k in SAVE.formations){ SAVE.formations[k]=uids.slice(0,10); } } }catch(_){}
+      SAVE.unlocked=Math.max(SAVE.unlocked||0,999);
+      var st=parseInt(q.get('stage')||'',10);
+      selectedStage=(!isNaN(st)?st:(_si!=null?_si:4));
+      startStage();
+      try{ if(window._adSpeed && typeof update==='function' && !window._adSpedUp){ window._adSpedUp=true; var _ou=update; window.update=function(dt){ return _ou.call(this, dt*window._adSpeed); }; } }catch(e){}   // 배속(기본 없음 — window._adSpeed 설정시만)
+      [60,300,700,1200,1800].forEach(function(ms){ setTimeout(fitCamera,ms); });
+      setTimeout(hideLoading,220);
+      if(AD){ setTimeout(function(){ startAdGuide(); startFinger(); },350); setTimeout(function(){ setInterval(setEnemyGens,700); },700); }
+    }catch(e){ booted=false; return setTimeout(boot,120); }
+  }
+  setTimeout(boot,100);
+
+  // ── 가이드 (공성 먼저) + 승리 CTA + 움직이는 손가락 ──
+  var _adPair=null, guideOn=false, won=false, captures=0, guideStart=0, fEl=null, initMy=1, aiActivated=false;
+  function flashAttack(t){ try{ var el=document.getElementById('adFlash'); if(!el){ el=document.createElement('div'); el.id='adFlash'; el.style.cssText='position:fixed;left:0;right:0;top:40%;text-align:center;z-index:6900;pointer-events:none;color:#ff5a3a;font-size:clamp(24px,8vw,48px);font-weight:900;text-shadow:0 3px 12px #000,0 0 30px #f30,0 0 3px #000;letter-spacing:-1px;opacity:0;transition:opacity .22s;'; document.body.appendChild(el); } el.textContent=t||'⚔ 적군 반격!'; el.style.opacity='1'; setTimeout(function(){ if(el) el.style.opacity='0'; },1500); }catch(e){} }
+  function nearestMy(target){ var m=MY(), best=null,bt=-1; m.forEach(function(s){ var t=(s.troops.spear+s.troops.cavalry+s.troops.archer); if(t>bt){bt=t;best=s;} }); return best; }   // 전방 대군(병력 최다 성)에서 공격
+  function aimedAt(target){ try{ return armies.some(function(a){ return a && a.owner===side() && a.target===target; }); }catch(e){ return false; } }
+  // 조준당한 적 성으로 실제 공격을 보낸 아군 성(공격 부대의 출발지) — 반격은 이 방향으로
+  function attackerSrc(target){ try{ var s=side();
+    var a=armies.find(function(x){ return x && x.owner===s && x.target===target && x.commanderOriginCastle && x.commanderOriginCastle.owner===s; });
+    if(a && a.commanderOriginCastle) return a.commanderOriginCastle;
+  }catch(e){} return nearestMy(target); }
+  // 조준당한 적 성이 장수를 이끌고 즉시 출진(튀어나옴) — 엔진 AI 출진 로직 복제
+  function sallyEnemy(ec, tgt){ try{
+    if(!ec||!tgt||ec.owner===0||ec.owner===side()) return;
+    var u=(typeof majorityUnit==='function')?majorityUnit(ec):'cavalry';
+    if(!(ec.troops[u]>0)){ ['cavalry','spear','archer'].some(function(k){ if(ec.troops[k]>0){u=k;return true;} return false; }); }
+    var send=ec.troops[u]; if(!(send>0)) return;
+    ec.troops[u]=0;
+    var army={ owner:ec.owner, troops:send, unit:u, atkBonus:(ec.trait==='atk'?1.4:1.0),
+      x:ec.x*worldPxW(), y:ec.y*worldPxH(), _sx:ec.x*worldPxW(), _sy:ec.y*worldPxH(),
+      target:tgt, pursuingArmy:null, homeCastle:null, path:null,
+      seed:Math.random()*1000, shooting:false, shootTimer:0, isArmy:true };
+    if(ec._commanderUid!=null){ army.commanderUid=ec._commanderUid; army.commanderRank=ec._commanderRank||1; }
+    try{ army._aid=(window._mpArmySeq=(window._mpArmySeq|0)+1); }catch(_){}
+    armies.push(army);
+    try{ if(window.BGM&&BGM.sfxShout) BGM.sfxShout(); }catch(_){}
+  }catch(e){} }
+  function side(){ try{ return _mySide(); }catch(e){ return 1; } }
+  function EN(){ try{ var s=side(); return castles.filter(function(c){ return c.owner!==s && c.owner!==0; }); }catch(e){ return []; } }
+  function MY(){ try{ var s=side(); return castles.filter(function(c){ return c.owner===s; }); }catch(e){ return []; } }
+  function NEU(){ try{ return castles.filter(function(c){ return c.owner===0; }); }catch(e){ return []; } }
+  function ready(){ try{ return typeof castles!=='undefined' && castles.length && typeof cx==='function' && typeof showTutoDrag==='function' && typeof _mySide==='function'; }catch(e){ return false; } }
+  function adMsg(t){ var el=document.getElementById('adMsg'); if(!el){ el=document.createElement('div'); el.id='adMsg'; el.style.cssText='position:fixed;left:0;right:0;top:8%;text-align:center;z-index:6600;pointer-events:none;color:#ffe9b0;font-size:clamp(17px,5.2vw,27px);font-weight:800;text-shadow:0 2px 8px #000,0 0 18px #b5502a;padding:0 16px;transition:opacity .3s;'; document.body.appendChild(el); } if(el.textContent!==t)el.textContent=t; el.style.opacity='1'; }
+  function adMsgHide(){ var el=document.getElementById('adMsg'); if(el) el.style.opacity='0'; }
+  function pickPair(){ var m=MY(); if(!m.length) return null; var neu=NEU(); var pool=neu.length?neu:EN(); if(!pool.length) return null; var best=null,bd=1e18; pool.forEach(function(t){ m.forEach(function(s){ var d=Math.hypot(t.x-s.x,t.y-s.y); if(d<bd){bd=d;best={from:s,to:t};} }); }); return best; }
+  function startAdGuide(){
+    if(guideOn) return; guideOn=true;
+    var startAt=Date.now()+900, phase=0, aimed=false, leftE=null, rightE=null, neuC=null, rightFree=false;
+    function ident(){ if(leftE&&rightE&&neuC) return; var en=EN(); if(en.length>=2){ en=en.slice().sort(function(a,b){return a.x-b.x;}); leftE=en[0]; rightE=en[en.length-1]; } if(!neuC){ var nu=NEU(); if(nu.length) neuC=nu[0]; } }
+    // 오른쪽 적성 봉인(왼쪽 먼저): 겨냥 전엔 병력을 minTroops 아래로 유지 → AI 출진 안 함
+    setInterval(function(){ if(won) return; ident(); if(rightE && rightE.owner===2 && !rightFree){ try{ rightE.troops={spear:2,cavalry:3,archer:2}; }catch(e){} } },300);
+    setInterval(function(){
+      if(won) return;
+      if(!ready()){ _adPair=null; return; }
+      if(Date.now()<startAt) return;
+      ident();
+      var s=side();
+      if(!EN().length && phase>=1){ won=true; _adPair=null; try{hideTutoAttackGuide();}catch(x){} adMsgHide(); showCTA(); return; }
+      var target=(phase===0)?neuC:(phase===1?leftE:(phase===2?rightE:null));
+      try{ window._adDbg={phase:phase,aimed:aimed,target:(target&&target.name)||null,ai:(window._adStageRef?window._adStageRef.aiLevel:'?'),rightFree:rightFree,rightT:(rightE?(rightE.troops.spear+rightE.troops.cavalry+rightE.troops.archer):-1)}; }catch(_){}
+      if(!target){ _adPair=null; return; }
+      if(target.owner===s){ phase++; aimed=false; return; }   // 점령 완료 → 다음 단계, 손가락 재등장
+      var src=nearestMy(target); if(!src){ _adPair=null; return; }
+      // 겨냥 성공은 항상 먼저 감지 → 손가락 숨김 + 조준당한 적장 즉시 출진
+      if(!aimed && aimedAt(target)){
+        aimed=true;
+        var _atk=attackerSrc(target);   // 공격 들어온 방향(출발 성)으로 반격
+        if(phase===1){ try{ if(window._adStageRef) window._adStageRef.aiLevel=2; }catch(e){} sallyEnemy(target,_atk); flashAttack('⚔ 여포 출진!'); }        // 조준당한 적장이 즉시 출진(왼쪽만, 오른쪽 봉인)
+        else if(phase===2){ rightFree=true; sallyEnemy(target,_atk); flashAttack('⚔ 동탁 최후의 출진!'); }                                                 // 오른쪽 봉인 해제 → 적장 출진
+      }
+      if(aimed){ _adPair=null; try{hideTutoAttackGuide();}catch(x){} adMsg(phase===0?'공성 점령 중…':(phase===1?'왼쪽 적성 함락 중…':'천하통일 직전!')); return; }
+      // 아직 겨냥 전: 적 공격 가이드 손가락은 아군 병력이 전부 성에 도착(전군 집결)한 뒤에만 표시
+      if(phase>=1){
+        var myMarching=0; try{ myMarching=armies.filter(function(a){ return a && a.owner===s; }).length; }catch(e){ myMarching=0; }
+        if(myMarching>0){ _adPair=null; try{hideTutoAttackGuide();}catch(x){} adMsg('⚔ 병력 집결 중…'); return; }
+      }
+      _adPair={from:src,to:target}; try{ showTutoDrag(cx(src),cy(src),cx(target),cy(target)); }catch(x){} adMsg(phase===0?'⚔ 성도 → 중원(공성)으로 드래그!':(phase===1?'⚔ 공성 → 왼쪽 적 성으로 공격!':'⚔ 오른쪽 적 성으로 공격! 마무리!'));
+    },110);
+  }
+  function ensureFinger(){ if(fEl) return; fEl=document.createElement('div'); fEl.id='adFinger'; fEl.textContent='👆'; fEl.style.cssText='position:fixed;z-index:6800;pointer-events:none;font-size:clamp(40px,11vw,54px);filter:drop-shadow(0 3px 6px rgba(0,0,0,.8));opacity:0;will-change:left,top,transform,opacity;'; document.body.appendChild(fEl); }
+  function startFinger(){ ensureFinger(); requestAnimationFrame(fingerLoop); }
+  function fingerLoop(){
+    requestAnimationFrame(fingerLoop);
+    if(won || !_adPair || !ready()){ if(fEl) fEl.style.opacity='0'; return; }
+    ensureFinger();
+    var pr=_adPair, ax,ay,bx,by;
+    try{ ax=cx(pr.from)/DPR(); ay=cy(pr.from)/DPR(); bx=cx(pr.to)/DPR(); by=cy(pr.to)/DPR(); }catch(e){ return; }
+    var cyc=1500, t=(Date.now()%cyc)/cyc, p, sc;
+    if(t<0.12){ p=0; sc=0.82; } else if(t<0.82){ p=(t-0.12)/0.70; sc=0.9; } else { p=1; sc=1.12; }
+    var x=ax+(bx-ax)*p, y=ay+(by-ay)*p;
+    fEl.style.left=x+'px'; fEl.style.top=y+'px';
+    fEl.style.transform='translate(-28%,-4%) scale('+sc+')';
+    fEl.style.opacity=(t>0.9?String(Math.max(0,1-(t-0.9)/0.1)):'1');
+  }
+  var _adEnemyUids=null;
+  function setEnemyGens(){
+    try{
+      if(typeof makeEnemyInstance!=='function' || typeof castles==='undefined' || !castles.length) return;
+      var s=_mySide();
+      var ecs=castles.filter(function(c){ return c.owner!==s && c.owner!==0; });
+      if(!ecs.length) return;
+      if(!_adEnemyUids){ var want=['lu_bu','dong_zhuo','cao_cao','xiahou_dun']; _adEnemyUids=want.map(function(id){ var inst=makeEnemyInstance(id,1); return inst?inst.uid:null; }); }
+      ecs.forEach(function(c,i){ var u=_adEnemyUids[i%_adEnemyUids.length]; if(u!=null && c._commanderUid!==u){ c._commanderUid=u; c._commanderRank=1; try{ c._commanderQueue=[u]; }catch(_){} } });
+    }catch(e){}
+  }
+  function showCTA(){
+    if(document.getElementById('adCTA')) return;
+    var d=document.createElement('div'); d.id='adCTA';
+    d.style.cssText='position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;background:#0b0816 var(--advic,url(./assets/result/result_victory_bg.png)) center/cover no-repeat;text-align:center;font-family:inherit;';
+    d.innerHTML=
+      '<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,5,16,.12) 0%,rgba(8,5,16,.42) 44%,rgba(8,5,16,.94) 100%)"></div>'+
+      '<div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;padding:0 24px calc(env(safe-area-inset-bottom,0px) + 7vh)">'+
+        '<div style="color:#ffe28c;font-size:clamp(40px,13vw,74px);font-weight:900;text-shadow:0 4px 16px #000,0 0 46px #e33,0 0 4px #7a1;letter-spacing:-3px;line-height:1;margin-bottom:8px;white-space:nowrap">손가락 삼국지</div>'+
+        '<div style="color:#ffd76a;font-size:clamp(15px,4.6vw,22px);font-weight:800;text-shadow:0 2px 10px #000;margin-bottom:15px">천하통일! · 유비·관우·장비와 천하를</div>'+
+        '<div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:9px 8px;max-width:420px;margin-bottom:22px">'+
+          '<span style="background:rgba(255,225,140,.12);border:1px solid rgba(255,215,120,.36);color:#ffe6a8;font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;text-shadow:0 1px 3px #000">🏯 방대한 시나리오</span>'+
+          '<span style="background:linear-gradient(#ffdf7a,#e08a1a);border:1px solid #ffe6a0;color:#2a1500;font-size:clamp(15px,4.5vw,18px);font-weight:900;padding:10px 17px;border-radius:999px;box-shadow:0 3px 10px rgba(0,0,0,.5);letter-spacing:-.3px">⚔ 장수 수집·강화</span>'+
+          '<span style="background:linear-gradient(#ffec8e,#e8710d);border:1px solid #fff0b2;color:#2a1200;font-size:clamp(16px,5vw,21px);font-weight:900;padding:11px 19px;border-radius:999px;box-shadow:0 5px 16px rgba(224,90,10,.6),0 0 0 2px rgba(255,220,120,.28);letter-spacing:-.3px">👥 실시간 멀티·친구대전</span>'+
+        '</div>'+
+        '<button id="adInstall" style="position:relative;width:min(92%,430px);background:linear-gradient(#ffe789,#efa310);color:#3a2000;font-size:clamp(20px,6.2vw,29px);font-weight:900;padding:20px 20px;border:none;border-radius:19px;box-shadow:0 7px 0 #8f5100,0 16px 36px rgba(0,0,0,.6);cursor:pointer;letter-spacing:-.5px;overflow:hidden">무료로 설치하고 시작 ▶<span style="position:absolute;top:0;left:-60%;width:38%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);animation:adShine 2.2s infinite"></span></button>'+
+        '<div style="color:#e6d3a0;font-size:13px;margin-top:14px;letter-spacing:.3px;opacity:.95;text-shadow:0 2px 6px #000">무료 설치 · 삼국 실시간 전략</div>'+
+      '</div>';
+    var _stl=document.createElement('style'); _stl.textContent='@keyframes adShine{0%{left:-60%}55%,100%{left:130%}} #adInstall{animation:adPulse 1.15s ease-in-out infinite} @keyframes adPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}'; document.head.appendChild(_stl);
+    document.body.appendChild(d);
+    document.getElementById('adInstall').addEventListener('click',function(){ try{ if(window.ExitApi&&ExitApi.exit){ExitApi.exit();return;} }catch(e){} try{ location.href=STORE; }catch(e){} });
+  }
+})();
+</script>

@@ -89,6 +89,33 @@ function addTroopsToCastle(c, unit, count) {
   return added;
 }
 
+// ── 진영 로드아웃 정규화 (게스트 전송값 검증·클램프 — 치팅 방지) ──────────
+function _clamp(v, lo, hi) { v = Number(v); if (!Number.isFinite(v)) return lo; return v < lo ? lo : (v > hi ? hi : v); }
+// 계정 업그레이드(단련소) 배수: upgVal 곱 형태(≥1). prototype: castleAtk .08/lv 등 → 상한 3배로 클램프.
+function normUpg(u) {
+  u = u || {};
+  return {
+    unitAtk:   _clamp(u.unitAtk,   1, 3),
+    unitDef:   _clamp(u.unitDef,   1, 3),
+    castleAtk: _clamp(u.castleAtk, 1, 3),
+    castleDef: _clamp(u.castleDef, 1, 3),
+    prodRate:  _clamp(u.prodRate,  1, 3),
+  };
+}
+// 장수 1명의 해석된 버프(분수) + 크리티컬. prototype generalBuff/commanderCritStats 결과를 그대로 실어옴.
+function normGen(g) {
+  g = g || {};
+  return {
+    atk:  _clamp(g.atk,  0, 1),   // unitAtk 분수
+    def:  _clamp(g.def,  0, 1),   // unitDef 분수
+    cAtk: _clamp(g.cAtk, 0, 1),   // castleAtk 분수
+    cDef: _clamp(g.cDef, 0, 1),   // castleDef 분수
+    prod: _clamp(g.prod, 0, 1),   // prodRate 분수
+    critChance: _clamp(g.critChance, 0, 0.4),
+    critMult:   _clamp(g.critMult,   1, 2),
+  };
+}
+
 // ── SimEngine — 순수 권위 전장 시뮬 ───────────────────────────────────────
 // 계약(설계문서 §2): constructor(mapDef, seed, opts) / enqueue / step / snapshot / applySnapshot
 export class SimEngine {
@@ -135,6 +162,81 @@ export class SimEngine {
     // 본진(isHome) 원소유자 기록 — 함락 즉시승 판정용(MP 대전). 미지정 맵은 소멸 판정만.
     this._homes = [];
     (mapDef.castles || []).forEach((c, i) => { if (c.isHome) this._homes.push({ idx: i, owner: c.owner }); });
+    // 진영별 장수 로드아웃(대칭 PvP 메타). 있으면 pvp 모드: 양측 성/부대에 장수·업그레이드 보정을 결정론 계산.
+    this.loadouts = opts.loadouts || null;
+    this.pvp = !!this.loadouts;
+    this.side = null;
+    this._initLoadouts();
+  }
+
+  // ── 진영 로드아웃 초기화 + 초기 성 커맨더 배정 ──────────────────────────
+  _initLoadouts() {
+    if (!this.loadouts) return;
+    this.side = {};
+    for (const s of [1, 2]) {
+      const L = this.loadouts[s] || {};
+      this.side[s] = {
+        upg: normUpg(L.upg),
+        gens: (L.generals || []).slice(0, 10).map(normGen),
+        used: new Set(),          // 성에 배정된 gen 인덱스
+      };
+    }
+    // 초기 소유 성에 rank순(본진 우선) 커맨더 배정. 배열/정렬 순서 결정론 유지(V8 안정정렬).
+    for (const s of [1, 2]) {
+      const owned = this.castles.filter((c) => c.owner === s);
+      owned.sort((a, b) => (b.isHome ? 1 : 0) - (a.isHome ? 1 : 0));
+      for (const c of owned) this._assignCommander(c);
+    }
+    // 나머지(중립 등)도 무보정 필드 확정.
+    for (const c of this.castles) if (c._cmdSide == null) this._applyCastleMuls(c);
+  }
+  _assignCommander(c) {
+    if (!this.side) return;
+    const S = this.side[c.owner];
+    if (!S) { c._cmdIdx = -1; c._cmdSide = c.owner || 0; this._applyCastleMuls(c); return; }
+    let idx = -1;
+    for (let i = 0; i < S.gens.length; i++) { if (!S.used.has(i)) { idx = i; break; } }
+    if (idx >= 0) { S.used.add(idx); c._cmdIdx = idx; } else { c._cmdIdx = -1; }
+    c._cmdSide = c.owner;
+    this._applyCastleMuls(c);
+  }
+  _releaseCommander(c) {
+    if (!this.side) return;
+    const S = c._cmdSide ? this.side[c._cmdSide] : null;
+    if (S && c._cmdIdx >= 0) S.used.delete(c._cmdIdx);
+    c._cmdIdx = -1; c._cmdSide = 0;
+  }
+  // 점령 시: 이전 소유자 커맨더 반납 → 소유자 변경 → 새 소유자 커맨더 배정 → 벽/생산/전투 보정 갱신.
+  _captureCastle(c, newOwner) {
+    if (this.side) this._releaseCommander(c);
+    c.owner = newOwner;
+    if (this.side) this._assignCommander(c);
+  }
+  _applyCastleMuls(c) {
+    const S = (this.side && c.owner) ? this.side[c.owner] : null;
+    if (!S) { c.atkMul = 1; c.defMul = 1; c.arriveDefMul = 1; c.critChance = 0; c.critMult = 1; c._prodMul = 1; c._cmdSide = c._cmdSide || 0; return; }
+    const g = (c._cmdIdx >= 0) ? S.gens[c._cmdIdx] : null;
+    const cAtkB = g ? 1 + g.cAtk : 1, cDefB = g ? 1 + g.cDef : 1, prodB = g ? 1 + g.prod : 1;
+    c.atkMul = S.upg.castleAtk * cAtkB;
+    c.defMul = S.upg.castleDef * cDefB;
+    c.arriveDefMul = cDefB;                 // 도착방어는 upg 미포함(prototype asymmetry 보존)
+    c._prodMul = S.upg.prodRate * prodB;
+    c.critChance = g ? g.critChance : 0;
+    c.critMult = g ? g.critMult : 1;
+  }
+  // 부대 스폰 시 출발성 커맨더에서 부대 보정 산출(pvp). prototype: army atk/def=upgVal×commander, arriveAtk=commander만.
+  _armyMulsFrom(from) {
+    if (!this.side) return null;
+    const S = this.side[from.owner];
+    if (!S) return { atkMul: 1, defMul: 1, arriveAtkMul: 1, critChance: 0, critMult: 1 };
+    const g = (from._cmdIdx >= 0) ? S.gens[from._cmdIdx] : null;
+    return {
+      atkMul: S.upg.unitAtk * (g ? 1 + g.atk : 1),
+      defMul: S.upg.unitDef * (g ? 1 + g.def : 1),
+      arriveAtkMul: g ? (1 + g.atk) * (1 + g.cAtk) : 1,
+      critChance: g ? g.critChance : 0,
+      critMult: g ? g.critMult : 1,
+    };
   }
 
   // ── 좌표 변환 (렌더 아님 — 시뮬 내부 정규화→월드픽셀) ──
@@ -165,7 +267,8 @@ export class SimEngine {
     if (send < 1) return null;
     from.troops[unit] = 0;
     const isArmyTarget = !!(to && to.isArmy);
-    const m = opts.muls || {};
+    // muls: 명시 주입 우선, 없으면 pvp에서 출발성 커맨더로 결정론 산출(기본 무보정).
+    const m = opts.muls || (this.pvp ? this._armyMulsFrom(from) : null) || {};
     const a = {
       owner: from.owner, troops: send, unit,
       atkBonus: from.trait === 'atk' ? 1.4 : 1.0, _start: send,
@@ -211,8 +314,10 @@ export class SimEngine {
       if (c._lastSiegeT && now - c._lastSiegeT < 0.7) continue;
       c._grow += dt;
       let rate = c.trait === 'prod' ? 0.7 : 1.2;
-      if (c.owner === 2 && this.params.growthMult > 1) rate /= this.params.growthMult;
-      if (c.owner === 1) rate /= (c._prodMul || 1); // 배선층 주입(upgVal*commander), 기본 1
+      // 싱글: 적(2)에 AI 성장핸디캡. pvp에선 대칭이라 미적용.
+      if (!this.pvp && c.owner === 2 && this.params.growthMult > 1) rate /= this.params.growthMult;
+      // 생산 보정: 양 진영 모두 적용(_prodMul 기본 1). pvp에선 양측 장수/업그레이드 반영.
+      rate /= (c._prodMul || 1);
       while (c._grow >= rate) {
         c._grow -= rate;
         if (totalTroops(c) < CASTLE_AUTO_GROW_CAP) c.troops[c.primary]++;
@@ -411,7 +516,7 @@ export class SimEngine {
         const winner = aliveAtks.reduce((p, x) => (p && p.troops > x.troops ? p : x), null);
         if (winner) {
           const prevOwner = castle.owner;
-          castle.owner = winner.owner;
+          this._captureCastle(castle, winner.owner);
           castle._contested = false;
           castle.primary = winner.unit;
           castle.troops = { spear: 0, cavalry: 0, archer: 0 };
@@ -594,7 +699,7 @@ export class SimEngine {
       // 빈 성 점령
       if (a.target && a.target.owner === 0 && d < 12 * SIM_DPR / SIM_REF_ZOOM) {
         const prevOwner = a.target.owner;
-        a.target.owner = a.owner;
+        this._captureCastle(a.target, a.owner);
         a.target.primary = a.unit;
         a.target.troops = { spear: 0, cavalry: 0, archer: 0 };
         a.target.troops[a.unit] = a.troops;
@@ -654,7 +759,7 @@ export class SimEngine {
           });
         }
       }
-      c.owner = a.owner;
+      this._captureCastle(c, a.owner);
       c.primary = a.unit;
       c.troops = { spear: 0, cavalry: 0, archer: 0 };
       c.troops[a.unit] = remain;

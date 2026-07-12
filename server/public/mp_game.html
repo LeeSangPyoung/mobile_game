@@ -6,7 +6,7 @@
 <title>손가락삼국지 — 실시간 1v1</title>
 <style>
   :root { color-scheme: dark; } * { box-sizing: border-box; }
-  html,body { margin:0; height:100%; background:#0b0f16; color:#e6edf3; font:14px/1.4 'Noto Sans KR',system-ui,sans-serif; overscroll-behavior:none; -webkit-user-select:none; user-select:none; }
+  html,body { margin:0; height:100%; background:#07090d; color:#f4ead8; font:14px/1.4 'Noto Sans KR',system-ui,sans-serif; overscroll-behavior:none; -webkit-user-select:none; user-select:none; }
   #wrap { display:flex; flex-direction:column; height:100%; }
   #hud { display:none; gap:14px; padding:7px 12px; align-items:center; border-bottom:1px solid #1c2430; font-variant-numeric:tabular-nums; }
   .me { color:#58a6ff; font-weight:700; } .en { color:#f85149; font-weight:700; }
@@ -14,6 +14,245 @@
   #stage { position:relative; flex:1; display:flex; align-items:center; justify-content:center; touch-action:none; overflow:hidden; }
   canvas { display:block; touch-action:none; }
   .panel { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px; background:radial-gradient(circle at 50% 30%,rgba(20,32,58,.6),rgba(5,8,13,.94)); z-index:10; text-align:center; padding:20px; }
+  .panel.lobby-panel,
+  .panel.nick-panel,
+  .panel.rank-panel {
+    justify-content:flex-start;
+    gap:0;
+    padding:54px 10px 12px;
+    background:
+      linear-gradient(180deg, rgba(3,8,14,.66) 0%, rgba(5,9,15,.7) 44%, rgba(3,6,10,.84) 100%),
+      radial-gradient(circle at 50% 0%, rgba(58,77,105,.34), transparent 40%),
+      url('assets/battle/intro_duel_bg_cityfire.png') center / cover no-repeat,
+      linear-gradient(180deg, #08111d 0%, #050a12 100%);
+  }
+  .panel.lobby-panel::before,
+  .panel.nick-panel::before,
+  .panel.rank-panel::before {
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+      linear-gradient(90deg, rgba(0,0,0,.22), transparent 14%, transparent 86%, rgba(0,0,0,.22)),
+      radial-gradient(circle at 50% 50%, transparent 42%, rgba(0,0,0,.26) 100%);
+  }
+  .lobby-shell,
+  .nick-shell,
+  .rank-shell {
+    position:relative;
+    width:min(620px, calc(100vw - 18px));
+    color:#f8ead1;
+    text-align:center;
+  }
+  .lobby-shell {
+    display:grid;
+    gap:10px;
+    padding:12px;
+    border:2px solid #d2a128;
+    border-radius:18px;
+    background:
+      linear-gradient(180deg, rgba(19,31,47,.98), rgba(8,15,26,.99));
+    box-shadow:0 0 0 1px rgba(0,0,0,.75), 0 18px 38px rgba(0,0,0,.62), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .lobby-top {
+    display:grid;
+    grid-template-columns: minmax(0,1fr);
+    gap:5px;
+    justify-items:center;
+    padding:10px 12px 12px;
+    border:1px solid rgba(212,161,40,.58);
+    border-radius:12px;
+    background:linear-gradient(180deg, #1e2d42 0%, #101a29 58%, #0a111d 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
+  }
+  .lobby-kicker {
+    display:inline-grid;
+    place-items:center;
+    min-width:138px;
+    height:30px;
+    border:1px solid #8e6b1c;
+    border-radius:9px;
+    color:#2b1604;
+    background:linear-gradient(180deg,#fff1a8 0%,#f2b736 48%,#d48b13 100%);
+    font:800 12px/1 'Noto Serif KR',serif;
+    letter-spacing:2px;
+    box-shadow:0 3px 0 #7b4f0f, inset 0 1px 0 rgba(255,255,255,.65);
+  }
+  .lobby-title {
+    font:900 27px/1.05 'Noto Serif KR',serif;
+    letter-spacing:3px;
+    color:#fff0bd;
+    text-shadow:0 2px 0 #111927, 0 0 10px rgba(242,183,54,.22);
+  }
+  .lobby-sub { color:#d6deea; font:800 12px/1.3 'Noto Serif KR',serif; letter-spacing:.2px; }
+  .record-strip {
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    gap:0;
+    padding:8px 4px;
+    border:1px solid rgba(151,119,43,.6);
+    border-radius:10px;
+    background:#070d16;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+  }
+  .record-cell { min-width:0; }
+  .record-cell b { display:block; font:900 19px/1 'Noto Serif KR',serif; color:#fff0bd; }
+  .record-cell span { display:block; margin-top:4px; color:#c7cfda; font-size:10px; font-weight:900; letter-spacing:1px; }
+  .war-board {
+    display:grid;
+    gap:11px;
+    padding:14px;
+    border:1px solid rgba(212,161,40,.64);
+    border-radius:12px;
+    background:linear-gradient(180deg, #142235 0%, #0c1523 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.07);
+  }
+  .war-board-head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .war-board-head strong { font:900 18px/1 'Noto Serif KR',serif; letter-spacing:1px; color:#fff0bd; }
+  .live-pill {
+    position:relative;
+    padding:6px 9px 6px 20px;
+    border:1px solid #ff5148;
+    color:#fff4f1;
+    background:linear-gradient(180deg,#d7362f 0%,#8e1f1e 58%,#4a1012 100%);
+    font:900 10px/1 monospace;
+    letter-spacing:1px;
+    text-shadow:0 1px 0 rgba(0,0,0,.55);
+    box-shadow:0 0 0 1px rgba(70,0,0,.7), 0 0 12px rgba(255,48,38,.52), inset 0 1px 0 rgba(255,255,255,.22);
+  }
+  .live-pill::before {
+    content:"";
+    position:absolute;
+    left:8px;
+    top:50%;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#ff2d25;
+    transform:translateY(-50%);
+    box-shadow:0 0 8px #ff4b43;
+    animation:liveBlink 1.1s ease-in-out infinite;
+  }
+  .loadout-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .loadout-stat {
+    padding:11px 10px;
+    border:1px solid rgba(72,91,116,.9);
+    border-radius:0;
+    background:#08101b;
+    text-align:left;
+  }
+  .loadout-stat span { display:block; color:#aeb7c3; font-size:11px; font-weight:900; letter-spacing:.3px; }
+  .loadout-stat b { display:block; margin-top:5px; color:#ffd451; font:900 23px/1 'Noto Serif KR',serif; white-space:nowrap; }
+  .loadout-stat b em { font:inherit; font-style:normal; color:inherit; }
+  .lobby-note { margin:0; color:#c2cbd7; font-size:12px; line-height:1.45; text-align:left; }
+  .find-main {
+    width:100%;
+    min-height:58px;
+    display:grid;
+    place-items:center;
+    gap:4px;
+    margin-top:2px;
+    padding:12px 18px;
+    border-radius:10px;
+    font-family:'Noto Serif KR',serif;
+    background:radial-gradient(circle at 50% 0%, rgba(255,255,255,.58), transparent 34%), linear-gradient(180deg,#fff0a6 0%,#f2b534 52%,#d88e13 100%);
+    border-color:#8b6119;
+    box-shadow:0 4px 0 #7c4f0e, inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .find-main span { font-size:21px; font-weight:900; letter-spacing:4px; }
+  .find-main em { font-style:normal; font-size:11px; font-weight:900; letter-spacing:1px; color:rgba(50,21,5,.76); }
+  .find-row { display:flex; gap:8px; margin-top:2px; }
+  .find-row .find-main { flex:1; min-height:58px; margin-top:0; }
+  .find-row .find-main span { font-size:18px; letter-spacing:2px; }
+  .find-random {
+    background:radial-gradient(circle at 50% 0%, rgba(255,255,255,.4), transparent 34%), linear-gradient(180deg,#6ba4f0 0%,#3f74c6 52%,#274f96 100%);
+    border-color:#254a7f;
+    box-shadow:0 3px 0 #1b3a68, inset 0 1px 0 rgba(255,255,255,.28);
+    color:#f2f7ff;
+  }
+  .find-random span { color:#ffffff; }
+  .find-random em { color:rgba(255,255,255,.82); }
+  .queue-msg {
+    width:100%;
+    padding:13px 14px;
+    border:1px solid rgba(212,161,40,.62);
+    border-radius:10px;
+    background:#111b2a;
+    color:#cbffd2;
+    font-weight:900;
+  }
+  .queue-dot {
+    display:inline-block;
+    width:8px;
+    height:8px;
+    margin-right:7px;
+    border-radius:50%;
+    background:#5fe876;
+    box-shadow:0 0 12px #5fe876;
+    animation:queuePulse 1s ease-in-out infinite;
+  }
+  .lobby-actions { display:flex; gap:9px; }
+  .ghost-btn {
+    width:100%;
+    padding:13px 14px;
+    border-radius:10px;
+    background:linear-gradient(180deg,#263447 0%,#172231 100%);
+    color:#f1f5fb;
+    border:1px solid #4b5b70;
+    box-shadow:0 3px 0 rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.08);
+    font-size:15px;
+  }
+  .rank-btn {
+    position:relative;
+    color:#fff2c2;
+    border-color:#d2a128;
+    background:
+      radial-gradient(circle at 20% 0%, rgba(255,244,184,.22), transparent 36%),
+      linear-gradient(180deg,#2d4260 0%,#1b2c47 56%,#111d31 100%);
+    box-shadow:0 3px 0 #53370d, 0 0 12px rgba(210,161,40,.18), inset 0 1px 0 rgba(255,255,255,.14);
+    text-shadow:0 1px 0 rgba(0,0,0,.65);
+  }
+  .rank-btn::before {
+    content:"♛";
+    display:inline-block;
+    margin-right:7px;
+    color:#ffd85b;
+    font-size:16px;
+    line-height:1;
+    vertical-align:-1px;
+    text-shadow:0 1px 0 #4c2e06, 0 0 8px rgba(255,216,91,.35);
+  }
+  .nick-shell {
+    padding:22px 18px 18px;
+    border:1px solid rgba(255,211,122,.56);
+    border-radius:8px;
+    background:linear-gradient(180deg, rgba(39,27,19,.94), rgba(11,15,22,.97));
+    box-shadow:0 0 0 2px rgba(36,16,6,.88), 0 24px 60px rgba(0,0,0,.68);
+  }
+  .nick-shell h1,
+  .rank-shell h1 { margin-bottom:9px; }
+  .rank-shell {
+    display:grid;
+    gap:10px;
+    padding:12px;
+    border:2px solid #d2a128;
+    border-radius:18px;
+    background:linear-gradient(180deg, rgba(19,31,47,.98), rgba(8,15,26,.99));
+    box-shadow:0 0 0 1px rgba(0,0,0,.75), 0 18px 38px rgba(0,0,0,.62), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .rank-head {
+    display:grid;
+    gap:5px;
+    justify-items:center;
+    padding:10px 12px 12px;
+    border:1px solid rgba(212,161,40,.58);
+    border-radius:12px;
+    background:linear-gradient(180deg, #1e2d42 0%, #101a29 58%, #0a111d 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
+  }
+  @keyframes queuePulse { 0%,100%{transform:scale(.8);opacity:.55} 50%{transform:scale(1.18);opacity:1} }
+  @keyframes liveBlink { 0%,100%{opacity:.45} 50%{opacity:1} }
   h1 { font:900 26px 'Noto Serif KR',serif; color:#fff1b8; margin:0; text-shadow:0 2px 0 rgba(0,0,0,.6); }
   input { background:#0b0f16; color:#e6edf3; border:2px solid #2b3543; border-radius:10px; padding:12px 14px; font-size:18px; text-align:center; width:220px; }
   button { background:linear-gradient(180deg,#f2b536,#d58716); color:#2a1206; border:2px solid #8a5a13; border-radius:12px; padding:14px 28px; font:800 18px 'Noto Serif KR',serif; cursor:pointer; box-shadow:0 4px 0 #7a4e12; }
@@ -22,9 +261,128 @@
   .muted { color:#8b949e; font-size:13px; }
   .err { color:#ff8080; font-size:13px; min-height:18px; }
   .stat { color:#cbd5e1; font-size:15px; }
-  #banner h2 { font-size:44px; margin:0; }
+  #banner {
+    overflow:hidden;
+    padding:22px;
+    background:#05070b;
+  }
+  #banner::before {
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,.06), rgba(0,0,0,.08) 38%, rgba(0,0,0,.38) 100%),
+      var(--result-bg, none) center / cover no-repeat;
+    filter:saturate(1.12) brightness(1.16);
+    transform:scale(1.01);
+  }
+  #banner::after {
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+      radial-gradient(circle at 50% 22%, rgba(255,220,127,.12), transparent 34%),
+      linear-gradient(90deg, rgba(0,0,0,.24), transparent 18%, transparent 82%, rgba(0,0,0,.24));
+  }
+  #banner.is-win { --result-bg:url('assets/result/result_victory_bg.png'); --result-accent:#f4c13a; --result-title:#ffe9a6; }
+  #banner.is-loss { --result-bg:url('assets/result/result_defeat_burning_city.png'); --result-accent:#d44638; --result-title:#ffb1ac; }
+  .result-card {
+    position:relative;
+    z-index:1;
+    width:min(560px, calc(100vw - 36px));
+    margin-top:min(7vh, 62px);
+    padding:22px 18px 18px;
+    border:2px solid var(--result-accent);
+    border-radius:18px;
+    background:linear-gradient(180deg, rgba(17,29,45,.78), rgba(5,9,15,.86));
+    box-shadow:0 0 0 1px rgba(0,0,0,.72), 0 22px 46px rgba(0,0,0,.56), inset 0 1px 0 rgba(255,255,255,.09);
+  }
+  .result-kicker {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:128px;
+    height:32px;
+    padding:0 18px;
+    border-radius:8px;
+    background:linear-gradient(180deg,#ffe78b,#d28b16);
+    color:#351705;
+    border:1px solid rgba(99,54,9,.8);
+    box-shadow:0 3px 0 rgba(101,58,8,.85), inset 0 1px 0 rgba(255,255,255,.52);
+    font:900 15px 'Noto Serif KR',serif;
+  }
+  #banner h2 {
+    font:900 clamp(42px, 12vw, 74px)/1 'Noto Serif KR',serif;
+    margin:14px 0 8px;
+    color:var(--result-title);
+    text-shadow:0 3px 0 rgba(0,0,0,.65), 0 0 18px color-mix(in srgb, var(--result-accent) 62%, transparent);
+    letter-spacing:0;
+  }
+  .result-sub {
+    color:#fff2c8;
+    font-weight:900;
+    text-shadow:0 2px 0 rgba(0,0,0,.52);
+    margin-bottom:7px;
+  }
+  #banner .stat {
+    color:#cfd8e3;
+    font-size:14px;
+    margin-bottom:14px;
+  }
+  #again {
+    min-width:112px;
+    border-radius:10px;
+  }
   #tip { display:none; padding:6px 12px; color:#6e7681; font-size:12px; border-top:1px solid #1c2430; }
-  #conn { position:fixed; right:8px; top:8px; z-index:30; font:11px monospace; color:#6e7681; }
+  #conn { display:none !important; }
+  #backMain { position:fixed; left:10px; top:10px; z-index:30; display:none; padding:8px 12px; border-radius:8px; background:rgba(4,8,12,.62); border:1px solid rgba(255,211,122,.28); color:#f3e1bb; font-size:13px; font-weight:900; cursor:pointer; }
+  .myrank { width:100%; background:linear-gradient(180deg,#203654,#18283f); border:1px solid #42638f; border-radius:12px; padding:12px 14px; display:flex; align-items:center; gap:12px; box-shadow:inset 0 1px 0 rgba(255,255,255,.08); }
+  .myrank .rk { font-size:26px; font-weight:900; color:#9dc4ff; min-width:64px; text-align:center; font-family:'Noto Serif KR',serif; }
+  .myrank .info { text-align:left; flex:1; min-width:0; } .myrank .info .nm { font-weight:900; font-size:16px; overflow:hidden; text-overflow:ellipsis; color:#f4ead8; } .myrank .info .sub { color:#aeb7c3; font-size:12px; margin-top:3px; }
+  .myrank .pt { font-size:22px; font-weight:900; color:#48d869; white-space:nowrap; font-family:'Noto Serif KR',serif; }
+  .ranklist { width:100%; max-height:min(48vh, 410px); overflow:auto; border:1px solid #3b4d66; border-radius:12px; background:#080e17; }
+  .ranklist table { width:100%; border-collapse:collapse; font-size:13px; font-variant-numeric:tabular-nums; }
+  .ranklist th { position:sticky; top:0; background:#121c2a; color:#aeb7c3; font-size:11px; font-weight:900; padding:9px 10px; text-align:left; z-index:1; }
+  .ranklist td { padding:10px; border-top:1px solid #1b2636; text-align:left; color:#eee6d7; font-weight:800; }
+  .ranklist td.n, .ranklist th.n { text-align:right; }
+  .ranklist tr.me td { background:#1a2b47; color:#dbe8ff; font-weight:900; }
+  .ranklist .rk { color:#7d8998; width:52px; text-align:center; vertical-align:middle; }
+  .rank-mark {
+    position:relative;
+    display:inline-grid;
+    place-items:center;
+    width:34px;
+    height:30px;
+    font:900 13px/1 'Noto Serif KR',serif;
+    color:#9aa6b7;
+    margin:0 auto;
+  }
+  .rank-mark.top {
+    color:#271204;
+    text-shadow:0 1px 0 rgba(255,255,255,.45);
+  }
+  .rank-mark.top::before {
+    content:"";
+    position:absolute;
+    inset:2px 4px 3px;
+    clip-path:polygon(50% 0, 91% 14%, 100% 46%, 82% 83%, 50% 100%, 18% 83%, 0 46%, 9% 14%);
+    background:linear-gradient(180deg,#fff3a6,#d99b18 56%,#8e4c0a);
+    box-shadow:0 2px 0 rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.65), inset 0 -5px 9px rgba(0,0,0,.18);
+  }
+  .rank-mark.top::after {
+    content:"";
+    position:absolute;
+    inset:7px 9px 10px;
+    clip-path:polygon(50% 0, 61% 35%, 100% 35%, 69% 57%, 80% 100%, 50% 73%, 20% 100%, 31% 57%, 0 35%, 39% 35%);
+    background:rgba(255,255,255,.38);
+    mix-blend-mode:screen;
+  }
+  .rank-mark span { position:relative; z-index:1; }
+  .rank-mark.r1::before { background:linear-gradient(180deg,#fff6b9 0%,#f4c13a 52%,#a6610d 100%); }
+  .rank-mark.r2::before { background:linear-gradient(180deg,#f6f9ff 0%,#b3c5db 52%,#5d7088 100%); }
+  .rank-mark.r3::before { background:linear-gradient(180deg,#ffd8a6 0%,#cb7a35 52%,#743817 100%); }
+  .ranklist .empty { padding:20px; text-align:center; color:#6e7681; }
 </style>
 </head>
 <body>
@@ -39,32 +397,84 @@
   <div id="stage">
     <canvas id="cv"></canvas>
     <!-- 닉네임 -->
-    <div class="panel" id="pNick">
-      <h1>⚔ 실시간 1v1</h1>
-      <div class="muted">처음이신가요? 닉네임을 정하세요</div>
-      <input id="nick" maxlength="16" placeholder="닉네임" autocomplete="off">
-      <div class="err" id="nickErr"></div>
-      <button id="regBtn">시작</button>
+    <div class="panel nick-panel" id="pNick" style="display:none">
+      <div class="nick-shell">
+        <div class="lobby-kicker">실시간 멀티대전</div>
+        <h1>군주 등록</h1>
+        <div class="muted">전장에 남길 군주명을 정하십시오</div>
+        <input id="nick" maxlength="16" placeholder="닉네임" autocomplete="off">
+        <div class="err" id="nickErr"></div>
+        <button id="regBtn" class="find-main"><span>입장</span><em>전장 로비로 이동</em></button>
+      </div>
     </div>
     <!-- 로비 -->
-    <div class="panel" id="pLobby" style="display:none">
-      <h1 id="hello">환영합니다</h1>
-      <div class="stat">전적 <b id="wins" style="color:#58a6ff">0</b>승 <b id="losses" style="color:#f85149">0</b>패</div>
-      <button id="findBtn">대전 찾기</button>
-      <div class="muted" id="findMsg" style="display:none">상대를 찾는 중…</div>
-      <button id="cancelBtn" style="display:none;background:#1c2430;color:#e6edf3;border-color:#2b3543;box-shadow:none">취소</button>
+    <div class="panel lobby-panel" id="pLobby" style="display:none">
+      <div class="lobby-shell">
+        <div class="lobby-top">
+          <div class="lobby-kicker">실시간 멀티대전</div>
+          <div class="lobby-title" id="hello">군주</div>
+          <div class="lobby-sub">같은 전투력대의 상대와 1 대 1로 겨룹니다</div>
+        </div>
+        <div class="record-strip" aria-label="전적">
+          <div class="record-cell"><b id="wins">0</b><span>승</span></div>
+          <div class="record-cell"><b id="draws">0</b><span>무</span></div>
+          <div class="record-cell"><b id="losses">0</b><span>패</span></div>
+          <div class="record-cell"><b id="pts">0</b><span>점수</span></div>
+          <div class="record-cell"><b id="lobbyRank">-</b><span>랭킹</span></div>
+        </div>
+        <div class="war-board">
+          <div class="war-board-head">
+            <strong>출전 전력</strong>
+            <span class="live-pill">LIVE 1V1</span>
+          </div>
+          <div class="loadout-grid">
+            <div class="loadout-stat"><span>전투력</span><b id="power">1000</b></div>
+            <div class="loadout-stat"><span>출전 장수</span><b><em id="squad">0</em>명</b></div>
+          </div>
+          <p class="lobby-note" id="squadHint">본편에서 편성한 장수와 강화 수치가 실시간 대전에 반영됩니다.</p>
+        </div>
+        <div class="find-row" id="findRow">
+          <button id="findBtn" class="find-main"><span>전투력 매칭</span><em>전투력 기반 매칭</em></button>
+          <button id="findRandomBtn" class="find-main find-random"><span>랜덤 매칭</span><em>매칭 확률 높음</em></button>
+        </div>
+        <div class="queue-msg" id="findMsg" style="display:none"><span class="queue-dot"></span>상대 군주를 찾는 중</div>
+        <div class="lobby-actions">
+          <button id="cancelBtn" class="ghost-btn" style="display:none">매칭 취소</button>
+          <button id="rankBtn" class="ghost-btn rank-btn">랭킹</button>
+          <button id="lobbyBackBtn" class="ghost-btn">뒤로가기</button>
+        </div>
+      </div>
+    </div>
+    <!-- 랭킹 -->
+    <div class="panel rank-panel" id="pRank" style="display:none">
+      <div class="rank-shell">
+        <div class="rank-head">
+          <div class="lobby-kicker">명예의 전장</div>
+          <h1 style="font-size:25px">랭킹</h1>
+          <div class="muted">승 3점 · 무 1점 · 패 0점</div>
+        </div>
+        <div id="myRank" class="myrank"></div>
+        <div id="rankList" class="ranklist"></div>
+        <button id="rankBack" class="ghost-btn">돌아가기</button>
+      </div>
     </div>
     <!-- 결과 -->
-    <div class="panel" id="banner" style="display:none">
-      <h2 id="bwin"></h2>
-      <div class="stat" id="bstat"></div>
-      <button id="again">로비로</button>
+    <div class="panel result-panel" id="banner" style="display:none">
+      <div class="result-card">
+        <div class="result-kicker" id="bkicker">결과</div>
+        <h2 id="bwin"></h2>
+        <div class="result-sub" id="bsub"></div>
+        <div class="stat" id="bstat"></div>
+        <button id="again">로비로</button>
+      </div>
     </div>
   </div>
   <div id="tip">내 성(파랑) 탭 → 목표 성 탭 = 전 병력 출진. 상대 본진(★) 함락 시 승리.</div>
 </div>
+<div id="backMain" onclick="location.href='index.html'">← 메인</div>
 <div id="conn">연결 중…</div>
 
+<script src="./assets/generals/roster_200.js"></script>
 <script>
 // ===== engine.js =====
 // engine.js — 손가락삼국지 순수 전장 시뮬 엔진 (Phase 0 추출)
@@ -158,6 +568,33 @@ function addTroopsToCastle(c, unit, count) {
   return added;
 }
 
+// ── 진영 로드아웃 정규화 (게스트 전송값 검증·클램프 — 치팅 방지) ──────────
+function _clamp(v, lo, hi) { v = Number(v); if (!Number.isFinite(v)) return lo; return v < lo ? lo : (v > hi ? hi : v); }
+// 계정 업그레이드(단련소) 배수: upgVal 곱 형태(≥1). prototype: castleAtk .08/lv 등 → 상한 3배로 클램프.
+function normUpg(u) {
+  u = u || {};
+  return {
+    unitAtk:   _clamp(u.unitAtk,   1, 3),
+    unitDef:   _clamp(u.unitDef,   1, 3),
+    castleAtk: _clamp(u.castleAtk, 1, 3),
+    castleDef: _clamp(u.castleDef, 1, 3),
+    prodRate:  _clamp(u.prodRate,  1, 3),
+  };
+}
+// 장수 1명의 해석된 버프(분수) + 크리티컬. prototype generalBuff/commanderCritStats 결과를 그대로 실어옴.
+function normGen(g) {
+  g = g || {};
+  return {
+    atk:  _clamp(g.atk,  0, 1),   // unitAtk 분수
+    def:  _clamp(g.def,  0, 1),   // unitDef 분수
+    cAtk: _clamp(g.cAtk, 0, 1),   // castleAtk 분수
+    cDef: _clamp(g.cDef, 0, 1),   // castleDef 분수
+    prod: _clamp(g.prod, 0, 1),   // prodRate 분수
+    critChance: _clamp(g.critChance, 0, 0.4),
+    critMult:   _clamp(g.critMult,   1, 2),
+  };
+}
+
 // ── SimEngine — 순수 권위 전장 시뮬 ───────────────────────────────────────
 // 계약(설계문서 §2): constructor(mapDef, seed, opts) / enqueue / step / snapshot / applySnapshot
 class SimEngine {
@@ -204,6 +641,81 @@ class SimEngine {
     // 본진(isHome) 원소유자 기록 — 함락 즉시승 판정용(MP 대전). 미지정 맵은 소멸 판정만.
     this._homes = [];
     (mapDef.castles || []).forEach((c, i) => { if (c.isHome) this._homes.push({ idx: i, owner: c.owner }); });
+    // 진영별 장수 로드아웃(대칭 PvP 메타). 있으면 pvp 모드: 양측 성/부대에 장수·업그레이드 보정을 결정론 계산.
+    this.loadouts = opts.loadouts || null;
+    this.pvp = !!this.loadouts;
+    this.side = null;
+    this._initLoadouts();
+  }
+
+  // ── 진영 로드아웃 초기화 + 초기 성 커맨더 배정 ──────────────────────────
+  _initLoadouts() {
+    if (!this.loadouts) return;
+    this.side = {};
+    for (const s of [1, 2]) {
+      const L = this.loadouts[s] || {};
+      this.side[s] = {
+        upg: normUpg(L.upg),
+        gens: (L.generals || []).slice(0, 10).map(normGen),
+        used: new Set(),          // 성에 배정된 gen 인덱스
+      };
+    }
+    // 초기 소유 성에 rank순(본진 우선) 커맨더 배정. 배열/정렬 순서 결정론 유지(V8 안정정렬).
+    for (const s of [1, 2]) {
+      const owned = this.castles.filter((c) => c.owner === s);
+      owned.sort((a, b) => (b.isHome ? 1 : 0) - (a.isHome ? 1 : 0));
+      for (const c of owned) this._assignCommander(c);
+    }
+    // 나머지(중립 등)도 무보정 필드 확정.
+    for (const c of this.castles) if (c._cmdSide == null) this._applyCastleMuls(c);
+  }
+  _assignCommander(c) {
+    if (!this.side) return;
+    const S = this.side[c.owner];
+    if (!S) { c._cmdIdx = -1; c._cmdSide = c.owner || 0; this._applyCastleMuls(c); return; }
+    let idx = -1;
+    for (let i = 0; i < S.gens.length; i++) { if (!S.used.has(i)) { idx = i; break; } }
+    if (idx >= 0) { S.used.add(idx); c._cmdIdx = idx; } else { c._cmdIdx = -1; }
+    c._cmdSide = c.owner;
+    this._applyCastleMuls(c);
+  }
+  _releaseCommander(c) {
+    if (!this.side) return;
+    const S = c._cmdSide ? this.side[c._cmdSide] : null;
+    if (S && c._cmdIdx >= 0) S.used.delete(c._cmdIdx);
+    c._cmdIdx = -1; c._cmdSide = 0;
+  }
+  // 점령 시: 이전 소유자 커맨더 반납 → 소유자 변경 → 새 소유자 커맨더 배정 → 벽/생산/전투 보정 갱신.
+  _captureCastle(c, newOwner) {
+    if (this.side) this._releaseCommander(c);
+    c.owner = newOwner;
+    if (this.side) this._assignCommander(c);
+  }
+  _applyCastleMuls(c) {
+    const S = (this.side && c.owner) ? this.side[c.owner] : null;
+    if (!S) { c.atkMul = 1; c.defMul = 1; c.arriveDefMul = 1; c.critChance = 0; c.critMult = 1; c._prodMul = 1; c._cmdSide = c._cmdSide || 0; return; }
+    const g = (c._cmdIdx >= 0) ? S.gens[c._cmdIdx] : null;
+    const cAtkB = g ? 1 + g.cAtk : 1, cDefB = g ? 1 + g.cDef : 1, prodB = g ? 1 + g.prod : 1;
+    c.atkMul = S.upg.castleAtk * cAtkB;
+    c.defMul = S.upg.castleDef * cDefB;
+    c.arriveDefMul = cDefB;                 // 도착방어는 upg 미포함(prototype asymmetry 보존)
+    c._prodMul = S.upg.prodRate * prodB;
+    c.critChance = g ? g.critChance : 0;
+    c.critMult = g ? g.critMult : 1;
+  }
+  // 부대 스폰 시 출발성 커맨더에서 부대 보정 산출(pvp). prototype: army atk/def=upgVal×commander, arriveAtk=commander만.
+  _armyMulsFrom(from) {
+    if (!this.side) return null;
+    const S = this.side[from.owner];
+    if (!S) return { atkMul: 1, defMul: 1, arriveAtkMul: 1, critChance: 0, critMult: 1 };
+    const g = (from._cmdIdx >= 0) ? S.gens[from._cmdIdx] : null;
+    return {
+      atkMul: S.upg.unitAtk * (g ? 1 + g.atk : 1),
+      defMul: S.upg.unitDef * (g ? 1 + g.def : 1),
+      arriveAtkMul: g ? (1 + g.atk) * (1 + g.cAtk) : 1,
+      critChance: g ? g.critChance : 0,
+      critMult: g ? g.critMult : 1,
+    };
   }
 
   // ── 좌표 변환 (렌더 아님 — 시뮬 내부 정규화→월드픽셀) ──
@@ -234,7 +746,8 @@ class SimEngine {
     if (send < 1) return null;
     from.troops[unit] = 0;
     const isArmyTarget = !!(to && to.isArmy);
-    const m = opts.muls || {};
+    // muls: 명시 주입 우선, 없으면 pvp에서 출발성 커맨더로 결정론 산출(기본 무보정).
+    const m = opts.muls || (this.pvp ? this._armyMulsFrom(from) : null) || {};
     const a = {
       owner: from.owner, troops: send, unit,
       atkBonus: from.trait === 'atk' ? 1.4 : 1.0, _start: send,
@@ -280,8 +793,10 @@ class SimEngine {
       if (c._lastSiegeT && now - c._lastSiegeT < 0.7) continue;
       c._grow += dt;
       let rate = c.trait === 'prod' ? 0.7 : 1.2;
-      if (c.owner === 2 && this.params.growthMult > 1) rate /= this.params.growthMult;
-      if (c.owner === 1) rate /= (c._prodMul || 1); // 배선층 주입(upgVal*commander), 기본 1
+      // 싱글: 적(2)에 AI 성장핸디캡. pvp에선 대칭이라 미적용.
+      if (!this.pvp && c.owner === 2 && this.params.growthMult > 1) rate /= this.params.growthMult;
+      // 생산 보정: 양 진영 모두 적용(_prodMul 기본 1). pvp에선 양측 장수/업그레이드 반영.
+      rate /= (c._prodMul || 1);
       while (c._grow >= rate) {
         c._grow -= rate;
         if (totalTroops(c) < CASTLE_AUTO_GROW_CAP) c.troops[c.primary]++;
@@ -480,7 +995,7 @@ class SimEngine {
         const winner = aliveAtks.reduce((p, x) => (p && p.troops > x.troops ? p : x), null);
         if (winner) {
           const prevOwner = castle.owner;
-          castle.owner = winner.owner;
+          this._captureCastle(castle, winner.owner);
           castle._contested = false;
           castle.primary = winner.unit;
           castle.troops = { spear: 0, cavalry: 0, archer: 0 };
@@ -663,7 +1178,7 @@ class SimEngine {
       // 빈 성 점령
       if (a.target && a.target.owner === 0 && d < 12 * SIM_DPR / SIM_REF_ZOOM) {
         const prevOwner = a.target.owner;
-        a.target.owner = a.owner;
+        this._captureCastle(a.target, a.owner);
         a.target.primary = a.unit;
         a.target.troops = { spear: 0, cavalry: 0, archer: 0 };
         a.target.troops[a.unit] = a.troops;
@@ -723,7 +1238,7 @@ class SimEngine {
           });
         }
       }
-      c.owner = a.owner;
+      this._captureCastle(c, a.owner);
       c.primary = a.unit;
       c.troops = { spear: 0, cavalry: 0, archer: 0 };
       c.troops[a.unit] = remain;
@@ -827,7 +1342,11 @@ class SimEngine {
 //   Host→Guest  STATE { tick, snap }              // 권위 스냅샷(주기적)
 //   Host→Guest  END   { winner, reason }
 //   Guest→Host  CMD   { cmd:{type:'SEND_ARMY',fromId,toId,unit} }
+//   Guest→Host  HELLO { loadout? }   // 참가 + (메타)장수 로드아웃 전달
 //   Guest→Host  SURRENDER {}
+//
+// 메타(장수 로드아웃): opts.hostLoadout이 있으면 pvp 메타 모드. 호스트는 게스트의 HELLO로
+//   상대 로드아웃을 받은 뒤에야 엔진을 생성(양측 보정 주입). 로드아웃은 engine이 클램프(치팅방지).
 
 
 // ── 호스트: 권위 시뮬 + 양측 명령 적용 + 스냅샷 방송 ──────────────────────
@@ -836,23 +1355,38 @@ class HostMatch {
     this.channel = channel;
     this.seed = seed >>> 0;
     this.mapDef = mapDef;
-    this.eng = new SimEngine(mapDef, this.seed);
     this.hostSide = opts.hostSide || 1;    // 호스트가 조종하는 진영
     this.guestSide = opts.guestSide || 2;  // 게스트가 조종하는 진영
     this.stepDt = 1 / 15;
     this.snapEvery = opts.snapEvery || 2;  // n틱마다 스냅샷(2 → ~7.5Hz)
     this._sinceSnap = 0;
     this.over = false;
+    // 메타 로드아웃(옵션). 있으면 게스트 로드아웃 수신 후 엔진 생성.
+    this.hostLoadout = opts.hostLoadout || null;
+    this.useLoadouts = !!this.hostLoadout;
+    this.guestLoadout = null;
+    this.eng = this.useLoadouts ? null : new SimEngine(mapDef, this.seed);  // 비메타: 기존처럼 즉시 생성
     channel.onMessage((m) => this._onGuest(m));
+  }
+  _buildEngine() {
+    const engOpts = {};
+    if (this.useLoadouts) {
+      engOpts.loadouts = {};
+      engOpts.loadouts[this.hostSide] = this.hostLoadout;
+      engOpts.loadouts[this.guestSide] = this.guestLoadout || { upg: {}, generals: [] };
+    }
+    this.eng = new SimEngine(this.mapDef, this.seed, engOpts);
   }
   start() {
     this.channel.send({ t: 'START', seed: this.seed, map: this.mapDef, youSide: this.guestSide });
-    this._broadcast();
+    if (this.eng) this._broadcast();   // 비메타: 엔진 준비됨. 메타: 게스트 HELLO 후 방송.
   }
   hostCommand(cmd) { this._applyCommand(cmd, this.hostSide); }   // 로컬(호스트) 플레이어 입력
   _onGuest(m) {
     if (!m) return;
-    if (m.t === 'HELLO') { // 게스트 늦참가 → 매치정보+현재상태 재전송
+    if (m.t === 'HELLO') { // 게스트 참가(+로드아웃) → 필요시 엔진생성, 매치정보+현재상태 (재)전송
+      if (m.loadout && this.useLoadouts) this.guestLoadout = m.loadout;
+      if (!this.eng) this._buildEngine();
       this.channel.send({ t: 'START', seed: this.seed, map: this.mapDef, youSide: this.guestSide });
       this._broadcast();
       return;
@@ -863,20 +1397,21 @@ class HostMatch {
   }
   // 명령 검증 — 해당 사이드의 성만 조종 가능(치팅 방지: 소유권 확인)
   _applyCommand(cmd, side) {
-    if (this.over || !cmd || cmd.type !== 'SEND_ARMY') return;
+    if (this.over || !this.eng || !cmd || cmd.type !== 'SEND_ARMY') return;
     const from = this.eng.castles[cmd.fromId];
     if (!from || from.owner !== side) return;
     this.eng.enqueue('net', { type: 'SEND_ARMY', fromId: cmd.fromId, toId: cmd.toId, unit: cmd.unit });
   }
   _forceWin(side, reason) {
     if (this.over) return;
-    this.eng.winner = side; this.over = true;
+    if (this.eng) this.eng.winner = side;
+    this.over = true;
     this._broadcast();
     this.channel.send({ t: 'END', winner: side, reason });
   }
   // 고정 15Hz 스텝 — 호스트 루프가 매 틱 호출
   tick() {
-    if (this.over) return;
+    if (this.over || !this.eng) return;
     const ev = this.eng.step(this.stepDt);
     if (++this._sinceSnap >= this.snapEvery) { this._broadcast(); this._sinceSnap = 0; }
     if (this.eng.winner != null) {
@@ -886,13 +1421,14 @@ class HostMatch {
       this.channel.send({ t: 'END', winner: this.eng.winner, reason: (w && w.reason) || 'homeCapture' });
     }
   }
-  _broadcast() { this.channel.send({ t: 'STATE', tick: this.eng.tick, snap: this.eng.snapshot() }); }
+  _broadcast() { if (!this.eng) return; this.channel.send({ t: 'STATE', tick: this.eng.tick, snap: this.eng.snapshot() }); }
 }
 
 // ── 게스트: 명령 송신 + 권위 스냅샷 수신/보관(렌더용) ──────────────────────
 class GuestMatch {
   constructor(channel, opts = {}) {
     this.channel = channel;
+    this.loadout = opts.loadout || null;   // 내 장수 로드아웃(메타). join 시 호스트에 전달.
     this.youSide = null;
     this.map = null; this.seed = null;
     this.snap = null; this.prevSnap = null; this.lastRecvAt = 0;
@@ -908,7 +1444,7 @@ class GuestMatch {
     else if (m.t === 'STATE') { this.prevSnap = this.snap; this.snap = m.snap; this.onState(m); }
     else if (m.t === 'END') { this.over = true; this.winner = m.winner; this.reason = m.reason; this.onEnd(m); }
   }
-  join() { this.channel.send({ t: 'HELLO' }); }                          // 참가 시 호스트에 상태 요청
+  join() { this.channel.send({ t: 'HELLO', loadout: this.loadout || undefined }); }  // 참가 + (메타)로드아웃 전달
   command(cmd) { if (!this.over) this.channel.send({ t: 'CMD', cmd }); } // 호스트로 전송(권위는 호스트)
   surrender() { this.channel.send({ t: 'SURRENDER' }); }
 }
@@ -921,6 +1457,194 @@ function makeLoopbackPair() {
     send(msg) { const copy = JSON.parse(JSON.stringify(msg)); if (other.cb) other.cb(copy); },
   });
   return [mk(ends[0], ends[1]), mk(ends[1], ends[0])];
+}
+
+// ===== meta.js (장수 로드아웃·전투력) =====
+// meta.js — 순수 메타 계산: SAVE(장수 로스터·강화·편성·업그레이드) → 엔진 로드아웃 + 전투력.
+//   브라우저·Node 공용(DOM 의존 0). 공식은 prototype.html 배선층과 1:1 일치.
+//
+//   loadout 형식(engine.js가 소비): { upg:{unitAtk,unitDef,castleAtk,castleDef,prodRate},
+//     generals:[{atk,def,cAtk,cDef,prod,critChance,critMult}] }   (각 값은 '분수'/확률, 엔진에서 1+ 처리)
+//
+//   상위문서: docs/multiplayer_realtime_design.md §1(보유 로스터에서 장수 10명 편성)
+
+const MAX_DEPLOY_GENERALS = 10;
+// 계정 업그레이드(단련소) 레벨당 효과 — prototype UPG_DEFS.per 일치
+const UPG_PER = { castleAtk: 0.08, castleDef: 0.10, prodRate: 0.10, unitAtk: 0.06, unitDef: 0.05 };
+const GENERAL_BUFF_KEYS = ['unitAtk', 'unitDef', 'castleAtk', 'castleDef', 'prodRate'];
+// 별 등급/강화 배수 — prototype 상수 일치 (index = stars(1~5) / lv(1~6))
+const STAR_MULT = [1.0, 1.0, 1.2, 1.4, 1.7, 2.0];
+const STAR_FLAT = [0, 0, 0.012, 0.025, 0.045, 0.075];
+const ENHANCE_MULT = [1.0, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0];
+const FORMATION_KEYS = ['天', '地', '人'];
+
+// 명장 수동 버프(나머지는 절차생성) — prototype MANUAL_GENERAL_DEFS 그대로
+const MANUAL_GENERAL_DEFS = [
+  { id: 'liu_bei', name: '유비', buffs: { unitAtk: 0.10, unitDef: 0.05, castleDef: 0.05, castleAtk: 0.05 } },
+  { id: 'guan_yu', name: '관우', buffs: { unitAtk: 0.10, unitDef: 0.04, castleAtk: 0.08 } },
+  { id: 'zhang_fei', name: '장비', buffs: { unitAtk: 0.10, unitDef: 0.03, castleAtk: 0.06 } },
+  { id: 'zhao_yun', name: '조운', buffs: { unitAtk: 0.07, unitDef: 0.10 } },
+  { id: 'lu_bu', name: '여포', buffs: { unitAtk: 0.10, castleAtk: 0.10, unitDef: 0.02 } },
+  { id: 'xiahou_dun', name: '하후돈', buffs: { castleAtk: 0.06, unitDef: 0.04 } },
+  { id: 'cao_cao', name: '조조', buffs: { unitAtk: 0.08, unitDef: 0.08, castleAtk: 0.06, castleDef: 0.06 } },
+  { id: 'cao_xing', name: '조흥', buffs: { unitAtk: 0.02, castleAtk: 0.02 } },
+  { id: 'taishi_ci', name: '태사자', buffs: { unitAtk: 0.07, unitDef: 0.03 } },
+  { id: 'zhuge_liang', name: '제갈량', buffs: { prodRate: 0.08, castleDef: 0.05, unitDef: 0.03 } },
+  { id: 'huang_zhong', name: '황충', buffs: { unitAtk: 0.08, unitDef: 0.02 } },
+  { id: 'huang_gai', name: '황개', buffs: { castleDef: 0.07, unitDef: 0.04 } },
+  { id: 'yan_liang', name: '안량', buffs: { unitAtk: 0.07, castleAtk: 0.04 } },
+  { id: 'dong_zhuo', name: '동탁', buffs: { castleDef: 0.06, unitDef: 0.03 } },
+  { id: 'sima_yi', name: '사마의', buffs: { castleDef: 0.08, unitDef: 0.06, castleAtk: 0.04 } },
+  { id: 'gan_ning', name: '감녕', buffs: { unitAtk: 0.06, castleAtk: 0.04 } },
+  { id: 'yuan_shao', name: '원소', buffs: { castleDef: 0.05, unitAtk: 0.03 } },
+  { id: 'sun_quan', name: '손권', buffs: { castleDef: 0.06, unitDef: 0.04 } },
+  { id: 'zhou_yu', name: '주유', buffs: { castleAtk: 0.08, unitAtk: 0.05 } },
+  { id: 'ma_chao', name: '마초', buffs: { unitAtk: 0.09, unitDef: 0.03 } },
+  { id: 'sun_ce', name: '손책', buffs: { unitAtk: 0.08, castleAtk: 0.06 } },
+  { id: 'lu_xun', name: '육손', buffs: { unitDef: 0.06, castleAtk: 0.05, prodRate: 0.04 } },
+  { id: 'pang_tong', name: '방통', buffs: { castleAtk: 0.07, prodRate: 0.04 } },
+  { id: 'guo_jia', name: '곽가', buffs: { unitAtk: 0.05, unitDef: 0.05 } },
+  { id: 'dian_wei', name: '전위', buffs: { unitDef: 0.08, unitAtk: 0.05 } },
+  { id: 'xu_chu', name: '허저', buffs: { unitDef: 0.08, castleDef: 0.06 } },
+  { id: 'zhang_liao', name: '장료', buffs: { unitAtk: 0.08, unitDef: 0.04 } },
+  { id: 'xu_huang', name: '서황', buffs: { castleAtk: 0.07, unitDef: 0.04 } },
+  { id: 'wen_chou', name: '문추', buffs: { unitAtk: 0.06, unitDef: 0.02 } },
+  { id: 'meng_huo', name: '맹획', buffs: { unitDef: 0.05, unitAtk: 0.04 } },
+  { id: 'hua_xiong', name: '화웅', buffs: { unitAtk: 0.07, castleAtk: 0.04 } },
+  { id: 'gao_shun', name: '고순', buffs: { unitDef: 0.07, castleAtk: 0.05 } },
+  { id: 'chen_gong', name: '진궁', buffs: { castleDef: 0.06, prodRate: 0.04 } },
+  { id: 'li_ru', name: '이유', buffs: { castleAtk: 0.05, prodRate: 0.05 } },
+  { id: 'li_jue', name: '이각', buffs: { unitAtk: 0.05, unitDef: 0.04 } },
+  { id: 'guo_si', name: '곽사', buffs: { unitAtk: 0.05, castleAtk: 0.03 } },
+  { id: 'zhang_ji', name: '장제', buffs: { castleDef: 0.05, unitDef: 0.04 } },
+  { id: 'zhang_xiu', name: '장수', buffs: { unitAtk: 0.06, unitDef: 0.04 } },
+  { id: 'jia_xu', name: '가후', buffs: { castleAtk: 0.06, castleDef: 0.05, prodRate: 0.03 } },
+  { id: 'xun_yu', name: '순욱', buffs: { prodRate: 0.08, castleDef: 0.05 } },
+  { id: 'xun_you', name: '순유', buffs: { unitDef: 0.05, prodRate: 0.05 } },
+  { id: 'cheng_yu', name: '정욱', buffs: { castleAtk: 0.05, castleDef: 0.05 } },
+  { id: 'cao_ren', name: '조인', buffs: { castleDef: 0.08, unitDef: 0.05 } },
+  { id: 'cao_hong', name: '조홍', buffs: { unitAtk: 0.05, castleDef: 0.04 } },
+  { id: 'cao_pi', name: '조비', buffs: { castleAtk: 0.05, castleDef: 0.05, prodRate: 0.03 } },
+  { id: 'cao_zhang', name: '조창', buffs: { unitAtk: 0.08, unitDef: 0.03 } },
+  { id: 'cao_zhi', name: '조식', buffs: { prodRate: 0.07, castleDef: 0.03 } },
+  { id: 'cao_ang', name: '조앙', buffs: { unitDef: 0.05, castleDef: 0.04 } },
+  { id: 'cao_chun', name: '조순', buffs: { unitAtk: 0.06, unitDef: 0.05 } },
+  { id: 'cao_rui', name: '조예', buffs: { castleDef: 0.06, prodRate: 0.04 } },
+];
+
+function hashGeneralId(id) {
+  let h = 2166136261;
+  for (const ch of String(id || '')) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function generatedGeneralBuffs(id, name, index) {
+  const h = hashGeneralId(`${id}:${name}:${index}`);
+  const first = h % GENERAL_BUFF_KEYS.length;
+  let second = Math.floor(h / 7) % GENERAL_BUFF_KEYS.length;
+  if (second === first) second = (second + 2) % GENERAL_BUFF_KEYS.length;
+  let third = Math.floor(h / 37) % GENERAL_BUFF_KEYS.length;
+  if (third === first || third === second) third = (third + 1) % GENERAL_BUFF_KEYS.length;
+  const buffs = {};
+  buffs[GENERAL_BUFF_KEYS[first]] = 0.045 + (h % 4) * 0.005;
+  buffs[GENERAL_BUFF_KEYS[second]] = 0.030 + (Math.floor(h / 11) % 4) * 0.005;
+  if (h % 3 === 0) buffs[GENERAL_BUFF_KEYS[third]] = 0.020 + (Math.floor(h / 17) % 3) * 0.005;
+  Object.keys(buffs).forEach((k) => { buffs[k] = Math.round(buffs[k] * 1000) / 1000; });
+  return buffs;
+}
+
+// 전체 로스터 구성: GENERALS_200(id/name 쌍) + 명장 수동버프 오버레이, 나머지는 절차생성.
+function buildRoster(pairs) {
+  const manualById = new Map(MANUAL_GENERAL_DEFS.map((g) => [g.id, g]));
+  const rawPairs = Array.isArray(pairs) && pairs.length ? pairs : MANUAL_GENERAL_DEFS.map((g) => [g.id, g.name]);
+  const seen = new Set();
+  const list = [];
+  rawPairs.forEach((pair, index) => {
+    const id = pair && String(pair[0] || '').trim();
+    const name = pair && String(pair[1] || '').trim();
+    if (!id || !name || seen.has(id)) return;
+    seen.add(id);
+    const base = manualById.get(id) || { id, name, buffs: generatedGeneralBuffs(id, name, index) };
+    list.push({ id, name: base.name || name, buffs: base.buffs });
+  });
+  return list;
+}
+
+function clampStars(v) { return Math.max(1, Math.min(5, (v | 0) || 1)); }
+function clampLv(v) { return Math.max(1, Math.min(6, (v | 0) || 1)); }
+
+// 장수 1개 버프 해석 — prototype generalBuff 일치: base × ENHANCE_MULT[lv] × STAR_MULT[stars] (+STAR_FLAT)
+function generalBuff(def, lv, stars, key) {
+  if (!def || !def.buffs) return 0;
+  const st = clampStars(stars), base = def.buffs[key] || 0;
+  let v = base * ENHANCE_MULT[clampLv(lv)] * (STAR_MULT[st] || 1);
+  if (key === 'unitAtk') v += STAR_FLAT[st];
+  else if (key === 'unitDef') v += STAR_FLAT[st] * 0.6;
+  return v;
+}
+// 크리티컬(등급+레벨) — prototype commanderCritStats 일치
+function commanderCritStats(stars, lv) {
+  const base = { 1: { chance: 0.05, mult: 1.20 }, 2: { chance: 0.08, mult: 1.40 }, 3: { chance: 0.12, mult: 1.55 },
+    4: { chance: 0.16, mult: 1.70 }, 5: { chance: 0.20, mult: 1.85 } }[clampStars(stars)] || { chance: 0.05, mult: 1.20 };
+  const L = clampLv(lv);
+  return {
+    chance: Math.min(0.40, base.chance + Math.min(0.12, (L - 1) * 0.006)),
+    mult: Math.min(2.0, base.mult + Math.min(0.15, (L - 1) * 0.008)),
+  };
+}
+function upgVal(upgrades, key) { return 1 + ((upgrades && upgrades[key]) || 0) * UPG_PER[key]; }
+
+// 활성 편성 uid 목록 — 활성 포메이션 우선, 없으면 lastDeployGenerals, 없으면 天.
+function activeDeployUids(save) {
+  save = save || {};
+  const k = FORMATION_KEYS.includes(save.activeFormation) ? save.activeFormation : null;
+  const f = save.formations || {};
+  let src = [];
+  if (k && Array.isArray(f[k]) && f[k].length) src = f[k];
+  else if (Array.isArray(save.lastDeployGenerals) && save.lastDeployGenerals.length) src = save.lastDeployGenerals;
+  else if (Array.isArray(f['天']) && f['天'].length) src = f['天'];
+  return src.slice(0, MAX_DEPLOY_GENERALS);
+}
+
+// SAVE + roster → 엔진 로드아웃. 편성이 비면 업그레이드만 반영된 로드아웃(장수 0).
+function computeLoadout(save, roster) {
+  save = save || {};
+  const byId = new Map((roster || []).map((g) => [g.id, g]));
+  const upgrades = save.upgrades || {};
+  const upg = {
+    unitAtk: upgVal(upgrades, 'unitAtk'), unitDef: upgVal(upgrades, 'unitDef'),
+    castleAtk: upgVal(upgrades, 'castleAtk'), castleDef: upgVal(upgrades, 'castleDef'),
+    prodRate: upgVal(upgrades, 'prodRate'),
+  };
+  const instById = new Map((save.generals || []).map((i) => [i.uid, i]));
+  const generals = [];
+  for (const uid of activeDeployUids(save)) {
+    const inst = instById.get(uid); if (!inst) continue;
+    const def = byId.get(inst.id); if (!def) continue;
+    const lv = inst.lv || 1, stars = inst.stars || 1;
+    const crit = commanderCritStats(stars, lv);
+    generals.push({
+      atk: generalBuff(def, lv, stars, 'unitAtk'), def: generalBuff(def, lv, stars, 'unitDef'),
+      cAtk: generalBuff(def, lv, stars, 'castleAtk'), cDef: generalBuff(def, lv, stars, 'castleDef'),
+      prod: generalBuff(def, lv, stars, 'prodRate'),
+      critChance: crit.chance, critMult: crit.mult,
+      _id: def.id, _name: def.name, _lv: lv, _stars: stars,   // UI 표시용(엔진은 무시)
+    });
+  }
+  return { upg, generals };
+}
+
+// 전투력(매칭 브래킷용) — 로드아웃을 단일 스칼라로. 기준 1000, 장수·업그레이드가 많을수록 상승.
+function computePower(loadout) {
+  if (!loadout) return 1000;
+  const u = loadout.upg || {};
+  let p = 1000;
+  p += (((u.unitAtk || 1) - 1) + ((u.unitDef || 1) - 1) + ((u.castleAtk || 1) - 1) + ((u.castleDef || 1) - 1) + ((u.prodRate || 1) - 1)) * 500;
+  for (const g of loadout.generals || []) {
+    p += ((g.atk || 0) + (g.def || 0) + (g.cAtk || 0) + (g.cDef || 0) + (g.prod || 0)) * 350;
+    p += (g.critChance || 0) * (g.critMult || 1) * 200;
+    p += 50;   // 편성 인원 자체 가치
+  }
+  return Math.round(p);
 }
 
 // ===== 서버 클라이언트 =====
@@ -948,9 +1672,16 @@ function makeLoopbackPair() {
   // --- WebSocket 연결(같은 호스트, http→ws / https→wss) ---
   var ws=null, wsReady=false;
   var chan={ _hs:[], send:function(m){ if(ws&&wsReady) ws.send(JSON.stringify({t:'relay',m:m})); }, onMessage:function(cb){ this._hs.push(cb); }, _deliver:function(m){ for(var i=0;i<this._hs.length;i++) this._hs[i](m); } };
+  var PROD_SERVER='wss://games.wooriban.org';  // APK/로컬 등 '서버 밖'에서 열릴 때 접속할 배포 서버
+  function serverUrl(){
+    var h=location.hostname;
+    // 실제 서버에서 서빙된 경우(브라우저 직접접속) 같은 오리진, 그 외(APK localhost/file)엔 배포서버로 고정
+    if((location.protocol==='http:'||location.protocol==='https:') && h && h!=='localhost' && h!=='127.0.0.1')
+      return (location.protocol==='https:'?'wss:':'ws:')+'//'+location.host;
+    return PROD_SERVER;
+  }
   function connect(){
-    var proto=location.protocol==='https:'?'wss:':'ws:';
-    ws=new WebSocket(proto+'//'+location.host);
+    ws=new WebSocket(serverUrl());
     ws.onopen=function(){ wsReady=true; $('conn').textContent='● 연결됨'; $('conn').style.color='#3fb950';
       var uid=localStorage.getItem('mp_uid');
       if(uid) ws.send(JSON.stringify({t:'hello',uid:uid}));  // 재로그인
@@ -960,28 +1691,60 @@ function makeLoopbackPair() {
     ws.onmessage=function(e){ var m; try{m=JSON.parse(e.data);}catch(_){return;} onServer(m); };
   }
   function onServer(m){
-    if(m.t==='welcome'){ myUid=m.uid; myNick=m.nick; localStorage.setItem('mp_uid',m.uid); showLobby(m.wins,m.losses); }
+    if(m.t==='welcome'){ myUid=m.uid; myNick=m.nick; localStorage.setItem('mp_uid',m.uid); lastStats={wins:m.wins,draws:m.draws||0,losses:m.losses}; showLobby(m.wins,m.losses); requestLobbyRank(); }
     else if(m.t==='error'){ if(m.code==='dup'||m.code==='nick'){ $('nickErr').textContent=m.msg; $('regBtn').disabled=false; } else if(m.code==='noauth'){ showNick(); } }
-    else if(m.t==='queued'){ $('findMsg').style.display='block'; $('cancelBtn').style.display='inline-block'; $('findBtn').style.display='none'; }
+    else if(m.t==='queued'){ isQueued=true; $('findMsg').style.display='block'; $('cancelBtn').style.display=''; $('rankBtn').style.display='none'; $('lobbyBackBtn').style.display='none'; $('findRow').style.display='none'; }
     else if(m.t==='matched'){ oppNick=m.opp; startMatch(m.role); }
-    else if(m.t==='stats'){ lastStats={wins:m.wins,losses:m.losses}; $('wins').textContent=m.wins; $('losses').textContent=m.losses; if(over) $('bstat').textContent='전적 '+m.wins+'승 '+m.losses+'패'; }
+    else if(m.t==='stats'){ lastStats={wins:m.wins,draws:m.draws||0,losses:m.losses}; $('wins').textContent=m.wins; $('draws').textContent=m.draws||0; $('losses').textContent=m.losses; $('pts').textContent=(m.wins*3+(m.draws||0)); requestLobbyRank(); if(over) $('bstat').textContent='전적 '+m.wins+'승 '+(m.draws||0)+'무 '+m.losses+'패'; }
+    else if(m.t==='rank'){ renderRank(m); }
     else if(m.t==='oppLeft'){ if(role && !over){ endBanner(mySide,'상대가 나갔습니다'); } }
     else if(m.t==='relay'){ chan._deliver(m.m); }
   }
 
-  var myUid=null, myNick=null, oppNick=null, lastStats={wins:0,losses:0};
-  function showNick(){ $('pNick').style.display='flex'; $('pLobby').style.display='none'; $('banner').style.display='none'; $('nick').focus&&$('nick').focus(); }
-  function showLobby(w,l){ $('pNick').style.display='none'; $('pLobby').style.display='flex'; $('banner').style.display='none'; $('hello').textContent=myNick+' 님'; $('wins').textContent=w; $('losses').textContent=l; lastStats={wins:w,losses:l}; $('findBtn').style.display='inline-block'; $('findMsg').style.display='none'; $('cancelBtn').style.display='none'; }
+  var myUid=null, myNick=null, oppNick=null, lastStats={wins:0,draws:0,losses:0};
+  // '메인으로' 버튼: index.html(메인게임)은 앱·웹 모두 존재하므로 항상 노출(대전 중엔 숨김).
+  function showBack(on){ var b=$('backMain'); if(b) b.style.display=on?'block':'none'; }
+
+  // --- 메타: 본편 SAVE(localStorage 'save')에서 장수 로드아웃·전투력 산출 ---
+  var myLoadout={upg:{},generals:[]}, myPower=1000, mpRoster=[];
+  try { mpRoster = buildRoster(window.GENERALS_200); } catch(_) { mpRoster = buildRoster(null); }
+  function refreshLoadout(){
+    var save={};
+    try { save=JSON.parse(localStorage.getItem('save')||'{}'); } catch(_) { save={}; }
+    try { myLoadout=computeLoadout(save, mpRoster); myPower=computePower(myLoadout); }
+    catch(_) { myLoadout={upg:{},generals:[]}; myPower=1000; }
+    if($('power')) $('power').textContent=myPower;
+    if($('squad')) $('squad').textContent=(myLoadout.generals||[]).length;
+  }
+
+  function showNick(){ $('pNick').style.display='flex'; $('pLobby').style.display='none'; $('banner').style.display='none'; $('banner').classList.remove('is-win','is-loss'); showBack(true); $('nick').focus&&$('nick').focus(); }
+  function showLobby(w,l){ $('pNick').style.display='none'; $('pLobby').style.display='flex'; $('pRank').style.display='none'; $('banner').style.display='none'; $('banner').classList.remove('is-win','is-loss'); showBack(true); $('hello').textContent='군주 '+myNick; var d=lastStats.draws||0; $('wins').textContent=w; $('draws').textContent=d; $('losses').textContent=l; $('pts').textContent=(w*3+d); lastStats={wins:w,draws:d,losses:l}; if(isQueued){ $('findRow').style.display='none'; $('findMsg').style.display='block'; $('cancelBtn').style.display=''; $('rankBtn').style.display='none'; $('lobbyBackBtn').style.display='none'; } else { $('findRow').style.display=''; $('findMsg').style.display='none'; $('cancelBtn').style.display='none'; $('rankBtn').style.display=''; $('lobbyBackBtn').style.display=''; } refreshLoadout(); }
+  // 랭킹 화면
+  function requestLobbyRank(){ if(ws&&wsReady&&myUid) ws.send(JSON.stringify({t:'rank'})); }
+  function showRank(){ if(isQueued) return; $('pLobby').style.display='none'; $('pRank').style.display='flex'; showBack(true); $('myRank').innerHTML='<div class="info">불러오는 중…</div>'; $('rankList').innerHTML=''; if(ws&&wsReady) ws.send(JSON.stringify({t:'rank'})); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function renderRank(m){
+    var me=m.me;
+    if($('lobbyRank')) $('lobbyRank').textContent = me ? (me.rank+'위') : '-';
+    $('myRank').innerHTML = me
+      ? '<div class="rk">'+me.rank+'위</div><div class="info"><div class="nm">'+esc(me.nick)+' <span style="color:#8fb6f5">(나)</span></div><div class="sub">'+me.wins+'승 '+me.draws+'무 '+me.losses+'패 · 전체 '+me.total+'명</div></div><div class="pt">'+me.pts+'점</div>'
+      : '<div class="info">닉네임 등록 후 순위가 집계됩니다.</div>';
+    var top=m.top||[];
+    if(!top.length){ $('rankList').innerHTML='<div class="empty">아직 대전 기록이 없습니다.</div>'; return; }
+    var rows=top.map(function(u,i){ var rk=u.rank||(i+1); var badge='<span class="rank-mark '+(rk<=3?'top r'+rk:'')+'"><span>'+rk+'</span></span>'; var isMe=u.mine||(me&&u.nick===me.nick);
+      return '<tr class="'+(isMe?'me':'')+'"><td class="rk">'+badge+'</td><td>'+esc(u.nick)+'</td><td class="n">'+u.wins+'/'+u.draws+'/'+u.losses+'</td><td class="n" style="color:#3fb950;font-weight:800">'+u.pts+'</td></tr>'; }).join('');
+    $('rankList').innerHTML='<table><thead><tr><th class="rk">#</th><th>닉네임</th><th class="n">승/무/패</th><th class="n">점수</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  }
 
   // --- 매치 ---
-  var role=null, host=null, guest=null, mySide=null, gmap=null, over=false, selected=-1, flip=false;
+  var role=null, host=null, guest=null, mySide=null, gmap=null, over=false, selected=-1, flip=false, isQueued=false;
   var STEP=1/15, acc=0, lastT=0, raf=null;
   function startMatch(r){
-    role=r; over=false; selected=-1;
-    $('pLobby').style.display='none'; $('pNick').style.display='none'; $('banner').style.display='none';
+    role=r; over=false; selected=-1; isQueued=false;
+    $('pLobby').style.display='none'; $('pRank').style.display='none'; $('pNick').style.display='none'; $('banner').style.display='none'; showBack(false);
     $('hud').style.display='flex'; $('tip').style.display='block';
-    if(r==='host'){ mySide=1; gmap=pvpMap(); host=new HostMatch(gmap,(Math.random()*2e9)>>>0,chan,{hostSide:1,guestSide:2,snapEvery:1}); host.start(); flip=homeIsTop(); resize(); }
-    else { guest=new GuestMatch(chan,{ onStart:function(mm){ mySide=mm.youSide; gmap=mm.map; flip=homeIsTop(); resize(); }, onEnd:function(mm){ endBanner(mm.winner); } }); guest.join(); }
+    if(r==='host'){ mySide=1; gmap=pvpMap(); host=new HostMatch(gmap,(Math.random()*2e9)>>>0,chan,{hostSide:1,guestSide:2,snapEvery:1,hostLoadout:myLoadout}); host.start(); flip=homeIsTop(); resize(); }
+    else { guest=new GuestMatch(chan,{ loadout:myLoadout, onStart:function(mm){ mySide=mm.youSide; gmap=mm.map; flip=homeIsTop(); resize(); }, onEnd:function(mm){ endBanner(mm.winner); } }); guest.join(); }
     lastT=performance.now(); acc=0; if(!raf) loop();
     keepAlive();
   }
@@ -1013,15 +1776,19 @@ function makeLoopbackPair() {
   function castleAt(px,py){ var cs=castlesView(),best=-1,bd=40*curV.s*0.9+18; for(var i=0;i<cs.length;i++){ var p=S(cs[i]); var d=Math.hypot(px-p.x,py-p.y); if(d<bd){bd=d;best=i;} } return best; }
   cv.addEventListener('pointerdown',function(e){ if(over||!role) return; var r=cv.getBoundingClientRect(); var px=(e.clientX-r.left),py=(e.clientY-r.top); var hit=castleAt(px,py); var cs=castlesView(); if(hit<0){ selected=-1; return; } if(selected<0){ if(cs[hit].owner===mySide) selected=hit; } else if(hit===selected){ selected=-1; } else { var src=cs[selected]; ['spear','cavalry','archer'].forEach(function(u){ if((src.troops[u]|0)>0){ var cmd={type:'SEND_ARMY',fromId:selected,toId:hit,unit:u}; if(role==='host') host.hostCommand(cmd); else guest.command(cmd); } }); selected=-1; } });
 
-  function endBanner(winner,note){ if(over) return; over=true; var win=winner===mySide; $('bwin').textContent=win?'🏆 승리!':'💀 패배…'; $('bwin').style.color=win?'#58a6ff':'#f85149'; $('bstat').textContent=note||('전적 '+lastStats.wins+'승 '+lastStats.losses+'패'); $('banner').style.display='flex'; $('hud').style.display='none'; $('tip').style.display='none'; if(role==='host'&&winner!=null){ try{ ws.send(JSON.stringify({t:'result',winner:winner})); }catch(_){} } }
+  function endBanner(winner,note){ if(over) return; over=true; var win=winner===mySide, b=$('banner'); b.classList.remove('is-win','is-loss'); b.classList.add(win?'is-win':'is-loss'); $('bkicker').textContent=win?'승전 결과':'전투 결과'; $('bwin').textContent=win?'승리':'패배'; $('bsub').textContent=note||(win?'장수들이 승전고를 울렸습니다':'성을 정비하고 다시 출정하십시오'); $('bstat').textContent='전적 '+lastStats.wins+'승 '+(lastStats.draws||0)+'무 '+lastStats.losses+'패'; b.style.display='flex'; $('hud').style.display='none'; $('tip').style.display='none'; if(role==='host'&&winner!=null){ try{ ws.send(JSON.stringify({t:'result',winner:winner})); }catch(_){} } }
 
   // --- UI 이벤트 ---
   $('regBtn').onclick=function(){ var n=$('nick').value.trim(); if(!n){ $('nickErr').textContent='닉네임을 입력하세요'; return; } $('nickErr').textContent=''; $('regBtn').disabled=true; ws.send(JSON.stringify({t:'hello',nick:n})); setTimeout(function(){$('regBtn').disabled=false;},1500); };
   $('nick').addEventListener('keydown',function(e){ if(e.key==='Enter') $('regBtn').click(); });
-  $('findBtn').onclick=function(){ ws.send(JSON.stringify({t:'queue'})); };
-  $('cancelBtn').onclick=function(){ ws.send(JSON.stringify({t:'cancel'})); $('findMsg').style.display='none'; $('cancelBtn').style.display='none'; $('findBtn').style.display='inline-block'; };
-  $('again').onclick=function(){ role=null; host=null; guest=null; over=false; $('banner').style.display='none'; $('hud').style.display='none'; ws.send(JSON.stringify({t:'stats'})); showLobby(lastStats.wins,lastStats.losses); };
+  $('findBtn').onclick=function(){ refreshLoadout(); ws.send(JSON.stringify({t:'queue', power:myPower, mode:'ranked'})); };
+  $('findRandomBtn').onclick=function(){ refreshLoadout(); ws.send(JSON.stringify({t:'queue', power:myPower, mode:'random'})); };
+  $('cancelBtn').onclick=function(){ isQueued=false; ws.send(JSON.stringify({t:'cancel'})); $('findMsg').style.display='none'; $('cancelBtn').style.display='none'; $('rankBtn').style.display=''; $('lobbyBackBtn').style.display=''; $('findRow').style.display=''; };
+  $('again').onclick=function(){ role=null; host=null; guest=null; over=false; $('banner').style.display='none'; $('banner').classList.remove('is-win','is-loss'); $('hud').style.display='none'; ws.send(JSON.stringify({t:'stats'})); showLobby(lastStats.wins,lastStats.losses); };
   $('surr').onclick=function(){ if(role==='guest') guest.surrender(); else if(role==='host') host._forceWin(2,'surrender'); };
+  $('rankBtn').onclick=function(){ showRank(); };
+  $('lobbyBackBtn').onclick=function(){ location.href='index.html'; };
+  $('rankBack').onclick=function(){ showLobby(lastStats.wins,lastStats.losses); };
 
   // 최초: uid 있으면 자동 로그인, 없으면 닉네임 화면
   if(!localStorage.getItem('mp_uid')) showNick();
