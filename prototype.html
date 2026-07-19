@@ -8185,9 +8185,25 @@
     justify-content: space-between !important;
   }
   #homeDailyStack .home-daily:active { transform: scale(0.97) !important; }
-  #homeDailyStack .home-daily-label { flex: 1 1 auto; text-align: left; }
+  /* 이모지(⭐/🏆/⚔) 폭이 제각각이라 그냥 두면 텍스트 시작점이 어긋남 → 고정폭 칸에 가운데 정렬 */
+  #homeDailyStack .home-daily-label { flex: 1 1 auto; text-align: left; display: flex; align-items: center; gap: 6px; min-width: 0; }
+  #homeDailyStack .hdl-icon {
+    font-style: normal;
+    flex: 0 0 16px;
+    width: 16px;
+    text-align: center;
+    line-height: 1;
+    font-size: 12px;
+  }
+  #homeDailyStack .hdl-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   #homeDailyStack .home-daily-bar { flex: 0 0 54px; width: 54px !important; height: 6px !important; }
-  #homeDailyStack .home-daily-count { flex: 0 0 auto; min-width: 36px; text-align: right; }
+  /* 별은 고정 칸, 숫자는 그 오른쪽에서 우측정렬 → 3줄의 ★가 세로로 정확히 맞음
+     (0/20 과 0/5 는 폭이 달라 통째로 우측정렬하면 별 위치가 어긋남) */
+  #homeDailyStack .home-daily-count { flex: 0 0 auto; display: flex; align-items: baseline; gap: 3px; width: 52px; }
+  #homeDailyStack .hdc-num { flex: 1 1 auto; text-align: right; }
+  /* 보상이 '별'임을 숫자 앞에서 바로 보이게 (0/5 만으론 '5번 이겨야 하나?'로 읽힘) */
+  #homeDailyStack .hdc-star { font-style: normal; color: #ffd23f; flex: 0 0 auto; }
+  #homeDailyStack .home-daily.done .hdc-star { color: #7fe0a0; }
   #homeDailyBonus {
     display: flex;
     flex-direction: column;
@@ -12060,20 +12076,20 @@
     </div>
     <div id="homeDailyStack">
     <button class="home-daily" id="homeDailyStar" type="button" aria-label="오늘의 별 도전">
-      <span class="home-daily-label">⭐ 오늘의 별</span>
+      <span class="home-daily-label"><i class="hdl-icon">⭐</i><span class="hdl-text">오늘의 별</span></span>
       <span class="home-daily-bar"><i id="homeDailyFill" style="width:0%"></i></span>
-      <span class="home-daily-count"><b id="homeDailyEarned">0</b>/<span id="homeDailyCap">10</span></span>
+      <span class="home-daily-count"><i class="hdc-star">★</i><span class="hdc-num"><b id="homeDailyEarned">0</b>/<span id="homeDailyCap">10</span></span></span>
     </button>
     <div id="homeDailyBonus">
       <div class="home-daily home-daily--sub" id="hdbWin">
-        <span class="home-daily-label">🏆 오늘의 시나리오 첫승</span>
+        <span class="home-daily-label"><i class="hdl-icon">🏆</i><span class="hdl-text">오늘의 시나리오 첫승</span></span>
         <span class="home-daily-bar"><i class="hdb-fill" style="width:0%"></i></span>
-        <span class="home-daily-count"><b class="hdb-now">0</b>/<span class="hdb-cap">5</span></span>
+        <span class="home-daily-count"><i class="hdc-star">★</i><span class="hdc-num"><b class="hdb-now">0</b>/<span class="hdb-cap">5</span></span></span>
       </div>
       <div class="home-daily home-daily--sub" id="hdbMp">
-        <span class="home-daily-label">⚔ 오늘의 멀티 첫승</span>
+        <span class="home-daily-label"><i class="hdl-icon">⚔</i><span class="hdl-text">오늘의 멀티 첫승</span></span>
         <span class="home-daily-bar"><i class="hdb-fill" style="width:0%"></i></span>
-        <span class="home-daily-count"><b class="hdb-now">0</b>/<span class="hdb-cap">5</span></span>
+        <span class="home-daily-count"><i class="hdc-star">★</i><span class="hdc-num"><b class="hdb-now">0</b>/<span class="hdb-cap">5</span></span></span>
       </div>
     </div>
     </div>
@@ -13564,7 +13580,10 @@ function refreshTopStats() {
     if (eEl) eEl.textContent = dEarned;
     if (cEl) cEl.textContent = dCap;
     if (wrap) wrap.classList.toggle('done', dFull);
-    if (lEl) lEl.textContent = dFull ? '⭐ 오늘 완료!' : '⭐ 오늘의 별';
+    // 아이콘(<i class="hdl-icon">)은 유지하고 텍스트만 교체 — textContent로 덮으면 아이콘 정렬이 깨짐
+    const lTxt = wrap && wrap.querySelector('.hdl-text');
+    if (lTxt) lTxt.textContent = dFull ? '오늘 완료!' : '오늘의 별';
+    else if (lEl) lEl.textContent = dFull ? '⭐ 오늘 완료!' : '⭐ 오늘의 별';
   } catch (_) {}
   // 오늘의 보너스 — 첫 승리(+5)와 첫 멀티 승리(+5)를 한 줄로 합산 표시 (0/10 → 10/10, 완료 시 녹색)
   try {
