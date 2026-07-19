@@ -13754,7 +13754,9 @@ const ENHANCE_MAX_LV = 6;
 const ENHANCE_MULT = [1.0, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0]; // index = lv (1~6)
 const ENHANCE_SUCCESS = [0, 0.95, 0.70, 0.50, 0.28, 0.15]; // index = current lv (rate to reach lv+1)
 const ENHANCE_FODDER = [0, 1, 2, 3, 4, 5];                 // 재료 최대 선택 수 (현재 lv → +1 시도)
-const ENHANCE_COST_STARS = 0;   // 별은 뽑기 전용 — 강화는 골드+재료만 (시도 횟수 병목 제거)
+const ENHANCE_COST_STARS = 1;   // 별 = 이 게임의 최대 코인. 강화는 핵심 성장이라 별을 소모함.
+// (한때 병목 때문에 0으로 뺐다가 복구 — 올바른 해법은 '사용처 제거'가 아니라 '공급 확대'였음:
+//  오늘의 별 상한 10→20, 골드→별 교환(400G), 재클리어 골드 25%→40% 로 공급을 2배 이상 늘려둠)
 const ENHANCE_COST_GOLD = 200;
 function enhanceSuccessRate(lv, fodders) {
   const baseRate = ENHANCE_SUCCESS[lv] || 0;
@@ -41200,7 +41202,7 @@ function showStarExchange() {
       <div class="sx-stat"><span>최대 교환</span><b>${maxGold.toLocaleString()}G</b></div>
     </div>
     <div class="sx-rate"><span>교환 비율</span><b>★1 = ${STAR_TO_GOLD.toLocaleString()}G</b></div>
-    <span class="sx-note">별은 장수 뽑기에도 사용됩니다</span>
+    <span class="sx-note">별은 장수 등용·강화에도 사용됩니다</span>
     <div style="margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,215,120,.28)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
         <b style="color:#ffe28c;font-size:13px">골드로 별 사기</b>
