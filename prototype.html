@@ -12022,6 +12022,10 @@
       <span class="home-daily-bar"><i id="homeDailyFill" style="width:0%"></i></span>
       <span class="home-daily-count"><b id="homeDailyEarned">0</b>/<span id="homeDailyCap">10</span></span>
     </button>
+    <div id="homeDailyBonus" style="position:absolute;left:50%;top:calc(16% + 84px);transform:translateX(-50%);z-index:5;display:flex;gap:5px;width:min(272px,74vw)">
+      <span id="hdbWin" style="flex:1;text-align:center;padding:3px 5px;border-radius:999px;font-size:10px;font-weight:800;white-space:nowrap"></span>
+      <span id="hdbMp" style="flex:1;text-align:center;padding:3px 5px;border-radius:999px;font-size:10px;font-weight:800;white-space:nowrap"></span>
+    </div>
     <section class="home-hero" aria-hidden="true">
       <div class="home-title-mark">三國</div>
       <div class="home-title" aria-label="손가락 삼국지">
@@ -13511,6 +13515,18 @@ function refreshTopStats() {
     if (wrap) wrap.classList.toggle('done', dFull);
     if (lEl) lEl.textContent = dFull ? '⭐ 오늘 완료!' : '⭐ 오늘의 별';
   } catch (_) {}
+  // 오늘의 첫 승리 / 첫 멀티 승리 보너스 칩 (받기 전=금색 강조, 받은 후=흐리게)
+  try {
+    [['hdbWin', 'single', '🏆 첫 승리'], ['hdbMp', 'mp', '⚔ 첫 멀티']].forEach(function (it) {
+      const el = document.getElementById(it[0]); if (!el) return;
+      const done = (typeof dailyBonusDone === 'function') ? dailyBonusDone(it[1]) : false;
+      const amt = (typeof dailyBonusAmount === 'function') ? dailyBonusAmount(it[1]) : 5;
+      el.textContent = done ? it[2] + ' 완료' : it[2] + ' ★' + amt;
+      el.style.border = '1px solid ' + (done ? 'rgba(150,140,120,.32)' : 'rgba(255,215,120,.6)');
+      el.style.background = done ? 'rgba(120,110,95,.12)' : 'rgba(255,225,140,.16)';
+      el.style.color = done ? '#8a8170' : '#ffe6a8';
+    });
+  } catch (_) {}
 }
 function confirmExitBattle() {
   if (msgShown) return;
@@ -13909,6 +13925,11 @@ function mpGrantReward(won, forfeit, entryKind, oppGenIds, opts) {
       r.stars = MP_WIN_STAR;
       SAVE.starsAvailable = (SAVE.starsAvailable | 0) + MP_WIN_STAR;
     }
+    // 오늘의 첫 멀티 승리 보너스 (봇전 포함 — 하루 1회라 파밍 불가). 결과창 별 표기에 합산.
+    try {
+      const _fb = claimDailyFirstWin('mp');
+      if (_fb) { r.stars = (r.stars | 0) + _fb; r.firstMpBonus = _fb; }
+    } catch (_) {}
     // 등용: 상대 출전 장수 중 랜덤 1명 (확률). 봇전은 등용 없음(무한 장수농사 방지).
     if (!isBot && Array.isArray(oppGenIds) && oppGenIds.length && Math.random() < MP_RECRUIT_CHANCE) {
       const gid = oppGenIds[Math.floor(Math.random() * oppGenIds.length)];
@@ -16581,6 +16602,36 @@ function ensureDailyStarRoll() {
       && Array.isArray(SAVE.dailyStar.featured) && SAVE.dailyStar.featured.length === 0) return;
   SAVE.dailyStar = { date: today, seed, featured, earned: prevEarned };
   saveProgress();
+}
+// === 일일 첫 승리 보너스 — '오늘의 별' 상한(20)과 완전히 별개로 지급 ===
+//   매일 접속·플레이 동기 부여용. 각각 하루 1회라 봇전 포함해도 파밍 불가.
+const DAILY_FIRST_WIN_STAR = 5;     // 오늘의 첫 승리(싱글 — 재클리어 포함, 튜토리얼 제외)
+const DAILY_FIRST_MPWIN_STAR = 5;   // 오늘의 첫 멀티 승리(봇전 포함 — 실유저가 적어 봇밖에 못 하는 현실 반영)
+function ensureDailyBonus() {
+  const today = dailyTodayKey();
+  if (!SAVE.dailyBonus || SAVE.dailyBonus.date !== today) {
+    SAVE.dailyBonus = { date: today, firstWin: false, firstMpWin: false };
+  }
+  return SAVE.dailyBonus;
+}
+function dailyBonusDone(kind) {
+  const db = ensureDailyBonus();
+  return (kind === 'mp') ? !!db.firstMpWin : !!db.firstWin;
+}
+function dailyBonusAmount(kind) { return (kind === 'mp') ? DAILY_FIRST_MPWIN_STAR : DAILY_FIRST_WIN_STAR; }
+// 지급(중복 방지 + 클럭 역행 가드). 반환: 지급된 별 수(0 = 이미 받았거나 보류)
+function claimDailyFirstWin(kind) {
+  const db = ensureDailyBonus();
+  const key = (kind === 'mp') ? 'firstMpWin' : 'firstWin';
+  if (db[key]) return 0;
+  const now = Date.now(), _maxSeen = SAVE.maxSeenMs || 0;
+  if (now < _maxSeen - 60000) return 0;              // 시계 되돌림 감지 → 지급 보류
+  if (now > _maxSeen) SAVE.maxSeenMs = now;
+  const amt = dailyBonusAmount(kind);
+  db[key] = true;
+  SAVE.starsAvailable = (SAVE.starsAvailable | 0) + amt;
+  saveProgress();
+  return amt;
 }
 function dailyStarCap() { return DAILY_STAR_CAP; }
 function dailyStarEarned() { try { ensureDailyStarRoll(); } catch (_) {} return (SAVE.dailyStar && (SAVE.dailyStar.earned | 0)) || 0; }
@@ -21299,6 +21350,12 @@ function checkWin() {
     const isReclear = prevStars > 0;
     const goldGain = Math.floor(baseGain * (isReclear ? 0.40 : 1));   // 재클리어 25%→40% (막힌 유저의 골드 파밍이 의미있게 — 골드→별 교환과 연동)
     SAVE.gold = (SAVE.gold || 0) + goldGain;
+    // 오늘의 첫 승리 보너스 — 재클리어도 인정(막힌 유저가 못 받으면 역설), 튜토리얼·온라인 제외
+    let _firstWinBonus = 0;
+    if (!window._mpMode && !window._botMatch && !(STAGES[currentStage] && STAGES[currentStage].isTutorial)) {
+      try { _firstWinBonus = claimDailyFirstWin('single'); } catch (_) {}
+      if (_firstWinBonus) { try { showSelectToast(`오늘의 첫 승리! ★${_firstWinBonus}`, '#ffd23f'); } catch (_) {} }
+    }
     // 재클리어는 별 미지급(무한 파밍 방지) — 별은 위의 '등급 갱신'에서만. 골드는 재클리어도 지급됨.
     // 챕터 클리어 보너스 — 보스(각 챕터 20장) 최초 클리어 시 묶음 보상
     if (!isReclear && !(STAGES[currentStage] && STAGES[currentStage].isTutorial)) {
