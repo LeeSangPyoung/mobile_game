@@ -26603,6 +26603,23 @@ function closeTutorialOffer(accept) {
       </label>
       <input id="battleBgmVolume" class="audio-range" type="range" min="0" max="100" step="1" value="45">
     </div>
+    <div class="audio-row">
+      <div class="audio-copy">
+        <b>대전 초대</b>
+        <span id="mpDndValue">받는 중</span>
+      </div>
+      <label class="audio-toggle">
+        <input id="mpDndToggle" type="checkbox">
+        <span>받지 않기</span>
+      </label>
+    </div>
+    <div class="audio-row" id="mpBlockRow" style="display:none">
+      <div class="audio-copy">
+        <b>차단한 상대</b>
+        <span id="mpBlockCount">0명</span>
+      </div>
+      <div id="mpBlockList" style="display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-top:4px"></div>
+    </div>
     <div class="audio-actions">
       <button type="button" class="audio-close audio-btn" onclick="closeAudioSettings()">닫기</button>
     </div>
@@ -41221,10 +41238,72 @@ function applyAudioSettingsFromUi(e) {
     }
   }
 }
+// === 대전 초대: 방해 금지(DND) + 상대 차단 ===
+function mpBlockedMap() {
+  if (!SAVE.mpBlocked || typeof SAVE.mpBlocked !== 'object') SAVE.mpBlocked = {};
+  return SAVE.mpBlocked;
+}
+function isMpBlocked(uid) {
+  if (uid === null || uid === undefined) return false;
+  return !!mpBlockedMap()[String(uid)];
+}
+function mpBlockAdd(uid, nick) {
+  if (uid === null || uid === undefined) return;
+  mpBlockedMap()[String(uid)] = String(nick || '상대');
+  saveProgress();
+}
+function mpBlockRemove(uid) {
+  delete mpBlockedMap()[String(uid)];
+  saveProgress();
+  syncMpInviteUi();
+  showSelectToast('차단을 해제했습니다', '#7ad07a');
+}
+// 설정 화면: DND 토글 상태 + 차단 목록 렌더
+function syncMpInviteUi() {
+  const dnd = !!SAVE.mpDnd;
+  const tg = document.getElementById('mpDndToggle');
+  if (tg) tg.checked = dnd;
+  const val = document.getElementById('mpDndValue');
+  if (val) val.textContent = dnd ? '받지 않는 중' : '받는 중';
+  const map = mpBlockedMap();
+  const uids = Object.keys(map);
+  const row = document.getElementById('mpBlockRow');
+  const cnt = document.getElementById('mpBlockCount');
+  const list = document.getElementById('mpBlockList');
+  if (cnt) cnt.textContent = uids.length + '명';
+  if (row) row.style.display = uids.length ? '' : 'none';
+  if (list) {
+    const _e = function (s) {
+      return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function (c) {
+        return c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '"' ? '&quot;' : '&#39;';
+      });
+    };
+    list.innerHTML = uids.map(function (u) {
+      return '<button type="button" class="mp-unblock" data-uid="' + _e(u) + '" ' +
+        'style="display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;border:1px solid rgba(255,215,120,.4);' +
+        'background:rgba(255,225,140,.12);color:#ffe6a8;font-size:12px;font-weight:700;cursor:pointer">' +
+        _e(map[u]) + ' <span style="opacity:.8">해제 ✕</span></button>';
+    }).join('');
+    Array.prototype.forEach.call(list.querySelectorAll('.mp-unblock'), function (b) {
+      b.onclick = function () { mpBlockRemove(b.getAttribute('data-uid')); };
+    });
+  }
+}
 function showAudioSettings() {
   const modal = document.getElementById('audioSettingsModal');
   if (!modal) return;
   syncAudioSettingsUi();
+  syncMpInviteUi();
+  const dndTg = document.getElementById('mpDndToggle');
+  if (dndTg && !dndTg._mpBound) {
+    dndTg._mpBound = true;
+    dndTg.addEventListener('change', function () {
+      SAVE.mpDnd = !!dndTg.checked;
+      saveProgress();
+      syncMpInviteUi();
+      showSelectToast(SAVE.mpDnd ? '대전 초대를 받지 않습니다' : '대전 초대를 다시 받습니다', '#ffd23f');
+    });
+  }
   modal.style.display = 'flex';
   ['prepBgmVolume','battleBgmVolume','prepBgmMute','battleBgmMute'].forEach(id => {
     const el = document.getElementById(id);
@@ -43048,6 +43127,7 @@ function __startRenderLoop() {
     else if (m.t === 'friendInviteSent') { if (M.phase === 'friendWaiting' || M.phase === 'friendInput') renderFriendWaiting(m.to || M.friendTarget || ''); }
     else if (m.t === 'friendInvited') {
       // 초대 수신 — 완전히 게임 바깥일 때만 수락 팝업. 그 외엔 사유와 함께 자동 회신(상대 화면 방해 X)
+      try { if (typeof isMpBlocked === 'function' && isMpBlocked(m.fromUid)) { send({ t: 'friendBusy', fromUid: m.fromUid, reason: '초대 차단' }); return; } } catch (_) {}
       var _busy = friendBusyReason();
       if (_busy) { send({ t: 'friendBusy', fromUid: m.fromUid, reason: _busy }); return; }
       M.incomingInvite = { from: m.from, fromUid: m.fromUid };
@@ -43717,6 +43797,7 @@ function __startRenderLoop() {
   }
   // 친구 초대 수락 가능 여부 — 완전히 게임 바깥(메인/로비)일 때만 수락. 아니면 사유 문자열 반환.
   function friendBusyReason() {
+    try { if (SAVE.mpDnd) return '방해 금지 중'; } catch (_) {}        // 설정에서 '대전 초대 받지 않기' ON
     if (M.active) return '대전 중';                                   // 온라인 대전/편성 중
     try {
       if (document.body.classList.contains('in-game')) {
@@ -43772,9 +43853,16 @@ function __startRenderLoop() {
       '<div class="mpo-findrow">' +
         '<div class="mpo-btn" id="mpoInvAccept"><span>수락</span><em>바로 편성 시작</em></div>' +
         '<div class="mpo-btn rand" id="mpoInvDecline"><span>거절</span><em>신청 취소</em></div>' +
-      '</div>';
+      '</div>' +
+      '<button class="mpo-ghost" id="mpoInvBlock">이 상대 차단 (설정에서 해제 가능)</button>';
     $('mpoInvAccept').onclick = function () { M._pendingKind = 'friend'; send({ t: 'friendAccept', fromUid: inv.fromUid }); M.incomingInvite = null; $('mpoShell').innerHTML = '<div class="mpo-title" style="font-size:20px">매칭 중…</div>'; };
     $('mpoInvDecline').onclick = function () { send({ t: 'friendDecline', fromUid: inv.fromUid }); M.incomingInvite = null; M.phase = 'lobby'; renderLobby(); };
+    $('mpoInvBlock').onclick = function () {
+      try { if (typeof mpBlockAdd === 'function') mpBlockAdd(inv.fromUid, inv.from); } catch (_) {}
+      send({ t: 'friendDecline', fromUid: inv.fromUid });
+      M.incomingInvite = null; M.phase = 'lobby'; renderLobby();
+      try { showSelectToast(inv.from + ' 님을 차단했습니다', '#c1121f'); } catch (_) {}
+    };
   }
 
   function requestRank() { if (M.ws && M.ready && M.uid) send({ t: 'rank' }); }
