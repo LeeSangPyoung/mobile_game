@@ -12714,6 +12714,10 @@ if (typeof SAVE.starsAvailable !== 'number') {
   SAVE.starsAvailable = Object.values(SAVE.stars||{}).reduce((a,b)=>a+(b||0), 0);
 }
 const STAR_TO_GOLD = 100; // 별→골드 환율 200→100 (밸런스 조정)
+// 골드→별 역교환 — 스테이지에 막힌 유저가 '대전'말고도 별을 얻을 수 있는 출구.
+// 역방향은 4배 불리하게(★1=400G) 잡아 아비트라지(별→골드→별) 차단.
+// ※ '오늘의 별' 일일 상한(10)은 재도전 보상 상한이라 이 교환과 무관 — 상한 설계는 유지됨.
+const GOLD_TO_STAR = 400;
 // 튜토리얼 스테이지 삽입에 따른 인덱스 시프트 (한 번만)
 if (!SAVE.tutorialStageMigrated) {
   const oldStars = SAVE.stars || {};
@@ -41196,7 +41200,25 @@ function showStarExchange() {
       <div class="sx-stat"><span>최대 교환</span><b>${maxGold.toLocaleString()}G</b></div>
     </div>
     <div class="sx-rate"><span>교환 비율</span><b>★1 = ${STAR_TO_GOLD.toLocaleString()}G</b></div>
-    <span class="sx-note">별은 장수 뽑기에도 사용됩니다</span>`;
+    <span class="sx-note">별은 장수 뽑기에도 사용됩니다</span>
+    <div style="margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,215,120,.28)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+        <b style="color:#ffe28c;font-size:13px">골드로 별 사기</b>
+        <span style="color:#c9b78a;font-size:11.5px">★1 = ${GOLD_TO_STAR.toLocaleString()}G</span>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${[1, 5, 10].map(function (n) {
+          const cost = n * GOLD_TO_STAR;
+          const ok = (SAVE.gold || 0) >= cost;
+          return '<button type="button" onclick="doGoldToStar(' + n + ')" ' + (ok ? '' : 'disabled ') +
+            'style="flex:1;min-width:64px;padding:8px 6px;border-radius:9px;font-weight:900;font-size:12.5px;cursor:' + (ok ? 'pointer' : 'default') + ';' +
+            'border:1px solid ' + (ok ? 'rgba(255,215,120,.55)' : 'rgba(150,140,120,.3)') + ';' +
+            'background:' + (ok ? 'rgba(255,225,140,.14)' : 'rgba(120,110,95,.10)') + ';' +
+            'color:' + (ok ? '#ffe6a8' : '#7d7360') + '">★' + n + '<br><span style="font-size:10px;opacity:.85">' + cost.toLocaleString() + 'G</span></button>';
+        }).join('')}
+      </div>
+      <span style="display:block;color:#a08a5e;font-size:10.5px;margin-top:6px">스테이지를 다시 클리어해 모은 골드로 별을 채울 수 있습니다</span>
+    </div>`;
   document.querySelectorAll('#starExchangeModal .sx-btn[data-exchange]').forEach(btn => {
     const raw = btn.dataset.exchange;
     const disabled = avail <= 0 || (raw !== 'all' && avail < Number(raw));
@@ -41204,6 +41226,21 @@ function showStarExchange() {
     btn.classList.toggle('disabled', disabled);
   });
   document.getElementById('starExchangeModal').style.display = 'flex';
+}
+// 골드 → 별 (역교환). 막힌 유저의 별 수급 출구.
+function doGoldToStar(n) {
+  const gold = SAVE.gold || 0;
+  const want = (n === 'max') ? Math.floor(gold / GOLD_TO_STAR) : Number(n);
+  if (!(want > 0)) { showSelectToast(`골드가 부족합니다 (★1 = ${GOLD_TO_STAR.toLocaleString()}G)`, '#c1121f'); return; }
+  const cost = want * GOLD_TO_STAR;
+  if (gold < cost) { showSelectToast(`골드 ${cost.toLocaleString()}G 필요`, '#c1121f'); return; }
+  SAVE.gold = gold - cost;
+  SAVE.starsAvailable = (SAVE.starsAvailable || 0) + want;
+  saveProgress();
+  refreshTopStats();
+  if (typeof window.__enhResourceHook === 'function') { try { window.__enhResourceHook(); } catch (_) {} }
+  showSelectToast(`${cost.toLocaleString()}G → ★${want}`, '#7ad07a');
+  showStarExchange();   // 모달 수치 갱신
 }
 function doStarExchange(n) {
   const avail = SAVE.starsAvailable || 0;
