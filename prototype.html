@@ -13733,9 +13733,9 @@ function instanceStars(inst) { return inst ? clampStars(inst.stars || 1) : 1; }
 // === 장수 강화 시스템 ===
 const ENHANCE_MAX_LV = 6;
 const ENHANCE_MULT = [1.0, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0]; // index = lv (1~6)
-const ENHANCE_SUCCESS = [0, 0.90, 0.60, 0.40, 0.15, 0.05]; // index = current lv (rate to reach lv+1)
+const ENHANCE_SUCCESS = [0, 0.95, 0.70, 0.50, 0.28, 0.15]; // index = current lv (rate to reach lv+1)
 const ENHANCE_FODDER = [0, 1, 2, 3, 4, 5];                 // 재료 최대 선택 수 (현재 lv → +1 시도)
-const ENHANCE_COST_STARS = 1;
+const ENHANCE_COST_STARS = 0;   // 별은 뽑기 전용 — 강화는 골드+재료만 (시도 횟수 병목 제거)
 const ENHANCE_COST_GOLD = 200;
 function enhanceSuccessRate(lv, fodders) {
   const baseRate = ENHANCE_SUCCESS[lv] || 0;
@@ -13743,7 +13743,7 @@ function enhanceSuccessRate(lv, fodders) {
   if (!baseRate || !maxFodder) return 0;
   const emptyRate = Math.max(0.01, baseRate * 0.12);
   const normalGain = (baseRate - emptyRate) / maxFodder;
-  const bonusCap = Math.min(0.95, baseRate + 0.25);
+  const bonusCap = Math.min(0.95, baseRate + 0.45);   // 좋은 재료를 많이 투자하면 확률이 실제로 크게 오르도록 상한 완화
   const list = Array.isArray(fodders) ? fodders.slice(0, maxFodder) : [];
   const rate = list.reduce((sum, f) => {
     const flv = Math.max(1, Math.min(ENHANCE_MAX_LV, (f && f.lv) || 1));
@@ -15270,13 +15270,9 @@ function ensureTutoAttackGuide() {
     g.id = 'tutoAttackGuide';
     g.style.cssText = 'position:fixed; inset:0; pointer-events:none; z-index:6500; opacity:0; transition:opacity 0.18s;';
     g.innerHTML = `
-      <i class="tag-start"></i>
       <div class="tag-route">
         <i class="tag-line"></i>
-        <i class="tag-comet"></i>
-        <i class="tag-arrow"></i>
-      </div>
-      <i class="tag-target"></i>`;
+      </div>`;
     document.body.appendChild(g);
     const style = document.createElement('style');
     style.textContent = `
@@ -15299,77 +15295,9 @@ function ensureTutoAttackGuide() {
         box-shadow:0 0 8px rgba(255,116,48,0.24);
         animation: tagLinePulse 1.28s ease-in-out infinite;
       }
-      #tutoAttackGuide .tag-comet {
-        position:absolute;
-        left:12px; top:50%;
-        width:18px; height:18px;
-        margin:-9px 0 0 -9px;
-        border-radius:50%;
-        background:radial-gradient(circle at 34% 30%, #fff9d0 0 18%, #ffd75a 50%, #ff9d45 100%);
-        box-shadow:0 0 0 4px rgba(255,211,64,0.12), 0 0 12px rgba(255,106,38,0.36);
-        animation: tagCometMove 1.28s cubic-bezier(.2,.82,.22,1) infinite;
-      }
-      #tutoAttackGuide .tag-arrow {
-        position:absolute;
-        right:14px; top:50%;
-        width:0; height:0;
-        margin-top:-8px;
-        border-top:8px solid transparent;
-        border-bottom:8px solid transparent;
-        border-left:13px solid rgba(255,96,56,0.68);
-        filter:drop-shadow(0 0 5px rgba(255,80,38,0.34));
-        animation: tagArrowPulse 1.28s ease-in-out infinite;
-      }
-      #tutoAttackGuide .tag-start,
-      #tutoAttackGuide .tag-target {
-        position:fixed;
-        width:66px; height:66px;
-        margin:-33px 0 0 -33px;
-        border-radius:50%;
-      }
-      #tutoAttackGuide .tag-start {
-        left:var(--tag-x1, 0px); top:var(--tag-y1, 0px);
-        border:3px solid rgba(255,224,112,0.64);
-        box-shadow:0 0 0 1px rgba(56,28,0,0.32), 0 0 14px rgba(255,218,68,0.26);
-        animation: tagStartPulse 1.28s ease-in-out infinite;
-      }
-      #tutoAttackGuide .tag-target {
-        left:var(--tag-x2, 0px); top:var(--tag-y2, 0px);
-        border:3px solid rgba(255,91,54,0.70);
-        box-shadow:0 0 0 1px rgba(42,8,2,0.42), 0 0 16px rgba(255,64,35,0.30);
-        animation: tagTargetPulse 1.28s ease-in-out infinite;
-      }
-      #tutoAttackGuide .tag-target::before,
-      #tutoAttackGuide .tag-target::after {
-        content:'';
-        position:absolute;
-        left:50%; top:50%;
-        background:rgba(255,91,54,0.64);
-        transform:translate(-50%, -50%);
-        border-radius:999px;
-      }
-      #tutoAttackGuide .tag-target::before { width:42px; height:3px; }
-      #tutoAttackGuide .tag-target::after { width:3px; height:42px; }
-      @keyframes tagCometMove {
-        0%, 12% { transform:translateX(0) scale(0.82); opacity:0; }
-        22% { opacity:0.82; }
-        76%, 100% { transform:translateX(calc(var(--tag-dist, 120px) - 24px)) scale(1); opacity:0.86; }
-      }
       @keyframes tagLinePulse {
         0%, 100% { opacity:0.42; }
         50% { opacity:0.72; }
-      }
-      @keyframes tagArrowPulse {
-        0%, 100% { transform:translateX(0) scale(0.92); opacity:0.48; }
-        50% { transform:translateX(4px) scale(1.02); opacity:0.78; }
-      }
-      @keyframes tagStartPulse {
-        0%, 100% { transform:scale(0.96); opacity:0.58; }
-        50% { transform:scale(1.02); opacity:0.86; }
-      }
-      @keyframes tagTargetPulse {
-        0%, 100% { transform:scale(0.98); filter:brightness(1); opacity:0.68; }
-        50% { transform:scale(1.04); filter:brightness(1.08); opacity:0.94; }
       }
     `;
     document.head.appendChild(style);
@@ -17808,13 +17736,18 @@ function counters(atk, def) {
 }
 
 // === AI 레벨 ===
+// AI 레벨 = '공격성(행동)' 축. '전투력(병력·스탯)' 축과 분리한다.
+//   난이도는 병력(chEnemyBase 0.50→0.90)으로만 올리고, AI는 초반부터 '켜'둔다.
+//   → 초반 적은 병력이 약해 5명짜리 소부대로 툭툭 견제만 하지만(약하지만 성의는 보임),
+//     레벨이 낮아도 '가만히 당하지만 않는' 게 아니라 실제로 선공한다. 바보처럼 보이지 않게.
+//   minTroops(출진 최소병력)는 반드시 초반 적 성 병력(ch1 규모≈13)보다 낮아야 실제로 출진함.
 const AI_LEVELS = {
-  0: { interval: 999, skip: 1.0, minTroops: 9999 }, // 튜토리얼 — AI 가만히
-  1: { interval: 12.0, skip: 0.92, minTroops: 28 }, // 거의 안 움직임 — 입문
-  2: { interval: 9.0,  skip: 0.78, minTroops: 22 },
-  3: { interval: 6.5,  skip: 0.6,  minTroops: 16 },
-  4: { interval: 5.0,  skip: 0.4,  minTroops: 12 },
-  5: { interval: 3.5,  skip: 0.25, minTroops: 8 }, // 그래도 도전적
+  0: { interval: 999, skip: 1.0,  minTroops: 9999 }, // 튜토리얼 — AI 정지
+  1: { interval: 7.0, skip: 0.50, minTroops: 10 },   // 입문: 약하지만 성의있게 — 소규모로 자주 견제
+  2: { interval: 6.0, skip: 0.42, minTroops: 11 },   // 초반: 견제 빈도 ↑
+  3: { interval: 5.5, skip: 0.35, minTroops: 14 },   // 중반: 병력 모아 제법 밀어붙임
+  4: { interval: 4.5, skip: 0.30, minTroops: 12 },
+  5: { interval: 3.3, skip: 0.22, minTroops: 8 },    // 공격적 — 후반/보스
 };
 
 // === 스테이지 시스템 ===
@@ -41215,7 +41148,7 @@ function showStarExchange() {
       <div class="sx-stat"><span>최대 교환</span><b>${maxGold.toLocaleString()}G</b></div>
     </div>
     <div class="sx-rate"><span>교환 비율</span><b>★1 = ${STAR_TO_GOLD.toLocaleString()}G</b></div>
-    <span class="sx-note">별은 병력 강화에도 사용됩니다</span>`;
+    <span class="sx-note">별은 장수 뽑기에도 사용됩니다</span>`;
   document.querySelectorAll('#starExchangeModal .sx-btn[data-exchange]').forEach(btn => {
     const raw = btn.dataset.exchange;
     const disabled = avail <= 0 || (raw !== 'all' && avail < Number(raw));
@@ -41624,7 +41557,7 @@ function renderEnhance() {
   const costPill = document.getElementById('enhCostPill');
 
   if (costPill) {
-    costPill.innerHTML = `<span>강화 비용</span><b>★${ENHANCE_COST_STARS} + ${ENHANCE_COST_GOLD.toLocaleString()}G</b>`;
+    costPill.innerHTML = '<span>강화 비용</span><b>' + (ENHANCE_COST_STARS > 0 ? '★' + ENHANCE_COST_STARS + ' + ' : '') + ENHANCE_COST_GOLD.toLocaleString() + 'G</b>';
   }
 
   // 타겟이 더 이상 보유 목록에 없으면 초기화
