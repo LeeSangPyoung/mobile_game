@@ -17822,6 +17822,14 @@ function counters(atk, def) {
          (atk==='cavalry' && def==='archer')  ||
          (atk==='archer'  && def==='spear');
 }
+// === 창병 정체성 = '돌파 + 공성' (기병=기동, 궁병=원거리와 구분) ===
+//   유저 피드백: "기병은 빠른 성 점령이라는 장점이 있는데 창병은 장점이 없다",
+//               "궁병이 사기 — 사거리 때문에 도달 전에 죽는다"
+//   → 창병에 피해감소(맷집)를 주고 그 감소를 '원거리 사격에도' 적용해 접근을 가능하게,
+//     도달 후엔 공성 피해 보너스로 성을 미는 병종 역할 부여.
+//   ※ engine.js(멀티 클라)에도 동일 값이 있어야 락스텝이 안 깨짐 — 함께 수정할 것.
+const SPEAR_TANK  = 1.25;   // 창병이 받는 피해 감소(근접+원거리 공통) — 나눗셈 계수(1.25 = 약 20%↓)
+const SPEAR_SIEGE = 1.30;   // 창병의 성벽 공성 피해 배수
 
 // === AI 레벨 ===
 // AI 레벨 = '공격성(행동)' 축. '전투력(병력·스탯)' 축과 분리한다.
@@ -20416,7 +20424,7 @@ function resolveEngagements(dt) {
       a._engageT = (a._engageT || 0) + dt;
       b._engageT = (b._engageT || 0) + dt;
       if (a._engageT < ENGAGE_WARMUP || b._engageT < ENGAGE_WARMUP) continue;
-      const aTank = a.unit === 'spear' ? 1.14 : 1, bTank = b.unit === 'spear' ? 1.14 : 1;   // 창병 탱커 — 근접 피해 ~12%↓
+      const aTank = a.unit === 'spear' ? SPEAR_TANK : 1, bTank = b.unit === 'spear' ? SPEAR_TANK : 1;   // 창병 탱커(근접)
       const dpsA = a.troops * (a.atkBonus || 1) * aCnt * DMG_RATE * aAtk / (bDef * bTank);
       const dpsB = b.troops * (b.atkBonus || 1) * bCnt * DMG_RATE * bAtk / (aDef * aTank);
       // 크리티컬: 장수 있는 쪽만, 쿨다운 기반 굴림
@@ -20526,7 +20534,7 @@ function resolveSieges(dt) {
     for (const a of atks) {
       // 강화: 공성 시 성벽이 받는 피해는 castleDef로 감소
       const cDef = castleCombatMul(castle, 'castleDef');
-      const aPow = a.troops * (a.atkBonus || 1) / cDef;
+      const aPow = a.troops * (a.atkBonus || 1) * (a.unit === 'spear' ? SPEAR_SIEGE : 1) / cDef;   // 창병 = 성을 미는 병종
 
       // 성 → 공성 부대 반격: 성내 병력 기준, 부대 교전 데미지의 약 30%
       {
@@ -21032,7 +21040,11 @@ function update(dt) {
       // 도착 시 데미지 적용 (게임 밸런스 유지 — 데미지값은 발사 시점에 결정됨)
       if (ar.hitArmy && ar.hitArmy.troops > 0 && !ar.hitArmy.dying && ar.hitArmy.owner !== ar.owner) {
         const beforeTroops = ar.hitArmy.troops;
-        ar.hitArmy._dmg = (ar.hitArmy._dmg || 0) + (ar.dmg || 0);
+        // 원거리 피해에도 방어를 적용 — 예전엔 화살이 병종·방어력을 전부 무시해서
+        // 궁병이 일방적으로 강했고 창병 탱커·병력방어 강화가 무의미했음.
+        const _tgTank = ar.hitArmy.unit === 'spear' ? SPEAR_TANK : 1;
+        const _tgDef = armyCombatMul(ar.hitArmy, 'unitDef');
+        ar.hitArmy._dmg = (ar.hitArmy._dmg || 0) + (ar.dmg || 0) / (_tgDef * _tgTank);
         while ((ar.hitArmy._dmg || 0) >= 1 && ar.hitArmy.troops > 0) {
           ar.hitArmy.troops--; ar.hitArmy._dmg -= 1;
         }

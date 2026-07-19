@@ -74,6 +74,10 @@ export function counters(atk, def) {
          (atk === 'cavalry' && def === 'archer')  ||
          (atk === 'archer'  && def === 'spear');
 }
+// === 창병 정체성 = '돌파 + 공성' ===
+// ⚠️ prototype.html 의 SPEAR_TANK / SPEAR_SIEGE 와 반드시 같은 값이어야 함(락스텝 desync 방지).
+const SPEAR_TANK  = 1.25;   // 창병이 받는 피해 감소(근접+원거리 공통)
+const SPEAR_SIEGE = 1.30;   // 창병의 성벽 공성 피해 배수
 function totalTroops(c) {
   return (c.troops.spear | 0) + (c.troops.cavalry | 0) + (c.troops.archer | 0);
 }
@@ -418,8 +422,9 @@ export class SimEngine {
         a._engageT = (a._engageT || 0) + dt;
         b._engageT = (b._engageT || 0) + dt;
         if (a._engageT < ENGAGE_WARMUP || b._engageT < ENGAGE_WARMUP) continue;
-        const dpsA = a.troops * (a.atkBonus || 1) * aCnt * DMG_RATE * aAtk / bDef;
-        const dpsB = b.troops * (b.atkBonus || 1) * bCnt * DMG_RATE * bAtk / aDef;
+        const aTank = a.unit === 'spear' ? SPEAR_TANK : 1, bTank = b.unit === 'spear' ? SPEAR_TANK : 1;   // 창병 탱커(근접)
+        const dpsA = a.troops * (a.atkBonus || 1) * aCnt * DMG_RATE * aAtk / (bDef * bTank);
+        const dpsB = b.troops * (b.atkBonus || 1) * bCnt * DMG_RATE * bAtk / (aDef * aTank);
         const aCritMult = this._rollCrit(a, dt);
         const bCritMult = this._rollCrit(b, dt);
         damage.set(b, (damage.get(b) || 0) + dpsA * aCritMult * dt);
@@ -468,7 +473,7 @@ export class SimEngine {
       castle._lastSiegeT = this.simTime;
       for (const a of atks) {
         const cDef = castle.defMul || 1;
-        const aPow = a.troops * (a.atkBonus || 1) / cDef;
+        const aPow = a.troops * (a.atkBonus || 1) * (a.unit === 'spear' ? SPEAR_SIEGE : 1) / cDef;   // 창병 = 성을 미는 병종
         // 성 반격
         const cAtk = castle.atkMul || 1;
         const garrison = totalTroops(castle);
@@ -792,7 +797,10 @@ export class SimEngine {
       ar.t += dt;
       if (ar.t < ar.dur) continue;
       if (ar.hitArmy && ar.hitArmy.troops > 0 && !ar.hitArmy.dying && ar.hitArmy.owner !== ar.owner) {
-        ar.hitArmy._dmg = (ar.hitArmy._dmg || 0) + (ar.dmg || 0);
+        // 원거리 피해에도 방어 적용(창병 탱커 + 병력 방어력) — prototype.html 과 동일 규칙
+        const _tgTank = ar.hitArmy.unit === 'spear' ? SPEAR_TANK : 1;
+        const _tgDef = ar.hitArmy.defMul || 1;
+        ar.hitArmy._dmg = (ar.hitArmy._dmg || 0) + (ar.dmg || 0) / (_tgDef * _tgTank);
         while ((ar.hitArmy._dmg || 0) >= 1 && ar.hitArmy.troops > 0) { ar.hitArmy.troops--; ar.hitArmy._dmg -= 1; }
       } else if (ar.hitCastle && ar.hitCastle.owner !== ar.owner && ar.hitCastle.owner !== 0) {
         if (ar.hitCastle.wallHP > 0) {
