@@ -13134,7 +13134,20 @@ function formatGeneralProfileStats(g = {}, lv = 1) {
     const cls = value ? 'profile-stat' : 'profile-stat is-empty';
     return `<span class="${cls}"><b>${label}</b><i>${value}</i></span>`;
   }).join('');
-  return `<div class="profile-stat-grid">${rows}</div>`;
+  // 지력 — 계책(회유) 성공률을 좌우하는 장수 개별 능력치 (숨어 있던 스탯을 노출)
+  let intel = 30;
+  try { if (typeof generalIntel === 'function') intel = generalIntel(g); } catch (_) {}
+  const intelRow = `<span class="profile-stat"><b>지력</b><i>${intel}</i></span>`;
+  const skillBox =
+    '<div style="margin-top:7px;padding:7px 10px;border-radius:10px;border:1px solid rgba(255,215,120,.32);' +
+    'background:rgba(255,225,140,.07);text-align:left">' +
+      '<b style="color:#ffe28c;font-size:11.5px">계책(회유)</b> ' +
+      '<span style="color:#e8d4a8;font-size:11px;line-height:1.45">' +
+        '<b style="color:#ffd23f">지력</b>이 높을수록 전투 중 적 부대를 귀순시킵니다. ' +
+        '<span style="color:#a08a5e">온라인 대전 제외</span>' +
+      '</span>' +
+    '</div>';
+  return `<div class="profile-stat-grid">${rows}${intelRow}</div>` + skillBox;
 }
 function upgStarCost(lv) { return Math.floor(lv / 5) + 1; } // 1,1,1,1,1, 2,2,2,2,2, 3..., 4...
 function upgUnitCost(key, lv) {
@@ -13780,6 +13793,16 @@ function rarityBadgeHTML(g) {
   const glow = `;text-shadow:0 0 ${r.stars >= 4 ? 10 : 7}px ${r.glow},0 1px 0 rgba(0,0,0,0.58)`;
   return `<div class="rarity-badge tier-${r.tier}" title="${r.label} ★${r.stars}" style="color:${r.color}${glow}">${stars}</div>`;
 }
+// 책사 뱃지 — 지력 높은 장수만 카드에 표시(계책=회유가 잘 통함).
+// 절대배치(★뱃지 아래)라 카드 높이·칩 줄수에 영향 없음. 자세한 수치·설명은 상세카드에서.
+function intelBadgeHTML(g) {
+  let intel = 30;
+  try { if (typeof generalIntel === 'function') intel = generalIntel(g); } catch (_) {}
+  if (intel < 80) return '';
+  return '<div class="intel-badge" title="지력 ' + intel + ' — 계책(회유) 성공률이 높습니다" ' +
+    'style="position:absolute;top:21px;left:4px;padding:1px 5px;border-radius:4px;font-size:9px;font-weight:900;' +
+    'background:rgba(8,18,54,0.85);color:#8fd0ff;border:1px solid #8fd0ff;z-index:2;line-height:1.1">책사</div>';
+}
 
 // === 인스턴스 기반 헬퍼 (uid 키) ===
 // 적군 commander 인스턴스 (스테이지 종료 시 초기화) — 음수 uid로 식별
@@ -14083,6 +14106,7 @@ function renderGeneralSelect() {
       : (isIn ? '<div class="formation-badge">편성됨</div>' : '');
     card.innerHTML = `
       ${rarityBadgeHTML(g)}
+      ${intelBadgeHTML(g)}
       ${badgeHTML}
       <div class="deploy-face"><img src="${g.bust || g.face}" alt=""></div>
       <div class="deploy-name"><span class="dn-text">${g.name}${g.lv > 1 ? ` <span class="lv-pill">+${g.lv-1}</span>` : ''}</span><button type="button" class="general-detail-btn" title="상세보기" aria-label="${htmlSafe(g.name)} 상세보기"></button></div>
@@ -14540,6 +14564,7 @@ function renderGeneralManage() {
       : (isIn ? '<div class="formation-badge">편성됨</div>' : '');
     card.innerHTML = `
       ${rarityBadgeHTML(g)}
+      ${intelBadgeHTML(g)}
       ${badgeHTML}
       <div class="deploy-face"><img src="${g.bust || g.face}" alt=""></div>
       <div class="deploy-name"><span class="dn-text">${g.name}${g.lv > 1 ? ` <span class="lv-pill">+${g.lv-1}</span>` : ''}</span><button type="button" class="general-detail-btn" title="상세보기" aria-label="${htmlSafe(g.name)} 상세보기"></button></div>
