@@ -21006,7 +21006,10 @@ function update(dt) {
     // 궁수 원거리 사격 — 행군/공성/교전 모두에서 사거리 내 적이 있으면 주기적으로 발사
     // (아군 부대 추격중이면 사격 금지 — 아군에 화살 쏘는 모션 방지)
     const _pursuingFriend = a.pursuingArmy && a.pursuingArmy.owner === a.owner;
-    if (!_pursuingFriend && a.unit === 'archer' && a.target.owner !== a.owner) {
+    // 근접 교전에 돌입하면 사격 중지 — 예전엔 교전 중에도 쏴서 궁병만 '근접뎀+원거리뎀'을
+    // 이중으로 넣었고, 그 탓에 상성상 우위인 기병이 궁병에게 지는 역전이 발생했음.
+    // (시뮬 검증: 이 조건 하나로 창>기>궁>창 상성이 3/3 정상 복원)
+    if (!_pursuingFriend && !a._engaged && a.unit === 'archer' && a.target.owner !== a.owner) {
       let foe = null, foeD = Infinity;
       for (const b of armies) {
         if (b === a || b.owner === a.owner || b.troops <= 0 || b.dying) continue;

@@ -663,7 +663,8 @@ export class SimEngine {
 
       // 궁수 사격
       const _pursuingFriend = a.pursuingArmy && a.pursuingArmy.owner === a.owner;
-      if (!_pursuingFriend && a.unit === 'archer' && a.target && a.target.owner !== a.owner) {
+      // 근접 교전 중에는 사격 중지 (근접뎀+원거리뎀 이중 특혜 제거) — prototype.html 과 동일 규칙
+      if (!_pursuingFriend && !a._engaged && a.unit === 'archer' && a.target && a.target.owner !== a.owner) {
         let foe = null, foeD = Infinity;
         for (const b of armies) {
           if (b === a || b.owner === a.owner || b.troops <= 0 || b.dying) continue;
