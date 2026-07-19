@@ -27,6 +27,9 @@ for (const sql of [
   "ALTER TABLE matches ADD COLUMN host_power INTEGER DEFAULT 0",
   "ALTER TABLE matches ADD COLUMN guest_power INTEGER DEFAULT 0",
   "ALTER TABLE matches ADD COLUMN dur INTEGER DEFAULT 0",
+  "ALTER TABLE installs ADD COLUMN ua TEXT",       // 기기 User-Agent 원문
+  "ALTER TABLE installs ADD COLUMN model TEXT",     // UA에서 파싱한 기기모델(예: SM-F926N)
+  "ALTER TABLE installs ADD COLUMN andver TEXT",    // UA에서 파싱한 안드로이드 버전
 ]) { try { db.exec(sql); } catch (_) {} }
 
 // ── 전투력 기반 매칭 파라미터 ────────────────────────────────────────────
@@ -35,7 +38,7 @@ const TOL_BASE = 200;            // 최초 허용 전투력차
 const TOL_STEP = 500;            // TOL_EVERY_MS마다 넓어지는 폭(빠른 확대)
 const TOL_EVERY_MS = 1500;       // 1.5초마다 매칭폭 확대(빠르게)
 const TOL_MAX = 1_000_000;       // 충분히 기다리면 사실상 아무나
-const BOT_WAIT_MS = 10000;       // 큐에서 이만큼(10초) 상대 못 찾으면 봇 투입
+const BOT_WAIT_MS = 3000;        // 큐에서 이만큼(3초) 상대 못 찾으면 봇 투입 (대기 이탈 방지 위해 10초→3초 단축)
 
 // ── 봇(더미 상대) — 큐 0명일 때 대전 성사용. 이름은 실제 유저처럼 보이게 100개, 예약(유저 사용 금지). ──
 const BOT_NAMES = [
@@ -71,11 +74,18 @@ const server = http.createServer((req, res) => {
   if (p === '/beacon') {
     const cid = String(u.searchParams.get('cid') || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40);
     const plat = u.searchParams.get('p') === 'app' ? 'app' : 'web';
+    // 기기모델/안드버전은 클라 beacon이 아니라 User-Agent 헤더에서 파싱한다.
+    //   예: "Mozilla/5.0 (Linux; Android 15; SM-F926N Build/…)" → andver=15, model=SM-F926N
+    const ua = String(req.headers['user-agent'] || '').slice(0, 300);
+    let andver = '', model = '';
+    const _av = ua.match(/Android\s+([\d.]+)/i); if (_av) andver = _av[1];
+    const _md = ua.match(/Android\s+[\d.]+;\s*([^;)]+?)\s*(?:Build\/|\))/i); if (_md) model = _md[1].trim();
     if (cid) { try {
       const now = Date.now();
       const ex = db.prepare('SELECT cid FROM installs WHERE cid=?').get(cid);
-      if (ex) db.prepare('UPDATE installs SET last_seen=?, launches=launches+1, platform=? WHERE cid=?').run(now, plat, cid);
-      else db.prepare('INSERT INTO installs(cid,platform,first_seen,last_seen,launches) VALUES(?,?,?,?,1)').run(cid, plat, now, now);
+      // model/andver는 파싱됐을 때만 갱신(웹/UA누락 시 기존값 보존).
+      if (ex) db.prepare("UPDATE installs SET last_seen=?, launches=launches+1, platform=?, ua=?, model=CASE WHEN ?<>'' THEN ? ELSE model END, andver=CASE WHEN ?<>'' THEN ? ELSE andver END WHERE cid=?").run(now, plat, ua, model, model, andver, andver, cid);
+      else db.prepare('INSERT INTO installs(cid,platform,first_seen,last_seen,launches,ua,model,andver) VALUES(?,?,?,?,1,?,?,?)').run(cid, plat, now, now, ua, model, andver);
     } catch (_) {} }
     res.writeHead(200, { 'Content-Type': 'image/gif', 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*' });
     res.end(Buffer.from('R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==', 'base64'));
@@ -264,7 +274,7 @@ function tryMatch() {
 }
 setInterval(tryMatch, 1000);   // 대기시간 경과에 따른 허용폭 확대 반영
 
-// ── 봇 투입: 큐에서 BOT_WAIT_MS(10초) 넘게 상대 못 찾은 대기자에게 봇 상대 배정 ──
+// ── 봇 투입: 큐에서 BOT_WAIT_MS(3초) 넘게 상대 못 찾은 대기자에게 봇 상대 배정 ──
 //   봇 전투는 '클라'에서 로컬 AI로 진행(서버는 상대 없음). 서버는 이름·시드·난이도만 내려줌.
 function spawnBotFor(ws) {
   if (!ws || ws.room) return;
@@ -607,6 +617,8 @@ function adminData() {
     connections: online.size,     // 원시 WS 연결 수(참고)
     userCount, matchCount, botCount,        // userCount=실유저(봇 제외), botCount=봇 수
     appInstalls, webDevices, activeToday,   // 설치(앱)/방문(웹) 기기 수 + 오늘 실행
+    // 기기목록(admin '기기' 탭이 소비) — 앱 기기만, 최근 접속순. model/andver는 beacon이 UA에서 파싱해 저장.
+    devices: (() => { try { return db.prepare("SELECT cid, platform, first_seen, last_seen, launches, model, andver FROM installs WHERE platform='app' ORDER BY last_seen DESC LIMIT 200").all(); } catch (_) { return []; } })(),
     queue: queue.map((w) => ({ uid: w.uid, nick: w.nick, power: w.power, mode: w.mode || 'ranked', waitMs: now - (w.qtime || now) }))
       .sort((x, y) => y.waitMs - x.waitMs),
     matches: [...activeRooms.values()].map((r) => ({
