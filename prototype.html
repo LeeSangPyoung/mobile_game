@@ -13711,7 +13711,9 @@ const STAR_MULT = [1.0, 1.0, 1.2, 1.4, 1.7, 2.0];          // index = stars(1~5)
 // 별 플랫 바닥값(C안) — 약한 장수도 고등급이면 핵심 전투(병공/병방)에 기본 기여.
 // 명장은 base가 커서 여전히 우위. unitAtk에 더하고 unitDef엔 60%.
 const STAR_FLAT = [0, 0, 0.012, 0.025, 0.045, 0.075];      // index = stars
-const STAR_ODDS = [0, 0.45, 0.33, 0.15, 0.05, 0.02];        // index = stars: 등용 시 등장 확률 (합 1.0)
+const STAR_ODDS = [0, 0.41, 0.30, 0.18, 0.08, 0.03];        // index = stars: 등용 시 등장 확률 (합 1.0)
+// ★3 15→18% / ★4 5→8% / ★5 2→3% 소폭 상향 — "좋은 카드도 가끔 나왔으면" 피드백.
+// 고등급은 여전히 희귀해야 수집 가치가 유지되므로 상향폭은 최소로.
 const STAR_META = {
   1: {
     label: '일반',
@@ -17192,6 +17194,19 @@ function resetStage() {
         }
       }
     });
+    // 등용 기회 확대 — 포로 수가 '적 성 개수'에 묶여 실제론 1~2명에 그치던 문제.
+    //   (분포는 평균 3명으로 상향돼 있었지만 Math.min(desired, 적성수)에서 잘림)
+    //   전투에는 참여하지 않는 '패잔병 장수'를 포로 목록에만 추가 → 난이도는 그대로, 등용 기회만 3~6명 확보.
+    if (!st.isTutorial && enemyCastles.length > 0) {
+      const wantPrisoners = 3 + Math.floor(Math.random() * 4);   // 3~6명
+      let _guard = 0;
+      while (stageEnemies.length < wantPrisoners && _guard++ < 24) {
+        const extra = pickRandomEnemyGeneral(used);
+        if (!extra) break;
+        used.add(extra.id);
+        stageEnemies.push(extra);
+      }
+    }
     window._stageEnemyGenerals = stageEnemies;
   }
   castles.forEach(c => {
@@ -21362,6 +21377,16 @@ function checkWin() {
     const isReclear = prevStars > 0;
     const goldGain = Math.floor(baseGain * (isReclear ? 0.40 : 1));   // 재클리어 25%→40% (막힌 유저의 골드 파밍이 의미있게 — 골드→별 교환과 연동)
     SAVE.gold = (SAVE.gold || 0) + goldGain;
+    // 강화 재료 공급 — 일반 스테이지 '첫 클리어' 시 50% 확률로 ★1 잡장수 1명.
+    //   (재클리어 제외 = 무한 파밍 방지. 막힌 유저는 골드→별→등용 경로로 재료 확보 가능)
+    if (!isReclear && !window._mpMode && !window._botMatch
+        && !(STAGES[currentStage] && STAGES[currentStage].isTutorial) && Math.random() < 0.5) {
+      try {
+        const _pool = GENERAL_ROSTER.filter(Boolean);
+        const _pick = _pool[Math.floor(Math.random() * _pool.length)];
+        if (_pick) { addOwnedGeneral(_pick.id, 1, 1); showSelectToast(`강화 재료 획득 — ${_pick.name}`, '#9fd0ff'); }
+      } catch (_) {}
+    }
     // 오늘의 첫 승리 보너스 — 재클리어도 인정(막힌 유저가 못 받으면 역설), 튜토리얼·온라인 제외
     let _firstWinBonus = 0;
     if (!window._mpMode && !window._botMatch && !(STAGES[currentStage] && STAGES[currentStage].isTutorial)) {
@@ -21378,11 +21403,11 @@ function checkWin() {
         SAVE.gold = (SAVE.gold || 0) + chBonusGold;
         SAVE.starsAvailable = (SAVE.starsAvailable || 0) + 5;
         starsGained += 5;
-        // 재료용 일반 장수 3명 지급(★1 고정 — 레어 인플레 없이 강화 재료 공급)
+        // 재료용 일반 장수 5명 지급(★1 고정 — 레어 인플레 없이 강화 재료 공급). 3→5 상향: 강화 1회에 최대 5장 소모라 3명으론 1회도 못 함
         let _genGiven = 0;
         try {
           const pool = GENERAL_ROSTER.filter(Boolean);
-          for (let n = 0; n < 3; n++) {
+          for (let n = 0; n < 5; n++) {
             const pick = pool[Math.floor(Math.random() * pool.length)];
             if (pick) { addOwnedGeneral(pick.id, 1, 1); _genGiven++; }
           }
