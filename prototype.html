@@ -21133,7 +21133,12 @@ function update(dt) {
         // 궁병이 일방적으로 강했고 창병 탱커·병력방어 강화가 무의미했음.
         const _tgTank = ar.hitArmy.unit === 'spear' ? SPEAR_TANK : 1;
         const _tgDef = armyCombatMul(ar.hitArmy, 'unitDef');
-        ar.hitArmy._dmg = (ar.hitArmy._dmg || 0) + (ar.dmg || 0) / (_tgDef * _tgTank);
+        // 원거리 상성 — 사격은 궁병 전용. 궁병을 '카운터하는' 병종(기병)만 피해를 감쇄받고,
+        //   궁병이 유리한 상성(궁>창)의 보너스는 원거리엔 주지 않는다.
+        //   이유: 궁병은 이미 '원거리+근접 동시 타격'이라는 구조적 이점이 있어 보너스까지 주면 이중 특혜.
+        //   (근접 교전에서는 궁>창 1.5배가 정상 적용됨)
+        const _tgCnt = counters(ar.hitArmy.unit, 'archer') ? 1 / 1.5 : 1;
+        ar.hitArmy._dmg = (ar.hitArmy._dmg || 0) + (ar.dmg || 0) * _tgCnt / (_tgDef * _tgTank);
         while ((ar.hitArmy._dmg || 0) >= 1 && ar.hitArmy.troops > 0) {
           ar.hitArmy.troops--; ar.hitArmy._dmg -= 1;
         }
