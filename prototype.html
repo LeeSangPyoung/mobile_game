@@ -13099,6 +13099,8 @@ function generalProfileRating(g) {
   return Math.max(88, Math.min(139, Math.round(score)));
 }
 function generalProfileRole(g) {
+  // 지력이 높은 장수는 계책(회유) 특화 → 버프보다 우선해 '책사'로 표기 (카드의 책사 뱃지와 일치)
+  try { if (typeof generalIntel === 'function' && generalIntel(g) >= 80) return '책사'; } catch (_) {}
   const b = (g && g.buffs) || {};
   const unitAtk = b.unitAtk || 0;
   const unitDef = b.unitDef || 0;
@@ -14398,6 +14400,10 @@ function showGeneralDetail(g) {
 
   modal.dataset.tier = rarity.tier;
   modal.dataset.stars = String(stars);
+  // 화면이 짧아도 하단 스탯/계책 설명이 잘리지 않도록 아트 영역을 줄어들 수 있게 강제.
+  // (.general-detail-card 반응형 변형이 여러 개라 CSS 대신 여기서 일괄 우선 적용)
+  const cardEl = modal.querySelector('.general-detail-card');
+  if (cardEl) cardEl.style.setProperty('grid-template-rows', 'minmax(110px, 1fr) auto', 'important');
   modal.style.setProperty('--detail-rarity', rarity.color);
   modal.style.setProperty('--detail-star-color', rarity.color);
   modal.style.setProperty('--detail-star-glow', rarity.glow);
