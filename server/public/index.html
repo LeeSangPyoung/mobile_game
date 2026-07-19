@@ -8155,6 +8155,33 @@
   .home-daily-count { font-variant-numeric: tabular-nums; white-space: nowrap; }
   .home-daily-count b { color: #fff; }
 
+  /* 일일 첫 승리 보너스 — '오늘의 별' 바 바로 아래에 같은 디자인으로 2줄.
+     .home-daily 스타일을 그대로 상속하고 위치/크기만 조정(이질감 제거). */
+  #homeDailyBonus {
+    position: absolute;
+    left: 50%;
+    top: calc(16% + 84px);
+    transform: translateX(-50%);
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    animation: homeDailyIn 0.5s ease both;
+  }
+  .home-daily--sub {
+    position: static;
+    left: auto; top: auto;
+    transform: none;
+    animation: none;
+    padding: 5px 11px;
+    font-size: 11px;
+    gap: 7px;
+    cursor: default;
+  }
+  .home-daily--sub:active { transform: none; }
+  .home-daily--sub .home-daily-bar { width: 54px; height: 6px; }
+
   .home-hero {
     position: absolute;
     inset: 0;
@@ -12022,9 +12049,17 @@
       <span class="home-daily-bar"><i id="homeDailyFill" style="width:0%"></i></span>
       <span class="home-daily-count"><b id="homeDailyEarned">0</b>/<span id="homeDailyCap">10</span></span>
     </button>
-    <div id="homeDailyBonus" style="position:absolute;left:50%;top:calc(16% + 84px);transform:translateX(-50%);z-index:5;display:flex;gap:5px;width:min(272px,74vw)">
-      <span id="hdbWin" style="flex:1;text-align:center;padding:3px 5px;border-radius:999px;font-size:10px;font-weight:800;white-space:nowrap"></span>
-      <span id="hdbMp" style="flex:1;text-align:center;padding:3px 5px;border-radius:999px;font-size:10px;font-weight:800;white-space:nowrap"></span>
+    <div id="homeDailyBonus">
+      <div class="home-daily home-daily--sub" id="hdbWin">
+        <span class="home-daily-label">🏆 첫 승리</span>
+        <span class="home-daily-bar"><i class="hdb-fill" style="width:0%"></i></span>
+        <span class="home-daily-count"><b class="hdb-now">0</b>/<span class="hdb-cap">5</span></span>
+      </div>
+      <div class="home-daily home-daily--sub" id="hdbMp">
+        <span class="home-daily-label">⚔ 첫 멀티</span>
+        <span class="home-daily-bar"><i class="hdb-fill" style="width:0%"></i></span>
+        <span class="home-daily-count"><b class="hdb-now">0</b>/<span class="hdb-cap">5</span></span>
+      </div>
     </div>
     <section class="home-hero" aria-hidden="true">
       <div class="home-title-mark">三國</div>
@@ -13515,16 +13550,19 @@ function refreshTopStats() {
     if (wrap) wrap.classList.toggle('done', dFull);
     if (lEl) lEl.textContent = dFull ? '⭐ 오늘 완료!' : '⭐ 오늘의 별';
   } catch (_) {}
-  // 오늘의 첫 승리 / 첫 멀티 승리 보너스 칩 (받기 전=금색 강조, 받은 후=흐리게)
+  // 오늘의 첫 승리 / 첫 멀티 승리 보너스 — '오늘의 별'과 같은 진행 표시(0/5 → 5/5, 완료 시 녹색)
   try {
-    [['hdbWin', 'single', '🏆 첫 승리'], ['hdbMp', 'mp', '⚔ 첫 멀티']].forEach(function (it) {
+    [['hdbWin', 'single'], ['hdbMp', 'mp']].forEach(function (it) {
       const el = document.getElementById(it[0]); if (!el) return;
       const done = (typeof dailyBonusDone === 'function') ? dailyBonusDone(it[1]) : false;
       const amt = (typeof dailyBonusAmount === 'function') ? dailyBonusAmount(it[1]) : 5;
-      el.textContent = done ? it[2] + ' 완료' : it[2] + ' ★' + amt;
-      el.style.border = '1px solid ' + (done ? 'rgba(150,140,120,.32)' : 'rgba(255,215,120,.6)');
-      el.style.background = done ? 'rgba(120,110,95,.12)' : 'rgba(255,225,140,.16)';
-      el.style.color = done ? '#8a8170' : '#ffe6a8';
+      el.classList.toggle('done', done);
+      const fill = el.querySelector('.hdb-fill');
+      if (fill) fill.style.width = (done ? 100 : 0) + '%';
+      const nowEl = el.querySelector('.hdb-now');
+      if (nowEl) nowEl.textContent = done ? amt : 0;
+      const capEl = el.querySelector('.hdb-cap');
+      if (capEl) capEl.textContent = amt;
     });
   } catch (_) {}
 }
@@ -41434,8 +41472,18 @@ function syncMpInviteUi() {
   const row = document.getElementById('mpBlockRow');
   const cnt = document.getElementById('mpBlockCount');
   const list = document.getElementById('mpBlockList');
-  if (cnt) cnt.textContent = uids.length + '명';
-  if (row) row.style.display = uids.length ? '' : 'none';
+  if (cnt) cnt.textContent = uids.length ? uids.length + '명' : '없음';
+  // 행은 항상 노출 — 차단이 0명이어도 '어디서 차단/해제하는지' 안내가 보여야 함.
+  // (#audioSettingsModal .audio-row 가 display:grid !important 라 우선순위를 맞춰 지정)
+  if (row) row.style.setProperty('display', 'grid', 'important');
+  if (!uids.length) {
+    if (list) {
+      list.innerHTML = '<span style="color:#a08a5e;font-size:11px;line-height:1.45">' +
+        '대전 초대가 왔을 때 <b style="color:#ffe6a8">[이 상대 차단]</b>을 누르면 여기에 표시되고, ' +
+        '<b style="color:#ffe6a8">해제 ✕</b>로 다시 풀 수 있습니다</span>';
+    }
+    return;
+  }
   if (list) {
     const _e = function (s) {
       return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function (c) {
