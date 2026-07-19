@@ -12050,15 +12050,10 @@
       <span class="home-daily-count"><b id="homeDailyEarned">0</b>/<span id="homeDailyCap">10</span></span>
     </button>
     <div id="homeDailyBonus">
-      <div class="home-daily home-daily--sub" id="hdbWin">
-        <span class="home-daily-label">🏆 첫 승리</span>
+      <div class="home-daily home-daily--sub" id="hdbCombo">
+        <span class="home-daily-label">🎁 오늘의 보너스</span>
         <span class="home-daily-bar"><i class="hdb-fill" style="width:0%"></i></span>
-        <span class="home-daily-count"><b class="hdb-now">0</b>/<span class="hdb-cap">5</span></span>
-      </div>
-      <div class="home-daily home-daily--sub" id="hdbMp">
-        <span class="home-daily-label">⚔ 첫 멀티</span>
-        <span class="home-daily-bar"><i class="hdb-fill" style="width:0%"></i></span>
-        <span class="home-daily-count"><b class="hdb-now">0</b>/<span class="hdb-cap">5</span></span>
+        <span class="home-daily-count"><b class="hdb-now">0</b>/<span class="hdb-cap">10</span></span>
       </div>
     </div>
     <section class="home-hero" aria-hidden="true">
@@ -13550,20 +13545,21 @@ function refreshTopStats() {
     if (wrap) wrap.classList.toggle('done', dFull);
     if (lEl) lEl.textContent = dFull ? '⭐ 오늘 완료!' : '⭐ 오늘의 별';
   } catch (_) {}
-  // 오늘의 첫 승리 / 첫 멀티 승리 보너스 — '오늘의 별'과 같은 진행 표시(0/5 → 5/5, 완료 시 녹색)
+  // 오늘의 보너스 — 첫 승리(+5)와 첫 멀티 승리(+5)를 한 줄로 합산 표시 (0/10 → 10/10, 완료 시 녹색)
   try {
-    [['hdbWin', 'single'], ['hdbMp', 'mp']].forEach(function (it) {
-      const el = document.getElementById(it[0]); if (!el) return;
-      const done = (typeof dailyBonusDone === 'function') ? dailyBonusDone(it[1]) : false;
-      const amt = (typeof dailyBonusAmount === 'function') ? dailyBonusAmount(it[1]) : 5;
-      el.classList.toggle('done', done);
+    const el = document.getElementById('hdbCombo');
+    if (el) {
+      const aAmt = dailyBonusAmount('single'), bAmt = dailyBonusAmount('mp');
+      const got = (dailyBonusDone('single') ? aAmt : 0) + (dailyBonusDone('mp') ? bAmt : 0);
+      const cap = aAmt + bAmt;
+      el.classList.toggle('done', got >= cap);
       const fill = el.querySelector('.hdb-fill');
-      if (fill) fill.style.width = (done ? 100 : 0) + '%';
+      if (fill) fill.style.width = Math.round(got / Math.max(1, cap) * 100) + '%';
       const nowEl = el.querySelector('.hdb-now');
-      if (nowEl) nowEl.textContent = done ? amt : 0;
+      if (nowEl) nowEl.textContent = got;
       const capEl = el.querySelector('.hdb-cap');
-      if (capEl) capEl.textContent = amt;
-    });
+      if (capEl) capEl.textContent = cap;
+    }
   } catch (_) {}
 }
 function confirmExitBattle() {
@@ -26787,7 +26783,7 @@ function closeTutorialOffer(accept) {
         <b>차단한 상대</b>
         <span id="mpBlockCount">0명</span>
       </div>
-      <div id="mpBlockList" style="display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-top:4px"></div>
+      <div id="mpBlockList"></div>
     </div>
     <div class="audio-actions">
       <button type="button" class="audio-close audio-btn" onclick="closeAudioSettings()">닫기</button>
@@ -26911,6 +26907,14 @@ function closeTutorialOffer(accept) {
     grid-column: 1 / -1 !important;
     width: 100% !important;
     accent-color: #c89024 !important;
+  }
+  /* 차단 목록 — 슬라이더와 동일하게 전체폭 한 줄 차지(2열 그리드에 끼면 라벨이 세로로 짜부라짐) */
+  #audioSettingsModal #mpBlockList {
+    grid-column: 1 / -1 !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    width: 100% !important;
   }
   #audioSettingsModal .audio-close {
     width: 100% !important;
@@ -41445,6 +41449,15 @@ function mpBlockedMap() {
   if (!SAVE.mpBlocked || typeof SAVE.mpBlocked !== 'object') SAVE.mpBlocked = {};
   return SAVE.mpBlocked;
 }
+// 레이아웃 확인용: ?blocktest=1 로 접속하면 차단 목록에 더미 10명 주입(그 외엔 아무 영향 없음)
+try {
+  if (new URLSearchParams(location.search).get('blocktest') === '1') {
+    const _names = ['도수', '조조', '관우', '여포', '장비', '초선', '동탁', '손권', '유비', '제갈량'];
+    const _m = mpBlockedMap();
+    _names.forEach(function (n, i) { _m['test' + i] = n; });
+    saveProgress();
+  }
+} catch (_) {}
 function isMpBlocked(uid) {
   if (uid === null || uid === undefined) return false;
   return !!mpBlockedMap()[String(uid)];
