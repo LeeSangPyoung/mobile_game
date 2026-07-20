@@ -41497,15 +41497,6 @@ function mpBlockedMap() {
   if (!SAVE.mpBlocked || typeof SAVE.mpBlocked !== 'object') SAVE.mpBlocked = {};
   return SAVE.mpBlocked;
 }
-// 레이아웃 확인용: ?blocktest=1 로 접속하면 차단 목록에 더미 10명 주입(그 외엔 아무 영향 없음)
-try {
-  if (new URLSearchParams(location.search).get('blocktest') === '1') {
-    const _names = ['도수', '조조', '관우', '여포', '장비', '초선', '동탁', '손권', '유비', '제갈량'];
-    const _m = mpBlockedMap();
-    _names.forEach(function (n, i) { _m['test' + i] = n; });
-    saveProgress();
-  }
-} catch (_) {}
 function isMpBlocked(uid) {
   if (uid === null || uid === undefined) return false;
   return !!mpBlockedMap()[String(uid)];
