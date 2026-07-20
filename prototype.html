@@ -13268,6 +13268,7 @@ function showScreen(name) {
     if (typeof castles !== 'undefined') castles.length = 0;
     if (typeof bgCanvas !== 'undefined') bgCanvas = null;
     if (typeof cinematic !== 'undefined') cinematic = null;
+    try { showCinematicSkipHint(false); } catch (_) {}
     // 잔상 일괄 제거 — 화면 전환 시 떠 있던 플로팅 UI를 모두 숨김
     { const _cl = document.getElementById('cinematicLabel'); if (_cl) { _cl.textContent = ''; _cl.style.opacity = '0'; } }
     { const _ctb = document.getElementById('chapterTierBanner'); if (_ctb) { _ctb.style.opacity = '0'; } }
@@ -15961,6 +15962,48 @@ function startOpeningCinematic() {
   phases.push({ d: 1.0, name: 'start',   n: startN, z: baseZoom, label: 'START!' });
   cinematic = { phases, idx: 0, phaseT: 0, baseZoom };
   drawCinematicLabel('');
+  showCinematicSkipHint(true);
+}
+// '탭하여 건너뛰기' 안내 — 있는지 몰라서 계속 다 보는 일이 없도록 오프닝 중에만 표시.
+function showCinematicSkipHint(on) {
+  let el = document.getElementById('cinematicSkipHint');
+  if (!el) {
+    if (!on) return;
+    el = document.createElement('div');
+    el.id = 'cinematicSkipHint';
+    el.textContent = '탭하여 건너뛰기';
+    el.style.cssText = 'position:fixed; left:50%; bottom:9%; transform:translateX(-50%);'
+      + ' pointer-events:none; z-index:5000; opacity:0; transition:opacity .35s ease;'
+      + ' font-size:13px; letter-spacing:.04em; color:rgba(255,255,255,.82);'
+      + ' background:rgba(0,0,0,.34); border:1px solid rgba(255,255,255,.18);'
+      + ' padding:6px 14px; border-radius:999px; text-shadow:0 2px 6px rgba(0,0,0,.6);';
+    document.body.appendChild(el);
+  }
+  // 튜토리얼은 건너뛰기를 막아두었으므로 안내도 띄우지 않는다.
+  const blocked = (typeof tutorialState !== 'undefined' && tutorialState);
+  el.style.opacity = (on && !blocked) ? '1' : '0';
+}
+// 오프닝(적진→공성→아군 순회) 건너뛰기 — 화면 아무 데나 탭.
+// 반복 플레이가 지겹다는 피드백 대응. 적성/공성 순회만 잘라내고 '아군' 페이즈 끝으로 점프해
+// 도발 컷씬과 START 연출은 그대로 남긴다(연출이라 성격이 다름).
+//
+// 멀티 안전성: 온라인은 락스텝이지만 _mpBeforeTick 배리어가 '상대 ack + DELAY'를 넘어서지
+// 못하게 막으므로, 나만 건너뛰어도 몇 틱 뒤 스톨했다가 상대가 오프닝을 마치면 이어진다.
+// 데스싱크는 나지 않는다. 대신 그동안 '상대를 기다리는 중' 오버레이가 뜬다.
+// 튜토리얼은 연출 순서가 안내와 얽혀 있어 건너뛰지 않는다.
+function skipCinematic() {
+  if (!cinematic || window._introDialogActive) return;
+  if (typeof tutorialState !== 'undefined' && tutorialState) return;   // 튜토리얼 제외
+  if (cinematic._skipped) return;
+  const phases = cinematic.phases || [];
+  const mineIdx = phases.findIndex(p => p && p.name === 'mine');
+  if (mineIdx < 0) return;
+  if (cinematic.idx >= mineIdx) return;   // 이미 아군 페이즈 이후면 건너뛸 게 없음
+  cinematic._skipped = true;
+  cinematic.idx = mineIdx;
+  cinematic.phaseT = phases[mineIdx].d;   // 다음 프레임에 이 페이즈 종료 → 컷씬 → START
+  drawCinematicLabel('');
+  showCinematicSkipHint(false);
 }
 const CINEMATIC_LABEL_ASSETS = {
   '아 군': { src: './assets/battle/cinematic_label_ally.png', alt: '아군', start: false },
@@ -16100,7 +16143,7 @@ function updateCinematic(dt) {
   if (dt > 0.05) dt = 0.05;
   cinematic.phaseT += dt;
   const ph = cinematic.phases[cinematic.idx];
-  if (!ph) { cinematic = null; drawCinematicLabel(''); return false; }
+  if (!ph) { cinematic = null; drawCinematicLabel(''); showCinematicSkipHint(false); return false; }
   const prev = cinematic.phases[cinematic.idx - 1];
   const blendDur = 0.65;
   const t = Math.min(1, cinematic.phaseT / blendDur);
@@ -16139,6 +16182,7 @@ function updateCinematic(dt) {
     if (cinematic.idx >= cinematic.phases.length) {
       cinematic = null;
       drawCinematicLabel('');
+      showCinematicSkipHint(false);
       // 시네마틱 종료 후 카메라: 아군이 짤리지 않게 아군 쪽으로 치우친 위치 유지
       const me = castles.find(c => c.owner === _mySide());
       const enemiesEnd = castles.filter(c => c.owner !== _mySide() && c.owner !== 0);
@@ -19655,7 +19699,7 @@ function getPinchInfo(e) {
 function pointerDown(e) {
   // 게임 화면이 아닐 때는 native 이벤트 통과 (스테이지 지도 스크롤 등 허용)
   if (!document.body.classList.contains('in-game')) return;
-  if (cinematic) { if (e.cancelable) e.preventDefault(); return; }
+  if (cinematic) { if (e.cancelable) e.preventDefault(); skipCinematic(); return; }
   if (e.cancelable) e.preventDefault();
   // === 더블탭 → 내 부대 하이라이트 (1.5초간 적 부대 어둡게) ===
   const _now = performance.now();
@@ -43468,12 +43512,17 @@ function __startRenderLoop() {
       var remain = Math.max(0, Math.ceil((MP_WAIT_FORFEIT_MS - waitedMs) / 1000));
       var secEl = document.getElementById('mpoWaitSec');
       if (secEl) secEl.textContent = '(' + waitedSec + '초)';
+      // 상대가 아직 한 틱도 안 보냈으면(oppAckTick<0) '이탈'이 아니라 '오프닝 보는 중'이다.
+      // 내가 오프닝을 건너뛰면 상대 오프닝(최대 약 8초)만큼 여기서 기다리게 되는데,
+      // 이때 '응답 없음 · 기권승' 문구가 뜨면 정상 상황을 고장으로 오해한다.
+      var oppInIntro = (oppAckTick < 0);
       var subEl = document.getElementById('mpoWaitSub');
       if (subEl) subEl.textContent = M._oppDropped
         ? '상대 연결 끊김 · 재접속 대기 중…'
-        : ((waitedSec < 3)
+        : ((oppInIntro || waitedSec < 3)
           ? '상대가 인트로/편성을 마치면 전투가 이어집니다'
           : '상대 응답 없음 · ' + remain + '초 후 자동 기권승');
+      if (oppInIntro && waitedMs < MP_INTRO_GRACE_MS) return;   // 오프닝 유예 중엔 이탈통보·기권 판정 보류
       // 스톨 타임아웃 — 상대 턴이 15초+ 없으면 서버에 상대 이탈 통보(3초마다 재전송). 서버가 검증 후 oppLeft→기권승.
       if (waitedMs > MP_STALL_TIMEOUT_MS && (nowMs - (M._oppGoneAt || 0)) > 3000) {
         M._oppGoneAt = nowMs;
@@ -43711,6 +43760,9 @@ function __startRenderLoop() {
   var DELAY = 18;                // 입력 지연(틱) — 매치 시작 시 실측 RTT로 자동 조정. 양쪽 동일값(호스트 협상).
   var MP_STALL_TIMEOUT_MS = 15000;   // 전투 중 상대 턴이 이만큼 없으면 이탈로 보고 서버에 통보(→서버 검증 후 기권승)
   var MP_WAIT_FORFEIT_MS = 45000;    // 상대 무응답이 이만큼 지속되면 클라 자체 기권승(폴백). 서버 유예(30초) 이후 값이어야 조기 승리로 유예를 깨지 않음.
+  // 상대가 아직 한 틱도 안 보낸 구간(=오프닝 시청 중) 유예. 오프닝 최장 약 8초 + 로딩 여유.
+  // 이 시간 동안엔 이탈 통보/기권 판정을 하지 않는다(정상 상황이므로).
+  var MP_INTRO_GRACE_MS = 20000;
   var rttSamples = [];
   function _perfNow() { return (window.performance && performance.now) ? performance.now() : 0; }
   function _median(a) { if (!a.length) return 0; var b = a.slice().sort(function (x, y) { return x - y; }); return b[Math.floor(b.length / 2)]; }
@@ -43789,7 +43841,11 @@ function __startRenderLoop() {
     if (tick % 90 === 0) { for (var k in ourHashAt) if (+k < tick - 60) delete ourHashAt[k]; for (var k2 in oppHashAt) if (+k2 < tick - 60) delete oppHashAt[k2]; }
   };
   // 배틀 시작 시 락스텝 상태 초기화
-  M._resetLockstep = function () { oppAckTick = -1; localPending = []; ourHashAt = {}; oppHashAt = {}; M._sched = {}; M._desync = false; M._lastOppTurnAt = 0; window._mpArmySeq = 0; };
+  // _lastOppTurnAt은 반드시 '지금'으로 시작해야 한다. 0으로 두면 대기시간이
+  // performance.now()-0 = 페이지 로드 후 전체 시간으로 계산돼, 내 오프닝이 상대보다
+  // 조금이라도 먼저 끝나는 순간 '상대 무응답 기권승'이 즉시 오발동한다.
+  // (오프닝 건너뛰기가 생기면서 실제로 터질 수 있는 경로가 됐다.)
+  M._resetLockstep = function () { oppAckTick = -1; localPending = []; ourHashAt = {}; oppHashAt = {}; M._sched = {}; M._desync = false; M._lastOppTurnAt = (window.performance && performance.now) ? performance.now() : 0; window._mpArmySeq = 0; };
   M._schedule = function (tick, cmd) { schedAt(tick, cmd); };   // 테스트용 직접 예약
 
   // 결정론 상태해시(데싱크 감지·테스트) — 성 소유/병력/성벽 + 부대 수/병력.
