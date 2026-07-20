@@ -15939,9 +15939,10 @@ function checkTutorialProgress() {
 function startOpeningCinematic() {
   const _ms = _mySide();   // 온라인 게스트 시점: 내 진영=owner2. 싱글은 1.
   const enemies = castles.filter(c => c.owner !== _ms && c.owner !== 0);
-  let neutrals = castles.filter(c => c.owner === 0);
-  // 온라인: 공성 투어를 대표 1곳(가장 큰 중립성=중원)으로 축약 → 오프닝 간결(적진→공성→아군→START).
-  if (window._mpMode && neutrals.length > 1) neutrals = neutrals.slice().sort((a, b) => (b.size || 1) - (a.size || 1)).slice(0, 1);
+  // 공성 대상(중립 성)은 전부 순회한다. 온라인은 예전에 '오프닝 간결' 목적으로 대표 1곳
+  // (중원)만 보여줬는데, 멀티 맵은 중립이 5~7개로 가장 많은 데다 매판 랜덤 배치라
+  // 오프닝이 지형 파악 역할을 해야 한다. 길이 문제는 건너뛰기 버튼으로 해결됐으므로 복원.
+  const neutrals = castles.filter(c => c.owner === 0);
   const mine = castles.find(c => c.owner === _ms);
   if (!enemies.length || !mine) { cinematic = null; return; }
   const baseZoom = zoom;
@@ -43838,9 +43839,20 @@ function __startRenderLoop() {
     catch (e) { console.error('applyMpCmd', e); }
     window._mpApplying = false;
   }
+  // 데스싱크 감지는 '개발자 진단'이다. 유저에게 배너로 띄우지 않는다 —
+  // 화면에 경고가 떠도 유저가 할 수 있는 일이 없고, 실제로는 정상 진행 중인데
+  // 불안감만 준다. 반올림 경계에서 한 번 튀는 것과 진짜 어긋남을 구분하기 위해
+  // '연속 3회' 불일치일 때만 desync로 확정하고, 콘솔에만 남긴다.
+  var _hashMiss = 0;
   function chkDesync(T, a, b) {
     if (a == null || b == null || M._desync) return;
-    if (a !== b) { M._desync = true; console.warn('[MPO] DESYNC tick', T, 'ours', a, 'opp', b); setBanner('⚠ 동기화 오류(desync) tick ' + T, ''); }
+    if (a === b) { _hashMiss = 0; return; }
+    _hashMiss++;
+    console.warn('[MPO] hash mismatch', _hashMiss, 'tick', T, 'ours', a, 'opp', b);
+    if (_hashMiss >= 3) {
+      M._desync = true;
+      console.warn('[MPO] DESYNC confirmed at tick', T);   // 배너 없음(진단 전용)
+    }
   }
 
   // 로컬 플레이어 입력 캡처 — sendCombinedArmy가 mp+비적용 상태에서 호출되면 여기로.
@@ -43895,7 +43907,10 @@ function __startRenderLoop() {
     if (typeof castles === 'undefined' || !castles) return 0;
     var h = 2166136261;
     function mix(n) { h = (h ^ (n | 0)); h = Math.imul(h, 16777619); }
-    castles.forEach(function (c) { mix(c.owner); mix(Math.round(c.wallHP || 0)); mix(c.troops.spear); mix(c.troops.cavalry); mix(c.troops.archer); });
+    // 병력은 소수다. mix()의 (n|0)은 '버림'이라 54.9999 vs 55.0001 처럼 기기 간 부동소수점
+    // 끝자리만 달라도 54 vs 55로 갈려 실제로는 멀쩡한 판이 desync로 잡혔다(오탐).
+    // 성벽·부대는 이미 Math.round를 쓰고 있었는데 성 병력만 빠져 있었다 → 동일하게 반올림.
+    castles.forEach(function (c) { mix(c.owner); mix(Math.round(c.wallHP || 0)); mix(Math.round(c.troops.spear)); mix(Math.round(c.troops.cavalry)); mix(Math.round(c.troops.archer)); });
     var arr = (typeof armies !== 'undefined' && armies) ? armies : [];
     mix(arr.length);
     arr.forEach(function (a) { mix(a.owner); mix(Math.round(a.troops)); mix(a.unit === 'spear' ? 1 : a.unit === 'cavalry' ? 2 : 3); });
