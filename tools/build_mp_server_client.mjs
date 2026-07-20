@@ -7,6 +7,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+
+// 싱글/멀티 전투 상수가 어긋나면 여기서 멈춘다(락스텝 데스싱크 방지)
+import { checkCombatSync } from './check_combat_sync.mjs';
+if (!checkCombatSync(root)) process.exit(1);
+
 const engineSrc = fs.readFileSync(path.join(root, 'engine.js'), 'utf8').replace(/^export\s+/gm, '');
 const netSrc = fs.readFileSync(path.join(root, 'netmatch.js'), 'utf8').replace(/^import[^\n]*\n/gm, '').replace(/^export\s+/gm, '');
 const metaSrc = fs.readFileSync(path.join(root, 'meta.js'), 'utf8').replace(/^import[^\n]*\n/gm, '').replace(/^export\s+/gm, '');
