@@ -13586,21 +13586,23 @@ function refreshTopStats() {
     if (lTxt) lTxt.textContent = dFull ? '오늘 완료!' : '오늘의 별';
     else if (lEl) lEl.textContent = dFull ? '⭐ 오늘 완료!' : '⭐ 오늘의 별';
   } catch (_) {}
-  // 오늘의 보너스 — 첫 승리(+5)와 첫 멀티 승리(+5)를 한 줄로 합산 표시 (0/10 → 10/10, 완료 시 녹색)
+  // 오늘의 보너스 — 시나리오 첫승(#hdbWin)·멀티 첫승(#hdbMp) 두 줄을 각각 갱신.
+  // (예전엔 합산 1줄 #hdbCombo였는데 3행 디자인으로 바꾸면서 엘리먼트가 사라졌고,
+  //  이 갱신 코드가 따라오지 않아 승리해도 0/5에서 멈춰 있었다. 별은 지급됐지만 표시만 안 됐음.)
   try {
-    const el = document.getElementById('hdbCombo');
-    if (el) {
-      const aAmt = dailyBonusAmount('single'), bAmt = dailyBonusAmount('mp');
-      const got = (dailyBonusDone('single') ? aAmt : 0) + (dailyBonusDone('mp') ? bAmt : 0);
-      const cap = aAmt + bAmt;
-      el.classList.toggle('done', got >= cap);
+    [['hdbWin', 'single'], ['hdbMp', 'mp']].forEach(function (pair) {
+      const el = document.getElementById(pair[0]);
+      if (!el) return;
+      const amt = dailyBonusAmount(pair[1]);
+      const got = dailyBonusDone(pair[1]) ? amt : 0;
+      el.classList.toggle('done', got >= amt);
       const fill = el.querySelector('.hdb-fill');
-      if (fill) fill.style.width = Math.round(got / Math.max(1, cap) * 100) + '%';
+      if (fill) fill.style.width = Math.round(got / Math.max(1, amt) * 100) + '%';
       const nowEl = el.querySelector('.hdb-now');
       if (nowEl) nowEl.textContent = got;
       const capEl = el.querySelector('.hdb-cap');
-      if (capEl) capEl.textContent = cap;
-    }
+      if (capEl) capEl.textContent = amt;
+    });
   } catch (_) {}
 }
 function confirmExitBattle() {
