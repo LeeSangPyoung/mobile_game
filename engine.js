@@ -32,7 +32,7 @@ const HUOYU_FULL_CONVERT_MAX = 55;
 const HUOYU_PARTIAL_MIN = 16;
 const HUOYU_PARTIAL_MAX = 35;
 // 사거리/반경 — prototype.html: N*SIM_DPR/SIM_REF_ZOOM (줌 독립)
-const SHOOT_RANGE  = 90  * SIM_DPR / SIM_REF_ZOOM;
+const SHOOT_RANGE  = 200 * SIM_DPR / SIM_REF_ZOOM;   // prototype.html과 동일해야 함(락스텝)
 const ENGAGE_DIST  = 60  * SIM_DPR / SIM_REF_ZOOM;
 const AGGRO_DIST   = 100 * SIM_DPR / SIM_REF_ZOOM;
 const ATTACK_RANGE = 80  * SIM_DPR / SIM_REF_ZOOM;
