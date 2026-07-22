@@ -17479,7 +17479,74 @@ function bindTap(el, fn) {
   ['pointerdown','touchstart','touchend','click','keydown'].forEach(t =>
     document.addEventListener(t, tryUnlock, { capture: true, passive: true }));
 })();
+// ===== 앱 강제 업데이트 게이트 =====
+// 앱(APK)에서만 동작한다. 빌드 시 window.__APP_BUILD__ = versionCode 가 심어지며,
+// 웹에는 이 값이 없어 게이트가 아예 돌지 않는다(웹은 항상 최신).
+// 서버의 app_gate.js( window.__APP_GATE__ = {min: N} )를 <script>로 불러와 비교한다.
+//  - <script> 방식이라 CORS 불필요. no-store라 항상 최신.
+//  - 내 버전 < min 이면 닫을 수 없는 전체화면 안내 → 플레이스토어 이동.
+//  - 서버에 못 닿으면(오프라인) 막지 않는다(=오프라인 시나리오 플레이 보존).
+// 구형 웹뷰 호환을 위해 ES5 스타일로 작성(화살표·템플릿리터럴·?. ?? 사용 안 함).
+function initAppUpdateGate() {
+  try {
+    var myBuild = window.__APP_BUILD__;
+    if (typeof myBuild !== 'number') return;   // 웹이거나 스탬프 없음 → 게이트 비활성
+    var s = document.createElement('script');
+    s.src = 'https://app.wooriban.org/app_gate.js?t=' + (new Date()).getTime();
+    s.async = true;
+    s.onload = function () {
+      try {
+        var g = window.__APP_GATE__;
+        if (!g || typeof g.min !== 'number') return;
+        if (myBuild >= g.min) return;   // 최신이면 통과
+        showAppUpdateGate(g);
+      } catch (e) {}
+    };
+    s.onerror = function () { /* 오프라인 등 → 막지 않음 */ };
+    document.head.appendChild(s);
+  } catch (e) {}
+}
+function showAppUpdateGate(g) {
+  if (document.getElementById('appUpdateGate')) return;
+  var PKG = 'com.leesp.samgukgi';
+  var msg = (g && typeof g.msg === 'string' && g.msg) ? g.msg
+    : '새로운 버전이 출시되었습니다.\n계속하려면 업데이트해 주세요.';
+  var ov = document.createElement('div');
+  ov.id = 'appUpdateGate';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:2147483647;display:flex;'
+    + 'flex-direction:column;align-items:center;justify-content:center;gap:22px;'
+    + 'padding:32px;text-align:center;'
+    + 'background:radial-gradient(circle at 50% 35%,rgba(40,26,12,.98),rgba(10,7,4,.99));'
+    + 'color:#ffe9b0;font-size:17px;line-height:1.6;';
+  var title = document.createElement('div');
+  title.textContent = '업데이트 필요';
+  title.style.cssText = 'font-size:24px;font-weight:900;color:#ffd23f;letter-spacing:.02em;'
+    + 'text-shadow:0 2px 8px rgba(0,0,0,.6);';
+  var body = document.createElement('div');
+  body.textContent = msg;
+  body.style.cssText = 'white-space:pre-line;max-width:320px;color:#f2ddb0;';
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.textContent = '업데이트하기';
+  btn.style.cssText = 'margin-top:6px;padding:15px 34px;border-radius:999px;border:none;'
+    + 'font-size:18px;font-weight:900;color:#2a1a08;cursor:pointer;'
+    + 'background:linear-gradient(180deg,#ffd766,#f0a93a);'
+    + 'box-shadow:0 6px 20px rgba(0,0,0,.5),0 0 16px rgba(255,190,70,.4);';
+  btn.onclick = function () {
+    // 플레이스토어 앱으로 바로(실패 시 웹 스토어). market: 스킴은 시스템이 처리.
+    var market = 'market://details?id=' + PKG;
+    var web = 'https://play.google.com/store/apps/details?id=' + PKG;
+    try { window.location.href = market; } catch (e) {}
+    setTimeout(function () { try { window.open(web, '_blank'); } catch (e2) {} }, 700);
+  };
+  ov.appendChild(title); ov.appendChild(body); ov.appendChild(btn);
+  document.body.appendChild(ov);
+  // 게임 진행 정지(루프가 돌더라도 이 오버레이가 최상단에서 입력을 다 막음)
+  try { window._appUpdateBlocked = true; } catch (e) {}
+}
+
 window.addEventListener('DOMContentLoaded', () => {
+  initAppUpdateGate();
   // 스플래시 → 1.5초 후 메뉴
   showScreen('splash');
   const bootParams = new URLSearchParams(window.location.search || '');
