@@ -5337,23 +5337,22 @@
   }
   .formation-tab.active b { color: #4a1206; text-shadow: 0 1px 0 rgba(255,245,186,0.8); }
   .formation-tab.active small { color: #5b2104; opacity: 1; }
-  /* 도감 탭 — 천/지/인(편성)과 구분: 좁은 폭 + 청록 톤 + 왼쪽 구분 여백.
-     '편성 3개 + 도감(보기)'로 읽히게 한다. 다른 브레이크포인트의
-     .formation-tab.active{...!important} 금색 룰을 이기려고 여기도 !important. */
-  .formation-tab.dexf-tab {
-    padding: 6px 14px !important; margin-left: 4px !important;
-    background: linear-gradient(180deg, #123449, #0a1f2c) !important;
-    border-color: #0a1f2c !important; color: #86c9e6 !important;
+  /* 도감 탭 — 색은 천/지/인과 동일(골드). 좁은 폭 + 왼쪽 구분 여백으로만 위치를 분리. */
+  .formation-tab.dexf-tab { padding: 6px 14px !important; margin-left: 4px !important; }
+  /* 네 탭 높이를 강제 통일 — 미디어쿼리 !important 패딩 차이로 높이가 달라져
+     박스 위/아래 여백이 어긋나던 문제 해결. box-sizing으로 정확히 46px 고정. */
+  #generalManageScreen #formationTabs .formation-tab {
+    height: 46px !important; min-height: 46px !important;
+    box-sizing: border-box !important; justify-content: center !important;
   }
-  .formation-tab.dexf-tab b { color: #9fe0ff !important; }
-  .formation-tab.dexf-tab small { color: #86c9e6 !important; }
-  .formation-tab.dexf-tab.active {
-    background: linear-gradient(180deg, #d7f2ff 0%, #7fd0ef 38%, #3a95bd 72%, #1c5673 100%) !important;
-    color: #06222f !important; border-color: #06222f !important;
-    box-shadow: 0 0 0 1px #6fc6e8, 0 3px 0 #06222f, inset 0 1px 0 rgba(255,255,255,0.5) !important;
+  /* 그리드 컨테이너에 원인불명 여분 높이가 있어 위쪽 여백이 커졌다.
+     명시적 grid-template-rows(46px 한 줄) + align-content:start로 못박아 제거. */
+  #generalManageScreen #formationTabs {
+    grid-template-rows: 46px !important;
+    grid-auto-rows: 0 !important;
+    align-content: start !important;
+    row-gap: 0 !important;
   }
-  .formation-tab.dexf-tab.active b { color: #06222f !important; text-shadow: 0 1px 0 rgba(210,240,255,0.8) !important; }
-  .formation-tab.dexf-tab.active small { color: #0c3346 !important; opacity: 1 !important; }
   .formation-slots {
     margin-top: 8px;
     display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;
@@ -5478,7 +5477,7 @@
   }
   #generalManageScreen .formation-block {
     margin-top: 0;
-    padding: 8px 10px 9px;
+    padding: 8px 10px;   /* 위아래 여백 대칭 */
   }
   #generalManageScreen .manage-summary-card {
     min-height: 0;
@@ -14414,7 +14413,9 @@ function renderManageDex(rosterEl) {
     bindTap(t, function () { setDexFilter(t.getAttribute('data-df')); });
   });
   const grid = rosterEl.querySelector('.dex-grid');
-  GENERAL_ROSTER.forEach(function (def) {
+  // 전투력(기본 능력치) 내림차순 — 강한 장수부터. 원본 배열은 건드리지 않게 복사 후 정렬.
+  const sorted = GENERAL_ROSTER.slice().sort(function (a, b) { return generalScoreOf(b) - generalScoreOf(a); });
+  sorted.forEach(function (def) {
     const has = owned.get(def.id);
     if (_dexFilter === 'owned' && !has) return;
     if (_dexFilter === 'locked' && has) return;
