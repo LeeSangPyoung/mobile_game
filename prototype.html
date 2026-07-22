@@ -12133,6 +12133,9 @@
       <button class="side-rail-btn" id="btnEnhance" aria-label="장수 강화">
         <span class="srb-icon srb-kor">鍛</span><span class="srb-label">강화</span>
       </button>
+      <button class="side-rail-btn" id="btnMainDex" aria-label="장수 도감">
+        <span class="srb-icon srb-kor">圖</span><span class="srb-label">도감</span>
+      </button>
 	      <button class="side-rail-btn" id="btnPowerManage" aria-label="전투력 관리">
 	        <span class="srb-icon srb-kor">戰</span><span class="srb-label">전투력</span>
 	      </button>
@@ -12271,6 +12274,60 @@
 </div>
 
 <!-- ===== 내 장수 관리 ===== -->
+<style id="dexCss">
+  #dexScreen .dex-shell { display:flex; flex-direction:column; width:100%; height:100%; box-sizing:border-box; padding:12px 12px 0; }
+  #dexScreen .dex-progress { margin:6px 4px 10px; }
+  #dexScreen .dex-progress-top { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:6px; }
+  #dexScreen .dex-progress-label { font-size:13px; color:#e8cf96; letter-spacing:.03em; }
+  #dexScreen .dex-progress-count { font-size:18px; font-weight:900; color:#ffd23f; text-shadow:0 1px 4px rgba(0,0,0,.6); }
+  #dexScreen .dex-bar { height:8px; border-radius:999px; background:rgba(255,255,255,.10); overflow:hidden; }
+  #dexScreen .dex-bar i { display:block; height:100%; width:0%; border-radius:999px; background:linear-gradient(90deg,#ffd766,#f0a93a); transition:width .35s ease; }
+  #dexScreen .dex-tabs { display:flex; gap:8px; margin:0 4px 10px; }
+  #dexScreen .dex-tab { flex:1; padding:9px 0; border-radius:10px; border:1px solid rgba(255,210,80,.28); background:rgba(255,255,255,.05); color:#d8c398; font-size:14px; font-weight:700; cursor:pointer; }
+  #dexScreen .dex-tab.active { background:linear-gradient(180deg,rgba(255,213,102,.24),rgba(240,169,58,.14)); border-color:rgba(255,210,80,.7); color:#ffe9b0; }
+  /* 행 높이를 고정(grid-auto-rows) — 카드 내부가 전부 absolute라 aspect-ratio에만 기대면
+     일부 환경에서 높이가 무너져 겹친다. 행 높이를 못박아 안정화. */
+  #dexScreen .dex-grid { flex:1; overflow-y:auto; display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:150px; gap:9px; padding:2px 2px 18px; align-content:start; }
+  #dexScreen .dex-card { position:relative; border-radius:12px; overflow:hidden; cursor:pointer;
+    background:radial-gradient(circle at 50% 34%, rgba(78,58,34,.6), rgba(18,12,7,.92)); border:1px solid rgba(255,255,255,.10); }
+  #dexScreen .dex-card.owned { border-color:rgba(255,205,90,.55); box-shadow:0 0 0 1px rgba(255,205,90,.2) inset; }
+  #dexScreen .dex-card.locked { background:radial-gradient(circle at 50% 34%, rgba(42,38,33,.55), rgba(12,10,8,.93)); }
+  /* 얼굴 아이콘은 이름줄 위 영역에 통째로(contain) — cover+top은 투구만 보였다 */
+  #dexScreen .dex-face { position:absolute; top:3px; left:3px; right:3px; bottom:25px; }
+  #dexScreen .dex-face img { width:100%; height:100%; object-fit:contain; object-position:center bottom; display:block; }
+  #dexScreen .dex-card.locked .dex-face img { filter:grayscale(1) brightness(.62) contrast(.95); opacity:.7; }
+  #dexScreen .dex-card.locked::after { content:"🔒"; position:absolute; top:6px; right:7px; font-size:14px; opacity:.92; filter:drop-shadow(0 1px 2px rgba(0,0,0,.8)); }
+  #dexScreen .dex-name { position:absolute; left:0; right:0; bottom:0; height:24px; line-height:24px; padding:0 6px; font-size:12.5px; font-weight:800; color:#fff2d4; text-align:center; background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.9)); text-shadow:0 1px 3px rgba(0,0,0,.95); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #dexScreen .dex-card.locked .dex-name { color:#dccfb6; }
+  #dexScreen .dex-stars { position:absolute; top:4px; left:6px; z-index:2; }
+  #dexScreen .dex-count { bottom:28px; }
+  #dexScreen .dex-stars { position:absolute; top:5px; left:6px; font-size:11px; color:#ffd23f; letter-spacing:-1px; text-shadow:0 1px 3px rgba(0,0,0,.85); }
+  #dexScreen .dex-lv { margin-left:4px; font-size:10px; color:#ffd23f; }
+  #dexScreen .dex-count { position:absolute; bottom:26px; right:6px; font-size:11px; font-weight:800; color:#fff; background:rgba(0,0,0,.6); border-radius:8px; padding:1px 6px; }
+</style>
+<div id="dexScreen" class="screen" style="display:none">
+  <div class="dex-shell">
+    <div class="deploy-top">
+      <button class="deploy-back" id="dexBack" aria-label="뒤로가기"></button>
+      <div class="deploy-heading">장수 도감</div>
+      <div class="deploy-count" id="dexCount">0 / 0</div>
+    </div>
+    <div class="dex-progress">
+      <div class="dex-progress-top">
+        <span class="dex-progress-label">수집 완성도</span>
+        <span class="dex-progress-count" id="dexCountBig">0 / 0</span>
+      </div>
+      <div class="dex-bar"><i id="dexBarFill"></i></div>
+    </div>
+    <div class="dex-tabs">
+      <button type="button" class="dex-tab active" id="dexTab_all">전체</button>
+      <button type="button" class="dex-tab" id="dexTab_owned">보유</button>
+      <button type="button" class="dex-tab" id="dexTab_locked">미보유</button>
+    </div>
+    <div class="dex-grid" id="dexGrid"></div>
+  </div>
+</div>
+
 <div id="generalManageScreen" class="screen" style="display:none">
   <div class="deploy-shell">
     <div class="deploy-top">
@@ -12773,7 +12830,7 @@
 <script src="./assets/generals/roster_200.js"></script>
 <script>
 // ===== 화면 전환 + 진행 상태 =====
-const SCREENS = ['splash', 'menu', 'stageSelect', 'stageInfo', 'generalSelectScreen', 'generalManageScreen', 'upgradeScreen', 'prisonerScreen', 'enhanceScreen', 'starterPickScreen'];
+const SCREENS = ['splash', 'menu', 'stageSelect', 'stageInfo', 'generalSelectScreen', 'generalManageScreen', 'dexScreen', 'upgradeScreen', 'prisonerScreen', 'enhanceScreen', 'starterPickScreen'];
 // ?reset=1 로 접속하면 저장 데이터를 지우고 신규 플레이로 시작 (개발용)
 if (new URLSearchParams(location.search).get('reset') === '1') {
   localStorage.removeItem('save');
@@ -14318,6 +14375,76 @@ function showGeneralManage() {
   // 진입 시 하단 로스터는 항상 맨 위부터 (화면 내 재렌더는 위치 유지, 재진입만 리셋)
   const _mr = document.getElementById('manageRoster');
   if (_mr) _mr.scrollTop = 0;
+}
+
+// ===== 장수 도감 =====
+// 수집 단위 = "장수 200명 각각을 한 번이라도 보유했는가"(정체성). ★ 등급은 등용 시 랜덤이라
+// 고정 속성이 아니므로 수집 축이 아니라 '보유한 최고 사본의 품질' 표시로만 쓴다.
+let _dexFilter = 'all';   // all | owned | locked
+function dexOwnedBestById() {
+  const map = new Map();   // id → { stars, lv, count }
+  const arr = Array.isArray(SAVE.generals) ? SAVE.generals : [];
+  arr.forEach(function (inst) {
+    if (!inst || !inst.id) return;
+    const st = clampStars((inst.stars) || 1);
+    const lv = Math.max(1, Math.min(ENHANCE_MAX_LV, (inst.lv) || 1));
+    const cur = map.get(inst.id);
+    if (!cur) { map.set(inst.id, { stars: st, lv: lv, count: 1 }); return; }
+    cur.count += 1;
+    if (st > cur.stars || (st === cur.stars && lv > cur.lv)) { cur.stars = st; cur.lv = lv; }
+  });
+  return map;
+}
+function showDex() {
+  showScreen('dexScreen');
+  renderDex();
+  refreshTopStats();
+  const grid = document.getElementById('dexGrid');
+  if (grid) grid.scrollTop = 0;
+}
+function setDexFilter(f) { _dexFilter = f; renderDex(); }
+function renderDex() {
+  const grid = document.getElementById('dexGrid');
+  if (!grid) return;
+  const owned = dexOwnedBestById();
+  const total = GENERAL_ROSTER.length;
+  const have = owned.size;
+  const cnt = have + ' / ' + total;
+  const c1 = document.getElementById('dexCount'); if (c1) c1.textContent = cnt;
+  const c2 = document.getElementById('dexCountBig'); if (c2) c2.textContent = cnt;
+  const bar = document.getElementById('dexBarFill'); if (bar) bar.style.width = Math.round(have / Math.max(1, total) * 100) + '%';
+  ['all', 'owned', 'locked'].forEach(function (f) {
+    const t = document.getElementById('dexTab_' + f);
+    if (t) t.classList.toggle('active', _dexFilter === f);
+  });
+  grid.innerHTML = '';
+  GENERAL_ROSTER.forEach(function (def) {
+    const has = owned.get(def.id);
+    if (_dexFilter === 'owned' && !has) return;
+    if (_dexFilter === 'locked' && has) return;
+    const g = has ? Object.assign({}, def, { stars: has.stars, lv: has.lv })
+                  : Object.assign({}, def, { stars: 1, lv: 1 });
+    const card = document.createElement('div');
+    card.className = 'dex-card ' + (has ? ('owned tier-' + getGeneralRarity(g).tier) : 'locked');
+    card.setAttribute('role', 'button');
+    card.tabIndex = 0;
+    card.setAttribute('aria-label', def.name + (has ? '' : ' 미보유'));
+    const starHTML = has ? '<span class="dex-stars">' + '★'.repeat(has.stars) + '</span>' : '';
+    const countHTML = (has && has.count > 1) ? '<span class="dex-count">x' + has.count + '</span>' : '';
+    const lvHTML = (has && has.lv > 1) ? '<span class="dex-lv">+' + (has.lv - 1) + '</span>' : '';
+    // 얼굴 아이콘(200명 전원 커버) — 전신 아트는 투구만 보여 도감엔 부적합.
+    const src = (typeof battleFaceIconSrc === 'function' ? battleFaceIconSrc(def.id, def) : '') || def.face || def.bust || '';
+    card.innerHTML =
+      '<div class="dex-face"><img loading="lazy" src="' + src + '" alt=""></div>' +
+      starHTML +
+      '<div class="dex-name">' + htmlSafe(def.name) + lvHTML + '</div>' +
+      countHTML;
+    bindTap(card, function () { showGeneralDetail(g); });
+    card.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); showGeneralDetail(g); }
+    });
+    grid.appendChild(card);
+  });
 }
 const FORMATION_KEYS = ['天','地','人'];
 const FORMATION_SUBS  = { '天': '하늘', '地': '땅', '人': '사람' };
@@ -17599,6 +17726,11 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('battleSelect').addEventListener('click', (e) => { if (e.target.id === 'battleSelect') closeBattleSelect(); });
   bindTap(document.getElementById('btnGeneralManage'), showGeneralManage);
   bindTap(document.getElementById('btnEnhance'), showEnhanceScreen);
+  bindTap(document.getElementById('btnMainDex'), showDex);
+  bindTap(document.getElementById('dexBack'), returnFromUtilityScreen);
+  bindTap(document.getElementById('dexTab_all'), () => setDexFilter('all'));
+  bindTap(document.getElementById('dexTab_owned'), () => setDexFilter('owned'));
+  bindTap(document.getElementById('dexTab_locked'), () => setDexFilter('locked'));
   bindTap(document.getElementById('btnPowerManage'), () => { _postUpgradeStage = null; goToUpgrade(); });
   bindTap(document.getElementById('btnMainExchange'), showStarExchange);
   bindTap(document.getElementById('btnMainSettings'), showAudioSettings);
