@@ -5275,6 +5275,13 @@
     width: 78px; height: 78px;
     border-radius: 12px;
   }
+  /* 내 장수 카드: 초상화 영역에 등급 배경(장면) — 컷아웃 캐릭터가 그 장면에 서 있게.
+     카드 본체는 금색 테마/어두운 글씨라 배경은 얼굴칸에만 넣는다. */
+  .manage-roster .deploy-card.tier-star1 .deploy-face { background-image:url('./assets/generals/rarity_bg/star1.webp') !important; background-size:cover !important; background-position:center 20% !important; }
+  .manage-roster .deploy-card.tier-star2 .deploy-face { background-image:url('./assets/generals/rarity_bg/star2.webp') !important; background-size:cover !important; background-position:center 20% !important; }
+  .manage-roster .deploy-card.tier-star3 .deploy-face { background-image:url('./assets/generals/rarity_bg/star3.webp') !important; background-size:cover !important; background-position:center 20% !important; }
+  .manage-roster .deploy-card.tier-star4 .deploy-face { background-image:url('./assets/generals/rarity_bg/star4.webp') !important; background-size:cover !important; background-position:center 20% !important; }
+  .manage-roster .deploy-card.tier-star5 .deploy-face { background-image:url('./assets/generals/rarity_bg/star5.webp') !important; background-size:cover !important; background-position:center 20% !important; }
   .manage-roster .deploy-card .deploy-name {
     font-size: 14px; letter-spacing: 1px;
   }
@@ -12326,7 +12333,8 @@
   .dex-view .dex-card.tier-star3::before { background-image:url('./assets/generals/rarity_bg/star3.webp'); }
   .dex-view .dex-card.tier-star4::before { background-image:url('./assets/generals/rarity_bg/star4.webp'); }
   .dex-view .dex-card.tier-star5::before { background-image:url('./assets/generals/rarity_bg/star5.webp'); }
-  .dex-view .dex-card.locked::before { filter:grayscale(1) brightness(.5); }
+  /* 미보유여도 배경(등급 장면)은 컬러로 그대로 — 흑백은 캐릭터(초상화)에만 적용. */
+  .dex-view .dex-card.locked::before { filter:brightness(.82); }
   /* 컷아웃 반신 초상화 — 배경 위(z-index 1)에서 카드를 채움 */
   .dex-view .dex-face { position:absolute; inset:0; bottom:20px; z-index:1; }
   .dex-view .dex-face img { width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
