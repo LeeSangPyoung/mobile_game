@@ -5351,15 +5351,18 @@
   }
   .formation-tab.dexf-tab b { color: #ffe08a !important; }
   .formation-tab.dexf-tab small { color: #ffd75e !important; opacity: 1 !important; }
-  /* 활성(도감 화면일 때)은 천/지/인과 완전히 동일한 금색 — 얇은 남색 테두리 + 금 배경(두꺼운 금테 X) */
+  /* 활성(도감 화면일 때)은 천/지/인 활성과 100% 동일 — 실제 적용되는 값 그대로 복사(#ffd96a, 1px 금테). */
   .formation-tab.dexf-tab.active {
-    background: radial-gradient(circle at 18% 0%, rgba(255,255,255,0.9), transparent 34%),
-      linear-gradient(180deg, #fff7b8 0%, #f7c948 100%) !important;
-    color: #082252 !important; border-color: rgba(5,22,58,0.74) !important;
-    box-shadow: 0 3px 0 rgba(5,22,58,0.72), inset 0 1px 0 rgba(255,255,255,0.72) !important;
+    border: 1px solid rgba(255,223,122,0.72) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.44), rgba(255,255,255,0.05) 36%),
+      linear-gradient(180deg, #ffd96a, #d39622 58%, #825116) !important;
+    color: #241305 !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.56) !important;
+    box-shadow: 0 10px 18px rgba(247,201,90,0.22), inset 0 1px 0 rgba(255,255,255,0.5) !important;
   }
-  .formation-tab.dexf-tab.active b { color: #082252 !important; text-shadow: none !important; }
-  .formation-tab.dexf-tab.active small { color: #082252 !important; }
+  .formation-tab.dexf-tab.active b { color: #241305 !important; text-shadow: 0 1px 0 rgba(255,255,255,0.56) !important; }
+  .formation-tab.dexf-tab.active small { color: #241305 !important; }
   /* 네 탭 높이를 강제 통일 — 미디어쿼리 !important 패딩 차이로 높이가 달라져
      박스 위/아래 여백이 어긋나던 문제 해결. box-sizing으로 정확히 46px 고정. */
   /* 탭 세로 정렬: 그리드 대신 flex로. align-items:center면 탭 높이가 달라도(도감 탭 등)
@@ -13008,56 +13011,56 @@ const UPG_DEFS = {
   unitDef:   { label: '병력 방어력', icon: '🦾', desc: '아군 부대 받는 피해 감소', per: 0.05, currency: 'gold' },
 };
 const MANUAL_GENERAL_DEFS = [
-  { id: 'liu_bei', name: '유비', buffs: { unitAtk: 0.10, unitDef: 0.05, castleDef: 0.05, castleAtk: 0.05 } },
+  { id: 'liu_bei', name: '유비', buffs: { unitAtk: 0.07, unitDef: 0.05, castleDef: 0.05, castleAtk: 0.05 } },
   { id: 'guan_yu', name: '관우', buffs: { unitAtk: 0.10, unitDef: 0.05, castleAtk: 0.085 } },
   { id: 'zhang_fei', name: '장비', buffs: { unitAtk: 0.10, unitDef: 0.05, castleAtk: 0.075 } },
   { id: 'zhao_yun', name: '조운', buffs: { unitAtk: 0.10, unitDef: 0.10, castleAtk: 0.02 } },
   { id: 'lu_bu', name: '여포', buffs: { unitAtk: 0.10, castleAtk: 0.10, unitDef: 0.05 } },
-  { id: 'xiahou_dun', name: '하후돈', buffs: { castleAtk: 0.06, unitDef: 0.04 } },
-  { id: 'cao_cao', name: '조조', buffs: { unitAtk: 0.07, unitDef: 0.07, castleAtk: 0.06, castleDef: 0.05 } },
-  { id: 'cao_xing', name: '조흥', buffs: { unitAtk: 0.02, castleAtk: 0.02 } },
-  { id: 'taishi_ci', name: '태사자', buffs: { unitAtk: 0.07, unitDef: 0.03 } },
-  { id: 'zhuge_liang', name: '제갈량', buffs: { prodRate: 0.08, castleDef: 0.05, unitDef: 0.03 } },
-  { id: 'huang_zhong', name: '황충', buffs: { unitAtk: 0.08, unitDef: 0.02 } },
-  { id: 'huang_gai', name: '황개', buffs: { castleDef: 0.07, unitDef: 0.04 } },
-  { id: 'yan_liang', name: '안량', buffs: { unitAtk: 0.07, castleAtk: 0.04 } },
-  { id: 'dong_zhuo', name: '동탁', buffs: { castleDef: 0.06, unitDef: 0.03 } },
-  { id: 'sima_yi', name: '사마의', buffs: { castleDef: 0.09, unitDef: 0.08, castleAtk: 0.05 } },
-  { id: 'gan_ning', name: '감녕', buffs: { unitAtk: 0.06, castleAtk: 0.04 } },
-  { id: 'yuan_shao', name: '원소', buffs: { castleDef: 0.05, unitAtk: 0.03 } },
-  { id: 'sun_quan', name: '손권', buffs: { castleDef: 0.06, unitDef: 0.04 } },
-  { id: 'zhou_yu', name: '주유', buffs: { castleAtk: 0.08, unitAtk: 0.05 } },
-  { id: 'ma_chao', name: '마초', buffs: { unitAtk: 0.09, unitDef: 0.03 } },
-  { id: 'sun_ce', name: '손책', buffs: { unitAtk: 0.08, castleAtk: 0.06 } },
-  { id: 'lu_xun', name: '육손', buffs: { unitDef: 0.06, castleAtk: 0.05, prodRate: 0.04 } },
-  { id: 'pang_tong', name: '방통', buffs: { castleAtk: 0.07, prodRate: 0.04 } },
-  { id: 'guo_jia', name: '곽가', buffs: { unitAtk: 0.05, unitDef: 0.05 } },
-  { id: 'dian_wei', name: '전위', buffs: { unitDef: 0.08, unitAtk: 0.05 } },
-  { id: 'xu_chu', name: '허저', buffs: { unitDef: 0.08, castleDef: 0.06 } },
-  { id: 'zhang_liao', name: '장료', buffs: { unitAtk: 0.08, unitDef: 0.04 } },
-  { id: 'xu_huang', name: '서황', buffs: { castleAtk: 0.07, unitDef: 0.04 } },
-  { id: 'wen_chou', name: '문추', buffs: { unitAtk: 0.06, unitDef: 0.02 } },
-  { id: 'meng_huo', name: '맹획', buffs: { unitDef: 0.05, unitAtk: 0.04 } },
-  { id: 'hua_xiong', name: '화웅', buffs: { unitAtk: 0.07, castleAtk: 0.04 } },
-  { id: 'gao_shun', name: '고순', buffs: { unitDef: 0.07, castleAtk: 0.05 } },
-  { id: 'chen_gong', name: '진궁', buffs: { castleDef: 0.06, prodRate: 0.04 } },
-  { id: 'li_ru', name: '이유', buffs: { castleAtk: 0.05, prodRate: 0.05 } },
-  { id: 'li_jue', name: '이각', buffs: { unitAtk: 0.05, unitDef: 0.04 } },
-  { id: 'guo_si', name: '곽사', buffs: { unitAtk: 0.05, castleAtk: 0.03 } },
-  { id: 'zhang_ji', name: '장제', buffs: { castleDef: 0.05, unitDef: 0.04 } },
-  { id: 'zhang_xiu', name: '장수', buffs: { unitAtk: 0.06, unitDef: 0.04 } },
-  { id: 'jia_xu', name: '가후', buffs: { castleAtk: 0.06, castleDef: 0.05, prodRate: 0.03 } },
-  { id: 'xun_yu', name: '순욱', buffs: { prodRate: 0.08, castleDef: 0.05 } },
-  { id: 'xun_you', name: '순유', buffs: { unitDef: 0.05, prodRate: 0.05 } },
-  { id: 'cheng_yu', name: '정욱', buffs: { castleAtk: 0.05, castleDef: 0.05 } },
-  { id: 'cao_ren', name: '조인', buffs: { castleDef: 0.08, unitDef: 0.05 } },
-  { id: 'cao_hong', name: '조홍', buffs: { unitAtk: 0.05, castleDef: 0.04 } },
-  { id: 'cao_pi', name: '조비', buffs: { castleAtk: 0.05, castleDef: 0.05, prodRate: 0.03 } },
-  { id: 'cao_zhang', name: '조창', buffs: { unitAtk: 0.08, unitDef: 0.03 } },
-  { id: 'cao_zhi', name: '조식', buffs: { prodRate: 0.07, castleDef: 0.03 } },
-  { id: 'cao_ang', name: '조앙', buffs: { unitDef: 0.05, castleDef: 0.04 } },
-  { id: 'cao_chun', name: '조순', buffs: { unitAtk: 0.06, unitDef: 0.05 } },
-  { id: 'cao_rui', name: '조예', buffs: { castleDef: 0.06, prodRate: 0.04 } },
+  { id: 'xiahou_dun', name: '하후돈', buffs: { unitAtk: 0.08, unitDef: 0.05, castleAtk: 0.05 } },
+  { id: 'cao_cao', name: '조조', buffs: { unitAtk: 0.06, unitDef: 0.07, castleAtk: 0.06, castleDef: 0.05 } },
+  { id: 'cao_xing', name: '조흥', buffs: { unitAtk: 0.04, castleAtk: 0.03 } },
+  { id: 'taishi_ci', name: '태사자', buffs: { unitAtk: 0.09, unitDef: 0.06, castleAtk: 0.05 } },
+  { id: 'zhuge_liang', name: '제갈량', buffs: { castleDef: 0.06, prodRate: 0.06, unitDef: 0.03 } },
+  { id: 'huang_zhong', name: '황충', buffs: { unitAtk: 0.10, castleAtk: 0.07, unitDef: 0.03 } },
+  { id: 'huang_gai', name: '황개', buffs: { unitAtk: 0.06, castleAtk: 0.05, unitDef: 0.04 } },
+  { id: 'yan_liang', name: '안량', buffs: { unitAtk: 0.10, castleAtk: 0.06, unitDef: 0.04 } },
+  { id: 'dong_zhuo', name: '동탁', buffs: { unitAtk: 0.07, unitDef: 0.05, castleDef: 0.05 } },
+  { id: 'sima_yi', name: '사마의', buffs: { castleDef: 0.08, unitDef: 0.07, castleAtk: 0.04 } },
+  { id: 'gan_ning', name: '감녕', buffs: { unitAtk: 0.09, castleAtk: 0.06, unitDef: 0.05 } },
+  { id: 'yuan_shao', name: '원소', buffs: { unitAtk: 0.05, unitDef: 0.05, castleDef: 0.04 } },
+  { id: 'sun_quan', name: '손권', buffs: { unitDef: 0.06, castleDef: 0.05, unitAtk: 0.04 } },
+  { id: 'zhou_yu', name: '주유', buffs: { castleAtk: 0.07, unitAtk: 0.05, unitDef: 0.04 } },
+  { id: 'ma_chao', name: '마초', buffs: { unitAtk: 0.10, unitDef: 0.06, castleAtk: 0.075 } },
+  { id: 'sun_ce', name: '손책', buffs: { unitAtk: 0.09, castleAtk: 0.06, unitDef: 0.04 } },
+  { id: 'lu_xun', name: '육손', buffs: { unitDef: 0.05, castleAtk: 0.05, prodRate: 0.04, unitAtk: 0.03 } },
+  { id: 'pang_tong', name: '방통', buffs: { castleAtk: 0.06, prodRate: 0.04, castleDef: 0.03 } },
+  { id: 'guo_jia', name: '곽가', buffs: { castleDef: 0.04, prodRate: 0.04, unitDef: 0.03 } },
+  { id: 'dian_wei', name: '전위', buffs: { unitAtk: 0.10, unitDef: 0.08, castleDef: 0.05 } },
+  { id: 'xu_chu', name: '허저', buffs: { unitDef: 0.10, unitAtk: 0.08, castleDef: 0.05 } },
+  { id: 'zhang_liao', name: '장료', buffs: { unitAtk: 0.09, unitDef: 0.06, castleAtk: 0.055 } },
+  { id: 'xu_huang', name: '서황', buffs: { unitAtk: 0.08, castleAtk: 0.07, unitDef: 0.04 } },
+  { id: 'wen_chou', name: '문추', buffs: { unitAtk: 0.10, castleAtk: 0.05, unitDef: 0.04 } },
+  { id: 'meng_huo', name: '맹획', buffs: { unitAtk: 0.08, unitDef: 0.05, castleAtk: 0.03 } },
+  { id: 'hua_xiong', name: '화웅', buffs: { unitAtk: 0.09, castleAtk: 0.04, unitDef: 0.03 } },
+  { id: 'gao_shun', name: '고순', buffs: { unitAtk: 0.07, unitDef: 0.07, castleAtk: 0.04 } },
+  { id: 'chen_gong', name: '진궁', buffs: { castleDef: 0.04, prodRate: 0.03 } },
+  { id: 'li_ru', name: '이유', buffs: { castleDef: 0.04, prodRate: 0.03 } },
+  { id: 'li_jue', name: '이각', buffs: { unitAtk: 0.07, castleAtk: 0.04, unitDef: 0.04 } },
+  { id: 'guo_si', name: '곽사', buffs: { unitAtk: 0.07, castleAtk: 0.04, unitDef: 0.03 } },
+  { id: 'zhang_ji', name: '장제', buffs: { unitAtk: 0.05, castleAtk: 0.03, unitDef: 0.03 } },
+  { id: 'zhang_xiu', name: '장수', buffs: { unitAtk: 0.07, unitDef: 0.05, castleAtk: 0.03 } },
+  { id: 'jia_xu', name: '가후', buffs: { castleDef: 0.05, prodRate: 0.04, unitDef: 0.03 } },
+  { id: 'xun_yu', name: '순욱', buffs: { castleDef: 0.05, prodRate: 0.05 } },
+  { id: 'xun_you', name: '순유', buffs: { castleDef: 0.04, prodRate: 0.04 } },
+  { id: 'cheng_yu', name: '정욱', buffs: { castleDef: 0.04, unitDef: 0.03 } },
+  { id: 'cao_ren', name: '조인', buffs: { unitDef: 0.07, castleDef: 0.06, unitAtk: 0.04 } },
+  { id: 'cao_hong', name: '조홍', buffs: { unitDef: 0.06, unitAtk: 0.05, castleDef: 0.03 } },
+  { id: 'cao_pi', name: '조비', buffs: { unitAtk: 0.05, unitDef: 0.05, castleDef: 0.04 } },
+  { id: 'cao_zhang', name: '조창', buffs: { unitAtk: 0.09, unitDef: 0.05, castleAtk: 0.045 } },
+  { id: 'cao_zhi', name: '조식', buffs: { prodRate: 0.04, castleDef: 0.03 } },
+  { id: 'cao_ang', name: '조앙', buffs: { unitAtk: 0.05, unitDef: 0.04 } },
+  { id: 'cao_chun', name: '조순', buffs: { unitAtk: 0.05, unitDef: 0.05, castleAtk: 0.03 } },
+  { id: 'cao_rui', name: '조예', buffs: { castleDef: 0.05, unitDef: 0.04 } },
 ];
 const GENERAL_FACE_IDS = new Set('cao_cao cao_xing dian_wei dong_zhuo gan_ning guan_yu guo_jia huang_gai huang_zhong liu_bei lu_bu lu_xun ma_chao meng_huo pang_tong sima_yi sun_ce sun_quan taishi_ci wen_chou xiahou_dun xu_chu xu_huang yan_liang yuan_shao zhang_fei zhang_liao zhao_yun zhou_yu zhuge_liang zhang_he yu_jin yue_jin li_dian cao_ren cao_hong cao_pi cao_zhi cao_zhang cao_ang cao_rui cheng_yu xun_yu xun_you jia_xu li_jue guo_si zhang_ji zhang_xiu hua_xiong li_ru'.split(' '));
 const GENERAL_BUST_REAL_IDS = new Set('zhang_he yu_jin yue_jin li_dian cao_ren cao_hong cao_pi cao_zhang cao_ang cao_rui cao_shuang cao_zhen cao_xiu xiahou_yuan xiahou_ba cheng_yu xun_yu xun_you jia_xu man_chong deng_ai zhong_hui guo_huai wang_ping zang_ba liu_ye xu_sheng ding_feng han_dang cheng_pu zhou_tai jiang_qin ling_tong lu_su zhang_zhao zhang_hong zhu_huan zhu_ran bu_zhi kan_ze yu_fan he_qi pan_zhang quan_cong sun_jian sun_shao sun_huan guan_ping guan_xing liu_feng ma_su ma_liang jiang_wei wei_yan fa_zheng jian_yong mi_zhu mi_fang sun_qian liao_hua ma_dai yan_yan li_yan fei_yi dong_yun jiang_wan huang_quan chen_dao meng_da li_hui huo_jun zhuge_zhan zhuge_jin zhuge_dan zhang_yi_shu dong_jue xin_pi gongsun_zan gongsun_du gongsun_kang liu_biao liu_zhang liu_yao tao_qian kong_rong zhang_lu zhang_ren ma_teng han_sui dong_cheng he_jin wang_yun zhang_xiu hua_xiong yuan_shu liu_xun'.split(' '));
@@ -15186,11 +15189,14 @@ function commanderArmyMult(a, key) {
 }
 // === 지력(intelligence) — 책사 높음, 맹장/일반 낮음(0 아님). 회유 능력에 사용 ===
 const GENERAL_INT = {
-  zhuge_liang: 98, pang_tong: 96, sima_yi: 94, guo_jia: 92, jia_xu: 90,
-  xun_yu: 89, xun_you: 87, zhou_yu: 86, lu_xun: 85, fa_zheng: 83, chen_gong: 82,
-  zhuge_jin: 80, jiang_wan: 79, li_ru: 80, cheng_yu: 81, kan_ze: 76, lu_su: 78,
+  zhuge_liang: 100, pang_tong: 97, sima_yi: 98, guo_jia: 96, jia_xu: 97,
+  xun_yu: 95, xun_you: 92, zhou_yu: 94, lu_xun: 93, fa_zheng: 92, chen_gong: 85,
+  zhuge_jin: 80, jiang_wan: 79, li_ru: 88, cheng_yu: 88, kan_ze: 76, lu_su: 78,
   huang_quan: 74, dong_yun: 72, fei_yi: 73, ma_su: 70, jian_yong: 68, mi_zhu: 66,
-  cao_cao: 75, liu_bei: 60, sun_quan: 64, yuan_shao: 58, dong_zhuo: 50,
+  cao_cao: 78, liu_bei: 60, sun_quan: 64, yuan_shao: 58, dong_zhuo: 52,
+  cao_zhi: 88,
+  cao_pi: 82,
+  cao_rui: 80,
 };
 function generalIntel(g) {
   if (!g || !g.id) return 28;
