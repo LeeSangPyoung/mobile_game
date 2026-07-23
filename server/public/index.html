@@ -5696,14 +5696,16 @@
     color: #fff5d8;
     box-shadow: 0 5px 0 #210804, 0 0 0 3px #f0b531, 0 10px 18px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.2);
   }
-  /* 내 장수/출전 카드의 실제 전투력(별+강화 반영) — 도감 스타일 콘덴스드 숫자, 얼굴칸 우하단 작게 */
-  .deploy-face { position: relative; }
-  .deploy-face .card-pow {
+  /* 실제 전투력(별+강화 반영) 배지 — 내장수/출전/편성슬롯/강화(대상·재료)/포로 공통.
+     도감 스타일 콘덴스드 숫자, 얼굴칸 우하단 작게. 컨테이너는 position:relative 필요. */
+  .deploy-face, .formation-slot, .enh-roster-card .face-wrap, #prisonerScreen .prison-face-frame { position: relative; }
+  .card-pow {
     position: absolute; right: 3px; bottom: 1px; z-index: 3;
     font-family: 'sans-serif-condensed','Roboto Condensed','Arial Narrow',Impact,sans-serif;
     font-size: 12px; font-weight: 900; font-style: normal; letter-spacing: -0.5px; line-height: 1;
     text-shadow: 0 0 2px rgba(0,0,0,0.95), 0 1px 2px rgba(0,0,0,0.95);
     -webkit-text-stroke: 0.35px rgba(0,0,0,0.6);
+    pointer-events: none;
   }
   .deploy-face {
     width: 72px; height: 72px;
@@ -12479,7 +12481,7 @@
     <div class="prison-event">
       <div class="prison-caption" id="prisonCaption">왕좌 앞에 사로잡은 적장이 끌려왔다.</div>
       <div class="prison-dialogue">
-        <div class="prison-face-frame"><img id="prisonFace" alt=""></div>
+        <div class="prison-face-frame"><img id="prisonFace" alt=""><span class="card-pow" id="prisonPow"></span></div>
         <div class="prison-speech">
           <div class="prison-speaker" id="prisonSpeaker">포로</div>
           <div class="prison-line" id="prisonLine"></div>
@@ -14419,6 +14421,7 @@ function renderGeneralSelect() {
           <span class="slot-rank">${i + 1}</span>
           ${rarityBadgeHTML(g)}
           <img src="${g.bust || g.face}" alt="">
+          <span class="card-pow" style="color:${getGeneralRarity(g).color}">${generalDetailPower(g).toLocaleString()}</span>
           <span class="slot-name">${g.name}${g.lv > 1 ? ` <small style="color:#ffd23f;">+${g.lv-1}</small>` : ''}</span>
           <span class="slot-x">×</span>
         `;
@@ -15044,6 +15047,7 @@ function renderGeneralManage() {
           <span class="slot-rank">${i + 1}</span>
           ${rarityBadgeHTML(g)}
           <img src="${g.bust || g.face}" alt="">
+          <span class="card-pow" style="color:${getGeneralRarity(g).color}">${generalDetailPower(g).toLocaleString()}</span>
           <span class="slot-name">${g.name}${g.lv > 1 ? ` <small style="color:#ffd23f;">+${g.lv-1}</small>` : ''}</span>
           <span class="slot-x">×</span>
         `;
@@ -22520,6 +22524,7 @@ function showPrisonerScreen(prisoners, onContinue) {
     renderAbility(p);
     const _st = clampStars(p.stars || 1);
     applyRarityBg(document.querySelector('#prisonerScreen .prison-face-frame'), p.id, _st);
+    { const _pp = document.getElementById('prisonPow'); if (_pp) { const _pd = getGeneralById(p.id) || p; _pp.textContent = generalDetailPower(Object.assign({}, _pd, { stars: _st, lv: 1 })).toLocaleString(); _pp.style.color = (STAR_META[_st] || STAR_META[1]).color; } }
     const _meta = STAR_META[_st] || STAR_META[1];
     const _glow = _st >= 4 ? `;text-shadow:0 0 8px ${_meta.color}` : '';
     speaker.innerHTML = `${p.name}(포로) <span style="color:${_meta.color}${_glow};font-weight:900">${'★'.repeat(_st)}</span>`;
@@ -42735,6 +42740,7 @@ function renderEnhanceRoster() {
         ${rarityBadgeHTML(g)}
         ${g.lv > 1 ? `<div class="lv-badge">Lv${g.lv}</div>` : ''}
         <img src="${g.bust || g.face}" alt="">
+        <span class="card-pow" style="color:${getGeneralRarity(g).color}">${generalDetailPower(g).toLocaleString()}</span>
       </div>
       ${__ENH.pickMode === 'fodder' && isFodder && !isTarget ? '<span class="enh-roster-remove" aria-hidden="true"></span>' : ''}
       <div class="name">${g.name}</div>
