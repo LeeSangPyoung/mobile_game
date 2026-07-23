@@ -5275,13 +5275,8 @@
     width: 78px; height: 78px;
     border-radius: 12px;
   }
-  /* 내 장수 카드: 초상화 영역에 등급 배경(장면) — 컷아웃 캐릭터가 그 장면에 서 있게.
-     카드 본체는 금색 테마/어두운 글씨라 배경은 얼굴칸에만 넣는다. */
-  .manage-roster .deploy-card.tier-star1 .deploy-face { background-image:url('./assets/generals/rarity_bg/star1.webp') !important; background-size:cover !important; background-position:center 20% !important; }
-  .manage-roster .deploy-card.tier-star2 .deploy-face { background-image:url('./assets/generals/rarity_bg/star2.webp') !important; background-size:cover !important; background-position:center 20% !important; }
-  .manage-roster .deploy-card.tier-star3 .deploy-face { background-image:url('./assets/generals/rarity_bg/star3.webp') !important; background-size:cover !important; background-position:center 20% !important; }
-  .manage-roster .deploy-card.tier-star4 .deploy-face { background-image:url('./assets/generals/rarity_bg/star4.webp') !important; background-size:cover !important; background-position:center 20% !important; }
-  .manage-roster .deploy-card.tier-star5 .deploy-face { background-image:url('./assets/generals/rarity_bg/star5.webp') !important; background-size:cover !important; background-position:center 20% !important; }
+  /* (내 장수 카드 얼굴칸 배경은 아래 :is(.manage-roster,.deploy-roster,.sp-roster) 블록에서
+     장면 이미지로 일괄 적용 — 내 장수/출전/시작선택 로스터 공통) */
   .manage-roster .deploy-card .deploy-name {
     font-size: 14px; letter-spacing: 1px;
   }
@@ -5717,7 +5712,7 @@
     box-shadow: 0 0 0 1px rgba(222,232,245,0.16), 0 4px 10px rgba(0,0,0,0.42) !important;
   }
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star1 .deploy-face {
-    background: radial-gradient(circle at 50% 36%, rgba(222,232,245,0.20), rgba(255,255,255,0.05) 52%, transparent 74%), #11161f !important;
+    background:url('./assets/generals/rarity_bg/star1.webp') center 16%/cover !important;
   }
   /* ★2 고급(초록) */
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star2 {
@@ -5726,7 +5721,7 @@
     box-shadow: 0 0 0 1px rgba(87,242,135,0.30), 0 0 12px rgba(87,242,135,0.30), 0 4px 10px rgba(0,0,0,0.42) !important;
   }
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star2 .deploy-face {
-    background: radial-gradient(circle at 50% 36%, rgba(87,242,135,0.34), rgba(91,255,191,0.14) 52%, transparent 74%), #11161f !important;
+    background:url('./assets/generals/rarity_bg/star2.webp') center 16%/cover !important;
   }
   /* ★3 희귀(파랑) */
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star3 {
@@ -5735,7 +5730,7 @@
     box-shadow: 0 0 0 1px rgba(77,181,255,0.34), 0 0 14px rgba(77,181,255,0.36), 0 4px 10px rgba(0,0,0,0.42) !important;
   }
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star3 .deploy-face {
-    background: radial-gradient(circle at 50% 36%, rgba(77,181,255,0.38), rgba(95,234,255,0.16) 52%, transparent 74%), #11161f !important;
+    background:url('./assets/generals/rarity_bg/star3.webp') center 16%/cover !important;
   }
   /* ★4 영웅(보라) */
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star4 {
@@ -5744,7 +5739,7 @@
     box-shadow: 0 0 0 1px rgba(199,125,255,0.40), 0 0 16px rgba(199,125,255,0.44), 0 4px 12px rgba(0,0,0,0.45) !important;
   }
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star4 .deploy-face {
-    background: radial-gradient(circle at 50% 36%, rgba(199,125,255,0.42), rgba(255,101,238,0.18) 52%, transparent 74%), #120e18 !important;
+    background:url('./assets/generals/rarity_bg/star4.webp') center 16%/cover !important;
   }
   /* ★5 전설(금) — 가장 화려 */
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star5 {
@@ -5753,7 +5748,7 @@
     box-shadow: 0 0 0 1.5px rgba(255,211,106,0.6), 0 0 20px rgba(255,191,64,0.55), 0 4px 14px rgba(0,0,0,0.5) !important;
   }
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star5 .deploy-face {
-    background: radial-gradient(circle at 50% 36%, rgba(255,191,64,0.48), rgba(255,76,124,0.18) 50%, transparent 74%), #1a1206 !important;
+    background:url('./assets/generals/rarity_bg/star5.webp') center 16%/cover !important;
   }
   /* 돋보기(상세) 버튼: 이름과 한 줄로 가지런히(이름 오른쪽 인라인) */
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card .deploy-name {
