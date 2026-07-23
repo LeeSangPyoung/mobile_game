@@ -5351,12 +5351,14 @@
   }
   .formation-tab.dexf-tab b { color: #ffe08a !important; }
   .formation-tab.dexf-tab small { color: #ffd75e !important; opacity: 1 !important; }
+  /* 활성(도감 화면일 때)은 다른 탭처럼 금색 */
   .formation-tab.dexf-tab.active {
-    background: linear-gradient(180deg, #e8202e, #8b0b12) !important;
-    border-color: #ffd766 !important;
-    box-shadow: 0 0 0 1px #ffd766, 0 3px 0 #4a0206, 0 0 12px rgba(255,80,60,.45) !important;
+    background: linear-gradient(180deg, #fff2bd 0%, #f3c663 35%, #d89d36 70%, #875216 100%) !important;
+    color: #2a1205 !important; border-color: #f4c34e !important;
+    box-shadow: 0 0 0 1px #f4c34e, 0 3px 0 #2a1205, inset 0 1px 0 rgba(255,255,255,0.5) !important;
   }
-  .formation-tab.dexf-tab.active b { color: #fff2c2 !important; text-shadow: 0 1px 2px rgba(0,0,0,.6) !important; }
+  .formation-tab.dexf-tab.active b { color: #4a1206 !important; text-shadow: none !important; }
+  .formation-tab.dexf-tab.active small { color: #5b2104 !important; }
   /* 네 탭 높이를 강제 통일 — 미디어쿼리 !important 패딩 차이로 높이가 달라져
      박스 위/아래 여백이 어긋나던 문제 해결. box-sizing으로 정확히 46px 고정. */
   /* 탭 세로 정렬: 그리드 대신 flex로. align-items:center면 탭 높이가 달라도(도감 탭 등)
@@ -12334,8 +12336,9 @@
   /* 행 높이를 고정(grid-auto-rows) — 카드 내부가 전부 absolute라 aspect-ratio에만 기대면
      일부 환경에서 높이가 무너져 겹친다. 행 높이를 못박아 안정화. */
   .dex-view { grid-column:1 / -1; }
-  /* 완성도+필터를 상단 고정 — 카드만 스크롤(페이지 전체가 밀리지 않게). */
-  .dex-view .dex-head { position:sticky; top:0; z-index:6; background:#0d0604; padding:6px 2px 8px; margin:-2px -2px 0; }
+  /* 완성도+필터를 상단 고정 — 카드만 스크롤. 배경은 화면 베이스색(#160705)에 맞춰
+     박스처럼 튀지 않게 + 상단 여백까지 덮어 뒤 이미지/카드 비침 제거 + 헤더 그림자. */
+  .dex-view .dex-head { position:sticky; top:-1px; z-index:6; background:transparent; backdrop-filter:blur(9px); -webkit-backdrop-filter:blur(9px); padding:8px 2px 8px; }
   .dex-view .dex-grid { display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:128px; gap:7px; padding:2px 2px 18px; align-content:start; }
   .dex-view .dex-card { position:relative; border-radius:12px; overflow:hidden; cursor:pointer;
     background:radial-gradient(circle at 50% 34%, rgba(78,58,34,.6), rgba(18,12,7,.92)); border:1px solid rgba(255,255,255,.10); }
