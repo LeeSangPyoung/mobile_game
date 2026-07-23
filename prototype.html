@@ -12301,7 +12301,7 @@
   /* 행 높이를 고정(grid-auto-rows) — 카드 내부가 전부 absolute라 aspect-ratio에만 기대면
      일부 환경에서 높이가 무너져 겹친다. 행 높이를 못박아 안정화. */
   .dex-view { grid-column:1 / -1; }
-  .dex-view .dex-grid { display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:150px; gap:9px; padding:2px 2px 18px; align-content:start; }
+  .dex-view .dex-grid { display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:128px; gap:7px; padding:2px 2px 18px; align-content:start; }
   .dex-view .dex-card { position:relative; border-radius:12px; overflow:hidden; cursor:pointer;
     background:radial-gradient(circle at 50% 34%, rgba(78,58,34,.6), rgba(18,12,7,.92)); border:1px solid rgba(255,255,255,.10); }
   .dex-view .dex-card.owned { border-color:rgba(255,205,90,.55); box-shadow:0 0 0 1px rgba(255,205,90,.2) inset; }
