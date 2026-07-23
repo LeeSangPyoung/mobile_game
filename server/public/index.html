@@ -2568,6 +2568,10 @@
     object-fit: cover !important; object-position: top center !important;
     transform: none !important;
   }
+  /* 포로 얼굴 프레임에 등급 배경(장면) — 캐릭터별 고정(--rbg). 컷아웃 초상이 그 장면에 서 있게. */
+  #prisonerScreen .prison-face-frame[style*="--rbg"] {
+    background: var(--rbg) center 16%/cover !important;
+  }
   .prison-speech {
     min-height: 116px;
     position: relative;
@@ -14757,7 +14761,9 @@ function showGeneralDetail(g) {
   modal.style.setProperty('--detail-aura-main', rarity.auraMain);
   modal.style.setProperty('--detail-aura-soft', rarity.auraSoft);
   modal.style.setProperty('--detail-aura-hot', rarity.auraHot);
-  modal.style.setProperty('--detail-bg', `url("${getGeneralDetailBackground(g)}")`);
+  // 상세 카드 배경: 등급 장면(캐릭터별 고정). 원복하려면 아래 한 줄을
+  // getGeneralDetailBackground(g)로 되돌리면 됨.
+  modal.style.setProperty('--detail-bg', (g && g.id) ? rarityBgUrl(g.id, stars) : `url("${getGeneralDetailBackground(g)}")`);
   if (art) {
     art.alt = `${g.name} 전신`;
     setImageFallback(art, resolveGeneralFullbodySources(g));
@@ -22279,6 +22285,7 @@ function showPrisonerScreen(prisoners, onContinue) {
     const _pg = getGeneralById(p.id); face.src = (_pg && _pg.bust) || p.bust || p.face;
     renderAbility(p);
     const _st = clampStars(p.stars || 1);
+    applyRarityBg(document.querySelector('#prisonerScreen .prison-face-frame'), p.id, _st);
     const _meta = STAR_META[_st] || STAR_META[1];
     const _glow = _st >= 4 ? `;text-shadow:0 0 8px ${_meta.color}` : '';
     speaker.innerHTML = `${p.name}(포로) <span style="color:${_meta.color}${_glow};font-weight:900">${'★'.repeat(_st)}</span>`;
