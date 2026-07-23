@@ -5343,8 +5343,20 @@
   }
   .formation-tab.active b { color: #4a1206; text-shadow: 0 1px 0 rgba(255,245,186,0.8); }
   .formation-tab.active small { color: #5b2104; opacity: 1; }
-  /* 도감 탭 — 색은 천/지/인과 동일(골드). 좁은 폭 + 왼쪽 구분 여백으로만 위치를 분리. */
-  .formation-tab.dexf-tab { padding: 6px 14px !important; margin-left: 4px !important; }
+  /* 도감 탭 — 특별하게: 빨간 배경 + 금색 글씨 + 금색 테두리(천/지/인과 확실히 구분). */
+  .formation-tab.dexf-tab {
+    padding: 6px 14px !important; margin-left: 4px !important;
+    background: linear-gradient(180deg, #c1121f, #7a0a12) !important;
+    border: 2px solid #f0b531 !important; color: #ffd75e !important;
+  }
+  .formation-tab.dexf-tab b { color: #ffe08a !important; }
+  .formation-tab.dexf-tab small { color: #ffd75e !important; opacity: 1 !important; }
+  .formation-tab.dexf-tab.active {
+    background: linear-gradient(180deg, #e8202e, #8b0b12) !important;
+    border-color: #ffd766 !important;
+    box-shadow: 0 0 0 1px #ffd766, 0 3px 0 #4a0206, 0 0 12px rgba(255,80,60,.45) !important;
+  }
+  .formation-tab.dexf-tab.active b { color: #fff2c2 !important; text-shadow: 0 1px 2px rgba(0,0,0,.6) !important; }
   /* 네 탭 높이를 강제 통일 — 미디어쿼리 !important 패딩 차이로 높이가 달라져
      박스 위/아래 여백이 어긋나던 문제 해결. box-sizing으로 정확히 46px 고정. */
   /* 탭 세로 정렬: 그리드 대신 flex로. align-items:center면 탭 높이가 달라도(도감 탭 등)
@@ -12322,6 +12334,8 @@
   /* 행 높이를 고정(grid-auto-rows) — 카드 내부가 전부 absolute라 aspect-ratio에만 기대면
      일부 환경에서 높이가 무너져 겹친다. 행 높이를 못박아 안정화. */
   .dex-view { grid-column:1 / -1; }
+  /* 완성도+필터를 상단 고정 — 카드만 스크롤(페이지 전체가 밀리지 않게). */
+  .dex-view .dex-head { position:sticky; top:0; z-index:6; background:#0d0604; padding:6px 2px 8px; margin:-2px -2px 0; }
   .dex-view .dex-grid { display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:128px; gap:7px; padding:2px 2px 18px; align-content:start; }
   .dex-view .dex-card { position:relative; border-radius:12px; overflow:hidden; cursor:pointer;
     background:radial-gradient(circle at 50% 34%, rgba(78,58,34,.6), rgba(18,12,7,.92)); border:1px solid rgba(255,255,255,.10); }
@@ -12988,12 +13002,12 @@ const UPG_DEFS = {
 };
 const MANUAL_GENERAL_DEFS = [
   { id: 'liu_bei', name: '유비', buffs: { unitAtk: 0.10, unitDef: 0.05, castleDef: 0.05, castleAtk: 0.05 } },
-  { id: 'guan_yu', name: '관우', buffs: { unitAtk: 0.10, unitDef: 0.04, castleAtk: 0.08 } },
-  { id: 'zhang_fei', name: '장비', buffs: { unitAtk: 0.10, unitDef: 0.03, castleAtk: 0.06 } },
-  { id: 'zhao_yun', name: '조운', buffs: { unitAtk: 0.07, unitDef: 0.10 } },
-  { id: 'lu_bu', name: '여포', buffs: { unitAtk: 0.10, castleAtk: 0.10, unitDef: 0.02 } },
+  { id: 'guan_yu', name: '관우', buffs: { unitAtk: 0.10, unitDef: 0.05, castleAtk: 0.085 } },
+  { id: 'zhang_fei', name: '장비', buffs: { unitAtk: 0.10, unitDef: 0.05, castleAtk: 0.075 } },
+  { id: 'zhao_yun', name: '조운', buffs: { unitAtk: 0.10, unitDef: 0.10, castleAtk: 0.02 } },
+  { id: 'lu_bu', name: '여포', buffs: { unitAtk: 0.10, castleAtk: 0.10, unitDef: 0.05 } },
   { id: 'xiahou_dun', name: '하후돈', buffs: { castleAtk: 0.06, unitDef: 0.04 } },
-  { id: 'cao_cao', name: '조조', buffs: { unitAtk: 0.08, unitDef: 0.08, castleAtk: 0.06, castleDef: 0.06 } },
+  { id: 'cao_cao', name: '조조', buffs: { unitAtk: 0.07, unitDef: 0.07, castleAtk: 0.06, castleDef: 0.05 } },
   { id: 'cao_xing', name: '조흥', buffs: { unitAtk: 0.02, castleAtk: 0.02 } },
   { id: 'taishi_ci', name: '태사자', buffs: { unitAtk: 0.07, unitDef: 0.03 } },
   { id: 'zhuge_liang', name: '제갈량', buffs: { prodRate: 0.08, castleDef: 0.05, unitDef: 0.03 } },
@@ -13001,7 +13015,7 @@ const MANUAL_GENERAL_DEFS = [
   { id: 'huang_gai', name: '황개', buffs: { castleDef: 0.07, unitDef: 0.04 } },
   { id: 'yan_liang', name: '안량', buffs: { unitAtk: 0.07, castleAtk: 0.04 } },
   { id: 'dong_zhuo', name: '동탁', buffs: { castleDef: 0.06, unitDef: 0.03 } },
-  { id: 'sima_yi', name: '사마의', buffs: { castleDef: 0.08, unitDef: 0.06, castleAtk: 0.04 } },
+  { id: 'sima_yi', name: '사마의', buffs: { castleDef: 0.09, unitDef: 0.08, castleAtk: 0.05 } },
   { id: 'gan_ning', name: '감녕', buffs: { unitAtk: 0.06, castleAtk: 0.04 } },
   { id: 'yuan_shao', name: '원소', buffs: { castleDef: 0.05, unitAtk: 0.03 } },
   { id: 'sun_quan', name: '손권', buffs: { castleDef: 0.06, unitDef: 0.04 } },
@@ -14491,12 +14505,14 @@ function renderManageDex(rosterEl) {
   const fil = [['all', '전체'], ['owned', '보유'], ['locked', '미보유']];
   rosterEl.innerHTML =
     '<div class="dex-view">' +
-      '<div class="dex-progress"><div class="dex-progress-top">' +
-        '<span class="dex-progress-label">수집 완성도</span>' +
-        '<span class="dex-progress-count">' + have + ' / ' + total + '</span>' +
-      '</div><div class="dex-bar"><i style="width:' + pct + '%"></i></div></div>' +
-      '<div class="dex-tabs">' +
-        fil.map(function (f) { return '<button type="button" class="dex-tab' + (_dexFilter === f[0] ? ' active' : '') + '" data-df="' + f[0] + '">' + f[1] + '</button>'; }).join('') +
+      '<div class="dex-head">' +
+        '<div class="dex-progress"><div class="dex-progress-top">' +
+          '<span class="dex-progress-label">수집 완성도</span>' +
+          '<span class="dex-progress-count">' + have + ' / ' + total + '</span>' +
+        '</div><div class="dex-bar"><i style="width:' + pct + '%"></i></div></div>' +
+        '<div class="dex-tabs">' +
+          fil.map(function (f) { return '<button type="button" class="dex-tab' + (_dexFilter === f[0] ? ' active' : '') + '" data-df="' + f[0] + '">' + f[1] + '</button>'; }).join('') +
+        '</div>' +
       '</div>' +
       '<div class="dex-grid"></div>' +
     '</div>';
