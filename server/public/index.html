@@ -12316,12 +12316,23 @@
   .dex-view .dex-card.owned.tier-star4 { border-color:#c77dff; box-shadow:0 0 0 1px rgba(199,125,255,.48) inset, 0 0 12px rgba(199,125,255,.44); }
   .dex-view .dex-card.owned.tier-star5 { border-color:#ffd36a; box-shadow:0 0 0 1.5px rgba(255,211,106,.62) inset, 0 0 18px rgba(255,191,64,.6); }
   .dex-view .dex-card.locked { background:radial-gradient(circle at 50% 34%, rgba(42,38,33,.55), rgba(12,10,8,.93)); }
-  /* 얼굴 아이콘은 이름줄 위 영역에 통째로(contain) — cover+top은 투구만 보였다 */
-  .dex-view .dex-face { position:absolute; top:3px; left:3px; right:3px; bottom:25px; }
+  /* 등급별 카드 배경(장면 아트) — 컷아웃 초상화가 그 장면 안에 서 있게. */
+  .dex-view .dex-card::before {
+    content:""; position:absolute; inset:0; z-index:0;
+    background-size:cover; background-position:center top;
+  }
+  .dex-view .dex-card.tier-star1::before { background-image:url('./assets/generals/rarity_bg/star1.webp'); }
+  .dex-view .dex-card.tier-star2::before { background-image:url('./assets/generals/rarity_bg/star2.webp'); }
+  .dex-view .dex-card.tier-star3::before { background-image:url('./assets/generals/rarity_bg/star3.webp'); }
+  .dex-view .dex-card.tier-star4::before { background-image:url('./assets/generals/rarity_bg/star4.webp'); }
+  .dex-view .dex-card.tier-star5::before { background-image:url('./assets/generals/rarity_bg/star5.webp'); }
+  .dex-view .dex-card.locked::before { filter:grayscale(1) brightness(.5); }
+  /* 컷아웃 반신 초상화 — 배경 위(z-index 1)에서 카드를 채움 */
+  .dex-view .dex-face { position:absolute; inset:0; bottom:20px; z-index:1; }
   .dex-view .dex-face img { width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
-  .dex-view .dex-card.locked .dex-face img { filter:grayscale(1) brightness(.62) contrast(.95); opacity:.7; }
-  .dex-view .dex-card.locked::after { content:"🔒"; position:absolute; top:6px; right:7px; font-size:14px; opacity:.92; filter:drop-shadow(0 1px 2px rgba(0,0,0,.8)); }
-  .dex-view .dex-name { position:absolute; left:0; right:0; bottom:0; height:24px; line-height:24px; padding:0 6px; font-size:12.5px; font-weight:800; color:#fff2d4; text-align:center; background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.9)); text-shadow:0 1px 3px rgba(0,0,0,.95); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dex-view .dex-card.locked .dex-face img { filter:grayscale(1) brightness(.62) contrast(.95); opacity:.9; }
+  .dex-view .dex-card.locked::after { content:"🔒"; position:absolute; top:6px; right:7px; z-index:3; font-size:14px; opacity:.92; filter:drop-shadow(0 1px 2px rgba(0,0,0,.8)); }
+  .dex-view .dex-name { position:absolute; left:0; right:0; bottom:0; z-index:2; height:24px; line-height:24px; padding:0 6px; font-size:12.5px; font-weight:800; color:#fff2d4; text-align:center; background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.9)); text-shadow:0 1px 3px rgba(0,0,0,.95); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .dex-view .dex-card.locked .dex-name { color:#dccfb6; }
   .dex-view .dex-stars { position:absolute; top:4px; left:6px; z-index:2; }
   /* 전투력(피파 오버롤 스타일) — 오른쪽 하단, 배지 없이 큰 숫자만.
@@ -12335,7 +12346,7 @@
     text-shadow:0 0 2px rgba(0,0,0,.95), 0 1px 3px rgba(0,0,0,.95), 0 0 6px rgba(0,0,0,.7);
     -webkit-text-stroke:0.5px rgba(0,0,0,.55);
   }
-  .dex-view .dex-count { bottom:28px; left:6px; right:auto; }   /* 보유수는 왼쪽으로(전투력과 안 겹치게) */
+  .dex-view .dex-count { bottom:28px; left:6px; right:auto; z-index:2; }   /* 보유수는 왼쪽으로(전투력과 안 겹치게) */
   .dex-view .dex-stars { position:absolute; top:5px; left:6px; font-size:11px; color:#ffd23f; letter-spacing:-1px; text-shadow:0 1px 3px rgba(0,0,0,.85); }
   .dex-view .dex-lv { margin-left:4px; font-size:10px; color:#ffd23f; }
   .dex-view .dex-count { position:absolute; bottom:26px; right:6px; font-size:11px; font-weight:800; color:#fff; background:rgba(0,0,0,.6); border-radius:8px; padding:1px 6px; }
