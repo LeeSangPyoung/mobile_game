@@ -12324,12 +12324,16 @@
   .dex-view .dex-name { position:absolute; left:0; right:0; bottom:0; height:24px; line-height:24px; padding:0 6px; font-size:12.5px; font-weight:800; color:#fff2d4; text-align:center; background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.9)); text-shadow:0 1px 3px rgba(0,0,0,.95); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .dex-view .dex-card.locked .dex-name { color:#dccfb6; }
   .dex-view .dex-stars { position:absolute; top:4px; left:6px; z-index:2; }
-  /* 전투력(피파 오버롤 스타일) — 오른쪽 하단, 배지 없이 큰 숫자만. 강한 외곽선으로 가독성. */
+  /* 전투력(피파 오버롤 스타일) — 오른쪽 하단, 배지 없이 큰 숫자만.
+     피파 카드처럼 '굵고 좁은(콘덴스드)' 서체: 안드로이드=sans-serif-condensed,
+     데스크톱=Arial Narrow/Impact. 세워진 형태(italic 아님) + 강한 외곽선. */
   .dex-view .dex-pow {
-    position:absolute; right:7px; bottom:25px; z-index:3;
-    font-size:23px; font-weight:900; font-style:italic; line-height:1; letter-spacing:-1px;
+    position:absolute; right:7px; bottom:24px; z-index:3;
+    font-family:'sans-serif-condensed','Roboto Condensed','Arial Narrow',Impact,'Haettenschweiler',sans-serif;
+    font-size:26px; font-weight:900; font-style:normal; font-stretch:condensed;
+    line-height:1; letter-spacing:0;
     text-shadow:0 0 3px rgba(0,0,0,.95), 0 2px 4px rgba(0,0,0,.95), 0 0 9px rgba(0,0,0,.75);
-    -webkit-text-stroke:0.6px rgba(0,0,0,.55);
+    -webkit-text-stroke:0.7px rgba(0,0,0,.6);
   }
   .dex-view .dex-count { bottom:28px; left:6px; right:auto; }   /* 보유수는 왼쪽으로(전투력과 안 겹치게) */
   .dex-view .dex-stars { position:absolute; top:5px; left:6px; font-size:11px; color:#ffd23f; letter-spacing:-1px; text-shadow:0 1px 3px rgba(0,0,0,.85); }
