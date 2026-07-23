@@ -5351,14 +5351,15 @@
   }
   .formation-tab.dexf-tab b { color: #ffe08a !important; }
   .formation-tab.dexf-tab small { color: #ffd75e !important; opacity: 1 !important; }
-  /* 활성(도감 화면일 때)은 다른 탭처럼 금색 */
+  /* 활성(도감 화면일 때)은 천/지/인과 완전히 동일한 금색 — 얇은 남색 테두리 + 금 배경(두꺼운 금테 X) */
   .formation-tab.dexf-tab.active {
-    background: linear-gradient(180deg, #fff2bd 0%, #f3c663 35%, #d89d36 70%, #875216 100%) !important;
-    color: #2a1205 !important; border-color: #f4c34e !important;
-    box-shadow: 0 0 0 1px #f4c34e, 0 3px 0 #2a1205, inset 0 1px 0 rgba(255,255,255,0.5) !important;
+    background: radial-gradient(circle at 18% 0%, rgba(255,255,255,0.9), transparent 34%),
+      linear-gradient(180deg, #fff7b8 0%, #f7c948 100%) !important;
+    color: #082252 !important; border-color: rgba(5,22,58,0.74) !important;
+    box-shadow: 0 3px 0 rgba(5,22,58,0.72), inset 0 1px 0 rgba(255,255,255,0.72) !important;
   }
-  .formation-tab.dexf-tab.active b { color: #4a1206 !important; text-shadow: none !important; }
-  .formation-tab.dexf-tab.active small { color: #5b2104 !important; }
+  .formation-tab.dexf-tab.active b { color: #082252 !important; text-shadow: none !important; }
+  .formation-tab.dexf-tab.active small { color: #082252 !important; }
   /* 네 탭 높이를 강제 통일 — 미디어쿼리 !important 패딩 차이로 높이가 달라져
      박스 위/아래 여백이 어긋나던 문제 해결. box-sizing으로 정확히 46px 고정. */
   /* 탭 세로 정렬: 그리드 대신 flex로. align-items:center면 탭 높이가 달라도(도감 탭 등)
@@ -12338,7 +12339,10 @@
   .dex-view { grid-column:1 / -1; }
   /* 완성도+필터를 상단 고정 — 카드만 스크롤. 배경은 화면 베이스색(#160705)에 맞춰
      박스처럼 튀지 않게 + 상단 여백까지 덮어 뒤 이미지/카드 비침 제거 + 헤더 그림자. */
-  .dex-view .dex-head { position:sticky; top:-1px; z-index:6; background:transparent; backdrop-filter:blur(9px); -webkit-backdrop-filter:blur(9px); padding:8px 2px 8px; }
+  /* 완성도+필터 상단 고정 — 게임 기본 남색 패널색으로 불투명(뒤 카드 안 비침) + 헤더 그림자.
+     상단 여백까지 덮어 틈새로 카드 비침 방지(margin-top 음수 + padding 보정). */
+  .dex-view .dex-head { position:sticky; top:0; z-index:6; background:linear-gradient(180deg, #14202f, #080d17); padding:8px 4px 9px; box-shadow:0 7px 11px -3px rgba(0,0,0,0.55); }
+  #manageRoster.dex-active { padding-top:0; }   /* 도감 모드: 로스터 상단 여백 제거 → 헤더 위 틈새로 카드 비침 방지 */
   .dex-view .dex-grid { display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:128px; gap:7px; padding:2px 2px 18px; align-content:start; }
   .dex-view .dex-card { position:relative; border-radius:12px; overflow:hidden; cursor:pointer;
     background:radial-gradient(circle at 50% 34%, rgba(78,58,34,.6), rgba(18,12,7,.92)); border:1px solid rgba(255,255,255,.10); }
@@ -14484,6 +14488,7 @@ function setDexFilter(f) { _dexFilter = f; renderGeneralManage(); }
 // (별도 화면이 아니라 같은 화면에서 탭만 바뀌는 서브메뉴 — 내 장수 메인을 흔들지 않음)
 function renderManageDex(rosterEl) {
   if (!rosterEl) return;
+  rosterEl.classList.add('dex-active');   // 도감 모드: 상단 여백 제거(헤더 고정용)
   // 1000장 = 200명 × ★1~★5. 각 (장수,등급) 조합이 한 칸.
   // 보유 판정: 지금 보유한 카드 중 그 장수를 그 등급으로 가지고 있으면 컬러.
   const ownedMap = new Map();   // "id:star" -> 보유 수
@@ -14906,6 +14911,7 @@ function renderGeneralManage() {
     renderManageDex(rosterEl);
     return;
   }
+  rosterEl.classList.remove('dex-active');   // 편성 모드: 로스터 상단 여백 복구
   if (_slotsWrap) _slotsWrap.style.display = '';
   if (_summaryCard) _summaryCard.style.display = '';
   // 포메이션 슬롯
