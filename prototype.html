@@ -12414,6 +12414,7 @@
       </div>
       <div class="general-detail-name" id="generalDetailName"></div>
       <div class="general-detail-power" id="generalDetailPower"></div>
+      <div class="general-detail-preview" id="generalDetailPreview" style="display:none"></div>
       <div class="general-detail-stats" id="generalDetailBuffs"></div>
     </div>
   </section>
@@ -14528,9 +14529,9 @@ function renderManageDex(rosterEl) {
       powHTML +
       '<div class="dex-name">' + htmlSafe(e.def.name) + '</div>' +
       countHTML;
-    bindTap(card, function () { showGeneralDetail(e.g); });
+    bindTap(card, function () { showGeneralDetail(e.g, { preview: true }); });
     card.addEventListener('keydown', function (ev) {
-      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); showGeneralDetail(e.g); }
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); showGeneralDetail(e.g, { preview: true }); }
     });
     grid.appendChild(card);
   });
@@ -14731,7 +14732,36 @@ function ensureGeneralDetailEvents() {
     if (e.key === 'Escape') closeGeneralDetailModal();
   });
 }
-function showGeneralDetail(g) {
+// 도감 상세에서 강화 미리보기(+0~+5) — 도감에서 열었을 때만(opts.preview). 전투력·능력치를
+// 강화레벨에 따라 다시 계산해 보여준다(실제 내 장수 변경 아님, 순수 미리보기).
+function setupDetailPreview(g, isPreview) {
+  const box = document.getElementById('generalDetailPreview');
+  if (!box) return;
+  const ratingEl = document.getElementById('generalDetailRating');
+  const buffsEl = document.getElementById('generalDetailBuffs');
+  const levelEl = document.getElementById('generalDetailLevel');
+  if (!isPreview || !g || !g.id) { box.style.display = 'none'; box.innerHTML = ''; return; }
+  const base = generalDetailPower(Object.assign({}, g, { lv: 1 }));
+  let html = '<div class="gdp-title">강화 미리보기</div><div class="gdp-btns">';
+  for (let lv = 1; lv <= ENHANCE_MAX_LV; lv++) html += '<button type="button" data-lv="' + lv + '">+' + (lv - 1) + '</button>';
+  html += '</div><div class="gdp-delta" id="gdpDelta"></div>';
+  box.innerHTML = html;
+  box.style.display = '';
+  const render = function (lv) {
+    const pg = Object.assign({}, g, { lv: lv });
+    const pow = generalDetailPower(pg);
+    if (ratingEl) ratingEl.textContent = pow.toLocaleString();
+    if (buffsEl) buffsEl.innerHTML = formatGeneralProfileStats(pg, lv);
+    if (levelEl) levelEl.textContent = lv > 1 ? ('+' + (lv - 1)) : 'Lv.1';
+    const d = document.getElementById('gdpDelta');
+    if (d) d.textContent = lv > 1 ? ('강화 +' + (lv - 1) + ' → 전투력 +' + (pow - base).toLocaleString()) : '기본 상태 (강화 +0)';
+    box.querySelectorAll('button').forEach(function (b) { b.classList.toggle('active', +b.getAttribute('data-lv') === lv); });
+  };
+  box.querySelectorAll('button').forEach(function (btn) { bindTap(btn, function () { render(+btn.getAttribute('data-lv')); }); });
+  render(1);
+}
+function showGeneralDetail(g, opts) {
+  opts = opts || {};
   if (!g) return;
   ensureGeneralDetailEvents();
   const modal = document.getElementById('generalDetailModal');
@@ -14774,15 +14804,17 @@ function showGeneralDetail(g) {
     rarityEl.style.color = rarity.color;
   }
   if (levelEl) levelEl.textContent = lv > 1 ? `+${lv - 1}` : 'Lv.1';
-  if (ratingEl) ratingEl.textContent = generalProfileRating(g);
+  // 상단 큰 숫자 = 전투력(도감 카드와 통일). 예전엔 오버롤(88~139)이라 전투력과 숫자가 달라 헷갈렸음.
+  if (ratingEl) ratingEl.textContent = generalDetailPower(g).toLocaleString();
   if (roleEl) roleEl.textContent = generalProfileRole(g);
   if (starsEl) {
     starsEl.textContent = '★'.repeat(stars);
     starsEl.style.color = rarity.color;
     starsEl.style.textShadow = `0 0 ${stars >= 4 ? 13 : 8}px ${rarity.glow}, 0 1px 0 rgba(0,0,0,0.72)`;
   }
-  if (powerEl) powerEl.textContent = `전투력 ${generalDetailPower(g).toLocaleString()}`;
+  if (powerEl) powerEl.style.display = 'none';   // 전투력은 상단 큰 숫자로 통일 → 중복 표기 제거
   if (buffsEl) buffsEl.innerHTML = formatGeneralProfileStats(g, lv);
+  setupDetailPreview(g, opts.preview);   // 도감에서 열었을 때만 강화 +0~+5 미리보기
 
   generalDetailLastFocus = document.activeElement;
   clearTimeout(generalDetailCloseTimer);
@@ -36083,6 +36115,19 @@ function closeTutorialOffer(accept) {
     font-weight: 900;
     line-height: 1;
   }
+  /* 강화 미리보기(도감 상세 전용) */
+  .general-detail-preview { margin-top: 7px; }
+  .general-detail-preview .gdp-title { font-size: 11px; color: #cdb98a; text-align: center; letter-spacing: 1px; margin-bottom: 5px; }
+  .general-detail-preview .gdp-btns { display: flex; gap: 4px; justify-content: center; }
+  .general-detail-preview .gdp-btns button {
+    flex: 1; max-width: 52px; padding: 6px 0; border-radius: 8px;
+    border: 1px solid rgba(255,210,80,0.32); background: rgba(255,255,255,0.06);
+    color: #e8cf96; font-weight: 900; font-size: 13px; cursor: pointer;
+  }
+  .general-detail-preview .gdp-btns button.active {
+    background: linear-gradient(180deg, #ffd766, #e8a93a); color: #2a1a08; border-color: #ffd766;
+  }
+  .general-detail-preview .gdp-delta { text-align: center; margin-top: 6px; font-size: 12px; font-weight: 800; color: #7fe0a0; }
   .general-detail-name {
     margin-top: 8px;
     color: #fff1b8;
