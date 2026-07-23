@@ -12308,7 +12308,7 @@
   .dex-view .dex-card.locked { background:radial-gradient(circle at 50% 34%, rgba(42,38,33,.55), rgba(12,10,8,.93)); }
   /* 얼굴 아이콘은 이름줄 위 영역에 통째로(contain) — cover+top은 투구만 보였다 */
   .dex-view .dex-face { position:absolute; top:3px; left:3px; right:3px; bottom:25px; }
-  .dex-view .dex-face img { width:100%; height:100%; object-fit:contain; object-position:center bottom; display:block; }
+  .dex-view .dex-face img { width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
   .dex-view .dex-card.locked .dex-face img { filter:grayscale(1) brightness(.62) contrast(.95); opacity:.7; }
   .dex-view .dex-card.locked::after { content:"🔒"; position:absolute; top:6px; right:7px; font-size:14px; opacity:.92; filter:drop-shadow(0 1px 2px rgba(0,0,0,.8)); }
   .dex-view .dex-name { position:absolute; left:0; right:0; bottom:0; height:24px; line-height:24px; padding:0 6px; font-size:12.5px; font-weight:800; color:#fff2d4; text-align:center; background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.9)); text-shadow:0 1px 3px rgba(0,0,0,.95); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -14429,8 +14429,8 @@ function renderManageDex(rosterEl) {
     const starHTML = has ? '<span class="dex-stars">' + '★'.repeat(has.stars) + '</span>' : '';
     const countHTML = (has && has.count > 1) ? '<span class="dex-count">x' + has.count + '</span>' : '';
     const lvHTML = (has && has.lv > 1) ? '<span class="dex-lv">+' + (has.lv - 1) + '</span>' : '';
-    // 얼굴 아이콘(200명 전원 커버) — 전신 아트는 투구만 보여 도감엔 부적합.
-    const src = (typeof battleFaceIconSrc === 'function' ? battleFaceIconSrc(def.id, def) : '') || def.face || def.bust || '';
+    // 내 장수 카드와 동일한 반신 초상화(halfbody_v6) — 유저 요청. 서버에 이미 배포돼 있음.
+    const src = def.bust || def.face || '';
     card.innerHTML =
       '<div class="dex-face"><img loading="lazy" src="' + src + '" alt=""></div>' +
       starHTML +
