@@ -13061,6 +13061,23 @@ const MANUAL_GENERAL_DEFS = [
   { id: 'cao_ang', name: '조앙', buffs: { unitAtk: 0.05, unitDef: 0.04 } },
   { id: 'cao_chun', name: '조순', buffs: { unitAtk: 0.05, unitDef: 0.05, castleAtk: 0.03 } },
   { id: 'cao_rui', name: '조예', buffs: { castleDef: 0.05, unitDef: 0.04 } },
+  { id: 'wei_yan', name: '위연', buffs: { unitAtk: 0.09, unitDef: 0.05, castleAtk: 0.045 } },
+  { id: 'zhou_tai', name: '주태', buffs: { unitDef: 0.08, unitAtk: 0.07, castleDef: 0.04 } },
+  { id: 'zhang_he', name: '장합', buffs: { unitAtk: 0.08, unitDef: 0.06, castleAtk: 0.045 } },
+  { id: 'jiang_wei', name: '강유', buffs: { unitAtk: 0.08, unitDef: 0.06, castleAtk: 0.04 } },
+  { id: 'xiahou_yuan', name: '하후연', buffs: { unitAtk: 0.08, castleAtk: 0.06, unitDef: 0.04 } },
+  { id: 'deng_ai', name: '등애', buffs: { unitAtk: 0.07, unitDef: 0.05, castleAtk: 0.05 } },
+  { id: 'gongsun_zan', name: '공손찬', buffs: { unitAtk: 0.07, unitDef: 0.05, castleDef: 0.03 } },
+  { id: 'ma_dai', name: '마대', buffs: { unitAtk: 0.07, unitDef: 0.05, castleAtk: 0.03 } },
+  { id: 'ding_feng', name: '정봉', buffs: { unitAtk: 0.06, unitDef: 0.05, castleAtk: 0.03 } },
+  { id: 'han_dang', name: '한당', buffs: { unitAtk: 0.06, castleAtk: 0.04, unitDef: 0.04 } },
+  { id: 'ling_tong', name: '능통', buffs: { unitAtk: 0.07, unitDef: 0.05, castleAtk: 0.02 } },
+  { id: 'cheng_pu', name: '정보', buffs: { unitAtk: 0.05, castleAtk: 0.05, unitDef: 0.04 } },
+  { id: 'zhang_bao', name: '장포', buffs: { unitAtk: 0.07, unitDef: 0.05, castleAtk: 0.02 } },
+  { id: 'guan_ping', name: '관평', buffs: { unitAtk: 0.06, unitDef: 0.05, castleAtk: 0.02 } },
+  { id: 'jiang_qin', name: '장흠', buffs: { unitAtk: 0.05, unitDef: 0.05 } },
+  { id: 'lu_su', name: '노숙', buffs: { castleDef: 0.05, prodRate: 0.05, unitDef: 0.03 } },
+  { id: 'diao_chan', name: '초선', buffs: { unitDef: 0.03, prodRate: 0.03 } },
 ];
 const GENERAL_FACE_IDS = new Set('cao_cao cao_xing dian_wei dong_zhuo gan_ning guan_yu guo_jia huang_gai huang_zhong liu_bei lu_bu lu_xun ma_chao meng_huo pang_tong sima_yi sun_ce sun_quan taishi_ci wen_chou xiahou_dun xu_chu xu_huang yan_liang yuan_shao zhang_fei zhang_liao zhao_yun zhou_yu zhuge_liang zhang_he yu_jin yue_jin li_dian cao_ren cao_hong cao_pi cao_zhi cao_zhang cao_ang cao_rui cheng_yu xun_yu xun_you jia_xu li_jue guo_si zhang_ji zhang_xiu hua_xiong li_ru'.split(' '));
 const GENERAL_BUST_REAL_IDS = new Set('zhang_he yu_jin yue_jin li_dian cao_ren cao_hong cao_pi cao_zhang cao_ang cao_rui cao_shuang cao_zhen cao_xiu xiahou_yuan xiahou_ba cheng_yu xun_yu xun_you jia_xu man_chong deng_ai zhong_hui guo_huai wang_ping zang_ba liu_ye xu_sheng ding_feng han_dang cheng_pu zhou_tai jiang_qin ling_tong lu_su zhang_zhao zhang_hong zhu_huan zhu_ran bu_zhi kan_ze yu_fan he_qi pan_zhang quan_cong sun_jian sun_shao sun_huan guan_ping guan_xing liu_feng ma_su ma_liang jiang_wei wei_yan fa_zheng jian_yong mi_zhu mi_fang sun_qian liao_hua ma_dai yan_yan li_yan fei_yi dong_yun jiang_wan huang_quan chen_dao meng_da li_hui huo_jun zhuge_zhan zhuge_jin zhuge_dan zhang_yi_shu dong_jue xin_pi gongsun_zan gongsun_du gongsun_kang liu_biao liu_zhang liu_yao tao_qian kong_rong zhang_lu zhang_ren ma_teng han_sui dong_cheng he_jin wang_yun zhang_xiu hua_xiong yuan_shu liu_xun'.split(' '));
@@ -15191,12 +15208,16 @@ function commanderArmyMult(a, key) {
 const GENERAL_INT = {
   zhuge_liang: 100, pang_tong: 97, sima_yi: 98, guo_jia: 96, jia_xu: 97,
   xun_yu: 95, xun_you: 92, zhou_yu: 94, lu_xun: 93, fa_zheng: 92, chen_gong: 85,
-  zhuge_jin: 80, jiang_wan: 79, li_ru: 88, cheng_yu: 88, kan_ze: 76, lu_su: 78,
+  zhuge_jin: 80, jiang_wan: 79, li_ru: 88, cheng_yu: 88, kan_ze: 76, lu_su: 90,
   huang_quan: 74, dong_yun: 72, fei_yi: 73, ma_su: 70, jian_yong: 68, mi_zhu: 66,
   cao_cao: 78, liu_bei: 60, sun_quan: 64, yuan_shao: 58, dong_zhuo: 52,
   cao_zhi: 88,
   cao_pi: 82,
   cao_rui: 80,
+  jiang_wei: 88,
+  deng_ai: 88,
+  guan_ping: 70,
+  zhang_bao: 50,
 };
 function generalIntel(g) {
   if (!g || !g.id) return 28;

@@ -68,6 +68,23 @@ const MANUAL_GENERAL_DEFS = [
   { id: 'cao_ang', name: '조앙', buffs: { unitAtk: 0.05, unitDef: 0.04 } },
   { id: 'cao_chun', name: '조순', buffs: { unitAtk: 0.05, unitDef: 0.05, castleAtk: 0.03 } },
   { id: 'cao_rui', name: '조예', buffs: { castleDef: 0.05, unitDef: 0.04 } },
+  { id: 'wei_yan', name: '위연', buffs: { unitAtk: 0.09, unitDef: 0.05, castleAtk: 0.045 } },
+  { id: 'zhou_tai', name: '주태', buffs: { unitDef: 0.08, unitAtk: 0.07, castleDef: 0.04 } },
+  { id: 'zhang_he', name: '장합', buffs: { unitAtk: 0.08, unitDef: 0.06, castleAtk: 0.045 } },
+  { id: 'jiang_wei', name: '강유', buffs: { unitAtk: 0.08, unitDef: 0.06, castleAtk: 0.04 } },
+  { id: 'xiahou_yuan', name: '하후연', buffs: { unitAtk: 0.08, castleAtk: 0.06, unitDef: 0.04 } },
+  { id: 'deng_ai', name: '등애', buffs: { unitAtk: 0.07, unitDef: 0.05, castleAtk: 0.05 } },
+  { id: 'gongsun_zan', name: '공손찬', buffs: { unitAtk: 0.07, unitDef: 0.05, castleDef: 0.03 } },
+  { id: 'ma_dai', name: '마대', buffs: { unitAtk: 0.07, unitDef: 0.05, castleAtk: 0.03 } },
+  { id: 'ding_feng', name: '정봉', buffs: { unitAtk: 0.06, unitDef: 0.05, castleAtk: 0.03 } },
+  { id: 'han_dang', name: '한당', buffs: { unitAtk: 0.06, castleAtk: 0.04, unitDef: 0.04 } },
+  { id: 'ling_tong', name: '능통', buffs: { unitAtk: 0.07, unitDef: 0.05, castleAtk: 0.02 } },
+  { id: 'cheng_pu', name: '정보', buffs: { unitAtk: 0.05, castleAtk: 0.05, unitDef: 0.04 } },
+  { id: 'zhang_bao', name: '장포', buffs: { unitAtk: 0.07, unitDef: 0.05, castleAtk: 0.02 } },
+  { id: 'guan_ping', name: '관평', buffs: { unitAtk: 0.06, unitDef: 0.05, castleAtk: 0.02 } },
+  { id: 'jiang_qin', name: '장흠', buffs: { unitAtk: 0.05, unitDef: 0.05 } },
+  { id: 'lu_su', name: '노숙', buffs: { castleDef: 0.05, prodRate: 0.05, unitDef: 0.03 } },
+  { id: 'diao_chan', name: '초선', buffs: { unitDef: 0.03, prodRate: 0.03 } },
 ];
 
 function hashGeneralId(id) {
