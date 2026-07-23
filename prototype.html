@@ -5379,11 +5379,11 @@
     color: #fff;
   }
   /* 채워진 편성 슬롯: 등급 배경(장면) — 컷아웃 캐릭터가 그 장면에 서 있게. */
-  .formation-slot.filled.tier-star1 { background:url('./assets/generals/rarity_bg/star1.webp') center 16%/cover !important; }
-  .formation-slot.filled.tier-star2 { background:url('./assets/generals/rarity_bg/star2.webp') center 16%/cover !important; }
-  .formation-slot.filled.tier-star3 { background:url('./assets/generals/rarity_bg/star3.webp') center 16%/cover !important; }
-  .formation-slot.filled.tier-star4 { background:url('./assets/generals/rarity_bg/star4.webp') center 16%/cover !important; }
-  .formation-slot.filled.tier-star5 { background:url('./assets/generals/rarity_bg/star5.webp') center 16%/cover !important; }
+  .formation-slot.filled.tier-star1 { background:var(--rbg) center 16%/cover !important; }
+  .formation-slot.filled.tier-star2 { background:var(--rbg) center 16%/cover !important; }
+  .formation-slot.filled.tier-star3 { background:var(--rbg) center 16%/cover !important; }
+  .formation-slot.filled.tier-star4 { background:var(--rbg) center 16%/cover !important; }
+  .formation-slot.filled.tier-star5 { background:var(--rbg) center 16%/cover !important; }
   .formation-slot.slot-selected {
     border-color: #fff2bd;
     box-shadow:
@@ -5712,7 +5712,7 @@
     box-shadow: 0 0 0 1px rgba(222,232,245,0.16), 0 4px 10px rgba(0,0,0,0.42) !important;
   }
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star1 .deploy-face {
-    background:url('./assets/generals/rarity_bg/star1.webp') center 16%/cover !important;
+    background:var(--rbg) center 16%/cover !important;
   }
   /* ★2 고급(초록) */
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star2 {
@@ -5721,7 +5721,7 @@
     box-shadow: 0 0 0 1px rgba(87,242,135,0.30), 0 0 12px rgba(87,242,135,0.30), 0 4px 10px rgba(0,0,0,0.42) !important;
   }
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star2 .deploy-face {
-    background:url('./assets/generals/rarity_bg/star2.webp') center 16%/cover !important;
+    background:var(--rbg) center 16%/cover !important;
   }
   /* ★3 희귀(파랑) */
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star3 {
@@ -5730,7 +5730,7 @@
     box-shadow: 0 0 0 1px rgba(77,181,255,0.34), 0 0 14px rgba(77,181,255,0.36), 0 4px 10px rgba(0,0,0,0.42) !important;
   }
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star3 .deploy-face {
-    background:url('./assets/generals/rarity_bg/star3.webp') center 16%/cover !important;
+    background:var(--rbg) center 16%/cover !important;
   }
   /* ★4 영웅(보라) */
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star4 {
@@ -5739,7 +5739,7 @@
     box-shadow: 0 0 0 1px rgba(199,125,255,0.40), 0 0 16px rgba(199,125,255,0.44), 0 4px 12px rgba(0,0,0,0.45) !important;
   }
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star4 .deploy-face {
-    background:url('./assets/generals/rarity_bg/star4.webp') center 16%/cover !important;
+    background:var(--rbg) center 16%/cover !important;
   }
   /* ★5 전설(금) — 가장 화려 */
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star5 {
@@ -5748,7 +5748,7 @@
     box-shadow: 0 0 0 1.5px rgba(255,211,106,0.6), 0 0 20px rgba(255,191,64,0.55), 0 4px 14px rgba(0,0,0,0.5) !important;
   }
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star5 .deploy-face {
-    background:url('./assets/generals/rarity_bg/star5.webp') center 16%/cover !important;
+    background:var(--rbg) center 16%/cover !important;
   }
   /* 돋보기(상세) 버튼: 이름과 한 줄로 가지런히(이름 오른쪽 인라인) */
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card .deploy-name {
@@ -5836,11 +5836,11 @@
     background: radial-gradient(circle at 50% 36%, rgba(255,191,64,0.48), rgba(255,76,124,0.18) 50%, transparent 74%), #1a1206 !important;
   }
   /* 강화 대상/재료 카드 얼굴칸에 등급 배경(장면) — 도감·내 장수와 통일 */
-  .enh-roster-card.tier-star1 .face-wrap { background:url('./assets/generals/rarity_bg/star1.webp') center 16%/cover !important; }
-  .enh-roster-card.tier-star2 .face-wrap { background:url('./assets/generals/rarity_bg/star2.webp') center 16%/cover !important; }
-  .enh-roster-card.tier-star3 .face-wrap { background:url('./assets/generals/rarity_bg/star3.webp') center 16%/cover !important; }
-  .enh-roster-card.tier-star4 .face-wrap { background:url('./assets/generals/rarity_bg/star4.webp') center 16%/cover !important; }
-  .enh-roster-card.tier-star5 .face-wrap { background:url('./assets/generals/rarity_bg/star5.webp') center 16%/cover !important; }
+  .enh-roster-card.tier-star1 .face-wrap { background:var(--rbg) center 16%/cover !important; }
+  .enh-roster-card.tier-star2 .face-wrap { background:var(--rbg) center 16%/cover !important; }
+  .enh-roster-card.tier-star3 .face-wrap { background:var(--rbg) center 16%/cover !important; }
+  .enh-roster-card.tier-star4 .face-wrap { background:var(--rbg) center 16%/cover !important; }
+  .enh-roster-card.tier-star5 .face-wrap { background:var(--rbg) center 16%/cover !important; }
   .deploy-name {
     width: 100%;
     font-family: 'Noto Serif KR', serif;
@@ -12335,11 +12335,11 @@
     content:""; position:absolute; inset:0; z-index:0;
     background-size:cover; background-position:center top;
   }
-  .dex-view .dex-card.tier-star1::before { background-image:url('./assets/generals/rarity_bg/star1.webp'); }
-  .dex-view .dex-card.tier-star2::before { background-image:url('./assets/generals/rarity_bg/star2.webp'); }
-  .dex-view .dex-card.tier-star3::before { background-image:url('./assets/generals/rarity_bg/star3.webp'); }
-  .dex-view .dex-card.tier-star4::before { background-image:url('./assets/generals/rarity_bg/star4.webp'); }
-  .dex-view .dex-card.tier-star5::before { background-image:url('./assets/generals/rarity_bg/star5.webp'); }
+  .dex-view .dex-card.tier-star1::before { background-image:var(--rbg); }
+  .dex-view .dex-card.tier-star2::before { background-image:var(--rbg); }
+  .dex-view .dex-card.tier-star3::before { background-image:var(--rbg); }
+  .dex-view .dex-card.tier-star4::before { background-image:var(--rbg); }
+  .dex-view .dex-card.tier-star5::before { background-image:var(--rbg); }
   /* 미보유는 배경까지 흑백(컬러 배경+흑백 캐릭터는 이질감). 별·전투력만 등급색 유지. */
   .dex-view .dex-card.locked::before { filter:grayscale(1) brightness(.5); }
   /* 컷아웃 반신 초상화 — 배경 위(z-index 1)에서 카드를 채움 */
@@ -13049,6 +13049,18 @@ function hashGeneralId(id) {
   }
   return h >>> 0;
 }
+// 등급 배경(장면) — 3세트 × 5등급. 캐릭터마다 세트를 id 해시로 '고정' 배정
+// (운영 중 안 바뀜, 어느 화면에서나 동일). 등급색은 등급(stars)이 결정 → 같은 색 안에서만 세트가 다름.
+// 파일: star{N}.webp(세트1) / star{N}_2.webp(세트2) / star{N}_3.webp(세트3)
+function rarityBgSet(id) { return hashGeneralId(String(id || '')) % 3; }   // 0,1,2 고정
+function rarityBgUrl(id, stars) {
+  const s = Math.max(1, Math.min(5, (stars | 0) || 1));
+  const set = rarityBgSet(id);
+  const suffix = set === 0 ? '' : ('_' + (set + 1));
+  return "url('./assets/generals/rarity_bg/star" + s + suffix + ".webp')";
+}
+// 카드 요소에 --rbg 지정(해당 캐릭터의 고정 배경). CSS가 var(--rbg)로 사용.
+function applyRarityBg(el, id, stars) { if (el) el.style.setProperty('--rbg', rarityBgUrl(id, stars)); }
 function generatedGeneralBuffs(id, name, index) {
   const h = hashGeneralId(`${id}:${name}:${index}`);
   const first = h % GENERAL_BUFF_KEYS.length;
@@ -14260,6 +14272,7 @@ function renderGeneralSelect() {
       const g = uid != null ? getOwnedGeneral(uid) : null;
       const slot = document.createElement('div');
       slot.className = 'formation-slot' + (g ? ' filled tier-' + getGeneralRarity(g).tier : '') + (i === selectedSlotIdx ? ' slot-selected' : '');
+      if (g) applyRarityBg(slot, g.id, getGeneralRarity(g).stars);
       if (g) {
         slot.innerHTML = `
           <span class="slot-rank">${i + 1}</span>
@@ -14333,6 +14346,7 @@ function renderGeneralSelect() {
     card.className = 'deploy-card has-detail tier-' + getGeneralRarity(g).tier
       + (isIn ? ' in-formation' : '')
       + (isDupId ? ' duplicate-id' : '');
+    applyRarityBg(card, g.id, getGeneralRarity(g).stars);
     const badgeHTML = isLeader
       ? '<div class="formation-badge leader-badge">선봉</div>'
       : (isIn ? '<div class="formation-badge">편성됨</div>' : '');
@@ -14494,6 +14508,7 @@ function renderManageDex(rosterEl) {
     const rr = getGeneralRarity(e.g);          // 그 등급의 색
     const card = document.createElement('div');
     card.className = 'dex-card tier-star' + e.star + (has ? ' owned' : ' locked');
+    applyRarityBg(card, e.def.id, e.star);
     card.setAttribute('role', 'button');
     card.tabIndex = 0;
     card.setAttribute('aria-label', e.def.name + ' ' + rr.label + (has ? '' : ' 미보유'));
@@ -14845,6 +14860,7 @@ function renderGeneralManage() {
       const g = uid != null ? getOwnedGeneral(uid) : null;
       const slot = document.createElement('div');
       slot.className = 'formation-slot' + (g ? ' filled tier-' + getGeneralRarity(g).tier : '') + (i === selectedSlotIdx ? ' slot-selected' : '');
+      if (g) applyRarityBg(slot, g.id, getGeneralRarity(g).stars);
       if (g) {
         slot.innerHTML = `
           <span class="slot-rank">${i + 1}</span>
@@ -14916,6 +14932,7 @@ function renderGeneralManage() {
     card.className = 'deploy-card has-detail tier-' + getGeneralRarity(g).tier
       + (isIn ? ' in-formation' : '')
       + (isDupId ? ' duplicate-id' : '');
+    applyRarityBg(card, g.id, getGeneralRarity(g).stars);
     const badgeHTML = isLeader
       ? '<div class="formation-badge leader-badge">선봉</div>'
       : (isIn ? '<div class="formation-badge">편성됨</div>' : '');
@@ -22134,6 +22151,7 @@ function showStarterPick(onDone) {
     card.setAttribute('role', 'button');
     card.setAttribute('aria-label', `${g.name} 선택`);
     card.className = 'deploy-card has-detail tier-' + getGeneralRarity(g).tier;
+    applyRarityBg(card, g.id, getGeneralRarity(g).stars);
     card.innerHTML = `
       ${rarityBadgeHTML(g)}
       <div class="deploy-face"><img src="${def.bust || def.face}" alt=""></div>
@@ -42448,6 +42466,7 @@ function renderEnhanceRoster() {
   visibleOwned.forEach(g => {
     const card = document.createElement('div');
     card.className = 'enh-roster-card tier-' + getGeneralRarity(g).tier;
+    applyRarityBg(card, g.id, getGeneralRarity(g).stars);
     const isTarget = g.uid === targetUid;
     const isFodder = fodderSet.has(g.uid);
     if (isTarget) card.classList.add('selected');
