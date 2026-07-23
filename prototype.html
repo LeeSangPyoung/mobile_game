@@ -12340,8 +12340,8 @@
   .dex-view .dex-card.tier-star3::before { background-image:url('./assets/generals/rarity_bg/star3.webp'); }
   .dex-view .dex-card.tier-star4::before { background-image:url('./assets/generals/rarity_bg/star4.webp'); }
   .dex-view .dex-card.tier-star5::before { background-image:url('./assets/generals/rarity_bg/star5.webp'); }
-  /* 미보유여도 배경(등급 장면)은 컬러로 그대로 — 흑백은 캐릭터(초상화)에만 적용. */
-  .dex-view .dex-card.locked::before { filter:brightness(.82); }
+  /* 미보유는 배경까지 흑백(컬러 배경+흑백 캐릭터는 이질감). 별·전투력만 등급색 유지. */
+  .dex-view .dex-card.locked::before { filter:grayscale(1) brightness(.5); }
   /* 컷아웃 반신 초상화 — 배경 위(z-index 1)에서 카드를 채움 */
   .dex-view .dex-face { position:absolute; inset:0; bottom:20px; z-index:1; }
   .dex-view .dex-face img { width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
