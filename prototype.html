@@ -5341,17 +5341,20 @@
   .formation-tab.dexf-tab { padding: 6px 14px !important; margin-left: 4px !important; }
   /* 네 탭 높이를 강제 통일 — 미디어쿼리 !important 패딩 차이로 높이가 달라져
      박스 위/아래 여백이 어긋나던 문제 해결. box-sizing으로 정확히 46px 고정. */
-  #generalManageScreen #formationTabs .formation-tab {
-    height: 46px !important; min-height: 46px !important;
-    box-sizing: border-box !important; justify-content: center !important;
-  }
-  /* 그리드 컨테이너에 원인불명 여분 높이가 있어 위쪽 여백이 커졌다.
-     명시적 grid-template-rows(46px 한 줄) + align-content:start로 못박아 제거. */
+  /* 탭 세로 정렬: 그리드 대신 flex로. align-items:center면 탭 높이가 달라도(도감 탭 등)
+     전부 세로 중앙에 오고, 컨테이너 높이는 탭에 딱 맞아 박스 위/아래 여백이 대칭이 된다.
+     (그리드 + grid-template-rows 조합에서 탭이 행보다 10px 아래로 밀리는 문제가 있었다.) */
   #generalManageScreen #formationTabs {
-    grid-template-rows: 46px !important;
-    grid-auto-rows: 0 !important;
-    align-content: start !important;
-    row-gap: 0 !important;
+    display: flex !important; align-items: center !important; gap: 6px !important;
+    height: 46px !important; min-height: 46px !important;   /* 컨테이너를 탭 높이에 못박음 */
+  }
+  #generalManageScreen #formationTabs .formation-tab {
+    flex: 1 1 0 !important; justify-content: center !important;   /* 天/地/人 균등 */
+    height: 46px !important; min-height: 46px !important; box-sizing: border-box !important;
+    margin-top: 0 !important; margin-bottom: 0 !important;   /* 유령 margin-top:10px 제거(세로 쏠림 원인) */
+  }
+  #generalManageScreen #formationTabs .formation-tab.dexf-tab {
+    flex: 0 0 auto !important;   /* 도감은 내용 폭만큼(좁게) */
   }
   .formation-slots {
     margin-top: 8px;
@@ -14742,7 +14745,7 @@ function renderGeneralManage() {
   const tabsEl = document.getElementById('formationTabs');
   if (tabsEl) {
     tabsEl.innerHTML = '';
-    tabsEl.style.gridTemplateColumns = 'repeat(3, 1fr) auto';   // 편성 3개 균등 + 도감 좁게
+    // 레이아웃은 CSS flex(#formationTabs)에서 처리 — 天/地/人 균등 + 도감 좁게 + 세로 중앙.
     FORMATION_KEYS.forEach(k => {
       const arr = getFormationIds(k);
       const tab = document.createElement('button');
