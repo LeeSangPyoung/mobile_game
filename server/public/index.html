@@ -14398,14 +14398,39 @@ function dexOwnedBestById() {
   });
   return map;
 }
+// 도감 완성도(조합 기준: 200명 × ★1~5 = 1000). 보유한 (장수,등급) 조합 수.
+function dexComboTotals() {
+  const s = new Set();
+  (Array.isArray(SAVE.generals) ? SAVE.generals : []).forEach(function (inst) {
+    if (inst && inst.id) s.add(inst.id + ':' + clampStars((inst.stars) || 1));
+  });
+  return { have: s.size, total: GENERAL_ROSTER.length * STAR_MAX };
+}
 function setDexFilter(f) { _dexFilter = f; renderGeneralManage(); }
 // 도감을 '내 장수' 화면의 로스터 영역(manageRoster)에 렌더한다. 天/地/人 옆 도감 탭 전용.
 // (별도 화면이 아니라 같은 화면에서 탭만 바뀌는 서브메뉴 — 내 장수 메인을 흔들지 않음)
 function renderManageDex(rosterEl) {
   if (!rosterEl) return;
-  const owned = dexOwnedBestById();
-  const total = GENERAL_ROSTER.length;
-  const have = owned.size;
+  // 1000장 = 200명 × ★1~★5. 각 (장수,등급) 조합이 한 칸.
+  // 보유 판정: 지금 보유한 카드 중 그 장수를 그 등급으로 가지고 있으면 컬러.
+  const ownedMap = new Map();   // "id:star" -> 보유 수
+  (Array.isArray(SAVE.generals) ? SAVE.generals : []).forEach(function (inst) {
+    if (!inst || !inst.id) return;
+    const st = clampStars((inst.stars) || 1);
+    const k = inst.id + ':' + st;
+    ownedMap.set(k, (ownedMap.get(k) || 0) + 1);
+  });
+  // 전 조합 생성 + 전투력(등급 반영) 미리 계산 후 내림차순
+  const entries = [];
+  GENERAL_ROSTER.forEach(function (def) {
+    for (var s = 1; s <= STAR_MAX; s++) {
+      const g = Object.assign({}, def, { stars: s, lv: 1 });
+      entries.push({ def: def, star: s, g: g, pow: generalDetailPower(g) });
+    }
+  });
+  entries.sort(function (a, b) { return b.pow - a.pow; });
+  const total = entries.length;                 // 1000
+  const have = ownedMap.size;                   // 보유한 조합 수
   const pct = Math.round(have / Math.max(1, total) * 100);
   const fil = [['all', '전체'], ['owned', '보유'], ['locked', '미보유']];
   rosterEl.innerHTML =
@@ -14423,33 +14448,30 @@ function renderManageDex(rosterEl) {
     bindTap(t, function () { setDexFilter(t.getAttribute('data-df')); });
   });
   const grid = rosterEl.querySelector('.dex-grid');
-  // 전투력(기본 능력치) 내림차순 — 강한 장수부터. 원본 배열은 건드리지 않게 복사 후 정렬.
-  const sorted = GENERAL_ROSTER.slice().sort(function (a, b) { return generalScoreOf(b) - generalScoreOf(a); });
-  sorted.forEach(function (def) {
-    const has = owned.get(def.id);
+  entries.forEach(function (e) {
+    const key = e.def.id + ':' + e.star;
+    const cnt = ownedMap.get(key) || 0;
+    const has = cnt > 0;
     if (_dexFilter === 'owned' && !has) return;
     if (_dexFilter === 'locked' && has) return;
-    const g = has ? Object.assign({}, def, { stars: has.stars, lv: has.lv })
-                  : Object.assign({}, def, { stars: 1, lv: 1 });
+    const rr = getGeneralRarity(e.g);          // 그 등급의 색
     const card = document.createElement('div');
-    card.className = 'dex-card ' + (has ? ('owned tier-' + getGeneralRarity(g).tier) : 'locked');
+    card.className = 'dex-card tier-star' + e.star + (has ? ' owned' : ' locked');
     card.setAttribute('role', 'button');
     card.tabIndex = 0;
-    card.setAttribute('aria-label', def.name + (has ? '' : ' 미보유'));
-    const _rr = has ? getGeneralRarity(g) : null;   // 등급색으로 별을 칠함(★1 흰~★5 금)
-    const starHTML = has ? '<span class="dex-stars" style="color:' + _rr.color + ';text-shadow:0 0 6px ' + _rr.glow + ',0 1px 2px rgba(0,0,0,.9)">' + '★'.repeat(has.stars) + '</span>' : '';
-    const countHTML = (has && has.count > 1) ? '<span class="dex-count">x' + has.count + '</span>' : '';
-    const lvHTML = (has && has.lv > 1) ? '<span class="dex-lv">+' + (has.lv - 1) + '</span>' : '';
-    // 내 장수 카드와 동일한 반신 초상화(halfbody_v6) — 유저 요청. 서버에 이미 배포돼 있음.
-    const src = def.bust || def.face || '';
+    card.setAttribute('aria-label', e.def.name + ' ' + rr.label + (has ? '' : ' 미보유'));
+    // 별은 보유/미보유 상관없이 항상 등급색으로 (유저 요청)
+    const starHTML = '<span class="dex-stars" style="color:' + rr.color + ';text-shadow:0 0 6px ' + rr.glow + ',0 1px 2px rgba(0,0,0,.9)">' + '★'.repeat(e.star) + '</span>';
+    const countHTML = (cnt > 1) ? '<span class="dex-count">x' + cnt + '</span>' : '';
+    const src = e.def.bust || e.def.face || '';
     card.innerHTML =
       '<div class="dex-face"><img loading="lazy" src="' + src + '" alt=""></div>' +
       starHTML +
-      '<div class="dex-name">' + htmlSafe(def.name) + lvHTML + '</div>' +
+      '<div class="dex-name">' + htmlSafe(e.def.name) + '</div>' +
       countHTML;
-    bindTap(card, function () { showGeneralDetail(g); });
+    bindTap(card, function () { showGeneralDetail(e.g); });
     card.addEventListener('keydown', function (ev) {
-      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); showGeneralDetail(g); }
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); showGeneralDetail(e.g); }
     });
     grid.appendChild(card);
   });
@@ -14758,7 +14780,8 @@ function renderGeneralManage() {
     const dexTab = document.createElement('button');
     dexTab.type = 'button';
     dexTab.className = 'formation-tab dexf-tab' + (_manageMode === 'dex' ? ' active' : '');
-    dexTab.innerHTML = `<b>圖</b><small>도감 · ${dexOwnedBestById().size}/${GENERAL_ROSTER.length}</small>`;
+    const _dt = dexComboTotals();
+    dexTab.innerHTML = `<b>圖</b><small>도감 · ${_dt.have}/${_dt.total}</small>`;
     bindTap(dexTab, () => { _manageMode = 'dex'; clearManageSlotSelection(); renderGeneralManage(); });
     tabsEl.appendChild(dexTab);
   }
