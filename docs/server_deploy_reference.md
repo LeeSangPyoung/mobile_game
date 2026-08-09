@@ -11,13 +11,16 @@
 - Cloudflare는 **HTML을 캐시하지 않음**(`Cache-Control: no-store` → `Cf-Cache-Status: DYNAMIC`). 파일만 올리면 **즉시 라이브 반영**됩니다.
 
 ## 2. 접속 정보 (SSH)
+
+> 🔐 **비밀번호(`<VM_PASSWORD>`)는 이 문서에 넣지 않습니다.** 별도 채널로 전달받아 명령의 `<VM_PASSWORD>` 자리에 넣으세요.
+> ⚠️ 과거 커밋 히스토리엔 평문 비번이 남아있습니다 — **VM 비번을 교체(rotate)하는 것이 근본 해결책**입니다.
 | 항목 | 값 |
 |---|---|
 | 호스트 | `192.168.254.137` (포트 22) |
 | 계정 | `game` |
-| 비밀번호 | `tkdvud83` |
+| 비밀번호 | `<VM_PASSWORD>` |
 | 호스트키 | `ssh-ed25519 SHA256:vV2qMd4k46dJtDcuS5MFO8GuIIFMqD4VANX1Vk58Log` |
-| sudo | 가능 (비번 `tkdvud83`) |
+| sudo | 가능 (비번 `<VM_PASSWORD>`) |
 
 > ⚠️ 이 VM은 VMware **NAT** 망이라 **호스트 PC(192.168.254.1)에서만** SSH 접속됩니다. 다른 기기/외부에서 SSH는 안 됨(웹은 Cloudflare로 접속).
 
@@ -26,13 +29,13 @@
 ```bash
 HK="SHA256:vV2qMd4k46dJtDcuS5MFO8GuIIFMqD4VANX1Vk58Log"
 # 명령 실행
-plink -batch -hostkey "$HK" -pw tkdvud83 game@192.168.254.137 "명령어"
+plink -batch -hostkey "$HK" -pw <VM_PASSWORD> game@192.168.254.137 "명령어"
 # 파일 업로드
-pscp -batch -hostkey "$HK" -pw tkdvud83 로컬파일 game@192.168.254.137:/원격경로
+pscp -batch -hostkey "$HK" -pw <VM_PASSWORD> 로컬파일 game@192.168.254.137:/원격경로
 ```
 **Linux/Mac (ssh/scp):**
 ```bash
-ssh game@192.168.254.137          # 비번 tkdvud83
+ssh game@192.168.254.137          # 비번 <VM_PASSWORD>
 scp 로컬파일 game@192.168.254.137:/원격경로
 ```
 
@@ -60,25 +63,25 @@ scp 로컬파일 game@192.168.254.137:/원격경로
 ```bash
 HK="SHA256:vV2qMd4k46dJtDcuS5MFO8GuIIFMqD4VANX1Vk58Log"
 # prototype.html 수정 후:
-pscp -batch -hostkey "$HK" -pw tkdvud83 prototype.html game@192.168.254.137:/workspace/public/index.html
+pscp -batch -hostkey "$HK" -pw <VM_PASSWORD> prototype.html game@192.168.254.137:/workspace/public/index.html
 ```
 온라인 클라(mp_game.html) 반영:
 ```bash
 # tools/build_mp_server_client.mjs 수정 후 재빌드:
 node tools/build_mp_server_client.mjs
-pscp -batch -hostkey "$HK" -pw tkdvud83 server/public/mp_game.html game@192.168.254.137:/workspace/public/mp_game.html
+pscp -batch -hostkey "$HK" -pw <VM_PASSWORD> server/public/mp_game.html game@192.168.254.137:/workspace/public/mp_game.html
 ```
 관리자 페이지:
 ```bash
-pscp -batch -hostkey "$HK" -pw tkdvud83 server/public/admin.html game@192.168.254.137:/workspace/public/admin.html
+pscp -batch -hostkey "$HK" -pw <VM_PASSWORD> server/public/admin.html game@192.168.254.137:/workspace/public/admin.html
 ```
 > 반영 즉시 확인: `curl -s "https://games.wooriban.org/index.html" | grep -c battleSelect` (0보다 크면 새 파일)
 
 ### B. 서버 코드 반영 (mp_server.js) — **업로드 + 재시작 필요**
 ```bash
 HK="SHA256:vV2qMd4k46dJtDcuS5MFO8GuIIFMqD4VANX1Vk58Log"
-pscp -batch -hostkey "$HK" -pw tkdvud83 server/mp_server.js game@192.168.254.137:/workspace/mp_server.js
-MSYS_NO_PATHCONV=1 plink -batch -hostkey "$HK" -pw tkdvud83 game@192.168.254.137 "bash /workspace/restart.sh"
+pscp -batch -hostkey "$HK" -pw <VM_PASSWORD> server/mp_server.js game@192.168.254.137:/workspace/mp_server.js
+MSYS_NO_PATHCONV=1 plink -batch -hostkey "$HK" -pw <VM_PASSWORD> game@192.168.254.137 "bash /workspace/restart.sh"
 ```
 
 ## 5. 서버 관리
