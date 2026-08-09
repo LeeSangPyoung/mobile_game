@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "418384038453",
+    "project_id": "ourclass-c2ec6",
+    "storage_bucket": "ourclass-c2ec6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418384038453:android:3ae3c6d45ef3dcb3283f7c",
+        "android_client_info": {
+          "package_name": "com.damoim.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFyRDK5SRiVqhMX3HvcXE5m6mWtJAjDus"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418384038453:android:d58d4f088b0fbe7c283f7c",
+        "android_client_info": {
+          "package_name": "com.leesp.samgukgi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFyRDK5SRiVqhMX3HvcXE5m6mWtJAjDus"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418384038453:android:01fd6ca93f293996283f7c",
+        "android_client_info": {
+          "package_name": "com.wooriban.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFyRDK5SRiVqhMX3HvcXE5m6mWtJAjDus"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

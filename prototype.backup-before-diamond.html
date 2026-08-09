@@ -5783,145 +5783,6 @@
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star5 .deploy-face {
     background:var(--rbg) center 16%/cover !important;
   }
-  /* ===== 💎 다이아몬드(tier-star6) — 5성 위 신규 최상위 등급: 아이스/프리즘 톤 ===== */
-  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star6 {
-    background: linear-gradient(180deg, #5a6273, #363c4b) !important;
-    border-color: rgba(210,220,235,0.7) !important;
-    box-shadow: 0 0 0 1.3px rgba(210,220,235,0.5), 0 0 15px rgba(180,200,235,0.35), 0 4px 14px rgba(0,0,0,0.45) !important;
-  }
-  /* 이름 흰색 (어두워진 바깥쪽 위에서 잘 보이게) */
-  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star6 .deploy-name,
-  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star6 .deploy-name .dn-text {
-    color: #ffffff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.6) !important;
-  }
-  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card.tier-star6 .deploy-face {
-    /* 다크 에테리얼 배경 — 그대로 노출 */
-    background: var(--rbg) center 16%/cover !important;
-  }
-  .formation-slot.filled.tier-star6 {
-    border-color: rgba(240,205,130,0.75) !important;
-    box-shadow: 0 0 12px rgba(240,205,130,0.45) !important;
-    background:var(--rbg) center 16%/cover !important;
-  }
-  .enh-roster-card.tier-star6 {
-    border-color: rgba(240,205,130,0.85) !important;
-    box-shadow: 0 0 14px rgba(240,205,130,0.45) !important;
-  }
-  .enh-roster-card.tier-star6 .face-wrap { background:var(--rbg) center 16%/cover !important; }
-  .dex-view .dex-card.owned.tier-star6 { border-color:#9fe8ff; box-shadow:0 0 0 1px rgba(159,232,255,.50) inset, 0 0 12px rgba(159,232,255,.42); }
-  /* 💎 다이아 뱃지 아이콘 — 주변 글자(별)와 비례(1.4em). 검은 배경은 screen 제거.
-     .formation-slot img / .deploy-face img / .enh-*-card img 가 width/height:100% !important 라서,
-     이를 이기려면 '.컨텍스트 .dia-badge-img'(특이성 0,2,0 > 0,1,1) 로 각각 덮어써야 한다. */
-  /* 💎 다이아 등급 = 금빛 다이아 이미지(투명 배경). 별 자리에, 검은 박스 없이.
-     .formation-slot img{width/height:100%!important} 같은 규칙 이기려고 컨텍스트별 고특이성 !important. */
-  .dia-badge-img,
-  .formation-slot .dia-badge-img, .deploy-card .dia-badge-img, .deploy-face .dia-badge-img,
-  .enh-roster-card .dia-badge-img, .enh-roster-card .face-wrap .dia-badge-img, .enh-target-frame .dia-badge-img,
-  .enh-fodder-card-art .dia-badge-img, .dex-stars .dia-badge-img, #generalDetailStars .dia-badge-img {
-    height:1.8em !important; width:auto !important; object-fit:contain !important;
-    vertical-align:middle; display:inline-block;
-  }
-  /* 다이아 뱃지는 검은 박스/테두리 제거 — 이미지만 떠 보이게. 로스터 카드는 왼쪽-아래(얼굴 왼쪽)로 */
-  .rarity-badge.tier-diamond { background:transparent !important; border:none !important; padding:0 !important; box-shadow:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; filter:none !important; }
-  /* 상세 모달: 다이아를 오른쪽 위(X 아래) 가장자리로 — 배경/광배 없이 이미지만 */
-  #generalDetailModal #generalDetailStars { position:absolute !important; top:40px !important; right:12px !important; left:auto !important; bottom:auto !important; margin:0 !important; z-index:8 !important; background:transparent !important; padding:0 !important; border:none !important; box-shadow:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; filter:none !important; min-width:0 !important; }
-  /* 상세 카드 다이아 등급: 기존 비트맵 대신 동일한 프리즘 배지 */
-  #generalDetailModal #generalDetailStars.is-diamond {
-    width:34px !important; height:22px !important; min-width:34px !important;
-    left:auto !important; right:12px !important;
-    background:rgba(6,12,24,.68) !important;
-    border:1px solid rgba(255,255,255,.22) !important; border-radius:999px !important;
-    box-shadow:0 2px 8px rgba(0,0,0,.38) !important;
-  }
-  #generalDetailModal #generalDetailStars.is-diamond .dia-badge-img { display:none !important; }
-  #generalDetailModal #generalDetailStars.is-diamond::before {
-    content:''; position:absolute; left:50%; top:1px; width:25px; height:19px;
-    transform:translateX(-50%);
-    clip-path:polygon(15% 8%,85% 8%,100% 38%,50% 100%,0 38%);
-    background:
-      linear-gradient(145deg,transparent 0 29%,rgba(255,255,255,.9) 30% 34%,transparent 35%),
-      linear-gradient(115deg,#66e8ff 0%,#f8ffff 20%,#d783ff 42%,#ffe66f 64%,#72f6d1 82%,#66e8ff 100%);
-    background-size:100% 100%,300% 100%;
-    animation:formationDiamondPrism 3.4s ease-in-out infinite;
-  }
-  #generalDetailModal #generalDetailStars.is-diamond::after {
-    content:''; position:absolute; left:calc(50% - 7px); top:4px; width:4px; height:4px;
-    background:#fff; border-radius:50%;
-    opacity:.82; animation:formationDiamondSpark 3.4s ease-in-out infinite;
-  }
-  /* 형성 슬롯의 pill 배경/그림자/최소폭도 제거 (다이아는 이미지만) */
-  .formation-slot .rarity-badge.tier-diamond {
-    background:rgba(6,12,24,.68) !important;
-    border:1px solid rgba(255,255,255,.22) !important; border-radius:999px !important;
-    box-shadow:0 2px 8px rgba(0,0,0,.38) !important;
-    width:calc(16px + var(--diamond-count, 1) * 12px) !important;
-    height:15px !important; min-width:0 !important; padding:0 !important;
-    top:4px !important; left:22px !important; right:auto !important; z-index:7 !important;
-    transform:none !important;
-    filter:none !important;
-  }
-  /* 위쪽 편성 슬롯: 비트맵 대신 선명한 블랙다이아 엠블럼을 별 자리(상단 중앙)에 표시 */
-  .formation-slot .rarity-badge.tier-diamond .dia-badge-img { display:none !important; }
-  .formation-slot .rarity-badge.tier-diamond::before {
-    content:''; position:absolute; left:50%; top:2px; width:11px; height:9px;
-    transform:translateX(-50%);
-    clip-path:polygon(15% 8%,85% 8%,100% 38%,50% 100%,0 38%);
-    background:
-      linear-gradient(145deg,transparent 0 29%,rgba(255,255,255,.9) 30% 34%,transparent 35%),
-      linear-gradient(115deg,#66e8ff 0%,#f8ffff 20%,#d783ff 42%,#ffe66f 64%,#72f6d1 82%,#66e8ff 100%);
-    background-size:100% 100%,300% 100%;
-    animation:formationDiamondPrism 3.4s ease-in-out infinite;
-  }
-  .formation-slot .rarity-badge.tier-diamond::after {
-    content:''; position:absolute; left:calc(50% - 3px); top:3px; width:2px; height:2px;
-    background:#fff;
-    clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);
-    opacity:.82; animation:formationDiamondSpark 3.4s ease-in-out infinite;
-  }
-  @keyframes formationDiamondPrism {
-    0%,100% { background-position:0 0,0% 0; filter:brightness(.92) saturate(1.05); }
-    50% { background-position:0 0,100% 0; filter:brightness(1.14) saturate(1.2); }
-  }
-  @keyframes formationDiamondSpark {
-    0%,35%,100% { opacity:.38; transform:scale(.72); }
-    52% { opacity:1; transform:scale(1.12); }
-  }
-  @media (prefers-reduced-motion:reduce) {
-    .formation-slot .rarity-badge.tier-diamond::before,
-    .formation-slot .rarity-badge.tier-diamond::after { animation:none !important; }
-  }
-  /* 하단 보유/출전 카드: 여포의 5성 배지와 같은 자리·크기, 내부만 프리즘 다이아 */
-  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card > .rarity-badge.tier-diamond {
-    top:4px !important; left:4px !important; right:auto !important;
-    width:calc(16px + var(--diamond-count, 1) * 12px) !important;
-    height:14px !important; min-width:0 !important; padding:0 !important;
-    background:rgba(6,12,24,.68) !important;
-    border:1px solid rgba(255,255,255,.22) !important; border-radius:999px !important;
-    box-shadow:0 2px 8px rgba(0,0,0,.38) !important;
-    transform:none !important; filter:none !important; z-index:7 !important;
-  }
-  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card > .rarity-badge.tier-diamond .dia-badge-img {
-    display:none !important;
-  }
-  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card > .rarity-badge.tier-diamond::before {
-    content:''; position:absolute; left:50%; top:2px; width:11px; height:9px;
-    transform:translateX(-50%);
-    clip-path:polygon(15% 8%,85% 8%,100% 38%,50% 100%,0 38%);
-    background:
-      linear-gradient(145deg,transparent 0 29%,rgba(255,255,255,.9) 30% 34%,transparent 35%),
-      linear-gradient(115deg,#66e8ff 0%,#f8ffff 20%,#d783ff 42%,#ffe66f 64%,#72f6d1 82%,#66e8ff 100%);
-    background-size:100% 100%,300% 100%;
-    animation:formationDiamondPrism 3.4s ease-in-out infinite;
-  }
-  :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card > .rarity-badge.tier-diamond::after {
-    content:''; position:absolute; left:calc(50% - 3px); top:3px; width:2px; height:2px;
-    background:#fff; border-radius:50%;
-    opacity:.82; animation:formationDiamondSpark 3.4s ease-in-out infinite;
-  }
-  @media (prefers-reduced-motion:reduce) {
-    :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card > .rarity-badge.tier-diamond::before,
-    :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card > .rarity-badge.tier-diamond::after { animation:none !important; }
-  }
   /* 돋보기(상세) 버튼: 이름과 한 줄로 가지런히(이름 오른쪽 인라인) */
   :is(.manage-roster,.deploy-roster,.sp-roster) .deploy-card .deploy-name {
     display: flex !important; align-items: center !important; justify-content: center !important;
@@ -12296,44 +12157,6 @@
 </style>
 </head>
 <body>
-<!-- 💎 다이아 등급 엠블럼(햇살 훈장) — SVG 심볼 1회 정의, 뱃지에서 <use>로 참조 -->
-<svg width="0" height="0" style="position:absolute;width:0;height:0" aria-hidden="true">
-  <defs>
-    <linearGradient id="dgGold" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#fff0b6"/><stop offset=".45" stop-color="#e7b854"/><stop offset="1" stop-color="#8f5f18"/>
-    </linearGradient>
-    <linearGradient id="dgGoldR" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#ffe9a0"/><stop offset=".5" stop-color="#d99f38"/><stop offset="1" stop-color="#7c5014"/>
-    </linearGradient>
-    <radialGradient id="dgGem" cx="40%" cy="30%" r="80%">
-      <stop offset="0" stop-color="#ffffff"/><stop offset=".28" stop-color="#c9a0ff"/><stop offset=".7" stop-color="#7c3aed"/><stop offset="1" stop-color="#43167e"/>
-    </radialGradient>
-    <polygon id="dgRay" points="50,4 54,27 46,27" fill="url(#dgGoldR)"/>
-    <symbol id="diaEmblem" viewBox="0 0 100 100">
-      <use href="#dgRay"/><use href="#dgRay" transform="rotate(30 50 50)"/><use href="#dgRay" transform="rotate(60 50 50)"/><use href="#dgRay" transform="rotate(90 50 50)"/><use href="#dgRay" transform="rotate(120 50 50)"/><use href="#dgRay" transform="rotate(150 50 50)"/><use href="#dgRay" transform="rotate(180 50 50)"/><use href="#dgRay" transform="rotate(210 50 50)"/><use href="#dgRay" transform="rotate(240 50 50)"/><use href="#dgRay" transform="rotate(270 50 50)"/><use href="#dgRay" transform="rotate(300 50 50)"/><use href="#dgRay" transform="rotate(330 50 50)"/>
-      <circle cx="50" cy="50" r="23" fill="url(#dgGold)" stroke="#6f4d12" stroke-width="1.5"/>
-      <circle cx="50" cy="50" r="16.5" fill="#241033"/>
-      <polygon points="50,37 62,50 50,63 38,50" fill="url(#dgGem)"/>
-    </symbol>
-    <linearGradient id="dgCry" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#dbe7f7"/><stop offset="1" stop-color="#a9c8e6"/></linearGradient>
-    <symbol id="diaGem" viewBox="0 0 100 100">
-      <polygon points="50,9 85,41 50,92 15,41" fill="url(#dgCry)" stroke="url(#dgGold)" stroke-width="3"/>
-      <polygon points="50,9 85,41 50,25" fill="#eef6ff" opacity=".9"/>
-      <polygon points="50,9 15,41 50,25" fill="#cfe3f6" opacity=".9"/>
-      <polygon points="15,41 50,25 85,41" fill="#ffffff" opacity=".55"/>
-      <polygon points="15,41 50,41 50,92" fill="#bcd8f0" opacity=".92"/>
-      <polygon points="85,41 50,41 50,92" fill="#a6c8e8" opacity=".92"/>
-      <polygon points="15,41 33,41 50,92" fill="#eaf4ff" opacity=".38"/>
-      <polygon points="67,41 85,41 50,92" fill="#eaf4ff" opacity=".38"/>
-      <g stroke="#ffffff" stroke-width=".9" opacity=".75" fill="none">
-        <line x1="50" y1="9" x2="50" y2="92"/><line x1="15" y1="41" x2="85" y2="41"/>
-        <line x1="15" y1="41" x2="50" y2="25"/><line x1="85" y1="41" x2="50" y2="25"/>
-        <line x1="33" y1="41" x2="50" y2="92"/><line x1="67" y1="41" x2="50" y2="92"/>
-      </g>
-      <path d="M50 3 l1.6 6.5 6.5 1.6 -6.5 1.6 -1.6 6.5 -1.6 -6.5 -6.5 -1.6 6.5 -1.6 z" fill="#ffffff"/>
-    </symbol>
-  </defs>
-</svg>
 <script>
 /* 설치/실행 집계 비콘 — 기기 고유 id(cid) 1회 전송. 앱=games.wooriban.org로, 웹=같은오리진. */
 (function(){ try {
@@ -12618,29 +12441,6 @@
   }
   .dex-view .dex-count { bottom:28px; left:6px; right:auto; z-index:2; }   /* 보유수는 왼쪽으로(전투력과 안 겹치게) */
   .dex-view .dex-stars { position:absolute; top:5px; left:6px; font-size:11px; color:#ffd23f; letter-spacing:-1px; text-shadow:0 1px 3px rgba(0,0,0,.85); }
-  .dex-view .dex-stars.is-diamond {
-    width:28px; height:14px;
-    background:rgba(6,12,24,.68);
-    border:1px solid rgba(255,255,255,.22); border-radius:999px;
-    box-shadow:0 2px 8px rgba(0,0,0,.38);
-    text-shadow:none; overflow:hidden;
-  }
-  .dex-view .dex-stars.is-diamond .dia-badge-img { display:none !important; }
-  .dex-view .dex-stars.is-diamond::before {
-    content:''; position:absolute; left:50%; top:2px; width:11px; height:9px;
-    transform:translateX(-50%);
-    clip-path:polygon(15% 8%,85% 8%,100% 38%,50% 100%,0 38%);
-    background:
-      linear-gradient(145deg,transparent 0 29%,rgba(255,255,255,.9) 30% 34%,transparent 35%),
-      linear-gradient(115deg,#66e8ff 0%,#f8ffff 20%,#d783ff 42%,#ffe66f 64%,#72f6d1 82%,#66e8ff 100%);
-    background-size:100% 100%,300% 100%;
-    animation:formationDiamondPrism 3.4s ease-in-out infinite;
-  }
-  .dex-view .dex-stars.is-diamond::after {
-    content:''; position:absolute; left:calc(50% - 3px); top:3px; width:2px; height:2px;
-    background:#fff; border-radius:50%;
-    opacity:.82; animation:formationDiamondSpark 3.4s ease-in-out infinite;
-  }
   .dex-view .dex-lv { margin-left:4px; font-size:10px; color:#ffd23f; }
   .dex-view .dex-count { position:absolute; bottom:26px; right:6px; font-size:11px; font-weight:800; color:#fff; background:rgba(0,0,0,.6); border-radius:8px; padding:1px 6px; }
 </style>
@@ -13437,13 +13237,7 @@ function hashGeneralId(id) {
 // 파일: star{N}.webp(세트1) / star{N}_2.webp(세트2) / star{N}_3.webp(세트3)
 function rarityBgSet(id) { return hashGeneralId(String(id || '')) % 3; }   // 0,1,2 고정
 function rarityBgUrl(id, stars) {
-  const st = (stars | 0) || 1;
-  if (st >= 6) {
-    // 다이아몬드 — 업로드한 다크 배경 10종을 캐릭터별 고정 변형으로 사용
-    const v = (hashGeneralId(String(id || '')) % 10) + 1;   // 1..10
-    return "url('./assets/generals/rarity_bg/diamond" + v + ".png?v=4')";
-  }
-  const s = Math.max(1, Math.min(5, st));
+  const s = Math.max(1, Math.min(5, (stars | 0) || 1));
   const set = rarityBgSet(id);
   const suffix = set === 0 ? '' : ('_' + (set + 1));
   return "url('./assets/generals/rarity_bg/star" + s + suffix + ".webp')";
@@ -14296,12 +14090,12 @@ function getGeneralById(id) {
   return GENERAL_BY_ID.get(id) || null;
 }
 // === 장수 별 등급 시스템 (등용 시 랜덤 결정, per-instance) ===
-const STAR_MAX = 6;   // 5성 위 💎다이아몬드(=6) 신설 (5성 다 모은 유저용 신규 최상위 등급). 도감도 다이아 포함(200칸 추가 → 200×6=1200)
-const STAR_MULT = [1.0, 1.0, 1.2, 1.4, 1.7, 2.0, 2.5];      // index = stars(1~5, 6=다이아): 버프 배수. 다이아=5성×1.25(+25%)
+const STAR_MAX = 5;
+const STAR_MULT = [1.0, 1.0, 1.2, 1.4, 1.7, 2.0];          // index = stars(1~5): 버프 배수
 // 별 플랫 바닥값(C안) — 약한 장수도 고등급이면 핵심 전투(병공/병방)에 기본 기여.
 // 명장은 base가 커서 여전히 우위. unitAtk에 더하고 unitDef엔 60%.
-const STAR_FLAT = [0, 0, 0.012, 0.025, 0.045, 0.075, 0.10]; // index = stars (6=다이아)
-const STAR_ODDS = [0, 0.41, 0.30, 0.18, 0.08, 0.03, 0];     // index = stars: 등용 시 등장 확률(합 1.0). 다이아(6)=0 → 랜덤엔 안 뜸(특별 획득)
+const STAR_FLAT = [0, 0, 0.012, 0.025, 0.045, 0.075];      // index = stars
+const STAR_ODDS = [0, 0.41, 0.30, 0.18, 0.08, 0.03];        // index = stars: 등용 시 등장 확률 (합 1.0)
 // ★3 15→18% / ★4 5→8% / ★5 2→3% 소폭 상향 — "좋은 카드도 가끔 나왔으면" 피드백.
 // 고등급은 여전히 희귀해야 수집 가치가 유지되므로 상향폭은 최소로.
 const STAR_META = {
@@ -14344,14 +14138,6 @@ const STAR_META = {
     auraMain: 'rgba(255,191,64,0.40)',
     auraSoft: 'rgba(255,76,124,0.22)',
     auraHot: 'rgba(255,246,180,0.86)',
-  },
-  6: {
-    label: '다이아몬드',
-    color: '#9fe8ff',
-    glow: 'rgba(159,232,255,0.85)',
-    auraMain: 'rgba(159,232,255,0.42)',
-    auraSoft: 'rgba(210,180,255,0.24)',
-    auraHot: 'rgba(240,250,255,0.90)',
   },
 };
 function rollStars() {
@@ -14427,12 +14213,8 @@ function getGeneralRarity(g) {
 }
 function rarityBadgeHTML(g) {
   const r = getGeneralRarity(g);
-  const glow = `;text-shadow:0 0 ${r.stars >= 4 ? 10 : 7}px ${r.glow},0 1px 0 rgba(0,0,0,0.58)`;
-  // 다이아몬드(6)는 별 대신 유저 제공 다이아 이미지 1개(별 크기 비례)
-  if (r.stars >= 6) {
-    return `<div class="rarity-badge tier-${r.tier} tier-diamond" style="--diamond-count:1" title="${r.label}"><img class="dia-badge-img" src="./assets/generals/diamond_badge.png?v=17" alt="다이아"></div>`;
-  }
   const stars = '★'.repeat(r.stars);
+  const glow = `;text-shadow:0 0 ${r.stars >= 4 ? 10 : 7}px ${r.glow},0 1px 0 rgba(0,0,0,0.58)`;
   return `<div class="rarity-badge tier-${r.tier}" title="${r.label} ★${r.stars}" style="color:${r.color}${glow}">${stars}</div>`;
 }
 // 책사 뱃지 — 지력 높은 장수만 카드에 표시(계책=회유가 잘 통함).
@@ -14879,7 +14661,7 @@ function renderManageDex(rosterEl) {
   // 전 조합 생성 + 전투력(등급 반영) 미리 계산 후 내림차순
   const entries = [];
   GENERAL_ROSTER.forEach(function (def) {
-    for (var s = 1; s <= STAR_MAX; s++) {   // 1~5성 + 다이아(6) — 각 장수마다 다이아 수집칸 1개
+    for (var s = 1; s <= STAR_MAX; s++) {
       const g = Object.assign({}, def, { stars: s, lv: 1 });
       entries.push({ def: def, star: s, g: g, pow: generalDetailPower(g) });
     }
@@ -14919,9 +14701,8 @@ function renderManageDex(rosterEl) {
     card.setAttribute('role', 'button');
     card.tabIndex = 0;
     card.setAttribute('aria-label', e.def.name + ' ' + rr.label + (has ? '' : ' 미보유'));
-    // 별은 보유/미보유 상관없이 항상 등급색으로 (유저 요청). 다이아(6)는 ★대신 💎 뱃지.
-    const starInner = (e.star >= 6) ? '<img class="dia-badge-img" src="./assets/generals/diamond_badge.png?v=17" alt="다이아">' : '★'.repeat(e.star);
-    const starHTML = '<span class="dex-stars' + (e.star >= 6 ? ' is-diamond' : '') + '" style="color:' + rr.color + ';text-shadow:0 0 6px ' + rr.glow + ',0 1px 2px rgba(0,0,0,.9)">' + starInner + '</span>';
+    // 별은 보유/미보유 상관없이 항상 등급색으로 (유저 요청)
+    const starHTML = '<span class="dex-stars" style="color:' + rr.color + ';text-shadow:0 0 6px ' + rr.glow + ',0 1px 2px rgba(0,0,0,.9)">' + '★'.repeat(e.star) + '</span>';
     const countHTML = (cnt > 1) ? '<span class="dex-count">x' + cnt + '</span>' : '';
     // 피파 오버롤처럼 전투력을 오른쪽 하단에 크게. 테두리를 등급색으로 강조.
     const powHTML = '<span class="dex-pow" style="border-color:' + rr.color + ';color:' + rr.color + '">' + e.pow + '</span>';
@@ -15212,9 +14993,7 @@ function showGeneralDetail(g, opts) {
   if (ratingEl) ratingEl.textContent = generalDetailPower(g).toLocaleString();
   if (roleEl) roleEl.textContent = generalProfileRole(g);
   if (starsEl) {
-    starsEl.classList.toggle('is-diamond', stars >= 6);
-    if (stars >= 6) starsEl.innerHTML = '<img class="dia-badge-img" src="./assets/generals/diamond_badge.png?v=17" alt="다이아">';
-    else starsEl.textContent = '★'.repeat(stars);
+    starsEl.textContent = '★'.repeat(stars);
     starsEl.style.color = rarity.color;
     starsEl.style.textShadow = `0 0 ${stars >= 4 ? 13 : 8}px ${rarity.glow}, 0 1px 0 rgba(0,0,0,0.72)`;
   }
@@ -23150,13 +22929,10 @@ function showPrisonerScreen(prisoners, onContinue) {
     { const _pp = document.getElementById('prisonPow'); if (_pp) { const _pd = getGeneralById(p.id) || p; _pp.textContent = generalDetailPower(Object.assign({}, _pd, { stars: _st, lv: 1 })).toLocaleString(); _pp.style.color = (STAR_META[_st] || STAR_META[1]).color; } }
     const _meta = STAR_META[_st] || STAR_META[1];
     const _glow = _st >= 4 ? `;text-shadow:0 0 8px ${_meta.color}` : '';
-    const _rankGlyph = _st >= 6 ? '' : '★'.repeat(_st);
-    speaker.innerHTML = `${p.name}(포로) <span class="prison-rank${_st >= 6 ? ' is-diamond' : ''}" style="color:${_meta.color}${_glow};font-weight:900">${_rankGlyph}</span>`;
-    caption.textContent = _st >= 6
-      ? `${_meta.label} 등급! ${p.name}을(를) 사로잡았다!`
-      : (_st >= 4
-        ? `★${_st} ${_meta.label} 등급! ${p.name}을(를) 사로잡았다!`
-        : `${state.idx + 1}번째 포로가 왕좌 앞에 무릎을 꿇었다.`);
+    speaker.innerHTML = `${p.name}(포로) <span style="color:${_meta.color}${_glow};font-weight:900">${'★'.repeat(_st)}</span>`;
+    caption.textContent = _st >= 4
+      ? `★${_st} ${_meta.label} 등급! ${p.name}을(를) 사로잡았다!`
+      : `${state.idx + 1}번째 포로가 왕좌 앞에 무릎을 꿇었다.`;
     if (state.phase === 'intro') {
       line.textContent = p.quote;
       const _free = (p.cost === 0) || (typeof liveEventFreeRecruitActive === 'function' && liveEventFreeRecruitActive());
@@ -36675,69 +36451,6 @@ function closeTutorialOffer(accept) {
 	    }
 	  }
 
-	  /* 💎 강화 화면 카드(대상선택/대상/재료)도 로스터와 동일 프리즘 다이아로 통일 — 원본 블랙 img 숨김. */
-	  #enhanceScreen :is(.enh-roster-card, .enh-target-frame, .enh-fodder-card-art) .rarity-badge.tier-diamond {
-	    top:4px !important; left:4px !important; right:auto !important; bottom:auto !important;
-	    width:calc(16px + var(--diamond-count, 1) * 12px) !important;
-	    height:14px !important; min-width:0 !important; max-width:none !important; padding:0 !important;
-	    background:rgba(6,12,24,.68) !important;
-	    border:1px solid rgba(255,255,255,.22) !important; border-radius:999px !important;
-	    box-shadow:0 2px 8px rgba(0,0,0,.38) !important;
-	    transform:none !important; filter:none !important; z-index:7 !important;
-	    display:block !important; overflow:visible !important;
-	  }
-	  #enhanceScreen :is(.enh-roster-card, .enh-target-frame, .enh-fodder-card-art) .rarity-badge.tier-diamond .dia-badge-img {
-	    display:none !important;
-	  }
-	  #enhanceScreen :is(.enh-roster-card, .enh-target-frame, .enh-fodder-card-art) .rarity-badge.tier-diamond::before {
-	    content:''; position:absolute; left:50%; top:2px; width:11px; height:9px;
-	    transform:translateX(-50%);
-	    clip-path:polygon(15% 8%,85% 8%,100% 38%,50% 100%,0 38%);
-	    background:
-	      linear-gradient(145deg,transparent 0 29%,rgba(255,255,255,.9) 30% 34%,transparent 35%),
-	      linear-gradient(115deg,#66e8ff 0%,#f8ffff 20%,#d783ff 42%,#ffe66f 64%,#72f6d1 82%,#66e8ff 100%);
-	    background-size:100% 100%,300% 100%;
-	    animation:formationDiamondPrism 3.4s ease-in-out infinite;
-	  }
-	  #enhanceScreen :is(.enh-roster-card, .enh-target-frame, .enh-fodder-card-art) .rarity-badge.tier-diamond::after {
-	    content:''; position:absolute; left:calc(50% - 3px); top:3px; width:2px; height:2px;
-	    background:#fff; border-radius:50%;
-	    opacity:.82; animation:formationDiamondSpark 3.4s ease-in-out infinite;
-	  }
-	  @media (prefers-reduced-motion:reduce) {
-	    #enhanceScreen :is(.enh-roster-card, .enh-target-frame, .enh-fodder-card-art) .rarity-badge.tier-diamond::before,
-	    #enhanceScreen :is(.enh-roster-card, .enh-target-frame, .enh-fodder-card-art) .rarity-badge.tier-diamond::after { animation:none !important; }
-	  }
-
-	  /* 💎 강화 준비(ritual) 카드: 다이아는 별 6개 대신 프리즘 다이아 엠블럼 1개 */
-	  .er-target .er-card-stars.is-diamond {
-	    display:flex !important; align-items:center; justify-content:center;
-	  }
-	  .er-target .er-card-stars.is-diamond::before {
-	    content:''; display:inline-block; width:28px; height:23px;
-	    clip-path:polygon(15% 8%,85% 8%,100% 38%,50% 100%,0 38%);
-	    background:
-	      linear-gradient(145deg,transparent 0 29%,rgba(255,255,255,.92) 30% 34%,transparent 35%),
-	      linear-gradient(115deg,#66e8ff 0%,#f8ffff 20%,#d783ff 42%,#ffe66f 64%,#72f6d1 82%,#66e8ff 100%);
-	    background-size:100% 100%,300% 100%;
-	    animation:formationDiamondPrism 3.4s ease-in-out infinite;
-	    filter:drop-shadow(0 1px 3px rgba(0,0,0,.5));
-	  }
-	  @media (prefers-reduced-motion:reduce) { .er-target .er-card-stars.is-diamond::before { animation:none !important; } }
-
-	  /* 💎 등용신(포로) 이름 옆 등급: 다이아는 별 대신 인라인 프리즘 다이아 */
-	  #prisonerScreen .prison-rank.is-diamond::before {
-	    content:''; display:inline-block; width:18px; height:15px; vertical-align:middle; margin-left:1px;
-	    clip-path:polygon(15% 8%,85% 8%,100% 38%,50% 100%,0 38%);
-	    background:
-	      linear-gradient(145deg,transparent 0 29%,rgba(255,255,255,.92) 30% 34%,transparent 35%),
-	      linear-gradient(115deg,#66e8ff 0%,#f8ffff 20%,#d783ff 42%,#ffe66f 64%,#72f6d1 82%,#66e8ff 100%);
-	    background-size:100% 100%,300% 100%;
-	    animation:formationDiamondPrism 3.4s ease-in-out infinite;
-	    filter:drop-shadow(0 1px 2px rgba(0,0,0,.55));
-	  }
-	  @media (prefers-reduced-motion:reduce){ #prisonerScreen .prison-rank.is-diamond::before{ animation:none !important; } }
-
 	  /* Final prisoner button cleanup: remove stripe-like bevel artifacts. */
 	  #prisonerScreen .prison-event {
 	    border-bottom-color: transparent !important;
@@ -44005,7 +43718,7 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
   targetEl.innerHTML = `
     <div class="er-card-art">
       <div class="er-card-rank">${safe(rarity.label)}</div>
-      <div class="er-card-stars${rarity.stars >= 6 ? ' is-diamond' : ''}">${rarity.stars >= 6 ? '' : '★'.repeat(rarity.stars)}</div>
+      <div class="er-card-stars">${'★'.repeat(rarity.stars)}</div>
       <div class="er-card-aura-rim" aria-hidden="true"></div>
       <div class="er-card-steam" aria-hidden="true"></div>
       <div class="er-card-edge-smoke" aria-hidden="true">

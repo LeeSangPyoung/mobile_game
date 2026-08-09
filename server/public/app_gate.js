@@ -1,1 +1,1 @@
-window.__APP_GATE__ = { min: 19 };
+window.__APP_GATE__ = { min: 27 };

@@ -18,6 +18,9 @@ app/_unused_assets_quarantine/
 app/android/keystore.properties
 app/android/*.jks
 app/android/*.keystore
+
+# 서버 시크릿 (절대 커밋 금지 — Firebase 서비스계정 개인키)
+server/secrets/
 app/node_modules/
 app/www/
 

@@ -163,6 +163,11 @@
       <nav class="nav">
         <a href="#/users" data-nav="users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 유저</a>
         <a href="#/matches" data-nav="matches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8"/></svg> 대전 기록</a>
+        <a href="#/devices" data-nav="devices"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg> 기기</a>
+      </nav>
+      <div class="navsec">라이브옵스</div>
+      <nav class="nav">
+        <a href="#/events" data-nav="events"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg> 깜짝 이벤트</a>
       </nav>
       <div class="sbfoot">
         <div class="live" id="live"><span class="dot"></span><span id="liveTxt">연결 대기</span></div>
@@ -181,9 +186,11 @@
   </div>
 </div>
 
+<script src="/assets/generals/roster_200.js"></script>
 <script>
 (function(){
   var $=function(s,r){ return (r||document).querySelector(s); };
+  var GENERALS = (window.GENERALS_200 || []).map(function(p){ return { id:p[0], name:p[1] }; });
   // ─── 테마(다크/라이트) ───
   var SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
   var MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>';
@@ -219,9 +226,180 @@
   async function api(path){ var sep=path.indexOf('?')<0?'?':'&'; var r; try{ r=await fetch(path+sep+'token='+encodeURIComponent(token)); }catch(e){ setLive(false); throw e; } if(r.status===403||r.status===401){ localStorage.removeItem('adminToken'); token=''; showLogin('세션이 만료되었습니다. 다시 로그인하세요.'); throw new Error('auth'); } setLive(true); return r.json(); }
   async function action(payload){ try{ await fetch('/admin/action?token='+encodeURIComponent(token),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }catch(_){ } }
   function setLive(on){ var el=$('#live'); el.classList.toggle('on',on); $('#liveTxt').textContent=on?'실시간 연결됨':'연결 끊김'; }
+  async function postJson(path,payload){ var sep=path.indexOf('?')<0?'?':'&'; try{ var r=await fetch(path+sep+'token='+encodeURIComponent(token),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload||{})}); return await r.json(); }catch(e){ return {ok:false,err:'network'}; } }
+  function fmtMMSS(ms){ if(ms<0) ms=0; var s=Math.floor(ms/1000); var m=Math.floor(s/60); s=s%60; return (m<10?'0':'')+m+':'+(s<10?'0':'')+s; }
+
+  // ─── 기기 ───
+  async function loadDevices(){
+    var d; try{ d=await api('/admin/api'); }catch(e){ if(e.message!=='auth') $('#view').innerHTML='<div class="card"><div class="empty">불러오기 실패</div></div>'; return; }
+    renderDevices(d);
+  }
+  function renderDevices(d){
+    var list=d.devices||[];
+    var head='<div class="kpis" style="margin-bottom:14px">'+
+      kpi('앱 설치',ICO.users,(d.appInstalls!=null?d.appInstalls:list.length),true)+
+      kpi('웹 방문',ICO.dot,(d.webDevices!=null?d.webDevices:'–'))+
+      kpi('오늘 실행',ICO.wait,(d.activeToday!=null?d.activeToday:'–'))+'</div>';
+    var rows=list.map(function(g,i){
+      var name=(g.model&&(''+g.model).trim())?esc(g.model):'<span style="color:var(--mute)">알 수 없음</span>';
+      var av=g.andver?('Android '+esc(''+g.andver)):'–';
+      return '<tr><td class="rank">'+(i+1)+'</td><td class="flex">'+name+'</td><td>'+av+'</td><td class="n">'+fmtDate(g.first_seen)+'</td><td class="n">'+fmtDate(g.last_seen)+'</td><td class="n rating">'+(g.launches||0)+'</td></tr>';
+    }).join('');
+    $('#view').innerHTML=head+'<div class="card"><h2>기기 목록 <span class="cnt">'+list.length+'</span></h2>'+
+      (list.length?'<div class="scroll"><table><thead><tr><th class="rank">#</th><th class="flex">기기명칭</th><th>OS</th><th class="n">설치일자</th><th class="n">마지막 활동</th><th class="n">실행횟수</th></tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="empty">등록된 앱 기기가 없습니다.</div>')+'</div>';
+  }
+
+  // ─── 공용 모달 ───
+  function showModal(title, innerHTML){
+    var old=document.getElementById('evModal'); if(old) old.parentNode.removeChild(old);
+    var ov=document.createElement('div'); ov.id='evModal';
+    ov.style.cssText='position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.62);display:flex;align-items:center;justify-content:center;padding:20px';
+    ov.innerHTML='<div style="background:var(--surface,#151a22);border:1px solid var(--border,#2a3340);border-radius:14px;max-width:660px;width:100%;max-height:82vh;overflow:auto;padding:18px 18px 20px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><h2 style="margin:0;font-size:17px">'+esc(title)+'</h2><button id="evModalX" style="background:none;border:none;color:inherit;font-size:24px;line-height:1;cursor:pointer">×</button></div>'+innerHTML+'</div>';
+    ov.addEventListener('click', function(e){ if(e.target===ov) ov.parentNode.removeChild(ov); });
+    document.body.appendChild(ov);
+    var x=document.getElementById('evModalX'); if(x) x.onclick=function(){ if(ov.parentNode) ov.parentNode.removeChild(ov); };
+  }
+  async function openCompletions(id){
+    var d; try{ d=await api('/admin/event/completions?id='+encodeURIComponent(id)); }catch(e){ return; }
+    var rows=d.rows||[]; var ev=d.event;
+    var detail='';
+    if(ev){
+      var pool=(ev.generals&&ev.generals.length)?ev.generals.map(function(g){return g.name;}).join(', '):(ev.generalName||'–');
+      detail='<div style="background:var(--card2,rgba(255,255,255,0.05));border:1px solid var(--line,#334);border-radius:10px;padding:12px 14px;margin-bottom:14px;display:grid;gap:6px;font-size:13.5px">'+
+        '<div style="font-size:15px"><b>'+esc(ev.title||'')+'</b></div>'+
+        '<div>유형: '+(ev.type==='star5'?'⭐ 별/골드':ev.type==='free_recruit'?'🆓 무료등용':'⚡ 장수 등용')+' &nbsp;·&nbsp; 장: '+esc(ev.stageLabel||'랜덤')+' &nbsp;·&nbsp; 지속 '+ev.durationMin+'분 &nbsp;·&nbsp; 시작 '+fmtDate(ev.startTs)+' &nbsp;·&nbsp; '+(ev.active?'<span style="color:#4caf50">활성</span>':'종료')+'</div>'+
+        (ev.type==='general'?('<div>장수풀: <b>'+esc(pool)+'</b> ★'+ev.stars+' &nbsp;·&nbsp; 등용확률 '+ev.recruitPct+'% &nbsp;·&nbsp; '+(ev.freeRecruit?'<span style="color:#4caf50">무료 등용(별차감 없음)</span>':'<span style="color:#ffa657">별 소모</span>')+'</div>'):'')+
+        '<div>보상: 별 '+(ev.rewardStars||0)+' / 골드 '+(ev.rewardGold||0)+'</div>'+
+      '</div>';
+    }
+    var table = rows.length ? ('<div class="scroll max"><table><thead><tr><th class="rank">#</th><th class="flex">유저</th><th>등용 장수</th><th class="n">결과</th><th class="n">달성 시각</th></tr></thead><tbody>'+
+      rows.map(function(r,i){ var who=(r.nick&&(''+r.nick).trim())?esc(r.nick):('기기 '+esc((''+(r.cid||'')).slice(0,8))); var gen=r.general_name?esc(r.general_name):'–'; var res=r.recruited?'<span style="color:#ffd23f;font-weight:700">등용 성공</span>':(r.general_name?'<span style="color:var(--mute)">미등용</span>':'<span style="color:#7fd0ff">완료</span>'); return '<tr><td class="rank">'+(i+1)+'</td><td class="flex">'+who+'</td><td>'+gen+'</td><td class="n">'+res+'</td><td class="n">'+fmtDate(r.ts)+'</td></tr>'; }).join('')+
+      '</tbody></table></div>') : '<div class="empty">아직 달성자가 없습니다.</div>';
+    showModal('이벤트 #'+id+' 상세', detail+'<div style="font-weight:700;margin:2px 0 8px">달성자 · '+rows.length+'명</div>'+table);
+  }
+
+  // ─── 깜짝 이벤트(라이브옵스) ───
+  var _evTick=null;
+  async function loadEvents(){
+    var d; try{ d=await api('/admin/event/status'); }catch(e){ if(e.message!=='auth') $('#view').innerHTML='<div class="card"><div class="empty">불러오기 실패</div></div>'; return; }
+    renderEvents(d);
+  }
+  function renderEvents(d){
+    if(_evTick){ clearInterval(_evTick); _evTick=null; }
+    function row(l,inner){ return '<label style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="min-width:88px;color:var(--dim);font-size:13px">'+l+'</span><span style="flex:1;min-width:180px">'+inner+'</span></label>'; }
+    var st='<style>.inp{padding:8px 10px;border-radius:8px;border:1px solid var(--line,#334);background:var(--card2,rgba(255,255,255,0.04));color:inherit;font-size:14px}.btn-primary{background:linear-gradient(180deg,#3a7bd5,#2a5fb0);color:#fff;border:none;padding:10px 18px;border-radius:9px;font-weight:800;cursor:pointer}.btn-primary:disabled{opacity:.5}'
+      +'#evGenList{max-height:190px;overflow:auto;border:1px solid var(--line,#334);border-radius:8px;padding:7px;display:flex;flex-wrap:wrap;gap:6px}'
+      +'.genchip{padding:5px 10px;border-radius:999px;border:1px solid var(--line,#445);background:var(--card2,rgba(255,255,255,0.05));color:inherit;font-size:13px;cursor:pointer;user-select:none}'
+      +'.genchip.on{background:linear-gradient(180deg,#ffd766,#e8a93a);color:#241305;border-color:#ffd766;font-weight:800}</style>';
+    var act=d.active;
+    var actHtml = act ? (
+      '<div class="card"><h2>🔴 진행중 이벤트</h2><div style="display:grid;gap:6px;font-size:14px">'+
+        '<div><b>'+esc(act.title||'')+'</b></div>'+
+        '<div>유형: '+(act.type==='star5'?'⭐ 별/골드':act.type==='free_recruit'?'🆓 무료등용':'⚡ 장수 등용')+'</div>'+
+        (act.type==='general'?('<div>장수풀: '+esc((act.generals&&act.generals.length)?act.generals.map(function(g){return g.name;}).join(', '):(act.generalName||'–'))+' ★'+act.stars+' · 등용 '+(act.recruitPct||0)+'%'+(act.freeRecruit?' · <span style="color:#4caf50">무료</span>':'')+'</div>'):'')+
+        (act.type==='free_recruit'?'<div style="color:#4caf50">기간 내 모든 장수 등용 무료</div>':('<div>장: '+esc(act.stageLabel||'랜덤')+' · 보상 별'+(act.rewardStars||0)+'/골드'+(act.rewardGold||0)+'</div>'))+
+        '<div>남은시간: <b id="evRemain" class="num">'+fmtMMSS(act.remainMs)+'</b></div>'+
+      '</div><div style="margin-top:10px"><button class="btn btn-danger" id="evClearBtn">이벤트 즉시 종료</button></div></div>'
+    ) : '<div class="card"><h2>진행중 이벤트</h2><div class="empty">활성 이벤트 없음</div></div>';
+    var pushInfo='<div class="card"><h2>푸시 상태</h2><div style="font-size:14px">FCM: '+(d.fcm?'<b style="color:#4caf50">사용가능</b>':'<b style="color:#e05a5a">비활성(서비스계정 없음)</b>')+' · 알림 대상 기기: <b class="num">'+(d.tokens||0)+'</b>대</div></div>';
+    var form='<div class="card"><h2>새 깜짝 이벤트 등록</h2><div style="display:grid;gap:12px;max-width:560px">'+
+      row('유형','<select id="evType" class="inp"><option value="general">⚡ 장수 등용(반복 도박)</option><option value="star5">⭐ 별/골드만 지급(1회 100%)</option><option value="free_recruit">🆓 무료 등용(기간 내 모든 등용 무료)</option></select>')+
+      '<div id="evStageRow">'+row('장(1~20)','<input id="evStageLocal" class="inp" type="number" min="1" max="20" placeholder="비우면 랜덤 장" style="width:180px"> <span style="color:var(--dim);font-size:12px">유저 현재 챕터 기준</span>')+'</div>'+
+      '<div id="evGenWrap" style="display:grid;gap:8px">'+
+        row('장수(다중선택)','<input id="evGenSearch" class="inp" placeholder="이름 검색…" style="width:180px"> <span id="evGenCount" style="color:var(--dim);font-size:12px">0명</span>')+
+        '<div id="evGenList"></div>'+
+        row('성급','<select id="evStars" class="inp"><option value="6">💎 다이아몬드</option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select>')+
+        row('등용 확률(%)','<input id="evPct" class="inp" type="number" min="0" max="100" value="5" style="width:100px">')+
+        row('별 차감','<label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" id="evFreeRecruit" checked style="width:16px;height:16px"> 무료 등용(별 차감 없음)</label>')+
+      '</div>'+
+      '<div id="evRewardRow">'+row('보상','별 <input id="evRs" class="inp" type="number" min="0" value="0" style="width:70px"> &nbsp; 골드 <input id="evRg" class="inp" type="number" min="0" value="0" style="width:110px">')+'</div>'+
+      row('지속(분)','<input id="evDur" class="inp" type="number" min="1" max="1440" value="30" style="width:90px">')+
+      row('알림 제목','<input id="evTitle" class="inp" placeholder="자동 생성(수정 가능)" style="width:100%">')+
+      row('알림 내용','<input id="evBody" class="inp" placeholder="자동 생성(수정 가능)" style="width:100%">')+
+      row('테스트 발송','<label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" id="evTest" style="width:16px;height:16px"> 🧪 선택한 기기에만 (실유저에겐 안 감)</label>')+
+      row('테스트 기기','<button type="button" class="btn" id="evTestPick" disabled>📱 기기 선택</button> <span id="evTestLbl" style="margin-left:8px;font-size:13px;color:var(--dim)">선택 안 됨</span>')+
+      '<div><button class="btn-primary" id="evSendBtn">🔔 이벤트 발송(푸시)</button> <span id="evMsg" style="margin-left:10px;font-size:13px"></span></div>'+
+    '</div></div>';
+    var recent='<div class="card"><h2>최근 이벤트 <span style="color:var(--dim);font-size:12px;font-weight:400">행 클릭 → 달성자</span></h2>'+(d.recent&&d.recent.length?(
+      '<div class="scroll"><table><thead><tr><th class="rank">#</th><th>유형</th><th class="flex">장</th><th class="n">달성</th><th class="n">시작</th><th class="n">상태</th></tr></thead><tbody>'+
+      d.recent.map(function(r){ return '<tr class="ev-row" data-evid="'+r.id+'" style="cursor:pointer"><td class="rank">'+r.id+'</td><td>'+(r.type==='star5'?'⭐별5':r.type==='free_recruit'?'🆓무료':'⚡장수')+'</td><td class="flex">'+esc(r.stage_label||'–')+'</td><td class="n rating">'+(r.done||0)+'명</td><td class="n">'+fmtDate(r.start_ts)+'</td><td class="n">'+(r.active?'<span style="color:#4caf50">활성</span>':'종료')+'</td></tr>'; }).join('')+
+      '</tbody></table></div>'):'<div class="empty">이벤트 기록 없음</div>')+'</div>';
+    $('#view').innerHTML=st+actHtml+pushInfo+form+recent;
+
+    var typeSel=$('#evType'), genWrap=$('#evGenWrap');
+    // 자동 알림 제목/내용 — 사용자가 직접 입력하면 그 필드는 자동갱신 중단.
+    var _ti=$('#evTitle'), _bo=$('#evBody'), titleDirty=false, bodyDirty=false;
+    if(_ti) _ti.addEventListener('input', function(){ titleDirty=(_ti.value.trim()!==''); });
+    if(_bo) _bo.addEventListener('input', function(){ bodyDirty=(_bo.value.trim()!==''); });
+    function autoTitle(t){ return t==='star5'?'⭐ 보상 이벤트!':(t==='free_recruit'?'🆓 무료 등용 이벤트!':'⚡ 특별 등용 이벤트!'); }
+    function autoBody(t,dur,rs,rg){
+      if(t==='star5'){ var ps=[]; if(rs>0)ps.push('별 '+rs); if(rg>0)ps.push('골드 '+rg); return (ps.length?ps.join(' / ')+' 획득 기회!':'보상 획득 기회!')+' · '+dur+'분 한정'; }
+      if(t==='free_recruit') return '지금 모든 장수 등용이 무료! 승리하고 등용하라 · '+dur+'분 한정';
+      return '특별한 장수가 나타났다! 승리해 등용하라 · '+dur+'분 한정';
+    }
+    function syncNotif(){ var t=typeSel.value, dur=parseInt(($('#evDur')||{}).value,10)||30, rs=parseInt(($('#evRs')||{}).value,10)||0, rg=parseInt(($('#evRg')||{}).value,10)||0;
+      if(!titleDirty&&_ti) _ti.value=autoTitle(t); if(!bodyDirty&&_bo) _bo.value=autoBody(t,dur,rs,rg); }
+    function syncType(){ var t=typeSel.value;
+      genWrap.style.display=(t==='general')?'grid':'none';
+      var sr=$('#evStageRow'); if(sr) sr.style.display=(t==='free_recruit')?'none':'';
+      var rr=$('#evRewardRow'); if(rr) rr.style.display=(t==='star5')?'':'none';   // 보상은 별/골드형만
+      syncNotif();
+    }
+    typeSel.addEventListener('change',syncType);
+    ['evDur','evRs','evRg'].forEach(function(id){ var e=$('#'+id); if(e) e.addEventListener('input',syncNotif); });
+    syncType();
+    // 장수 다중선택 칩
+    var evSel={};
+    function renderChips(f){ var list=$('#evGenList'); if(!list) return; f=(f||'').trim().toLowerCase();
+      var arr=GENERALS.filter(function(g){ return !f || g.name.toLowerCase().indexOf(f)>=0 || g.id.indexOf(f)>=0; });
+      list.innerHTML = arr.length ? arr.map(function(g){ return '<span class="genchip'+(evSel[g.id]?' on':'')+'" data-gid="'+g.id+'">'+esc(g.name)+'</span>'; }).join('') : '<span style="color:var(--dim);font-size:12px">검색 결과 없음</span>';
+    }
+    function updCount(){ var el=$('#evGenCount'); if(el) el.textContent=Object.keys(evSel).length+'명'; }
+    renderChips(''); updCount();
+    // 테스트 기기 — 모달로 기기목록에서 선택(내 실제 폰 = 방금 접속한 기기).
+    var evTestCid='';
+    var testChk=$('#evTest'), testPick=$('#evTestPick'), testLbl=$('#evTestLbl');
+    var _devs=d.devices||[];
+    function pickTestDevice(){
+      if(!_devs.length){ showModal('테스트 기기 선택', '<div class="empty">등록된 기기가 없습니다. 테스트할 폰에서 앱을 한 번 실행하세요.</div>'); return; }
+      var body='<div style="color:var(--dim);font-size:12px;margin-bottom:8px">방금 접속한(마지막 사용 최신) 기기가 보통 내 폰입니다.</div><div class="scroll max"><table><thead><tr><th class="rank">#</th><th class="flex">기기</th><th>OS</th><th class="n">마지막 사용</th><th style="width:60px"></th></tr></thead><tbody>'+
+        _devs.map(function(g,i){ var name=(g.model&&(''+g.model).trim())?esc(g.model):'기기'; var av=g.andver?('Android '+esc(''+g.andver)):'–'; var cid=''+(g.cid||''); return '<tr><td class="rank">'+(i+1)+'</td><td class="flex">'+name+' <span style="color:var(--mute);font-size:11px">'+cid.slice(0,8)+'</span></td><td>'+av+'</td><td class="n">'+fmtAgo(Date.now()-(g.last_seen||0))+'</td><td><button class="btn-primary devpick" data-cid="'+esc(cid)+'" data-name="'+name+'" style="padding:5px 12px">선택</button></td></tr>'; }).join('')+
+        '</tbody></table></div>';
+      showModal('테스트 기기 선택', body);
+      var mod=document.getElementById('evModal');
+      if(mod) mod.addEventListener('click', function(e){ var bb=e.target.closest?e.target.closest('.devpick'):null; if(!bb)return; evTestCid=bb.getAttribute('data-cid'); if(testLbl){ testLbl.textContent=bb.getAttribute('data-name')+' · '+evTestCid.slice(0,8); testLbl.style.color='#4caf50'; } if(mod.parentNode) mod.parentNode.removeChild(mod); });
+    }
+    if(testChk){ testChk.addEventListener('change', function(){ if(testPick) testPick.disabled=!testChk.checked; }); }
+    if(testPick) testPick.addEventListener('click', pickTestDevice);
+    var genList=$('#evGenList');
+    if(genList) genList.addEventListener('click', function(e){ var c=e.target.closest?e.target.closest('.genchip'):null; if(!c) return; var id=c.getAttribute('data-gid'); if(evSel[id]){ delete evSel[id]; c.classList.remove('on'); } else { var g=GENERALS.filter(function(x){return x.id===id;})[0]; evSel[id]=g?g.name:id; c.classList.add('on'); } updCount(); });
+    var gs=$('#evGenSearch'); if(gs) gs.addEventListener('input', function(){ renderChips(gs.value); });
+    var sendBtn=$('#evSendBtn');
+    if(sendBtn) sendBtn.addEventListener('click', async function(){
+      var slRaw=parseInt($('#evStageLocal').value,10); var stageLocal=(slRaw>=1&&slRaw<=20)?slRaw:null;
+      var generals=Object.keys(evSel).map(function(id){ return {id:id,name:evSel[id]}; });
+      if(typeSel.value==='general' && generals.length===0){ $('#evMsg').innerHTML='<span style="color:#e05a5a">장수를 1명 이상 선택하세요</span>'; return; }
+      var testCid=($('#evTest')&&$('#evTest').checked)?evTestCid:'';
+      if($('#evTest')&&$('#evTest').checked&&!testCid){ $('#evMsg').innerHTML='<span style="color:#e05a5a">테스트 대상 기기를 선택하세요 (📱 기기 선택)</span>'; return; }
+      var payload={ type:typeSel.value, stageLocal:stageLocal, generals:generals,
+        freeRecruit:($('#evFreeRecruit')?$('#evFreeRecruit').checked:true), testCid:testCid,
+        stars:parseInt($('#evStars')?$('#evStars').value:'5',10), recruitPct:parseInt($('#evPct')?$('#evPct').value:'0',10),
+        rewardStars:parseInt($('#evRs').value,10)||0, rewardGold:parseInt($('#evRg').value,10)||0,
+        durationMin:parseInt($('#evDur').value,10)||30, title:$('#evTitle').value.trim(), body:$('#evBody').value.trim() };
+      sendBtn.disabled=true; $('#evMsg').textContent='발송중…';
+      var r=await postJson('/admin/event',payload); sendBtn.disabled=false;
+      if(r&&r.ok){ $('#evMsg').innerHTML='<span style="color:#4caf50">'+(r.test?'🧪 테스트 발송':'발송 완료')+' (대상 '+(r.tokens||0)+'대)</span>'; setTimeout(loadEvents,800); }
+      else $('#evMsg').innerHTML='<span style="color:#e05a5a">실패: '+esc((r&&r.err)||'?')+'</span>';
+    });
+    var clearBtn=$('#evClearBtn');
+    if(clearBtn) clearBtn.addEventListener('click', async function(){ clearBtn.disabled=true; await postJson('/admin/event/clear',{}); setTimeout(loadEvents,400); });
+    // 최근 이벤트 행 클릭 → 달성자 모달
+    Array.prototype.forEach.call(document.querySelectorAll('.ev-row'), function(tr){ tr.addEventListener('click', function(){ openCompletions(tr.getAttribute('data-evid')); }); });
+    if(act){ var rem=act.remainMs; _evTick=setInterval(function(){ var el=$('#evRemain'); if(!el||state.view!=='events'){ clearInterval(_evTick); _evTick=null; return; } rem-=1000; if(rem<=0){ clearInterval(_evTick); _evTick=null; loadEvents(); return; } el.textContent=fmtMMSS(rem); },1000); }
+  }
 
   // ─── 라우팅 ───
-  var TITLES={ dashboard:'대시보드', live:'실시간 운영', users:'유저', matches:'대전 기록' };
+  var TITLES={ dashboard:'대시보드', live:'실시간 운영', users:'유저', matches:'대전 기록', devices:'기기', events:'깜짝 이벤트' };
   function route(){
     var h=(location.hash||'#/dashboard').replace(/^#\//,''); var parts=h.split('/'); var v=parts[0]||'dashboard';
     state.view=v;
@@ -230,6 +408,8 @@
     if(v==='dashboard'||v==='live') poll();
     else if(v==='users'){ if(parts[1]) loadUserDetail(parts[1]); else loadUsers(); }
     else if(v==='matches') loadMatches();
+    else if(v==='devices') loadDevices();
+    else if(v==='events') loadEvents();
     else location.hash='#/dashboard';
   }
   window.addEventListener('hashchange', route);

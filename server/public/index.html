@@ -7435,6 +7435,45 @@
     0%, 100% { transform: translate(-7px, -50%); filter: brightness(1); }
     50% { transform: translate(-11px, -50%); filter: brightness(1.09); }
   }
+  /* 깜짝 이벤트 스테이지 — 붉은/금빛 강조 + 확산 링 + ⚡뱃지 */
+  #stageSelect .stage.stage-event .castle {
+    box-shadow: 0 0 0 3px rgba(255,214,90,0.98), 0 0 20px 6px rgba(255,84,36,0.85) !important;
+  }
+  #stageSelect .stage.stage-event .castle::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    border: 2px solid rgba(255,130,60,0.95);
+    pointer-events: none;
+    animation: stageEvtGlow 1.15s ease-in-out infinite;
+  }
+  @keyframes stageEvtGlow {
+    0%, 100% { opacity: 0.45; }
+    50% { opacity: 1; }
+  }
+  #stageSelect .stage .badge-event {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translate(7px, -50%);
+    white-space: nowrap;
+    border: 1px solid rgba(255,223,128,0.95);
+    border-radius: 5px;
+    padding: 3px 7px 4px;
+    font-size: 10px;
+    font-weight: 900;
+    color: #fff2cf;
+    background: linear-gradient(180deg, #e0362a, #b3121f 60%, #7a0a14);
+    box-shadow: 0 4px 10px rgba(80,8,12,0.5), inset 0 1px 0 rgba(255,255,255,0.3);
+    z-index: 10;
+    animation: badgeEvtPulse 1.15s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes badgeEvtPulse {
+    0%, 100% { transform: translate(7px, -50%); filter: brightness(1); }
+    50% { transform: translate(11px, -50%); filter: brightness(1.12); }
+  }
 
   #hud {
     top: max(8px, env(safe-area-inset-top)) !important;
@@ -12431,6 +12470,7 @@
   <section class="general-detail-card" role="dialog" aria-modal="true" aria-labelledby="generalDetailName">
     <div class="general-detail-impact" aria-hidden="true"></div>
     <button type="button" class="general-detail-close" id="generalDetailClose" aria-label="닫기"></button>
+    <div class="general-detail-preview" id="generalDetailPreview" style="display:none"></div>
     <div class="general-detail-portrait">
       <div class="general-detail-backdrop" aria-hidden="true"></div>
       <div class="general-detail-aura" aria-hidden="true"></div>
@@ -12449,7 +12489,6 @@
       </div>
       <div class="general-detail-name" id="generalDetailName"></div>
       <div class="general-detail-power" id="generalDetailPower"></div>
-      <div class="general-detail-preview" id="generalDetailPreview" style="display:none"></div>
       <div class="general-detail-stats" id="generalDetailBuffs"></div>
     </div>
   </section>
@@ -13561,6 +13600,8 @@ function showScreen(name) {
     requestAnimationFrame(() => { resize(); requestAnimationFrame(() => resize()); });
   }
   syncBgmForScreen(name);
+  if (name === 'menu' || name === 'stageSelect') { try { startLiveEventPolling(); } catch (_) {} }
+  try { updateLiveBannerForScreen(name); } catch (_) {}
   if (false && inGame) { // 디버그 오버레이 비활성화
     let dbg = document.getElementById('__viewportDbg');
     if (!dbg) {
@@ -14884,10 +14925,11 @@ function setupDetailPreview(g, isPreview) {
   const levelEl = document.getElementById('generalDetailLevel');
   if (!isPreview || !g || !g.id) { box.style.display = 'none'; box.innerHTML = ''; return; }
   const base = generalDetailPower(Object.assign({}, g, { lv: 1 }));
-  let html = '<div class="gdp-title">강화 미리보기</div><div class="gdp-btns">';
-  for (let lv = 1; lv <= ENHANCE_MAX_LV; lv++) html += '<button type="button" data-lv="' + lv + '">+' + (lv - 1) + '</button>';
-  html += '</div><div class="gdp-delta" id="gdpDelta"></div>';
-  box.innerHTML = html;
+  // 오른쪽 상단 콤보박스(모의 강화 +0~+5) — 세로 공간을 거의 안 먹어 초상화가 안 가려짐
+  let opts = '';
+  for (let lv = 1; lv <= ENHANCE_MAX_LV; lv++) opts += '<option value="' + lv + '">강화 +' + (lv - 1) + '</option>';
+  box.innerHTML = '<div class="gdp-delta" id="gdpDelta"></div>'
+    + '<select class="gdp-select" id="gdpSelect" aria-label="강화 미리보기">' + opts + '</select>';
   box.style.display = '';
   const render = function (lv) {
     const pg = Object.assign({}, g, { lv: lv });
@@ -14896,10 +14938,10 @@ function setupDetailPreview(g, isPreview) {
     if (buffsEl) buffsEl.innerHTML = formatGeneralProfileStats(pg, lv);
     if (levelEl) levelEl.textContent = lv > 1 ? ('+' + (lv - 1)) : 'Lv.1';
     const d = document.getElementById('gdpDelta');
-    if (d) d.textContent = lv > 1 ? ('강화 +' + (lv - 1) + ' → 전투력 +' + (pow - base).toLocaleString()) : '기본 상태 (강화 +0)';
-    box.querySelectorAll('button').forEach(function (b) { b.classList.toggle('active', +b.getAttribute('data-lv') === lv); });
+    if (d) d.textContent = lv > 1 ? ('+' + (pow - base).toLocaleString()) : '기본';
   };
-  box.querySelectorAll('button').forEach(function (btn) { bindTap(btn, function () { render(+btn.getAttribute('data-lv')); }); });
+  const sel = document.getElementById('gdpSelect');
+  if (sel) sel.addEventListener('change', function () { render(+sel.value); });
   render(1);
 }
 function showGeneralDetail(g, opts) {
@@ -16711,7 +16753,14 @@ function updateCinematic(dt) {
         // 상하: 1v1 대칭맵(멀티/봇)은 두 본진 정중앙(0.5)에 카메라 → 보기에도 대칭·공정. 캠페인은 아군을 약간 아래로.
         // 1v1 대전(봇·MP)은 두 본진 정중앙에 카메라 → 위아래 대칭이 그대로 보여 공정. 캠페인은 아군을 약간 아래로.
         var _symMap = !!(window._botStage || (window._mpMode && window._mpStage));
-        camY = (me.y + (avg.y - me.y) * (_symMap ? 0.5 : 0.35)) * worldPxH();
+        if (_symMap) {
+          // 1v1 대칭맵(봇·MP): 두 본진 정중앙 → 위아래 대칭·공정
+          camY = (me.y + (avg.y - me.y) * 0.5) * worldPxH();
+        } else {
+          // 캠페인: 아군 성을 '화면 하단(약 76%)·좌우 중앙'에 고정 → 내 진영 아래·적진 위 구도.
+          var _vh = (typeof H === 'number' && H > 0) ? H : window.innerHeight;
+          camY = me.y * worldPxH() - (0.26 * _vh / Math.max(0.0001, zoom));
+        }
         clampCamera();
         const dispX = camX, dispY = camY;   // 이징 시작 중심(START 위치) — 스냅 방지용
         // 목표: 아군을 화면 하단에 두고 가장 가까운 적을 상단에 담는 '바운딩박스 핏'.
@@ -16738,14 +16787,18 @@ function updateCinematic(dt) {
             const needZY = H / ((maxY - minY) + mTop + mBot);
             const pad = 0.86;  // 1.0=딱 맞게, <1=살짝 더 줌아웃(여유)
             zoom = Math.max(minZoom(), Math.min(baseZoom, needZX, needZY) * pad);  // 줌인 금지 + 맵 커버
-            // 두 성의 바운딩박스 중심 — 둘을 대각선으로 함께 담아 줌아웃 최소화.
-            const cx0 = (minX + maxX) / 2, cy0 = (minY + maxY) / 2;
+            // 캠페인: 아군을 '화면 하단 중앙'에 두는 구도(좌우 아군중앙·상하 아군 76%). 봇/MP 대칭맵은 두 본진 중점.
+            const cx0 = _symMap ? ((minX + maxX) / 2) : allyPx;
+            const cy0 = (minY + maxY) / 2;   // (대칭맵 전용)
             // 내 본진이 월드 가장자리면 clampCamera가 카메라를 안쪽으로 밀어 박스 중심이 깨지고,
             // 먼 적성이 여백 없이 화면 구석에 바짝 붙어(잘린 듯) 보인다. → 아군·참조성이 모두
             // 최소여백을 유지할 때까지 minZoom 한도 안에서 조금씩 더 줌아웃(월드 커버 유지=배경 노출 없음).
             const safeM = 100 * DPR();   // 아군·적성을 화면 끝에서 더 안쪽(메인)으로 — 구석 걸침 방지
             for (let it = 0; it < 24; it++) {
-              camX = cx0; camY = cy0; clampCamera();
+              camX = cx0;
+              // 캠페인은 아군을 화면 하단(약 76%)에, 대칭맵은 두 본진 중점.
+              camY = _symMap ? cy0 : (allyPy - (0.26 * H / zoom));
+              clampCamera();
               const hW = W / (2 * zoom), hH = H / (2 * zoom);
               const framed =
                 Math.abs(allyPx - camX) <= hW - safeM && Math.abs(allyPy - camY) <= hH - safeM &&
@@ -17579,6 +17632,9 @@ function renderStageGrid() {
     const _pinFrag = document.createDocumentFragment();
     // '도전!' 마커는 항상 프론티어(첫 미클리어 unlock 판)에 — 옛 판 재클리어해도 다음 진행할 판을 가리킴
     const _frontier = (typeof nextCampaignStageIndex === 'function') ? nextCampaignStageIndex() : -1;
+    // 깜짝 이벤트 스테이지(유저별) — 이 노드에 특별 표시
+    const _levNow = (typeof liveEventActiveNow === 'function') ? liveEventActiveNow() : null;
+    const _levStage = (_levNow && typeof liveEventStageIndex === 'function') ? liveEventStageIndex(_levNow) : -1;
     for (let i = startIdx; i < endIdx; i++) {
       const isTutorial = STAGES[i] && STAGES[i].isTutorial;
       if (isTutorial) continue;
@@ -17604,6 +17660,8 @@ function renderStageGrid() {
       if (isBoss) cell.classList.add('boss');
       const isFeatured = unlocked && typeof dailyPickedFor === 'function' && dailyPickedFor(i);
       if (isFeatured) cell.classList.add('daily-featured');
+      const isEventStage = unlocked && _levStage === i;
+      if (isEventStage) cell.classList.add('stage-event');
 
       // 핀 위치
       const local = i - startIdx;
@@ -17618,9 +17676,11 @@ function renderStageGrid() {
         : '';
       const badgeGo = (i === _frontier && unlocked && stars === 0) ? '<div class="badge-go">도전!</div>' : '';
       const badgeDaily = isFeatured ? '<div class="badge-daily">⭐추천 +3</div>' : '';
+      const badgeEvent = isEventStage ? '<div class="badge-event">⚡이벤트</div>' : '';
       cell.innerHTML = `
         ${badgeGo}
         ${badgeDaily}
+        ${badgeEvent}
         <div class="castle">${flagText}</div>
         <div class="stars">${starsHTML}</div>
         <div class="req">★${requireStars}</div>
@@ -17856,6 +17916,29 @@ function resetStage() {
         stageEnemies.push(extra);
       }
     }
+    // 깜짝 이벤트(장수형): 이벤트 장수를 '가장 큰 적 성 지휘관'으로 세움 → 도발 컷씬·전투·포로에 모두 등장.
+    //   어떤 장수인지는 배너에 노출하지 않으므로(서프라이즈) 여기서 처음 마주친다.
+    window._eventPrisonerMeta = null;
+    try {
+      const _lev = (typeof liveEventActiveNow === 'function') ? liveEventActiveNow() : null;
+      if (_lev && _lev.generals && _lev.generals.length > 0 && typeof liveEventStageIndex === 'function'
+          && liveEventStageIndex(_lev) === currentStage && enemyCastles.length > 0) {
+        const _eg = resolveEventGeneral(_lev);
+        const _edef = _eg && (typeof getGeneralById === 'function' ? getGeneralById(_eg.id) : null);
+        if (_edef) {
+          const _big = enemyCastles.slice().sort((a, b) => (b.size || 1) - (a.size || 1))[0];
+          const _elv = 1 + Math.min(2, Math.max(0, Math.floor(Math.random() * campaignChapterForIndex(currentStage))));
+          const _einst = makeEnemyInstance(_edef.id, _elv);
+          if (_einst && _big) {
+            _big._commanderUid = _einst.uid;
+            _big._commanderRank = 1;
+            getGeneralFaceImage(_edef.id);
+            if (!stageEnemies.some(d => d && d.id === _edef.id)) stageEnemies.push(_edef);
+            window._eventPrisonerMeta = { id: _edef.id, eventId: _lev.id, recruitPct: _lev.recruitPct || 0, freeRecruit: (_lev.freeRecruit !== false), stars: _lev.stars || 5, name: (_eg.name || _edef.name) };
+          }
+        }
+      }
+    } catch (_) {}
     window._stageEnemyGenerals = stageEnemies;
   }
   castles.forEach(c => {
@@ -18022,8 +18105,50 @@ function showAppUpdateGate(g) {
   try { window._appUpdateBlocked = true; } catch (e) {}
 }
 
+// ===== 푸시 알림(FCM) — 앱(APK)에서만. 깜짝 이벤트 알림 수신용. =====
+//  Firebase 프로젝트 ourclass-c2ec6 재사용. 토큰을 게임서버(app.wooriban.org)에 등록하면
+//  서버가 'events' 토픽에 구독시키고, 관리자가 이벤트 만들면 토픽으로 방송한다.
+//  구형 웹뷰 호환 위해 ES5 스타일(화살표·?.·?? 미사용).
+var PUSH_API_BASE = 'https://app.wooriban.org';
+function registerPushToken(tok) {
+  if (!tok) return;
+  try {
+    var cid = '';
+    try { cid = localStorage.getItem('cid') || ''; } catch (e) {}
+    fetch(PUSH_API_BASE + '/push/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: tok, cid: cid, platform: 'app' })
+    }).catch(function () {});
+  } catch (e) {}
+}
+function onLiveEventPush() {
+  // 알림 수신/탭 → 활성 이벤트 새로고침(스테이지 표시). 이벤트 조회 로직과 연결(Phase 2).
+  try { if (typeof refreshLiveEvent === 'function') refreshLiveEvent(); } catch (e) {}
+}
+function initPushNotifications() {
+  try {
+    if (!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform())) return; // 앱에서만
+    var PN = (Capacitor.Plugins && Capacitor.Plugins.PushNotifications) ? Capacitor.Plugins.PushNotifications : null;
+    if (!PN) return;
+    // 하이라이트 채널(헤드업 알림)
+    try {
+      PN.createChannel({ id: 'events', name: '깜짝 이벤트', description: '한정 이벤트 알림', importance: 5, visibility: 1 });
+    } catch (e) {}
+    PN.addListener('registration', function (token) { try { registerPushToken(token && token.value); } catch (e) {} });
+    PN.addListener('registrationError', function () {});
+    PN.addListener('pushNotificationReceived', function () { try { onLiveEventPush(); } catch (e) {} });
+    PN.addListener('pushNotificationActionPerformed', function () { try { onLiveEventPush(); } catch (e) {} });
+    PN.checkPermissions().then(function (p) {
+      if (p && p.receive === 'granted') { PN.register(); return; }
+      PN.requestPermissions().then(function (r) { if (r && r.receive === 'granted') PN.register(); }).catch(function () {});
+    }).catch(function () {});
+  } catch (e) {}
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   initAppUpdateGate();
+  initPushNotifications();
   // 스플래시 → 1.5초 후 메뉴
   showScreen('splash');
   const bootParams = new URLSearchParams(window.location.search || '');
@@ -22041,6 +22166,200 @@ function drawBattleStains() {
   ctx.restore();
 }
 
+// ===== 깜짝 이벤트(LiveOps) — 서버 /live_event 폴링 → 스테이지 배너·보상 =====
+//  앱: app.wooriban.org, 웹: 같은 오리진. 클리어 여부는 기기 로컬(localStorage)로 유저별 종료.
+var LIVE_EVENT_BASE = (function () { try { return (window.Capacitor) ? 'https://app.wooriban.org' : ''; } catch (e) { return ''; } })();
+window._liveEvent = null;
+var _liveEventPollTimer = null;
+function _le_esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
+function _leHash(s) { var h = 5381; s = String(s); for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; return h; }
+function _leSeed(ev) { var cid = ''; try { cid = localStorage.getItem('cid') || ''; } catch (e) {} return _leHash(cid + ':' + (ev && ev.id)); }
+function userFurthestCampaignIndex() {
+  var off = campaignOffset();
+  var idx = Math.max(off, Math.min(STAGES.length - 1, (SAVE.unlocked || 1) - 1));
+  if (typeof isCampaignStageIndex === 'function' && !isCampaignStageIndex(idx)) idx = off;
+  return idx;
+}
+// 유저별 이벤트 스테이지 인덱스: 관리자 '장' 입력 시 유저 현재 챕터의 그 장(못 갔으면 현재 장),
+// 미입력 시 유저 현재 챕터의 랜덤 장(유저별 고정).
+function liveEventStageIndex(ev) {
+  if (!ev) return -1;
+  if (ev.type === 'free_recruit') return -1;   // 무료등용 이벤트는 특정 스테이지 없음(전역 버프)
+  try {
+    var furthest = userFurthestCampaignIndex();
+    var ch = campaignChapterForIndex(furthest);
+    var chStart = campaignStartIndex(ch);
+    var furthestLocal = (furthest - chStart) + 1;
+    if (furthestLocal < 1) furthestLocal = 1;
+    var localN;
+    if (ev.stageLocal && ev.stageLocal >= 1) {
+      localN = ev.stageLocal;
+      if (localN > furthestLocal) localN = furthestLocal;   // 아직 못 간 장 → 현재 장
+    } else {
+      localN = 1 + (_leSeed(ev) % furthestLocal);           // 랜덤(유저별 고정)
+    }
+    return chStart + (localN - 1);
+  } catch (e) { return -1; }
+}
+function eventStageLabelForUser(ev) {
+  var idx = liveEventStageIndex(ev); if (idx < 0) return '';
+  try { var ch = campaignChapterForIndex(idx); var local = (idx - campaignStartIndex(ch)) + 1; return ch + '챕터 ' + local + '장'; } catch (e) { return ''; }
+}
+// 폰마다 랜덤 1명(유저별 고정) — 관리자가 다중선택한 장수 풀에서.
+function resolveEventGeneral(ev) {
+  if (!ev) return null;
+  if (ev.generals && ev.generals.length) return ev.generals[_leSeed(ev) % ev.generals.length];
+  return ev.generalId ? { id: ev.generalId, name: ev.generalName } : null;
+}
+// 이벤트 달성 보고(운영콘솔 달성자 목록). general=획득 장수(없으면 null).
+function reportEventComplete(ev, general) {
+  try {
+    var cid = ''; try { cid = localStorage.getItem('cid') || ''; } catch (e) {}
+    fetch(LIVE_EVENT_BASE + '/event/complete', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventId: ev.id, cid: cid, nick: ((window.SAVE && SAVE.nick) || ''), generalId: (general && general.id) || '', generalName: (general && general.name) || '', recruited: !!general })
+    }).catch(function () {});
+  } catch (e) {}
+}
+function liveEventClaimed(id) { try { return localStorage.getItem('liveEvtDone_' + id) === '1'; } catch (e) { return false; } }
+function markLiveEventClaimed(id) { try { localStorage.setItem('liveEvtDone_' + id, '1'); } catch (e) {} }
+function liveEventActiveNow() {
+  var ev = window._liveEvent;
+  if (!ev || !ev.id) return null;
+  if (liveEventClaimed(ev.id)) return null;
+  if (Date.now() >= ev.endTs) return null;
+  return ev;
+}
+// 무료 등용 이벤트 활성? — 활성 시 이벤트 기간 동안 모든 포로 등용이 별 차감 없음.
+function liveEventFreeRecruitActive() {
+  var ev = liveEventActiveNow();
+  return !!(ev && ev.type === 'free_recruit');
+}
+var _lastEvtId = 0;
+function refreshLiveEvent() {
+  try {
+    var _cid = ''; try { _cid = localStorage.getItem('cid') || ''; } catch (e) {}
+    fetch(LIVE_EVENT_BASE + '/live_event?cid=' + encodeURIComponent(_cid), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var ev = (d && d.event) ? d.event : null;
+        if (ev && liveEventClaimed(ev.id)) ev = null;
+        window._liveEvent = ev;
+        try { renderLiveEventBanner(); } catch (e) {}
+        // 새 이벤트 등장 → 현재 화면이 메뉴/시나리오가 아니면 상단 헤드업으로 알림(푸시 수신 등)
+        try {
+          var nid = ev ? ev.id : 0;
+          if (nid && nid !== _lastEvtId) {
+            var sn = (typeof currentScreenName !== 'undefined') ? currentScreenName : '';
+            if (sn !== 'menu' && sn !== 'stageSelect' && sn !== 'splash' && sn !== 'game' && liveEventActiveNow()) triggerTopHeadsUp();
+          }
+          _lastEvtId = nid;
+        } catch (e) {}
+      }).catch(function () {});
+  } catch (e) {}
+}
+function startLiveEventPolling() {
+  refreshLiveEvent();
+  if (_liveEventPollTimer) return;
+  var n = 0;
+  _liveEventPollTimer = setInterval(function () {
+    n++;
+    var ev = window._liveEvent;
+    if (ev && Date.now() >= ev.endTs) window._liveEvent = null;
+    try { renderLiveEventBanner(); } catch (e) {}
+    if (n % 20 === 0) refreshLiveEvent();
+  }, 1000);
+}
+function goToLiveEventStage() {
+  var ev = liveEventActiveNow(); if (!ev) return;
+  var idx = (ev.type === 'free_recruit') ? userFurthestCampaignIndex() : liveEventStageIndex(ev);
+  if (idx < 0) return;
+  try { if (typeof goToStageSelectAt === 'function') goToStageSelectAt(idx); } catch (e) {}
+}
+(function _injectLiveEventCss() {
+  try {
+    if (document.getElementById('liveEventCss')) return;
+    var s = document.createElement('style'); s.id = 'liveEventCss';
+    s.textContent = '#liveEventBanner{position:fixed;left:10px;right:10px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:150;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;cursor:pointer;background:linear-gradient(180deg,rgba(193,18,31,0.96),rgba(120,10,20,0.96));border:1px solid rgba(255,214,106,0.82);box-shadow:0 6px 20px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.18);color:#ffe9b0;animation:lebPulse 1.7s ease-in-out infinite}'
+      + '#liveEventHeadsUp{position:fixed;left:10px;right:10px;top:calc(10px + env(safe-area-inset-top));z-index:200;display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:14px;cursor:pointer;background:linear-gradient(180deg,rgba(193,18,31,0.98),rgba(120,10,20,0.98));border:1px solid rgba(255,214,106,0.9);box-shadow:0 10px 30px rgba(0,0,0,0.62),inset 0 1px 0 rgba(255,255,255,0.2);color:#ffe9b0;transform:translateY(-185%);transition:transform .45s cubic-bezier(.2,.9,.25,1.12);pointer-events:none}'
+      + '#liveEventHeadsUp.leb-in{transform:translateY(0);pointer-events:auto}'
+      + '@keyframes lebPulse{0%,100%{box-shadow:0 6px 20px rgba(0,0,0,0.5),0 0 0 0 rgba(255,210,80,0.5)}50%{box-shadow:0 6px 24px rgba(0,0,0,0.5),0 0 0 6px rgba(255,210,80,0)}}'
+      + '#liveEventBanner .leb-ic,#liveEventHeadsUp .leb-ic{font-size:26px;filter:drop-shadow(0 0 6px rgba(255,210,80,0.8))}'
+      + '#liveEventBanner .leb-txt,#liveEventHeadsUp .leb-txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}'
+      + '#liveEventBanner .leb-txt b,#liveEventHeadsUp .leb-txt b{font-size:15px;color:#fff;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+      + '#liveEventBanner .leb-txt small,#liveEventHeadsUp .leb-txt small{font-size:12px;color:#ffdca0}'
+      + '#liveEventBanner .leb-cd,#liveEventHeadsUp .leb-cd{color:#ffe37a;font-variant-numeric:tabular-nums}'
+      + '#liveEventBanner .leb-go,#liveEventHeadsUp .leb-go{font-weight:900;color:#241305;background:linear-gradient(180deg,#ffd96a,#d39622);border-radius:999px;padding:6px 12px;font-size:13px;white-space:nowrap}';
+    document.head.appendChild(s);
+  } catch (e) {}
+})();
+function _liveBannerHTML(ev) {
+  var remain = Math.max(0, ev.endTs - Date.now());
+  var mm = Math.floor(remain / 60000), ss = Math.floor((remain % 60000) / 1000);
+  var cd = (mm < 10 ? '0' : '') + mm + ':' + (ss < 10 ? '0' : '') + ss;
+  var icon = (ev.type === 'star5') ? '⭐' : (ev.type === 'free_recruit') ? '🆓' : '⚡';
+  var sub;
+  if (ev.type === 'free_recruit') {
+    sub = '지금 모든 장수 등용 무료! · 남은 <b class="leb-cd">' + cd + '</b>';
+  } else {
+    var loc = eventStageLabelForUser(ev);
+    // 어떤 장수인지는 노출하지 않는다(서프라이즈) — 전투/컷씬에서 처음 마주친다.
+    var isGen = ev.generals && ev.generals.length > 0;
+    var what = isGen ? '특별 장수 등용 기회' : '보상 획득 기회';
+    sub = loc + ' · ' + what + ' · 남은 <b class="leb-cd">' + cd + '</b>';
+  }
+  return '<span class="leb-ic">' + icon + '</span>'
+    + '<span class="leb-txt"><b>' + _le_esc(ev.title) + '</b><small>' + sub + '</small></span>'
+    + '<span class="leb-go">GO ›</span>';
+}
+// 하단 배너 — 메인 메뉴·시나리오(스테이지선택)에서만 상시 노출.
+function renderLiveEventBanner() {
+  var ev = liveEventActiveNow();
+  var el = document.getElementById('liveEventBanner');
+  var inBattle = document.body && document.body.classList.contains('in-game');
+  var _sn = (typeof currentScreenName !== 'undefined') ? currentScreenName : '';
+  var show = ev && !inBattle && (_sn === 'menu' || _sn === 'stageSelect');
+  if (!show) { if (el && el.parentNode) el.parentNode.removeChild(el); return; }
+  if (!el) {
+    el = document.createElement('div'); el.id = 'liveEventBanner';
+    el.onclick = function () { goToLiveEventStage(); };
+    document.body.appendChild(el);
+  }
+  el.innerHTML = _liveBannerHTML(ev);
+}
+// 상단 헤드업(푸시알람처럼 스르륵) — 그 외 화면 진입 시. 10초 후 자동으로 올라가 사라짐.
+var _headsUpTimer = null;
+function triggerTopHeadsUp() {
+  var ev = liveEventActiveNow();
+  if (!ev) return;
+  if (document.body && document.body.classList.contains('in-game')) return;
+  var el = document.getElementById('liveEventHeadsUp');
+  if (!el) {
+    el = document.createElement('div'); el.id = 'liveEventHeadsUp';
+    el.onclick = function () { goToLiveEventStage(); hideTopHeadsUp(); };
+    document.body.appendChild(el);
+  }
+  el.innerHTML = _liveBannerHTML(ev);
+  void el.offsetWidth;      // reflow → transition 확실히
+  el.classList.add('leb-in');
+  if (_headsUpTimer) clearTimeout(_headsUpTimer);
+  _headsUpTimer = setTimeout(hideTopHeadsUp, 10000);   // 10초 후 사라짐
+}
+function hideTopHeadsUp() {
+  var el = document.getElementById('liveEventHeadsUp');
+  if (el) el.classList.remove('leb-in');
+}
+// 화면 진입 시 배너/헤드업 처리 — 메뉴·시나리오=하단배너, 그 외=상단 헤드업(전투/스플래시 제외).
+function updateLiveBannerForScreen(name) {
+  try { renderLiveEventBanner(); } catch (e) {}
+  try {
+    var isMain = (name === 'menu' || name === 'stageSelect');
+    var isHidden = (name === 'splash' || name === 'game' || (document.body && document.body.classList.contains('in-game')));
+    if (isMain || isHidden) { hideTopHeadsUp(); return; }
+    if (liveEventActiveNow()) triggerTopHeadsUp();
+  } catch (e) {}
+}
+
 function checkWin() {
   // 게임 화면에서만 실행 (강화/메뉴 등에서는 무시)
   if (!document.body.classList.contains('in-game')) return;
@@ -22120,6 +22439,24 @@ function checkWin() {
       try { _firstWinBonus = claimDailyFirstWin('single'); } catch (_) {}
       if (_firstWinBonus) { try { showSelectToast(`오늘의 첫 승리! ★${_firstWinBonus}`, '#ffd23f'); } catch (_) {} }
     }
+    // 깜짝 이벤트 처리 — 별·골드형만 여기서(1회 클리어=100% 지급 후 종료).
+    //   장수형은 아래 포로신 흐름에서 '이벤트 포로'로 주입 → 등용확률로 성공/실패(성공 시 종료).
+    try {
+      const _lev = (typeof liveEventActiveNow === 'function') ? liveEventActiveNow() : null;
+      if (_lev && liveEventStageIndex(_lev) === currentStage && !(STAGES[currentStage] && STAGES[currentStage].isTutorial)) {
+        if (_lev.type === 'star5') {   // 별/골드형만 여기서 지급(장수형=포로신, 무료등용=전역버프)
+          markLiveEventClaimed(_lev.id);
+          const _rw = [];
+          if ((_lev.rewardStars | 0) > 0) { SAVE.starsAvailable = (SAVE.starsAvailable || 0) + _lev.rewardStars; _rw.push('★' + _lev.rewardStars); }
+          if ((_lev.rewardGold | 0) > 0) { SAVE.gold = (SAVE.gold || 0) + _lev.rewardGold; _rw.push(_lev.rewardGold + 'G'); }
+          window._liveEvent = null;
+          try { renderLiveEventBanner(); } catch (_) {}
+          saveProgress();
+          reportEventComplete(_lev, null);
+          if (_rw.length) { try { showSelectToast('깜짝 이벤트 보상 — ' + _rw.join(' · '), '#ffd23f'); } catch (_) {} }
+        }
+      }
+    } catch (_) {}
     // 재클리어는 별 미지급(무한 파밍 방지) — 별은 위의 '등급 갱신'에서만. 골드는 재클리어도 지급됨.
     // 챕터 클리어 보너스 — 보스(각 챕터 20장) 최초 클리어 시 묶음 보상
     if (!isReclear && !(STAGES[currentStage] && STAGES[currentStage].isTutorial)) {
@@ -22228,7 +22565,7 @@ function checkWin() {
           _showVictoryModal();
         }
       };
-      // 테스트 중: 무조건 포로등용 페이지 노출
+      // 테스트 중: 무조건 포로등용 페이지 노출 (깜짝 이벤트 장수는 전투 적장으로 주입돼 여기 포함됨)
       const prisoners = getStagePrisoners(currentStage);
       if (prisoners.length > 0) {
         showPrisonerScreen(prisoners, proceedToVictoryModal);
@@ -22361,9 +22698,26 @@ function getStagePrisoners(stageIdx) {
   const isTuto = STAGES[stageIdx] && STAGES[stageIdx].isTutorial;
   if (isTuto) return [];
   const enemies = Array.isArray(window._stageEnemyGenerals) ? window._stageEnemyGenerals : [];
-  return enemies.map(generalToPrisoner).filter(Boolean);
+  const prisoners = enemies.map(generalToPrisoner).filter(Boolean);
+  // 깜짝 이벤트 장수 포로 태깅 — 이벤트 등용확률/무료/보고 적용.
+  const meta = window._eventPrisonerMeta;
+  if (meta && meta.id) {
+    for (const p of prisoners) {
+      if (p && p.id === meta.id) {
+        p.forcedChance = Math.max(0, Math.min(1, (meta.recruitPct || 0) / 100));
+        if (meta.freeRecruit) p.cost = 0;
+        p.stars = meta.stars || p.stars;
+        p._eventId = meta.eventId;
+        p._eventGeneral = { id: p.id, name: meta.name || p.name };
+        p.name = '⚡ ' + (p.name || meta.name || '');
+        break;
+      }
+    }
+  }
+  return prisoners;
 }
 function recruitChance(p) {
+  if (p && p.forcedChance != null) return Math.max(0, Math.min(1, p.forcedChance));   // 깜짝 이벤트 포로: 지정 등용확률
   // 등급 차등: 일반은 거의 확정(재료 공급), 레어는 낮되 바닥 45%(이중 좌절 방지)
   const st = clampStars((p && p.stars) || 1);
   const byStar = { 1: 0.92, 2: 0.85, 3: 0.70, 4: 0.55, 5: 0.45 }[st] || 0.85;
@@ -22533,9 +22887,12 @@ function showPrisonerScreen(prisoners, onContinue) {
       : `${state.idx + 1}번째 포로가 왕좌 앞에 무릎을 꿇었다.`;
     if (state.phase === 'intro') {
       line.textContent = p.quote;
-      meta.textContent = `등용 비용 ★${p.cost} · 충성심 ${p.loyalty} · 성공 확률 ${Math.round(recruitChance(p) * 100)}%`;
+      const _free = (p.cost === 0) || (typeof liveEventFreeRecruitActive === 'function' && liveEventFreeRecruitActive());
+      meta.textContent = _free
+        ? `⚡ 이벤트 · 무료 등용 · 성공 확률 ${Math.round(recruitChance(p) * 100)}%`
+        : `등용 비용 ★${p.cost} · 충성심 ${p.loyalty} · 성공 확률 ${Math.round(recruitChance(p) * 100)}%`;
       renderButtons([
-        { text: '등용한다', sub: `(★${p.cost} 차감)`, className: 'yes', action: () => attemptRecruit(p) },
+        { text: '등용한다', sub: (_free ? '(무료)' : `(★${p.cost} 차감)`), className: 'yes', action: () => attemptRecruit(p) },
         { text: '처단한다', className: 'no', action: () => executePrisoner(p) },
       ]);
     }
@@ -22567,7 +22924,8 @@ function showPrisonerScreen(prisoners, onContinue) {
     renderButtons([{ text: nextPrisonerLabel(), className: 'finish', action: nextPrisonerAction() }], true);
   };
   const attemptRecruit = (p) => {
-    const cost = p.cost || 1;
+    // 무료등용 이벤트 활성 시 모든 등용 무료. 아니면 포로 cost(이벤트 포로는 0일 수 있음).
+    const cost = (typeof liveEventFreeRecruitActive === 'function' && liveEventFreeRecruitActive()) ? 0 : ((p.cost != null) ? p.cost : 1);
     if ((SAVE.starsAvailable || 0) < cost) {
       speaker.textContent = '전령';
       line.textContent = `등용에 필요한 별이 부족합니다. ★${cost}개가 필요합니다.`;
@@ -22581,6 +22939,15 @@ function showPrisonerScreen(prisoners, onContinue) {
     if (success) {
       // 중복 허용 — 포로 화면에서 굴린 별 등급 그대로 승계 (Lv1)
       addOwnedGeneral(p.id, 1, p.stars);
+    }
+    // 깜짝 이벤트 포로 — 등용 성공 시 이벤트 종료+달성 보고. 실패면 이벤트 유지(재도전 가능).
+    if (p._eventId && success) {
+      try {
+        markLiveEventClaimed(p._eventId);
+        if (typeof reportEventComplete === 'function') reportEventComplete({ id: p._eventId }, p._eventGeneral || { id: p.id, name: p.name });
+        window._liveEvent = null;
+        try { renderLiveEventBanner(); } catch (_) {}
+      } catch (_) {}
     }
     saveProgress();
     refreshTopStats();
@@ -36322,19 +36689,45 @@ function closeTutorialOffer(accept) {
     font-weight: 900;
     line-height: 1;
   }
-  /* 강화 미리보기(도감 상세 전용) */
-  .general-detail-preview { margin-top: 7px; }
-  .general-detail-preview .gdp-title { font-size: 11px; color: #cdb98a; text-align: center; letter-spacing: 1px; margin-bottom: 5px; }
-  .general-detail-preview .gdp-btns { display: flex; gap: 4px; justify-content: center; }
-  .general-detail-preview .gdp-btns button {
-    flex: 1; max-width: 52px; padding: 6px 0; border-radius: 8px;
-    border: 1px solid rgba(255,210,80,0.32); background: rgba(255,255,255,0.06);
-    color: #e8cf96; font-weight: 900; font-size: 13px; cursor: pointer;
+  /* 강화 미리보기(도감 상세 전용) — 카드 오른쪽 상단 콤보박스. 세로 공간을 안 먹어 초상화가 안 가려짐 */
+  .general-detail-preview {
+    position: absolute;
+    top: 26px;
+    right: 42px;
+    z-index: 7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    pointer-events: none;
   }
-  .general-detail-preview .gdp-btns button.active {
-    background: linear-gradient(180deg, #ffd766, #e8a93a); color: #2a1a08; border-color: #ffd766;
+  .general-detail-preview .gdp-select {
+    pointer-events: auto;
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 5px 22px 5px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,210,80,0.55);
+    background:
+      linear-gradient(180deg, rgba(40,28,12,0.92), rgba(20,14,6,0.94)),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'><path d='M1 1l4 4 4-4' fill='none' stroke='%23ffd766' stroke-width='1.6' stroke-linecap='round'/></svg>") no-repeat right 8px center;
+    color: #ffe6a8;
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12);
   }
-  .general-detail-preview .gdp-delta { text-align: center; margin-top: 6px; font-size: 12px; font-weight: 800; color: #7fe0a0; }
+  .general-detail-preview .gdp-select:focus { outline: none; border-color: #ffd766; }
+  .general-detail-preview .gdp-select option { color: #201404; background: #f3e6c4; font-weight: 800; }
+  .general-detail-preview .gdp-delta {
+    pointer-events: none;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 900;
+    color: #7fe0a0;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
   .general-detail-name {
     margin-top: 8px;
     color: #fff1b8;
@@ -38278,6 +38671,53 @@ function closeTutorialOffer(accept) {
   .er-target-name {
     height: 33px !important;
     font-size: 16px !important;
+  }
+  .er-card-power {
+    position: relative !important;
+    z-index: 4 !important;
+    display: flex !important;
+    align-items: baseline !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    margin: 1px 0 7px !important;
+  }
+  .er-card-power .er-cp-label {
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1px !important;
+    color: #cdb98a !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.8) !important;
+  }
+  .er-card-power .er-cp-val {
+    font-family: 'Roboto Condensed', 'Noto Sans KR', system-ui, sans-serif !important;
+    font-size: 27px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: -0.5px !important;
+    text-shadow: 0 2px 3px rgba(0,0,0,0.72), 0 0 12px currentColor !important;
+    transition: transform 0.12s ease-out !important;
+  }
+  .er-card-power .er-cp-val.counting {
+    transform: scale(1.06) !important;
+  }
+  .er-card-power .er-cp-val.down {
+    color: #ff6b6b !important;
+  }
+  .er-card-power .er-cp-val.bump {
+    animation: er-cp-bump 0.42s cubic-bezier(.2,1.4,.4,1) !important;
+  }
+  .er-card-power .er-cp-val.bump-down {
+    animation: er-cp-bump-down 0.46s cubic-bezier(.3,0,.4,1) !important;
+  }
+  @keyframes er-cp-bump {
+    0% { transform: scale(1.28); }
+    60% { transform: scale(0.96); }
+    100% { transform: scale(1); }
+  }
+  @keyframes er-cp-bump-down {
+    0% { transform: scale(0.82); }
+    55% { transform: scale(1.05); }
+    100% { transform: scale(1); }
   }
   .er-card-stats {
     position: relative !important;
@@ -42299,7 +42739,7 @@ function getOwnedRoster() {
 
 function enhanceCardMetaHTML(g) {
   const rarity = getGeneralRarity(g);
-  const power = Math.round(100 + generalScoreOf(g) * 1000 + (g.lv || 1) * 35);
+  const power = generalDetailPower(g);   // 전투력 공식 통일(별·강화 반영) — 카드/도감/슬롯과 동일
   const buffs = formatGeneralBuffs(g.buffs, g.lv || 1).split(' · ').slice(0, 2);
   return `
     <div class="enh-card-info">
@@ -42315,7 +42755,7 @@ function enhanceCardMetaHTML(g) {
 
 function enhanceFodderBoardCardHTML(g) {
 	  const rarity = getGeneralRarity(g);
-	  const power = Math.round(100 + generalScoreOf(g) * 1000 + (g.lv || 1) * 35);
+	  const power = generalDetailPower(g);   // 전투력 공식 통일
 	  return `
 			    <div class="enh-fodder-card-label">재료 · Lv ${g.lv || 1}</div>
 			    <div class="enh-fodder-card-art">
@@ -43248,6 +43688,10 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
       </div>
       <div class="er-rarity-label">${safe(rarity.label)}</div>
       <div class="er-target-name">${safe(target.name)}</div>
+      <div class="er-card-power">
+        <span class="er-cp-label">전투력</span>
+        <b class="er-cp-val" id="erCardPower" style="color:${rarity.color}">${generalDetailPower(Object.assign({}, target, { lv: previewFromLv })).toLocaleString()}</b>
+      </div>
       ${buildRitualCardStatsHtml(target, previewFromLv)}
     </div>
     <i class="er-card-flare" aria-hidden="true"></i>
@@ -43368,6 +43812,38 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
     targetEl.style.transform = '';
   }
 
+  // 강화 결과에 따라 전투력 숫자가 스르륵 변하는 카운트 애니메이션
+  //  - 성공: 위로 상승(금색 bump)  - 실패로 레벨 하락: 아래로 감소(붉은 bump)
+  function animateEnhCardPower(baseTarget, fromLv, toLv) {
+    const el = targetEl.querySelector('#erCardPower');
+    if (!el) return;
+    const fromPow = generalDetailPower(Object.assign({}, baseTarget, { lv: fromLv }));
+    const toPow = generalDetailPower(Object.assign({}, baseTarget, { lv: toLv }));
+    if (toPow === fromPow) { el.textContent = toPow.toLocaleString(); return; }
+    const down = toPow < fromPow;
+    el.classList.add('counting');
+    if (down) el.classList.add('down');
+    const dur = down ? 780 : 900;
+    let startTs = 0;
+    function step(ts) {
+      if (closed) { el.textContent = toPow.toLocaleString(); return; }
+      if (!startTs) startTs = ts;
+      const t = Math.min(1, (ts - startTs) / dur);
+      const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+      const val = Math.round(fromPow + (toPow - fromPow) * eased);
+      el.textContent = val.toLocaleString();
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = toPow.toLocaleString();
+        el.classList.remove('counting');
+        el.classList.add(down ? 'bump-down' : 'bump');
+        setTimeout(() => el.classList.remove('bump', 'bump-down', 'down'), 460);
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
   function reveal() {
     settleTargetAfterCharge();
     root.classList.remove('charging', 'near-max', 'armed', 'preparing', 'storm-hit', 'storm-hit-wild');
@@ -43393,6 +43869,8 @@ function playEnhanceRitual(target, fodderObjs, success, oldLv, newLv, onDone, op
         resultLv.textContent = newLv < oldLv ? `Lv ${oldLv} → Lv ${newLv} 하락` : `Lv ${oldLv} 유지`;
       }
       finishTargetSettleForResult();
+      // 성공은 상승, 실패로 레벨이 떨어지면 하락 — 둘 다 숫자 애니메이션
+      if (success || newLv !== oldLv) animateEnhCardPower(target, oldLv, newLv);
       targetEl.classList.add(success ? 'success-pop' : 'fail-shake');
       try {
         if (success) BGM && BGM.sfxEnhanceSuccess && BGM.sfxEnhanceSuccess();

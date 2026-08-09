@@ -9,6 +9,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const { DatabaseSync } = require('node:sqlite');
+const fcm = require('./fcm_push');   // FCM v1 발송(깜짝 이벤트 알림). 서비스계정 없으면 자동 비활성.
 
 const PORT = Number(process.env.PORT || 8080);
 const ADMIN_KEY = process.env.ADMIN_KEY || 'samguk-admin';
@@ -18,6 +19,19 @@ db.exec("CREATE TABLE IF NOT EXISTS users(uid TEXT PRIMARY KEY, nick TEXT UNIQUE
 db.exec("CREATE TABLE IF NOT EXISTS matches(id INTEGER PRIMARY KEY AUTOINCREMENT, host_uid TEXT, guest_uid TEXT, winner_side INTEGER, ended INTEGER)");
 // 설치/실행 집계 — 앱·게임 실행 시 기기 고유 id(cid) 비콘. platform=app|web.
 db.exec("CREATE TABLE IF NOT EXISTS installs(cid TEXT PRIMARY KEY, platform TEXT, first_seen INTEGER, last_seen INTEGER, launches INTEGER DEFAULT 0)");
+// 푸시 토큰(FCM) — 앱에서 등록. 깜짝 이벤트 방송 대상.
+db.exec("CREATE TABLE IF NOT EXISTS push_tokens(token TEXT PRIMARY KEY, cid TEXT, platform TEXT, created INTEGER, last_seen INTEGER)");
+// 깜짝 이벤트(LiveOps) — 관리자가 등록, 30분 한정. active=1은 동시에 하나만.
+db.exec("CREATE TABLE IF NOT EXISTS live_events(id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, general_id TEXT, general_name TEXT, stars INTEGER, stage_id TEXT, stage_label TEXT, recruit_pct INTEGER, reward_stars INTEGER, reward_gold INTEGER, title TEXT, body TEXT, start_ts INTEGER, duration_min INTEGER, active INTEGER DEFAULT 1)");
+for (const sql of [
+  "ALTER TABLE live_events ADD COLUMN generals_json TEXT",   // 후보 장수 풀 [{id,name}] — 폰마다 랜덤 1명
+  "ALTER TABLE live_events ADD COLUMN stage_local INTEGER",  // 장(1~20). NULL이면 유저 현재 챕터 랜덤 장
+  "ALTER TABLE live_events ADD COLUMN free_recruit INTEGER DEFAULT 1", // 이벤트 등용 별차감 무마(1=무료, 0=별소모)
+  "ALTER TABLE live_events ADD COLUMN test_cid TEXT",                   // 테스트 모드: 지정 기기(cid)에만 푸시·표시. NULL=전체 공개
+]) { try { db.exec(sql); } catch (_) {} }
+// 이벤트 달성자(클리어) 기록 — 유저별 1회. 콘솔에서 이벤트별 달성자 조회.
+db.exec("CREATE TABLE IF NOT EXISTS event_completions(id INTEGER PRIMARY KEY AUTOINCREMENT, event_id INTEGER, cid TEXT, nick TEXT, general_id TEXT, general_name TEXT, recruited INTEGER, ts INTEGER)");
+try { db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_evcomp ON event_completions(event_id, cid)"); } catch (_) {}
 // 전투력/기록 확장 컬럼 (기존 DB에도 안전하게 추가)
 for (const sql of [
   "ALTER TABLE users ADD COLUMN power INTEGER DEFAULT 1000",
@@ -68,6 +82,11 @@ const MIME = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; chars
 const server = http.createServer((req, res) => {
   const u = new URL(req.url || '/', 'http://localhost');
   let p = decodeURIComponent(u.pathname);
+  // CORS — 앱(WebView origin=https://localhost)에서 /push/register·/live_event를 크로스오리진 fetch하므로 허용.
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
   if (p === '/' || p === '') p = '/index.html';   // 메인게임(prototype). 온라인 대전은 /mp_game.html
   if (p === '/health') { res.writeHead(200); res.end('ok'); return; }
   // 설치/실행 비콘 — 게임 로드 시 기기 id(cid) 1회. 인증 불필요, 1x1 gif 응답(가벼움).
@@ -124,6 +143,79 @@ const server = http.createServer((req, res) => {
   if (p === '/admin/matches') {
     if (!adminAuthed(u, req)) return sendJson(403, { ok: false, err: 'auth' });
     return sendJson(200, adminMatches(parseInt(u.searchParams.get('page') || '1', 10), u.searchParams.get('q') || ''));
+  }
+  // ── 푸시 토큰 등록(앱) ──
+  if (p === '/push/register' && req.method === 'POST') {
+    readBody((j) => {
+      const tok = String(j.token || '').trim();
+      if (!tok) return sendJson(400, { ok: false });
+      const now = Date.now();
+      try {
+        db.prepare("INSERT INTO push_tokens(token,cid,platform,created,last_seen) VALUES(?,?,?,?,?) ON CONFLICT(token) DO UPDATE SET cid=excluded.cid, platform=excluded.platform, last_seen=excluded.last_seen")
+          .run(tok, String(j.cid || ''), String(j.platform || 'app'), now, now);
+      } catch (_) {}
+      sendJson(200, { ok: true });
+    });
+    return;
+  }
+  // ── 활성 깜짝 이벤트 조회(게임 폴링). 테스트 이벤트는 지정 cid에만 보임. ──
+  if (p === '/live_event') {
+    const _cid = u.searchParams.get('cid') || '';
+    const _ev = activeEvent();
+    if (_ev && _ev.testCid && _ev.testCid !== _cid) return sendJson(200, { ok: true, event: null });
+    return sendJson(200, { ok: true, event: _ev });
+  }
+  // ── 이벤트 달성 보고(게임) ──
+  if (p === '/event/complete' && req.method === 'POST') {
+    readBody((j) => {
+      const eid = parseInt(j.eventId, 10);
+      const cid = String(j.cid || '').slice(0, 64);
+      if (!eid || !cid) return sendJson(400, { ok: false });
+      try {
+        db.prepare("INSERT OR IGNORE INTO event_completions(event_id,cid,nick,general_id,general_name,recruited,ts) VALUES(?,?,?,?,?,?,?)")
+          .run(eid, cid, String(j.nick || '').slice(0, 40), String(j.generalId || ''), String(j.generalName || ''), j.recruited ? 1 : 0, Date.now());
+      } catch (_) {}
+      sendJson(200, { ok: true });
+    });
+    return;
+  }
+  // ── 관리자: 이벤트 달성자 목록 ──
+  if (p === '/admin/event/completions') {
+    if (!adminAuthed(u, req)) return sendJson(403, { ok: false, err: 'auth' });
+    const eid = parseInt(u.searchParams.get('id') || '0', 10) || 0;
+    let rows = [];
+    try { rows = db.prepare("SELECT cid, nick, general_id, general_name, recruited, ts FROM event_completions WHERE event_id=? ORDER BY ts DESC LIMIT 1000").all(eid); } catch (_) {}
+    let ev = null;
+    try {
+      const r = db.prepare("SELECT * FROM live_events WHERE id=?").get(eid);
+      if (r) {
+        let generals = []; try { generals = r.generals_json ? JSON.parse(r.generals_json) : []; } catch (_) {}
+        ev = { id: r.id, type: r.type, generals, generalName: r.general_name, stars: r.stars, stageLabel: r.stage_label, stageLocal: r.stage_local, recruitPct: r.recruit_pct, rewardStars: r.reward_stars, rewardGold: r.reward_gold, freeRecruit: (r.free_recruit == null ? true : !!r.free_recruit), title: r.title, durationMin: r.duration_min, startTs: r.start_ts, active: r.active };
+      }
+    } catch (_) {}
+    return sendJson(200, { ok: true, id: eid, count: rows.length, rows, event: ev });
+  }
+  // ── 관리자: 이벤트 생성+푸시 방송 ──
+  if (p === '/admin/event' && req.method === 'POST') {
+    if (!adminAuthed(u, req)) return sendJson(403, { ok: false, err: 'auth' });
+    readBody((j) => sendJson(200, createLiveEvent(j)));
+    return;
+  }
+  // ── 관리자: 활성 이벤트 종료 ──
+  if (p === '/admin/event/clear' && req.method === 'POST') {
+    if (!adminAuthed(u, req)) return sendJson(403, { ok: false, err: 'auth' });
+    try { db.exec("UPDATE live_events SET active=0 WHERE active=1"); } catch (_) {}
+    return sendJson(200, { ok: true });
+  }
+  // ── 관리자: 푸시 대상 수 + 최근 이벤트(콘솔 표시용) ──
+  if (p === '/admin/event/status') {
+    if (!adminAuthed(u, req)) return sendJson(403, { ok: false, err: 'auth' });
+    let tokens = 0, recent = [], devices = [];
+    try { tokens = db.prepare("SELECT COUNT(*) c FROM push_tokens").get().c; } catch (_) {}
+    try { recent = db.prepare("SELECT le.id, le.type, le.general_name, le.stage_label, le.start_ts, le.duration_min, le.active, (SELECT COUNT(*) FROM event_completions ec WHERE ec.event_id=le.id) AS done FROM live_events le ORDER BY le.id DESC LIMIT 10").all(); } catch (_) {}
+    // 테스트 대상 선택용 — 푸시 토큰 보유 기기, 최근 접속순.
+    try { devices = db.prepare("SELECT pt.cid AS cid, pt.last_seen AS last_seen, i.model AS model, i.andver AS andver FROM push_tokens pt LEFT JOIN installs i ON i.cid=pt.cid ORDER BY pt.last_seen DESC LIMIT 30").all(); } catch (_) {}
+    return sendJson(200, { ok: true, tokens, fcm: fcm.fcmEnabled(), active: activeEvent(), recent, devices });
   }
 
   const file = path.normalize(path.join(PUB, p));
@@ -710,6 +802,90 @@ function adminMatches(page, q) {
     rows = db.prepare('SELECT ' + MATCH_COLS + ' ' + MATCH_JOIN + ' ORDER BY m.id DESC LIMIT ? OFFSET ?').all(PAGE, (page - 1) * PAGE);
   }
   return { rows, total, page, pageSize: PAGE };
+}
+
+// ── 깜짝 이벤트(LiveOps) ─────────────────────────────────────────────────
+function activeEvent() {
+  try {
+    const now = Date.now();
+    const row = db.prepare("SELECT * FROM live_events WHERE active=1 ORDER BY id DESC LIMIT 1").get();
+    if (!row) return null;
+    const endTs = row.start_ts + (row.duration_min || 30) * 60000;
+    if (now >= endTs) { try { db.prepare("UPDATE live_events SET active=0 WHERE id=?").run(row.id); } catch (_) {} return null; }
+    let generals = [];
+    try { generals = row.generals_json ? JSON.parse(row.generals_json) : []; } catch (_) { generals = []; }
+    return {
+      id: row.id, type: row.type, generalId: row.general_id, generalName: row.general_name,
+      generals, stars: row.stars, stageLocal: row.stage_local, stageLabel: row.stage_label,
+      recruitPct: row.recruit_pct, rewardStars: row.reward_stars, rewardGold: row.reward_gold,
+      freeRecruit: (row.free_recruit == null ? true : !!row.free_recruit),
+      testCid: row.test_cid || null,
+      title: row.title, body: row.body, startTs: row.start_ts, durationMin: row.duration_min,
+      endTs, remainMs: endTs - now,
+    };
+  } catch (_) { return null; }
+}
+function createLiveEvent(j) {
+  const now = Date.now();
+  const type = String(j.type || 'general');   // 'general' | 'star5'
+  const durationMin = Math.max(1, Math.min(1440, parseInt(j.durationMin, 10) || 30));
+  // 장수 풀(이름 다중선택) — [{id,name}]. 폰마다 랜덤 1명 배정(클라).
+  let generals = [];
+  try {
+    if (Array.isArray(j.generals)) generals = j.generals
+      .map((g) => ({ id: String((g && g.id) || ''), name: String((g && g.name) || '') }))
+      .filter((g) => g.id);
+  } catch (_) { generals = []; }
+  // 장(1~20). 미입력(0/빈값) → NULL = 유저 현재 챕터 랜덤 장(클라 결정).
+  let stageLocal = parseInt(j.stageLocal, 10);
+  if (!(stageLocal >= 1 && stageLocal <= 20)) stageLocal = null;
+  const stageLabel = stageLocal ? (stageLocal + '장') : '랜덤 장';
+  const freeRecruit = (j.freeRecruit === false) ? 0 : 1;   // 기본 무료(별 차감 없음)
+  const ev = {
+    type,
+    general_id: String((generals[0] && generals[0].id) || ''),
+    general_name: String((generals[0] && generals[0].name) || ''),
+    stars: parseInt(j.stars, 10) || 5,
+    stage_label: stageLabel,
+    recruit_pct: Math.max(0, Math.min(100, parseInt(j.recruitPct, 10) || 0)),
+    reward_stars: Math.max(0, parseInt(j.rewardStars, 10) || 0),
+    reward_gold: Math.max(0, parseInt(j.rewardGold, 10) || 0),
+    title: String(j.title || (type === 'star5' ? '⭐ 별 5개 획득 이벤트!' : '⚡ 특별 등용 이벤트!')),
+    body: String(j.body || ''),
+  };
+  // 테스트 모드: 지정 기기(cid)에만 푸시·표시. 빈값이면 전체 공개.
+  const testCid = (typeof j.testCid === 'string' && j.testCid.trim()) ? j.testCid.trim().slice(0, 64) : null;
+  let id = 0;
+  try {
+    db.exec("UPDATE live_events SET active=0 WHERE active=1");   // 동시에 하나만 활성
+    const r = db.prepare("INSERT INTO live_events(type,general_id,general_name,generals_json,stars,stage_local,stage_id,stage_label,recruit_pct,reward_stars,reward_gold,free_recruit,test_cid,title,body,start_ts,duration_min,active) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)")
+      .run(ev.type, ev.general_id, ev.general_name, JSON.stringify(generals), ev.stars, stageLocal, '', ev.stage_label, ev.recruit_pct, ev.reward_stars, ev.reward_gold, freeRecruit, testCid, ev.title, ev.body, now, durationMin);
+    id = Number(r.lastInsertRowid);
+  } catch (e) { return { ok: false, err: String((e && e.message) || e) }; }
+  const pushBody = ev.body || ('지금 접속하세요! ' + durationMin + '분 한정');
+  const sent = broadcastEventPush(ev.title, pushBody, { kind: 'live_event', eventId: String(id) }, testCid);
+  return { ok: true, id, test: !!testCid, tokens: sent };
+}
+function pushTokenCount() {
+  try { return db.prepare("SELECT COUNT(*) c FROM push_tokens").get().c; } catch (_) { return 0; }
+}
+function broadcastEventPush(title, body, data, targetCid) {
+  if (!fcm.fcmEnabled()) return 0;
+  let tokens = [];
+  try {
+    tokens = (targetCid
+      ? db.prepare("SELECT token FROM push_tokens WHERE cid=?").all(targetCid)
+      : db.prepare("SELECT token FROM push_tokens").all()).map((r) => r.token);
+  } catch (_) {}
+  tokens.forEach((tok) => {
+    fcm.sendToToken(tok, { title, body }, data).catch((e) => {
+      const msg = String((e && e.message) || e);
+      if (msg.indexOf('UNREGISTERED') >= 0 || msg.indexOf('INVALID_ARGUMENT') >= 0 || msg.indexOf('"code": 404') >= 0 || msg.indexOf(' 404 ') >= 0) {
+        try { db.prepare("DELETE FROM push_tokens WHERE token=?").run(tok); } catch (_) {}
+      }
+    });
+  });
+  return tokens.length;
 }
 
 server.listen(PORT, () => console.log('[mp_server] listening on :' + PORT + '  (public=' + PUB + ', admin=/admin key=' + (process.env.ADMIN_KEY ? '****' : ADMIN_KEY) + ')'));
