@@ -25186,6 +25186,21 @@ function _getSoldierSprite(unit, factionColor, isLeader, variant) {
   }
   return entry;
 }
+// 개별 병사 LOD —— 병사 스케일은 zoom 을 0.9 에서 하한 처리하므로 줌아웃해도 병사가 작아지지 않고
+//   서로 겹치기만 한다. 즉 멀리서 볼 때 24~30명을 낱개로 그려봐야 화면에선 뭉텅이 한 덩어리다.
+//   줌을 4단계로 '양자화'해서 곱한다 — 연속값으로 하면 _soldierPosCache 키가 매 프레임 바뀌어 캐시가 무너진다.
+function lodFactor() {
+  const z = zoom;
+  if (z >= 0.70) return 1;      // 평상시 교전 줌(튜토리얼 0.79 등) — 디테일 그대로 유지
+  if (z >= 0.50) return 0.7;
+  if (z >= 0.38) return 0.45;
+  return 0.3;                   // 전 맵 조망(0.3) — 병사 하나가 몇 픽셀
+}
+function lodCount(max, min = 1) {
+  const f = lodFactor();
+  return f === 1 ? max : Math.max(min, Math.round(max * f));
+}
+
 function drawSoldierCached(x, y, unit, factionColor, seed, isLeader) {
   const v = ((Math.abs(seed * 31) | 0) % _SOLDIER_SPRITE_VARIANTS);
   const sp = _getSoldierSprite(unit, factionColor, isLeader, v);
@@ -25232,7 +25247,7 @@ function _seededPositions(sd, n, baseRadius, minDist) {
 }
 function drawSoldierGroup(x, y, count, unit, factionColor, radius, seed, marchAngle, attacking) {
   // 부대 시각 표현: 선두는 유지하고 후방은 seed 기반 불규칙 쐐기 형태로 표시.
-  const visible = Math.max(1, Math.min(count, 30));
+  const visible = lodCount(Math.max(1, Math.min(count, 30)));   // 선두는 항상 유지(min 1)
   const t = performance.now() * 0.001;
   // 줌이 작아도 너무 작아지지 않게
   const z = Math.max(0.7, zoom);
@@ -25535,22 +25550,57 @@ function seededUnitRand(seed, idx) {
   return x - Math.floor(x);
 }
 
+// 주둔병 스프라이트 캐시 —— 병사 1명당 fill/stroke 약 22회를 매 프레임 새로 그리던 것을
+//   (성당 24명 × 성 개수 → 전체 드로우콜의 약 70%) 오프스크린에 한 번만 그려두고 drawImage 1회로 블릿한다.
+//   걸음(step)만 형태가 바뀌므로 위상을 GARRISON_STEP_PHASES 단계로 양자화해 캐시 키에 넣는다.
+//   bob/sway 는 단순 평행이동이라 블릿 좌표에 그대로 반영하면 움직임이 보존된다.
+const GARRISON_STEP_PHASES = 6;
+const GARRISON_REF_S = 12;          // 실사용 s(약 7~14.5) 한가운데 — 확대·축소비를 1 근처로 유지
+const _garrisonSpriteCache = new Map();
+function getGarrisonSprite(unit, factionColor, phase) {
+  const key = unit + '|' + factionColor + '|' + phase;
+  let hit = _garrisonSpriteCache.get(key);
+  if (hit) return hit;
+  const s = GARRISON_REF_S;
+  const pad = Math.ceil(s * 2.6);
+  const cv = document.createElement('canvas');
+  cv.width = pad * 2;
+  cv.height = pad * 2;
+  const g = cv.getContext('2d');
+  const stepSin = GARRISON_STEP_PHASES === 1 ? 0 : -1 + 2 * phase / (GARRISON_STEP_PHASES - 1);
+  paintGarrisonSoldier(g, pad, pad, unit, factionColor, s, stepSin);
+  hit = { canvas: cv, pad, s };
+  _garrisonSpriteCache.set(key, hit);
+  return hit;
+}
+
 function drawGarrisonSoldier(x, y, unit, factionColor, scale, seed) {
   const _dpz = DPR() * Math.max(0.9, Math.min(1.45, zoom));
   const s = scale * _dpz * (unit === 'cavalry' ? 1.28 : 1);   // 기병=말 탄 만큼 크게(한눈 구분)
   if (unit === 'cavalry') y -= scale * _dpz * 0.42;           // 커진 만큼 위로 올려 발 위치 정렬 유지
-  const u = UNITS[unit];
   const t = performance.now() * 0.001;
   const bob = Math.sin(t * 4.2 + seed) * s * 0.12;
   const sway = Math.cos(t * 2.4 + seed * 1.7) * s * 0.12;
   x += sway;
   y += bob;
+  const stepSin = Math.sin(t * 5.8 + seed);
+  const phase = Math.min(GARRISON_STEP_PHASES - 1,
+    Math.max(0, Math.round((stepSin + 1) / 2 * (GARRISON_STEP_PHASES - 1))));
+  const sp = getGarrisonSprite(unit, factionColor, phase);
+  const k = s / sp.s;                                          // 기준 크기 → 실제 크기 축소비
+  const half = sp.pad * k;
+  ctx.drawImage(sp.canvas, x - half, y - half, half * 2, half * 2);
+}
+
+// 실제 픽셀을 찍는 쪽 —— ctx 대신 임의의 2D 컨텍스트(g)에 그린다. 오프스크린 프리렌더 전용.
+function paintGarrisonSoldier(ctx, x, y, unit, factionColor, s, stepSin) {
+  const u = UNITS[unit];
 
   ctx.fillStyle = 'rgba(0,0,0,0.34)';
   ctx.beginPath(); ctx.ellipse(x, y + s * 1.3, s * 1.05, s * 0.3, 0, 0, Math.PI*2); ctx.fill();
 
   // legs
-  const step = Math.sin(t * 5.8 + seed) * s * 0.18;
+  const step = stepSin * s * 0.18;
   ctx.strokeStyle = '#2a1808';
   ctx.lineWidth = 1.5 * DPR();
   ctx.beginPath(); ctx.moveTo(x - s * 0.18, y + s * 0.75); ctx.lineTo(x - s * 0.34 + step, y + s * 1.25); ctx.stroke();
@@ -25645,7 +25695,7 @@ function drawCastleGarrison(c, x, y, r, factionColor) {
   for (const k of UNIT_KEYS) {
     for (let i = 0; i < (c.troops[k] || 0); i++) units.push(k);
   }
-  const visible = Math.min(units.length, 24);
+  const visible = units.length ? lodCount(Math.min(units.length, 24)) : 0;
   if (!visible) return;
   const spots = [
     [0.00, 0.02], [-0.17, -0.05], [0.18, -0.04], [-0.31, 0.08], [0.31, 0.08],
@@ -25710,11 +25760,17 @@ function drawCastle(c) {
   ctx.lineWidth = 2 * DPR();
   ctx.beginPath(); ctx.arc(x, y, r * 1.22, 0, Math.PI*2); ctx.stroke();
 
+  // 스프라이트가 있으면 아래 절차 드로잉은 통째로 건너뛴다.
+  //   (예전엔 globalAlpha=0 으로 '안 보이게'만 했는데, 알파 0 이어도 래스터 비용은 그대로 나간다 —
+  //    프레임당 232 드로우콜이 화면에 한 픽셀도 남기지 못하고 버려지고 있었음)
+  // 깃대 밑동 기준선 — 아래 절차 드로잉 블록 안에서 계산되던 값이라, 블록을 건너뛰어도
+  //   깃발(블록 뒤)이 그릴 수 있도록 여기서 동일 식으로 미리 구해둔다.
+  //   roofBotY = keepY - r*0.05, keepY = y - r*1.26  →  roofTopY = y - r*1.69
+  const roofTopY = y - r * 1.69;
+
   const spriteMode = !!getCastleSprite(c.owner);
-  if (spriteMode) {
+  if (!spriteMode) {
     ctx.save();
-    ctx.globalAlpha = 0;
-  }
 
   // === 4방향 진입로 (사다리꼴 흙길 + 해자 다리) ===
   for (let i = 0; i < 4; i++) {
@@ -26009,7 +26065,8 @@ function drawCastle(c) {
     ctx.beginPath(); ctx.arc(lx, ly, r * 0.04, 0, Math.PI*2); ctx.stroke();
   }
 
-  if (spriteMode) ctx.restore();
+    ctx.restore();
+  }   // ← if (!spriteMode) 끝
   drawCastleSpriteLayer(c, x, y, r);
   drawCastleFire(c, x, y, r);
   drawCastleGarrison(c, x, y, r, f.flag);
@@ -27963,8 +28020,11 @@ function loop(t) {
     requestAnimationFrame(loop);
     return;
   }
+  // 잔여분을 버리지 않고 보존(멀티 분기와 동일 규칙). 0으로 리셋하면 rAF가 60Hz 미만일 때
+  //   렌더가 rAF/2 로 반토막 난다(발열→스로틀→더 느려지는 하강나선). 밀린 시간은 3프레임까지만 인정.
   const useDt = Math.min(_accFrameDt, 0.1);
-  _accFrameDt = 0;
+  _accFrameDt -= TARGET_FRAME_DT;
+  if (_accFrameDt > TARGET_FRAME_DT * 3) _accFrameDt = TARGET_FRAME_DT * 3;
   update(useDt);
   render(useDt);
   requestAnimationFrame(loop);
