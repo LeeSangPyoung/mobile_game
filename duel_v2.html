@@ -79,6 +79,17 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 @keyframes bannerIn{0%{opacity:0;transform:scale(2.4) rotate(-4deg)}22%{opacity:1;transform:scale(1) rotate(0)}
   72%{opacity:1}100%{opacity:0;transform:scale(1.08)}}
 
+/* 개시 직후 몇 초만 뜨는 조작 안내 — 전투 중 화면에 설명이 하나도 없으면
+   플레이어는 무엇을 하는 게임인지 모른 채 얻어맞기만 한다 */
+/* 아래쪽에 둔다 — 위는 개시 배너("일기토")가 쓰는 자리다 */
+#tip{position:absolute;left:50%;bottom:calc(96*var(--u) + var(--safe-b));transform:translateX(-50%);z-index:6;
+  padding:calc(6*var(--u)) calc(14*var(--u));white-space:nowrap;pointer-events:none;
+  background:#0a0604d0;border:calc(2*var(--u)) solid #8a6c3c;
+  font-size:calc(14*var(--u));font-weight:900;color:#f0dcb4;text-shadow:1px 1px 0 #000;
+  opacity:0;transition:opacity .5s ease}
+#tip.show{opacity:1}
+#tip b{color:var(--gold)}
+
 /* ── 모바일 조작 패드 ──────────────────────────────────────────── */
 #pad{position:absolute;left:0;right:0;bottom:0;z-index:7;padding:0 calc(14*var(--u)) calc(10*var(--u) + var(--safe-b));
   display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none}
@@ -118,6 +129,8 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
   border:3px solid #fff0ad;background:linear-gradient(#e8ab2c,#a86a10);color:#2a1200;
   box-shadow:0 5px 0 #4a2a06,0 10px 26px #000a;letter-spacing:4px}
 .go:active{transform:translateY(4px);box-shadow:0 1px 0 #4a2a06}
+.go:disabled{cursor:progress;filter:grayscale(.7) brightness(.62);letter-spacing:1px}
+.go:disabled:active{transform:none;box-shadow:0 5px 0 #4a2a06,0 10px 26px #000a}
 .go:focus-visible,.pick:focus-visible{outline:3px solid #9de2ff;outline-offset:3px}
 .keys{margin-top:14px;font-size:clamp(10px,1.5vw,12px);color:#b79a6d;line-height:1.9}
 .keys b{color:#ffd45c}
@@ -153,6 +166,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
   </div>
 
   <div id="banner" aria-live="polite"></div>
+  <div id="tip"></div>
 
   <div id="pad">
     <div class="cluster">
@@ -251,14 +265,22 @@ const META = {
   },
 };
 
-function loadAssets() {
-  const keys = Object.keys(ASSET_SRC);
+// 에셋 총량이 11MB대다. 진행 표시 없이 받으면 첫 방문자는 검은 화면만 본다.
+// 게다가 전부 기다릴 이유가 없다 — 배경과 양쪽 포즈 시트(3.4MB)만 있으면 결투는 성립하고,
+// 걷기·공격·피격 시트는 없는 동안 pickFrame() 이 포즈 프레임으로 대체한다.
+const CORE_ASSETS = ['bg', 'pPose', 'bPose'];
+let assetsReady = false;
+function loadAssets(keys, onProgress) {
   let done = 0;
   return new Promise(resolve => {
     keys.forEach(k => {
       const img = new Image();
       A[k] = img;
-      const tick = () => { if (++done === keys.length) resolve(); };
+      const tick = () => {
+        done++;
+        onProgress?.(done / keys.length);
+        if (done === keys.length) resolve();
+      };
       img.onload = tick;
       img.onerror = tick;   // 하나 빠져도 결투는 계속된다(해당 모션만 포즈 시트로 대체)
       img.src = ASSET_SRC[k];
@@ -271,14 +293,14 @@ const ready = img => !!(img && img.complete && img.naturalWidth);
 //  2. 기술표 — 프레임 단위(60fps). 여기 숫자가 곧 손맛이다.
 //     startup: 칼이 나가기까지 / active: 판정 / recovery: 후딜
 // ═══════════════════════════════════════════════════════════════════
-// 사정거리는 '중심 간 거리' 기준. 두 장수가 겹치지 않는 최소 간격(SEPARATE)이 160이라
+// 사정거리는 '중심 간 거리' 기준. 두 장수가 겹치지 않는 최소 간격(SEPARATE=205)이 하한이라
 // 어떤 기술도 그보다 짧으면 영영 닿지 않는다 — 아래 값은 전부 그 위에서 잡았다.
 const MOVES = {
-  light:  { startup: 8,  active: 4, recovery: 13, dmg: 9,  reach: 190, push: 5,  stam: 8,
+  light:  { startup: 8,  active: 4, recovery: 13, dmg: 9,  reach: 240, push: 5,  stam: 8,
             label: '베기',   guardChip: 1.5, stunAdd: 6,  sheet: 'light',  arc: 'wide'  },
-  thrust: { startup: 13, active: 5, recovery: 19, dmg: 14, reach: 258, push: 9,  stam: 14,
+  thrust: { startup: 13, active: 5, recovery: 19, dmg: 14, reach: 310, push: 9,  stam: 14,
             label: '찌르기', guardChip: 3,   stunAdd: 10, sheet: 'thrust', arc: 'line'  },
-  heavy:  { startup: 21, active: 6, recovery: 26, dmg: 24, reach: 212, push: 22, stam: 24,
+  heavy:  { startup: 21, active: 6, recovery: 26, dmg: 24, reach: 262, push: 22, stam: 24,
             label: '강베기', guardChip: 9,   stunAdd: 22, sheet: 'heavy',  arc: 'heavy',
             crush: true },   // 가드해도 기력을 크게 깎는다 — 계속 막기만 하면 무너진다
 };
@@ -596,8 +618,8 @@ function stepFighter(f) {
 
 function separate() {
   // 두 장수가 겹치지 않게 밀어낸다 — 붙어서 뚫고 지나가면 결투가 안 된다
-  // 스프라이트 폭이 크다 — 90px대로 붙이면 두 장수가 서로를 뚫고 겹쳐 보인다
-  const d = B.x - P.x, min = 160;
+  // 스프라이트 폭이 월드 250px대다. 이보다 좁게 붙이면 두 장수가 서로를 뚫고 겹친다.
+  const d = B.x - P.x, min = 205;
   if (Math.abs(d) < min) {
     const push = (min - Math.abs(d)) / 2 * sign(d || 1);
     P.x -= push; B.x += push;
@@ -635,7 +657,7 @@ function updateAI() {
   ai.t++;
 
   // 플레이어가 후딜에 걸렸다 → 확정 처벌
-  if (P.state === 'recover' && dist < 250 && ai.react-- <= 0) {
+  if (P.state === 'recover' && dist < 300 && ai.react-- <= 0) {
     if (dist < MOVES.heavy.reach && B.stam > MOVES.heavy.stam && Math.random() < .55) { startMove(B, 'heavy'); return; }
     if (dist < MOVES.thrust.reach) { startMove(B, 'thrust'); return; }
   }
@@ -643,7 +665,7 @@ function updateAI() {
   if (helpless(P) && dist < MOVES.heavy.reach + 30 && B.stam > MOVES.heavy.stam) { startMove(B, 'heavy'); return; }
 
   // 플레이어가 칼을 뽑았다 → 막거나 뺀다
-  if (P.state === 'windup' && dist < 280) {
+  if (P.state === 'windup' && dist < 330) {
     if (ai.react > 0) { ai.react--; }
     else if (Math.random() < diff.guard) {
       B.guardHeld = true;
@@ -657,17 +679,17 @@ function updateAI() {
 
   // 거리 관리 — '닿는 거리'가 기준이다.
   // 여유(margin)를 두는 이유: 판정은 active 프레임에 나는데 그 사이 상대가 움직인다.
-  const MARGIN = 18;
+  const MARGIN = 24;
   const canReach = k => dist <= MOVES[k].reach - MARGIN;
   const inPocket = dist <= MOVES.thrust.reach - MARGIN;   // 가장 긴 기술이 닿는 범위
 
   if (!inPocket) {
     // 아직 못 닿는다 → 붙는다. 멀면 대시로 거리를 지운다
-    if (dist > 360 && B.stam > 22 && Math.random() < diff.aggro * .35) startDash(B, B.dir);
+    if (dist > 420 && B.stam > 22 && Math.random() < diff.aggro * .35) startDash(B, B.dir);
     else { B.vx = B.dir * 3.1; B.state = 'walk'; B.walkClock++; }
     return;
   }
-  if (dist < 172) {                       // 너무 붙었다 → 도끼를 휘두를 공간을 만든다
+  if (dist < 218) {                       // 너무 붙었다 → 도끼를 휘두를 공간을 만든다
     B.vx = -B.dir * 2.4; B.state = 'walk'; B.walkClock++;
     return;
   }
@@ -900,7 +922,9 @@ function drawFighter(f) {
   // f.x 는 논리 중심이고 컷 사각형은 무기 쪽으로 치우쳐 있어서, 그대로 쓰면 게이지가 옆으로 샌다.
   if (f.stun > 6 && f.state !== 'ko') {
     const visCx = f.x + f.dir * (dw * (0.5 - m.anchor) + ox * scale);
-    const w = 84, r = f.stun / STUN_MAX, top = GROUND - dh - 22;
+    // 컷 사각형에 머리 위 여백이 많이 붙은 프레임(피격 포즈 등)이 있어 dh 를 그대로 쓰면
+    // 게이지가 허공에 뜬다 — 실제 키 근처로 상한을 건다.
+    const w = 84, r = f.stun / STUN_MAX, top = GROUND - Math.min(dh, 300) - 16;
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(visCx - w / 2, top, w, 8);
     ctx.fillStyle = r > .75 ? '#ff6a3c' : '#ffd45c'; ctx.fillRect(visCx - w / 2 + 1, top + 1, (w - 2) * r, 6);
@@ -926,14 +950,24 @@ function drawFx() {
       const t = 1 - p.life / p.max, k = 1 / cam.zoom;
       ctx.save(); ctx.globalAlpha = (1 - t) * .85; ctx.translate(p.x, p.y); ctx.scale(p.dir, 1);
       ctx.strokeStyle = '#fff8dc'; ctx.lineCap = 'round';
-      ctx.lineWidth = (p.kind === 'heavy' ? 13 : p.kind === 'line' ? 6 : 9) * k * (1 - t * .5);
-      ctx.beginPath();
-      if (p.kind === 'line') { ctx.moveTo(-40, 0); ctx.lineTo(120 + t * 70, 0); }
-      else {
+      if (p.kind === 'line') {
+        // 찌르기는 균일한 굵기의 선으로 그리면 흰 막대가 화면에 걸린 것처럼 보인다.
+        // 뿌리는 두껍고 끝은 뾰족한 방추형으로 — 그래야 '찔러 나간' 방향이 읽힌다.
+        const tip = 150 + t * 90, back = -50, half = 7 * k * (1 - t * .55);
+        ctx.fillStyle = '#fff8dc';
+        ctx.beginPath();
+        ctx.moveTo(tip, 0);
+        ctx.quadraticCurveTo(back * .3, -half, back, 0);
+        ctx.quadraticCurveTo(back * .3, half, tip, 0);
+        ctx.fill();
+      } else {
+        ctx.lineWidth = (p.kind === 'heavy' ? 13 : 9) * k * (1 - t * .5);
         const r = (p.kind === 'heavy' ? 108 : 82) * (0.85 + t * .35);
+        ctx.beginPath();
         ctx.arc(-14, -6, r, -1.15 + t * .45, 0.55 + t * .45);
+        ctx.stroke();
       }
-      ctx.stroke(); ctx.restore();
+      ctx.restore();
     } else if (p.t === 'num') {
       const t = 1 - p.life / p.max, k = 1 / cam.zoom;
       ctx.globalAlpha = clamp(2 - t * 2.4, 0, 1);
@@ -1019,12 +1053,26 @@ function showResult(kind) {
   phase = 'result';
 }
 
+let touchMode = false;
+let tipTimer = 0;
+function showTip(html, ms = 4200) {
+  const el = $('tip');
+  el.innerHTML = html;
+  el.classList.add('show');
+  clearTimeout(tipTimer);
+  tipTimer = setTimeout(() => el.classList.remove('show'), ms);
+}
+
 function startFight() {
+  if (!assetsReady) return;          // 로딩 중엔 시작 금지
   $('overlay').hidden = true;
   $('ovVs').style.display = '';
   resetMatch();
   phase = 'fight';
   banner('일 기 토', '#ffd45c', 1);
+  showTip(touchMode
+    ? '<b>베기</b>로 두드리고 <b>가드</b>로 막아라 · 맞는 순간 가드 = <b>저스트가드</b>'
+    : '<b>J</b> 베기 · <b>K</b> 강베기 · <b>L</b> 찌르기 · <b>S</b> 가드 — 맞는 순간 가드가 <b>저스트가드</b>', 5200);
 }
 
 // 난이도 선택
@@ -1063,8 +1111,8 @@ syncUnit();
 // 조작계 감지는 '실제로 무엇을 썼는가'로 — 로드 시점의 미디어쿼리만 믿으면
 // 태블릿·에뮬레이터·터치 가능한 노트북에서 틀린 UI가 뜬다.
 const padEl = $('pad'), keysEl = document.querySelector('.keys');
-function useTouch() { padEl.classList.remove('hide'); keysEl.style.display = 'none'; }
-function useKeys() { padEl.classList.add('hide'); keysEl.style.display = ''; }
+function useTouch() { touchMode = true; padEl.classList.remove('hide'); keysEl.style.display = 'none'; }
+function useKeys() { touchMode = false; padEl.classList.add('hide'); keysEl.style.display = ''; }
 addEventListener('touchstart', useTouch, { passive: true, once: true });
 addEventListener('keydown', useKeys, { once: true });
 if (matchMedia('(pointer:coarse)').matches) useTouch(); else useKeys();
@@ -1085,11 +1133,22 @@ function loop(now) {
   render();
 }
 
-loadAssets().then(() => {
-  resetMatch();
-  render();
-  requestAnimationFrame(loop);
-});
+// 루프는 '에셋을 기다리지 않고' 먼저 돈다. 예전엔 로드 완료 후에야 시작해서,
+// 다 받기 전에 결투를 누르면 phase 만 fight 로 바뀌고 화면은 검은 채 멈췄다.
+resetMatch();
+requestAnimationFrame(loop);
+
+const goBtn = $('ovGo');
+goBtn.disabled = true;
+goBtn.textContent = '불러오는 중 0%';
+const restAssets = Object.keys(ASSET_SRC).filter(k => !CORE_ASSETS.includes(k));
+loadAssets(CORE_ASSETS, p => { goBtn.textContent = '불러오는 중 ' + Math.round(p * 100) + '%'; })
+  .then(() => {
+    assetsReady = true;
+    goBtn.disabled = false;
+    goBtn.textContent = '결 투';
+    loadAssets(restAssets);          // 나머지는 뒤에서 계속 받는다
+  });
 </script>
 </body>
 </html>
