@@ -1,0 +1,67 @@
+{
+  "name": "lu_bu",
+  "source": "assets/generals/fullbody_v6_aligned/lu_bu.webp",
+  "width": 477,
+  "height": 620,
+  "ground": 620,
+  "faces": 1,
+  "parts": [
+    {
+      "name": "legBack",
+      "file": "legBack.webp",
+      "w": 186,
+      "h": 215,
+      "px": 126,
+      "py": 24,
+      "ax": -48.5,
+      "ay": -211
+    },
+    {
+      "name": "legFront",
+      "file": "legFront.webp",
+      "w": 185,
+      "h": 235,
+      "px": 58,
+      "py": 24,
+      "ax": 46.5,
+      "ay": -211
+    },
+    {
+      "name": "upper",
+      "file": "upper.webp",
+      "w": 477,
+      "h": 580,
+      "px": 238,
+      "py": 409,
+      "ax": -0.5,
+      "ay": -211
+    },
+    {
+      "name": "head",
+      "file": "head.webp",
+      "w": 252,
+      "h": 188,
+      "px": 126,
+      "py": 170,
+      "ax": -0.5,
+      "ay": -416
+    }
+  ],
+  "markers": {
+    "weaponTip": {
+      "bone": "upper",
+      "x": 47,
+      "y": 62
+    },
+    "weaponButt": {
+      "bone": "upper",
+      "x": 47,
+      "y": 558
+    },
+    "hand": {
+      "bone": "upper",
+      "x": 85,
+      "y": 341
+    }
+  }
+}

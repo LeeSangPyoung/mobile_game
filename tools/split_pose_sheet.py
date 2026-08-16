@@ -31,6 +31,34 @@ BASELINE = 880      # 발끝 y — 모든 컷 동일
 H_TARGET = 620      # 캐릭터 키(px) — 기준 컷 기준
 
 
+def erase_grid_lines(rgb, key):
+    """시트에 그려진 격자선을 배경색으로 지운다.
+
+    모델이 컷을 구분하려고 흰 선을 긋는 경우가 있다(여포 시트가 그랬다).
+    선은 이미지 전체를 가로지르므로 그대로 두면 20개 컷이 한 덩어리로 붙는다.
+    '가로 한 줄이 거의 다 전경'인 행/열만 골라 배경으로 되돌린다.
+    """
+    # '전경 비율'로 찾으면 캐릭터를 지나는 행까지 걸린다(여포 시트에서 385줄 오검출).
+    # 격자선은 **흰색**이라는 점으로 판정한다.
+    a = rgb.astype(int)
+    white = (a[..., 0] > 195) & (a[..., 1] > 195) & (a[..., 2] > 195)
+    h, w = white.shape
+    rows = [y for y in range(h) if white[y].mean() > 0.5]
+    cols = [x for x in range(w) if white[:, x].mean() > 0.5]
+    if not rows and not cols:
+        return rgb, key, 0
+    out = rgb.copy()
+    bg = np.median(rgb[key], axis=0).astype(rgb.dtype) if key.any() else np.array([0, 255, 0])
+    pad = 2                       # 선 가장자리의 반투명 픽셀까지 함께 지운다
+    for y in rows:
+        out[max(0, y - pad):y + pad + 1, :] = bg
+    for x in cols:
+        out[:, max(0, x - pad):x + pad + 1] = bg
+    a = out.astype(int)
+    r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    return out, (g > 120) & (g - r > 60) & (g - b > 60), len(rows) + len(cols)
+
+
 def chroma_key(rgb):
     """단색 초록 배경을 뺀다. 없으면 None.
 
@@ -42,6 +70,10 @@ def chroma_key(rgb):
     key = (g > 120) & (g - r > 60) & (g - b > 60)
     if key.mean() < 0.25:
         return None
+    rgb2, key, nlines = erase_grid_lines(rgb, key)
+    if nlines:
+        print(f'  · 격자선 {nlines}줄 감지 → 배경으로 지움')
+        rgb[:] = rgb2
     fg = ~key
     fg = ndimage.binary_opening(fg, np.ones((3, 3)))      # 초록 위 잔점 제거
     fg = ndimage.binary_closing(fg, np.ones((5, 5)))

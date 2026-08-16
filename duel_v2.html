@@ -149,6 +149,11 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 .go:disabled{cursor:progress;filter:grayscale(.7) brightness(.62);letter-spacing:1px}
 .go:disabled:active{transform:none;box-shadow:0 5px 0 #4a2a06,0 10px 26px #000a}
 .go:focus-visible,.pick:focus-visible{outline:3px solid #9de2ff;outline-offset:3px}
+#pickWrap{display:grid;gap:8px;margin:14px 0 4px}
+.pickRow{display:flex;align-items:center;gap:10px;justify-content:center}
+.pickRow span{width:56px;text-align:right;color:#c9a86a;font-size:13px;font-weight:800}
+.pickRow select{flex:0 1 180px;font:inherit;font-weight:700;padding:7px 10px;border-radius:6px;
+  border:2px solid #6b4f26;background:#241809;color:#f0dcb4}
 .keys{margin-top:14px;font-size:clamp(10px,1.5vw,12px);color:#b79a6d;line-height:1.9}
 .keys b{color:#ffd45c}
 
@@ -214,6 +219,10 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
         <button class="pick" data-diff="easy">쉬움</button>
         <button class="pick on" data-diff="normal">보통</button>
         <button class="pick" data-diff="hard">어려움</button>
+      </div>
+      <div id="pickWrap">
+        <div class="pickRow"><span>내 장수</span><select id="pickP"></select></div>
+        <div class="pickRow"><span>상 대</span><select id="pickB"></select></div>
       </div>
       <button class="go" id="ovGo">결 투</button>
       <div class="keys">
@@ -328,7 +337,48 @@ const ASSET_SRC = {
   hStunned:   './assets/arcade_duel/hua_xiong_states/stunned.webp?v=6',
   hKoFall:    './assets/arcade_duel/hua_xiong_states/ko_fall.webp?v=6',
   hKoDown:    './assets/arcade_duel/hua_xiong_states/ko_down.webp?v=6',
+
 };
+
+// 20컷 완본을 갖춘 장수를 폴더 하나로 불러온다.
+// 조운·화웅은 예전 방식(에셋 키를 코드에 나열)으로 남아 있지만,
+// 앞으로 추가되는 장수는 이 경로만 쓴다 — 코드 편집 0줄.
+const FULL_POSES = ['idle', 'walk1', 'walk2', 'walk3',
+  'slash_windup', 'slash_impact', 'slash_recovery',
+  'thrust_windup', 'thrust_impact', 'thrust_recovery',
+  'heavy_windup', 'heavy_impact', 'heavy_recovery',
+  'guard_ready', 'guard_just', 'hurt_light', 'hurt_heavy',
+  'stunned', 'ko_fall', 'ko_down'];
+
+async function loadGeneral(gid, side, opts = {}) {
+  const dir = `./assets/arcade_duel/${gid}_states`;
+  const pre = 'g' + gid.replace(/[^a-z]/g, '') + '_';
+  await Promise.all(FULL_POSES.map(n => new Promise(res => {
+    const img = new Image();
+    img.onload = img.onerror = () => { A[pre + n] = img; res(); };
+    img.src = `${dir}/${n}.webp?v=1`;
+    POSE_KEY[pre + n] = n;
+  })));
+  POSE_SET[side] = {
+    idle: pre + 'idle', walk: [pre + 'walk1', pre + 'walk2', pre + 'walk3'],
+    guard: pre + 'guard_ready', guardJust: pre + 'guard_just',
+    hurtL: pre + 'hurt_light', hurtH: pre + 'hurt_heavy', stunned: pre + 'stunned',
+    koFall: pre + 'ko_fall', koDown: pre + 'ko_down',
+    light: [pre + 'slash_windup', pre + 'slash_impact', pre + 'slash_recovery'],
+    thrust: [pre + 'thrust_windup', pre + 'thrust_impact', pre + 'thrust_recovery'],
+    heavy: [pre + 'heavy_windup', pre + 'heavy_impact', pre + 'heavy_recovery'],
+  };
+  // 창끝 좌표와 실측 몸높이 — 빼먹으면 아우라가 허공에서 나고 덩치가 어긋난다
+  try {
+    const j = await (await fetch(`${dir}/poses.json?v=1`)).json();
+    for (const k in (j.poses || {})) POSE_TIP[pre.charAt(0) + gid + ':' + k] = j.poses[k];
+    if (j.bodyH) POSE_BODY_H[side] = j.bodyH;
+    TIP_NS[side] = pre.charAt(0) + gid;
+  } catch (e) { console.warn(gid + ' 좌표 로드 실패', e); }
+  CHAR_SIZE[side] = opts.size || 1.0;
+  CHAR_FEET[side] = opts.feet || { cx: STATE_CX, w: 320 };
+  return true;
+}
 
 // 캐릭터별 상태 → 에셋 키. 없는 항목은 null 이고, 그 상태는 기존 시트가 맡는다.
 const POSE_SET = {
@@ -361,6 +411,7 @@ for (const [who, kind, dir] of [['s', 'player', 'zhao_yun_states'], ['h', 'boss'
     .catch(() => {});
 }
 // 에셋 키 → poses.json 안의 이름. 앞글자(s/h)가 캐릭터를 가른다.
+const TIP_NS = { player: 's', boss: 'h' };   // 창끝 좌표의 캐릭터별 이름공간
 const POSE_KEY = {
   sIdle:'idle', sGuard:'guard_ready', sGuardJust:'guard_just',
   sHurtLight:'hurt_light', sHurtHeavy:'hurt_heavy', sStunned:'stunned',
@@ -400,6 +451,26 @@ Promise.all([import('./duel/rig.js'), import('./duel/clips.js')])
       lib.loadRig('./assets/duel_rig/hua_xiong', '3'),
     ]);
     RIGS.player = zy; RIGS.boss = hx;
+    // 실험: ?boss=<장수id> 로 상대를 갈아 끼운다.
+    // 전신 아트 한 장으로 자동 생성한 리그가 실제로 쓸 만한지 확인하는 통로 —
+    // 그려진 포즈가 없으니 공격도 리그가 흉내낸다.
+    // ?boss=<장수id> — 20컷 완본이 있으면 폴더만 읽어 갈아 끼운다(코드 편집 없음).
+    const alt = new URLSearchParams(location.search).get('boss');
+    if (alt) {
+      const SIZES = { lu_bu: 1.10, cao_cao: 1.02, hua_xiong: 1.14 };
+      const ok = await loadGeneral(alt, 'boss', { size: SIZES[alt] || 1.0 })
+        .then(() => ready(A['g' + alt.replace(/[^a-z]/g, '') + '_idle']))
+        .catch(() => false);
+      if (ok) { B.name = alt; syncHud(true); }
+      else {
+        // 완본이 없다 — 전신 아트로 자동 생성한 리그로라도 세운다
+        try {
+          RIGS.boss = await lib.loadRig(`./assets/duel_rig/${alt}`, '1');
+          POSE_SET.boss = {}; CHAR_FEET.boss = { cx: STATE_CX, w: 300 };
+          B.name = alt; syncHud(true);
+        } catch (e) { console.warn('대체 보스 로드 실패', alt, e); }
+      }
+    }
   })
   .catch(e => console.warn('리그 로드 실패 — 기존 시트로 계속한다', e));
 
@@ -541,9 +612,16 @@ let phase = 'title';          // title | fight | paused | over
 let fx = [], dust = [];
 let stats = { hits: 0, guards: 0, justs: 0, clashes: 0, taken: 0 };
 
+// 선택한 장수 — 시작 화면에서 고른 값. 없으면 기본(조운·화웅).
+const SIDE_INFO = {
+  player: { name: '조운', war: 96, hp: 120 },
+  boss:   { name: '화웅', war: 88, hp: 150 },
+};
+
 function resetMatch() {
-  P = makeFighter('player', { name: '조운', war: 96, x: STAGE_W / 2 - 190, dir: 1, hp: 120 });
-  B = makeFighter('boss',   { name: '화웅', war: 88, x: STAGE_W / 2 + 190, dir: -1, hp: 150 });
+  const pi = SIDE_INFO.player, bi = SIDE_INFO.boss;
+  P = makeFighter('player', { name: pi.name, war: pi.war, x: STAGE_W / 2 - 190, dir: 1, hp: pi.hp });
+  B = makeFighter('boss',   { name: bi.name, war: bi.war, x: STAGE_W / 2 + 190, dir: -1, hp: bi.hp });
   cam = { x: STAGE_W / 2, zoom: 1, shakeX: 0, shakeY: 0, punch: 0 };
   frame = 0; hitStop = 0; slowmo = 0; hap = 0; clockFrames = 60 * FPS;
   fx = []; dust = [];
@@ -980,10 +1058,10 @@ function updateAI() {
   const dz = P.z - B.z;
   if (Math.abs(dz) > Z_HIT * 0.55) {
     B.vz = lerp(B.vz, sign(dz) * (1.5 + diff.aggro * 1.3), 0.3);
-    if (Math.abs(dz) > Z_HIT * 1.6) {          // 많이 어긋났으면 접근보다 정렬이 먼저
-      B.state = 'walk'; B.walkClock++;
-      return;
-    }
+    // 깊이로 움직이면 그것도 '걷는' 것이다. 이 표시를 빠뜨리면 대기 자세인 채로
+    // 미끄러진다 — 다리가 멈춘 그림이 옆으로 이동만 하니 종잇장처럼 보인다.
+    B.state = 'walk'; B.walkClock++;
+    if (Math.abs(dz) > Z_HIT * 1.6) return;    // 많이 어긋났으면 접근보다 정렬이 먼저
   } else B.vz = lerp(B.vz, 0, 0.35);
 
   // 거리 관리 — '닿는 거리'가 기준이다.
@@ -1174,9 +1252,13 @@ function statePose(f) {
       if (f.guardHeld && !busy(f) && !helpless(f))
         return pick(f.guardT <= GUARD_JUST ? (set.guardJust || set.guard) : set.guard);
       if (f.state === 'idle') return pick(set.idle);
-      // 걷기 전용 그림이 없으면 대기 자세로 대신한다(리그가 못 맡을 때의 최후 수단)
-      if (f.state === 'walk' || f.state === 'dash' || f.state === 'backstep')
+      if (f.state === 'walk' || f.state === 'dash' || f.state === 'backstep') {
+        // 걷기 컷이 있으면 보폭에 맞춰 넘긴다 — 리그가 필요 없어지는 지점.
+        // 발이 미끄러지지 않도록 이동 거리(gait)로 프레임을 고른다.
+        if (Array.isArray(set.walk))
+          return pick(set.walk[Math.floor((f.gait || 0) / 34) % set.walk.length]);
         return pick(set.walk || set.idle);
+      }
       return null;
   }
 }
@@ -1237,7 +1319,7 @@ function drawShadow(f) {
 
 // 지금 그려진 포즈의 창끝을 무대 좌표로 — 발광·궤적이 붙는 지점.
 function tipOf(f) {
-  const t = POSE_TIP[(f.poseKey || '').charAt(0) + ':' + POSE_KEY[f.poseKey]];
+  const t = POSE_TIP[(TIP_NS[f.kind] || 's') + ':' + POSE_KEY[f.poseKey]];
   if (!t) return null;
   const s = 1;
   const zs = spriteScale(f) * zScale(f);
@@ -1277,8 +1359,12 @@ function rigClipFor(f) {
   // 가드 그림이 없는 캐릭터(화웅)는 리그가 맡는다.
   // 안 그러면 '가드할 때만' 옛 시트로 새서 그 순간 덩치가 바뀐다.
   if (f.guardHeld) return set.guard ? null : 'guard';
+  // 그려진 공격 포즈가 없으면 공격도 리그가 흉내낸다(전신 아트만 있는 장수)
+  if (busy(f) && f.move && !set[f.move.sheet]) return f.move.sheet;
   if (busy(f) || helpless(f)) return null;
-  if (f.state === 'walk' || f.state === 'dash' || f.state === 'backstep') return 'walk';
+  // 걷기 그림이 있으면 그림이 우선이다. 리그는 어디까지나 '그림이 없을 때'의 대체물.
+  if (f.state === 'walk' || f.state === 'dash' || f.state === 'backstep')
+    return set.walk ? null : 'walk';
   return null;   // 대기는 그려진 idle 한 장이면 충분하다
 }
 
@@ -1629,10 +1715,42 @@ document.querySelectorAll('#ovDiff .pick').forEach(b => {
     diff = DIFF[b.dataset.diff];
   });
 });
+// ── 장수 선택 ───────────────────────────────────────────────────
+// 20컷 완본은 폴더만 있으면 뜬다. 목록은 generals.json 이 알려준다.
+let ROSTER = [];
+const DEFAULT_SIDE = { player: 'zhao_yun', boss: 'hua_xiong' };
+fetch('./assets/arcade_duel/generals.json?v=1').then(r => r.json()).then(list => {
+  ROSTER = list;
+  for (const [sel, side] of [['pickP', 'player'], ['pickB', 'boss']]) {
+    const el = $(sel);
+    el.innerHTML = list.map(g =>
+      `<option value="${g.id}"${g.id === DEFAULT_SIDE[side] ? ' selected' : ''}>` +
+      `${g.name}${g.full ? '' : ' (부분)'}</option>`).join('');
+  }
+}).catch(() => { $('pickWrap').style.display = 'none'; });
+
+// 고른 장수를 실제로 불러온다. 완본이 아니면 원래 등록(조운·화웅)을 그대로 쓴다.
+async function applyPicks() {
+  if (!ROSTER.length) return;
+  for (const [sel, side] of [['pickP', 'player'], ['pickB', 'boss']]) {
+    const gid = $(sel).value;
+    const g = ROSTER.find(x => x.id === gid);
+    if (!g || !g.full) continue;                    // 부분 세트는 기존 경로 유지
+    await loadGeneral(gid, side, { size: g.size });
+    // resetMatch() 가 기본값으로 되돌리므로 여기 저장해 둔다
+    SIDE_INFO[side].name = g.name;
+    if (g.war) SIDE_INFO[side].war = g.war;
+    if (g.hp) SIDE_INFO[side].hp = g.hp;
+  }
+}
+
 // 오버레이 버튼은 하나 — 문맥(시작/재개/재시작)에 따라 갈린다
-$('ovGo').addEventListener('click', () => {
-  if (phase === 'paused') { $('overlay').hidden = true; phase = 'fight'; }
-  else startFight();
+$('ovGo').addEventListener('click', async () => {
+  if (phase === 'paused') { $('overlay').hidden = true; phase = 'fight'; return; }
+  const btn = $('ovGo'), label = btn.textContent;
+  btn.disabled = true; btn.textContent = '준비 중';
+  try { await applyPicks(); } finally { btn.disabled = false; btn.textContent = label; }
+  startFight();
 });
 
 function togglePause() {

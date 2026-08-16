@@ -1,0 +1,99 @@
+<!doctype html><meta charset="utf-8">
+<title>일기토 장수 레퍼런스</title>
+<style>
+ :root{--gold:#ffd45c}
+ *{box-sizing:border-box}
+ body{margin:0;background:#100b07;color:#e9dcc2;
+   font:14px/1.6 system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif}
+ header{position:sticky;top:0;z-index:5;background:#140e08f2;backdrop-filter:blur(6px);
+   padding:14px 20px;border-bottom:1px solid #3a2a16}
+ h1{margin:0 0 4px;font-size:18px;color:var(--gold)}
+ .sub{color:#a28f6d;font-size:12.5px}
+ .bar{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+ input,select{font:inherit;padding:6px 10px;border-radius:6px;border:1px solid #6b4f26;
+   background:#241809;color:#f0dcb4}
+ .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+   gap:14px;padding:18px 20px 60px}
+ .card{background:#1b120a;border:1px solid #3d2c18;border-radius:10px;overflow:hidden;
+   display:flex;flex-direction:column}
+ .card img{width:100%;aspect-ratio:1;object-fit:contain;background:#0b3d0b;display:block}
+ .meta{padding:8px 10px}
+ .nm{font-weight:800;color:#fff3c4}
+ .id{color:#9a8664;font-size:11.5px;font-family:ui-monospace,monospace}
+ .rk{float:right;color:var(--gold);font-weight:800;font-size:12px}
+ .btns{display:flex;gap:6px;padding:0 10px 10px}
+ .btns a,.btns button{flex:1;text-align:center;font:inherit;font-size:12px;font-weight:700;
+   padding:6px 4px;border-radius:6px;border:1px solid #6b4f26;background:#2a1c0d;
+   color:#f0dcb4;text-decoration:none;cursor:pointer}
+ .btns a:hover,.btns button:hover{background:#3a2712}
+ .top70{outline:2px solid #7a5a1e}
+ dialog{background:#1b120a;color:#e9dcc2;border:1px solid #6b4f26;border-radius:10px;
+   max-width:920px;width:94vw}
+ dialog h3{margin:12px 14px;font-size:14px;color:var(--gold)}
+ dialog textarea{width:calc(100% - 28px);height:58vh;margin:0 14px;background:#0e0a06;
+   color:#dcc9a0;border:1px solid #3d2c18;border-radius:6px;padding:10px;
+   font:12px/1.55 ui-monospace,monospace}
+ dialog .row{display:flex;gap:8px;padding:12px 14px}
+ dialog button{font:inherit;font-weight:700;padding:8px 14px;border-radius:6px;
+   border:1px solid #6b4f26;background:#2a1c0d;color:#f0dcb4;cursor:pointer}
+</style>
+<header>
+  <h1>일기토 장수 레퍼런스</h1>
+  <div class="sub"><b>이미지 받기</b>로 레퍼런스를 내려받아 GPT에 첨부하고, <b>프롬프트</b>를 복사해 붙여넣으세요.
+     전투력 상위 70명은 금색 테두리입니다.</div>
+  <div class="bar">
+    <input id="q" placeholder="이름 · id 검색" size="18">
+    <select id="filt">
+      <option value="all">전체</option>
+      <option value="top">전투력 상위 70</option>
+    </select>
+    <span id="cnt" class="sub"></span>
+  </div>
+</header>
+<div class="grid" id="grid"></div>
+<dialog id="dlg">
+  <h3 id="dlgT"></h3>
+  <textarea id="dlgX" readonly></textarea>
+  <div class="row">
+    <button id="copyBtn">프롬프트 복사</button>
+    <button onclick="document.getElementById('dlg').close()">닫기</button>
+  </div>
+</dialog>
+<script>
+const DATA = [{"id": "lu_bu", "name": "여포", "rank": 1}, {"id": "cao_cao", "name": "조조", "rank": 2}, {"id": "guan_yu", "name": "관우", "rank": 3}, {"id": "zhang_fei", "name": "장비", "rank": 4}, {"id": "zhao_yun", "name": "조운", "rank": 5}, {"id": "taishi_ci", "name": "태사자", "rank": 6}, {"id": "ma_chao", "name": "마초", "rank": 7}, {"id": "dian_wei", "name": "전위", "rank": 8}, {"id": "xu_chu", "name": "허저", "rank": 9}, {"id": "liu_bei", "name": "유비", "rank": 10}, {"id": "zhang_liao", "name": "장료", "rank": 11}, {"id": "huang_zhong", "name": "황충", "rank": 12}, {"id": "yan_liang", "name": "안량", "rank": 13}, {"id": "gan_ning", "name": "감녕", "rank": 14}, {"id": "sima_yi", "name": "사마의", "rank": 15}, {"id": "xu_huang", "name": "서황", "rank": 16}, {"id": "wen_chou", "name": "문추", "rank": 17}, {"id": "zhou_tai", "name": "주태", "rank": 18}, {"id": "sun_ce", "name": "손책", "rank": 19}, {"id": "cao_zhen", "name": "조진", "rank": 20}, {"id": "cao_zhang", "name": "조창", "rank": 21}, {"id": "wei_yan", "name": "위연", "rank": 22}, {"id": "zhang_he", "name": "장합", "rank": 23}, {"id": "jiang_wei", "name": "강유", "rank": 25}, {"id": "xiahou_yuan", "name": "하후연", "rank": 26}, {"id": "xiahou_dun", "name": "하후돈", "rank": 27}, {"id": "dong_zhuo", "name": "동탁", "rank": 28}, {"id": "lu_xun", "name": "육손", "rank": 29}, {"id": "cao_ren", "name": "조인", "rank": 30}, {"id": "deng_ai", "name": "등애", "rank": 31}, {"id": "sun_jian", "name": "손견", "rank": 32}, {"id": "yue_jin", "name": "악진", "rank": 33}, {"id": "xiahou_ba", "name": "하후패", "rank": 34}, {"id": "zhou_yu", "name": "주유", "rank": 35}, {"id": "meng_huo", "name": "맹획", "rank": 36}, {"id": "hua_xiong", "name": "화웅", "rank": 37}, {"id": "guan_xing", "name": "관흥", "rank": 38}, {"id": "ma_teng", "name": "마등", "rank": 39}, {"id": "li_jue", "name": "이각", "rank": 40}, {"id": "zhang_xiu", "name": "장수", "rank": 41}, {"id": "gongsun_zan", "name": "공손찬", "rank": 42}, {"id": "ma_dai", "name": "마대", "rank": 43}, {"id": "pan_zhang", "name": "반장", "rank": 45}, {"id": "zhang_ren", "name": "장임", "rank": 46}, {"id": "zhuge_liang", "name": "제갈량", "rank": 47}, {"id": "huang_gai", "name": "황개", "rank": 48}, {"id": "sun_quan", "name": "손권", "rank": 49}, {"id": "yu_jin", "name": "우금", "rank": 50}, {"id": "guo_huai", "name": "곽회", "rank": 51}, {"id": "cao_xiu", "name": "조휴", "rank": 52}, {"id": "man_chong", "name": "만총", "rank": 53}, {"id": "wang_ping", "name": "왕평", "rank": 54}, {"id": "xu_sheng", "name": "서성", "rank": 56}, {"id": "yuan_shao", "name": "원소", "rank": 57}, {"id": "guo_si", "name": "곽사", "rank": 58}, {"id": "cao_hong", "name": "조홍", "rank": 59}, {"id": "cao_pi", "name": "조비", "rank": 60}, {"id": "ding_feng", "name": "정봉", "rank": 61}, {"id": "han_dang", "name": "한당", "rank": 62}, {"id": "ling_tong", "name": "능통", "rank": 63}, {"id": "cheng_pu", "name": "정보", "rank": 64}, {"id": "zhang_bao", "name": "장포", "rank": 65}, {"id": "li_dian", "name": "이전", "rank": 66}, {"id": "zhu_ran", "name": "주연", "rank": 67}, {"id": "yan_yan", "name": "엄안", "rank": 68}, {"id": "pang_tong", "name": "방통", "rank": 69}, {"id": "guan_ping", "name": "관평", "rank": 71}, {"id": "lu_su", "name": "노숙", "rank": 72}, {"id": "zhang_jiao", "name": "장각", "rank": 73}, {"id": "zhong_hui", "name": "종회", "rank": 74}, {"id": "zhu_huan", "name": "주환", "rank": 75}, {"id": "li_yan", "name": "이엄", "rank": 76}, {"id": "zhuge_zhan", "name": "제갈첨", "rank": 77}, {"id": "tian_feng", "name": "전풍", "rank": 78}, {"id": "guan_suo", "name": "관색", "rank": 79}, {"id": "gao_lan", "name": "고람", "rank": 80}, {"id": "jia_xu", "name": "가후", "rank": 81}, {"id": "fa_zheng", "name": "법정", "rank": 82}, {"id": "liu_ye", "name": "유엽", "rank": 83}, {"id": "guo_jia", "name": "곽가", "rank": 84}, {"id": "zhang_ji", "name": "장제", "rank": 85}, {"id": "zhang_zhao", "name": "장소", "rank": 87}, {"id": "he_qi", "name": "하제", "rank": 88}, {"id": "quan_cong", "name": "전종", "rank": 89}, {"id": "liu_feng", "name": "유봉", "rank": 90}, {"id": "liao_hua", "name": "요화", "rank": 91}, {"id": "zhou_cang", "name": "주창", "rank": 92}, {"id": "meng_da", "name": "맹달", "rank": 94}, {"id": "yuan_tan", "name": "원담", "rank": 95}, {"id": "xun_yu", "name": "순욱", "rank": 96}, {"id": "jiang_qin", "name": "장흠", "rank": 97}, {"id": "zhu_zhi", "name": "주치", "rank": 98}, {"id": "fei_yi", "name": "비의", "rank": 100}, {"id": "jiang_wan", "name": "장완", "rank": 101}, {"id": "yuan_shang", "name": "원상", "rank": 102}, {"id": "ju_shou", "name": "저수", "rank": 103}, {"id": "han_sui", "name": "한수", "rank": 104}, {"id": "zhang_lu", "name": "장로", "rank": 105}, {"id": "ji_ling", "name": "기령", "rank": 106}, {"id": "gongsun_kang", "name": "공손강", "rank": 107}, {"id": "cao_ang", "name": "조앙", "rank": 108}, {"id": "cao_rui", "name": "조예", "rank": 109}, {"id": "liu_biao", "name": "유표", "rank": 110}, {"id": "zhong_yao", "name": "종요", "rank": 111}, {"id": "han_hao", "name": "한호", "rank": 112}, {"id": "ma_liang", "name": "마량", "rank": 113}, {"id": "wang_yun", "name": "왕윤", "rank": 114}, {"id": "zuo_ci", "name": "좌자", "rank": 115}, {"id": "xun_you", "name": "순유", "rank": 116}, {"id": "zhuge_jin", "name": "제갈근", "rank": 117}, {"id": "hua_tuo", "name": "화타", "rank": 118}, {"id": "yuan_shu", "name": "원술", "rank": 119}, {"id": "cao_shuang", "name": "조상", "rank": 120}, {"id": "lu_qian", "name": "여건", "rank": 121}, {"id": "mao_jie", "name": "모개", "rank": 122}, {"id": "zhang_hong", "name": "장굉", "rank": 123}, {"id": "bu_zhi", "name": "보즐", "rank": 124}, {"id": "yu_fan", "name": "우번", "rank": 126}, {"id": "dong_yun", "name": "동윤", "rank": 127}, {"id": "huang_quan", "name": "황권", "rank": 128}, {"id": "mi_zhu", "name": "미축", "rank": 129}, {"id": "li_hui", "name": "이회", "rank": 130}, {"id": "shen_pei", "name": "심배", "rank": 131}, {"id": "xin_pi", "name": "신비", "rank": 132}, {"id": "kong_rong", "name": "공융", "rank": 133}, {"id": "tao_qian", "name": "도겸", "rank": 134}, {"id": "liu_yu", "name": "유우", "rank": 135}, {"id": "yu_ji", "name": "우길", "rank": 136}, {"id": "cao_xing", "name": "조흥", "rank": 137}, {"id": "li_ru", "name": "이유", "rank": 139}, {"id": "cheng_yu", "name": "정욱", "rank": 140}, {"id": "cao_zhi", "name": "조식", "rank": 141}, {"id": "zhang_song", "name": "장송", "rank": 142}, {"id": "ma_su", "name": "마속", "rank": 143}, {"id": "liu_zhang", "name": "유장", "rank": 144}, {"id": "jian_yong", "name": "간옹", "rank": 145}, {"id": "sun_qian", "name": "손건", "rank": 146}, {"id": "diao_chan", "name": "초선", "rank": 147}, {"id": "guo_tu", "name": "곽도", "rank": 150}, {"id": "feng_ji", "name": "봉기", "rank": 151}, {"id": "liu_shan", "name": "유선", "rank": 152}, {"id": "he_jin", "name": "하진", "rank": 153}];
+const P1 = "The attached image is my character reference: {NAME}, a Three Kingdoms general.\nStudy it carefully — same face, same helmet, same armor pattern and colors,\nsame cape, same weapon. Chibi proportions, ornate detailed armor,\npainterly game art style.\n\nDraw this SAME character in 10 poses on ONE image, numbered 1 to 10:\n\n1  IDLE — side-on combat stance, weapon held ready, calm and watchful.\n   In this pose the weapon must NOT touch the ground.\n2  WALK 1 — mid-stride, front foot planting, rear foot lifted behind.\n3  WALK 2 — mid-stride, both legs passing each other, body at its highest.\n4  WALK 3 — mid-stride, rear foot planting, front foot lifted forward.\n5  SLASH WINDUP — weapon pulled back over the rear shoulder, torso coiled\n   away, weight on the back leg.\n6  SLASH IMPACT — weapon swept forward through a horizontal arc at full\n   extension, torso rotated into the swing, front foot planted hard.\n7  SLASH RECOVERY — just after the swing, weapon low and past the body,\n   torso over-rotated, off balance.\n8  THRUST WINDUP — weapon drawn back beside the hip, elbow behind, stance\n   low and compressed, aiming forward.\n9  THRUST IMPACT — deep lunge, weapon driven straight forward at maximum\n   reach, back leg stretched far behind, body a straight line.\n10 THRUST RECOVERY — pulling the weapon back, front leg still forward,\n   weight settling, still extended and open.\n\nSTRICT RULES\n- Background: solid pure green (#00FF00), completely flat, no gradient,\n  no texture, no shadow, no ground.\n- ALL figures at the SAME size and SAME scale. Do not vary the character size\n  between cells. Draw them as LARGE as the grid allows — I need detail.\n- Arrange them as 2 rows x 5 columns.\n- Do NOT draw grid lines, frames or separators between cells. Leave plain\n  green space between figures.\n- Clear empty green space between figures. Nothing may touch or overlap a\n  neighbour, and nothing may be cut off at the image edge — especially the\n  weapon, the cape and the helmet.\n- Every figure faces RIGHT and is seen from the SIDE (side-on combat view,\n  NOT front-facing). The reference image is front-facing; copy only the\n  character design, not that camera angle.\n- Character only. No slash trails, no motion blur, no impact effects, no dust,\n  no shadows, no background elements.\n- Identical costume in every pose: same face, same helmet, same armor pattern,\n  same cape, same weapon.", P2 = "The attached image is my character reference: {NAME}, a Three Kingdoms general.\nStudy it carefully — same face, same helmet, same armor pattern and colors,\nsame cape, same weapon. Chibi proportions, ornate detailed armor,\npainterly game art style.\n\nThis is the SECOND batch for the same character. Keep the exact same costume,\nthe same size and the same framing as the first batch.\n\nDraw 10 more poses on ONE image, numbered 11 to 20:\n\n11 HEAVY WINDUP — weapon raised high overhead with both hands, body\n   stretched upward and leaning back. The most telegraphed wind-up.\n12 HEAVY IMPACT — weapon smashed down through a vertical arc, ending near\n   the ground, body dropped into a deep crouch, full force committed.\n13 HEAVY RECOVERY — weapon resting on the ground, body bent forward over it,\n   slow to recover, wide open.\n14 GUARD — crouched low and side-on, weapon shaft held across the chest as\n   a barrier, head tucked, braced.\n15 PARRY — the instant of deflecting a blow: weapon snapped outward, arms\n   extended, torso twisting into the block, head up, defiant.\n16 HURT LIGHT — upper body recoils backward, head snapped back, off arm\n   flying up, both feet still planted, pained grimace.\n17 HURT HEAVY — whole body thrown backward and bent at the waist, head flung\n   far back, arms flung outward, weapon nearly slipping, front foot lifted\n   off the ground. Maximum recoil.\n18 STUNNED — slumped FORWARD, knees buckled, shoulders dropped, head hanging,\n   dazed, arms limp, weapon dragging on the ground. About to collapse.\n19 KO FALL — mid-fall after a fatal blow, body tipped backward about 45\n   degrees, feet off the ground, arms thrown up, the weapon flying loose out\n   of the hands, cape streaming upward.\n20 KO DOWN — collapsed on the ground, body lying horizontally on its back,\n   limbs sprawled, eyes closed, the weapon lying separately beside the body.\n   This is the only pose where the body is horizontal.\n\nSTRICT RULES\n- Background: solid pure green (#00FF00), completely flat, no gradient,\n  no texture, no shadow, no ground.\n- ALL figures at the SAME size and SAME scale. Do not vary the character size\n  between cells. Draw them as LARGE as the grid allows — I need detail.\n- Arrange them as 2 rows x 5 columns.\n- Do NOT draw grid lines, frames or separators between cells. Leave plain\n  green space between figures.\n- Clear empty green space between figures. Nothing may touch or overlap a\n  neighbour, and nothing may be cut off at the image edge — especially the\n  weapon, the cape and the helmet.\n- Every figure faces RIGHT and is seen from the SIDE (side-on combat view,\n  NOT front-facing). The reference image is front-facing; copy only the\n  character design, not that camera angle.\n- Character only. No slash trails, no motion blur, no impact effects, no dust,\n  no shadows, no background elements.\n- Identical costume in every pose: same face, same helmet, same armor pattern,\n  same cape, same weapon.";
+const grid = document.getElementById('grid');
+const q = document.getElementById('q'), filt = document.getElementById('filt');
+function render() {
+  const t = q.value.trim().toLowerCase(), f = filt.value;
+  const rows = DATA.filter(g => (f !== 'top' || g.rank <= 70)
+    && (!t || g.name.toLowerCase().includes(t) || g.id.includes(t)));
+  grid.innerHTML = rows.map(g => `
+    <div class="card${g.rank <= 70 ? ' top70' : ''}">
+      <img src="./asset_img/refs/${g.id}.png" loading="lazy" alt="${g.name}">
+      <div class="meta"><span class="rk">${g.rank}위</span>
+        <div class="nm">${g.name}</div><div class="id">${g.id}</div></div>
+      <div class="btns">
+        <a href="./asset_img/refs/${g.id}.png" download>이미지 받기</a>
+        <button data-id="${g.id}" data-name="${g.name}" data-p="1">1차</button>
+        <button data-id="${g.id}" data-name="${g.name}" data-p="2">2차</button>
+      </div>
+    </div>`).join('');
+  document.getElementById('cnt').textContent = rows.length + '명';
+  grid.querySelectorAll('button[data-id]').forEach(b => b.onclick = () => {
+    document.getElementById('dlgT').textContent =
+      b.dataset.name + ' (' + b.dataset.id + ') — 첨부할 파일: asset_img/refs/' + b.dataset.id + '.png';
+    const src = b.dataset.p === '2' ? P2 : P1;
+    document.getElementById('dlgT').textContent += '  ·  ' + b.dataset.p + '차 (10컷)';
+    document.getElementById('dlgX').value = src.split('{NAME}').join(b.dataset.name);
+    document.getElementById('dlg').showModal();
+  });
+}
+document.getElementById('copyBtn').onclick = e => {
+  navigator.clipboard.writeText(document.getElementById('dlgX').value);
+  e.target.textContent = '복사됨';
+  setTimeout(() => e.target.textContent = '프롬프트 복사', 1200);
+};
+q.oninput = render; filt.onchange = render;
+render();
+</script>

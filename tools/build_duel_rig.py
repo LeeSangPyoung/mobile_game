@@ -189,6 +189,45 @@ RIGS = {
 }
 
 
+def auto_spec(gid, src):
+    """전신 아트(fullbody_v6_aligned) 한 장으로 리그 정의를 자동 생성한다.
+
+    200명이 같은 규격(정면 직립, 투명 배경)으로 그려져 있어서 비율만으로
+    부위를 나눌 수 있다. 손으로 폴리곤을 찍는 수작업을 없애기 위한 실험이다.
+
+    한계: 이 아트는 **정면**이다. 일기토는 측면 대결이라 그대로 쓰면
+    몸은 정면인데 옆으로 걸어가는 그림이 된다. 어디까지 봐줄 만한지
+    실제로 넣어 보고 판단하려고 만들었다.
+    """
+    im = Image.open(os.path.join(ROOT, src)).convert('RGBA')
+    bb = im.getbbox()
+    W, H = bb[2] - bb[0], bb[3] - bb[1]
+    cx = W // 2
+    return {
+        'src': src,
+        'frame': bb,
+        'faces': 1,
+        'ground': H,
+        'height': H,
+        'claim': {},
+        'parts': [
+            # 다리 — 아래 34%. 가운데에서 좌우로 가른다.
+            {'name': 'legBack',  'pivot': (int(cx - W * 0.10), int(H * 0.66)),
+             'poly': rect(int(cx - W * 0.34), int(H * 0.64), cx, H)},
+            {'name': 'legFront', 'pivot': (int(cx + W * 0.10), int(H * 0.66)),
+             'poly': rect(cx, int(H * 0.64), int(cx + W * 0.34), H)},
+            {'name': 'upper',    'pivot': (cx, int(H * 0.66)), 'poly': None},
+            {'name': 'head',     'pivot': (cx, int(H * 0.33)),
+             'poly': rect(int(cx - W * 0.24), 0, int(cx + W * 0.24), int(H * 0.34))},
+        ],
+        'markers': {
+            'weaponTip':  {'bone': 'upper', 'at': (int(W * 0.10), int(H * 0.10))},
+            'weaponButt': {'bone': 'upper', 'at': (int(W * 0.10), int(H * 0.90))},
+            'hand':       {'bone': 'upper', 'at': (int(W * 0.18), int(H * 0.55))},
+        },
+    }
+
+
 def build(name, spec):
     src = Image.open(os.path.join(ROOT, spec['src'])).convert('RGBA')
     frame = src.crop(spec['frame'])
@@ -292,7 +331,13 @@ def build(name, spec):
 
 
 if __name__ == '__main__':
-    targets = sys.argv[1:] or list(RIGS)
-    for t in targets:
-        print(f'[{t}]')
-        build(t, RIGS[t])
+    args = sys.argv[1:]
+    if args and args[0] == '--auto':
+        # 전신 아트에서 자동으로 — 폴리곤 수작업 없이
+        for gid in args[1:]:
+            print(f'[{gid}] (자동)')
+            build(gid, auto_spec(gid, f'assets/generals/fullbody_v6_aligned/{gid}.webp'))
+    else:
+        for t in (args or list(RIGS)):
+            print(f'[{t}]')
+            build(t, RIGS[t])

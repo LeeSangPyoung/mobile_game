@@ -1,0 +1,129 @@
+{
+  "canvasW": 1280,
+  "canvasH": 1024,
+  "cx": 640,
+  "ground": 880,
+  "bodyH": 620,
+  "poses": {
+    "idle": {
+      "tipX": 389,
+      "tipY": 848,
+      "footL": 388,
+      "footR": 627
+    },
+    "slash_impact": {
+      "tipX": 1006,
+      "tipY": 494,
+      "footL": 621,
+      "footR": 743
+    },
+    "slash_recovery": {
+      "tipX": 375,
+      "tipY": 842,
+      "footL": 380,
+      "footR": 643
+    },
+    "slash_windup": {
+      "tipX": 407,
+      "tipY": 264,
+      "footL": 459,
+      "footR": 545
+    },
+    "thrust_impact": {
+      "tipX": 1091,
+      "tipY": 563,
+      "footL": 600,
+      "footR": 727
+    },
+    "thrust_recovery": {
+      "tipX": 568,
+      "tipY": 269,
+      "footL": 412,
+      "footR": 492
+    },
+    "thrust_windup": {
+      "tipX": 872,
+      "tipY": 867,
+      "footL": 754,
+      "footR": 872
+    },
+    "walk1": {
+      "tipX": 405,
+      "tipY": 862,
+      "footL": 402,
+      "footR": 820
+    },
+    "walk2": {
+      "tipX": 382,
+      "tipY": 847,
+      "footL": 790,
+      "footR": 880
+    },
+    "walk3": {
+      "tipX": 405,
+      "tipY": 862,
+      "footL": 733,
+      "footR": 825
+    },
+    "guard_just": {
+      "tipX": 1001,
+      "tipY": 430,
+      "footL": 638,
+      "footR": 731
+    },
+    "guard_ready": {
+      "tipX": 377,
+      "tipY": 804,
+      "footL": 422,
+      "footR": 875
+    },
+    "heavy_impact": {
+      "tipX": 883,
+      "tipY": 849,
+      "footL": 398,
+      "footR": 669
+    },
+    "heavy_recovery": {
+      "tipX": 445,
+      "tipY": 878,
+      "footL": 701,
+      "footR": 853
+    },
+    "heavy_windup": {
+      "tipX": 839,
+      "tipY": 875,
+      "footL": 441,
+      "footR": 572
+    },
+    "hurt_heavy": {
+      "tipX": 900,
+      "tipY": 642,
+      "footL": 494,
+      "footR": 573
+    },
+    "hurt_light": {
+      "tipX": 354,
+      "tipY": 880,
+      "footL": 350,
+      "footR": 559
+    },
+    "ko_down": {
+      "tipX": 1059,
+      "tipY": 848,
+      "footL": 611,
+      "footR": 1030
+    },
+    "ko_fall": {
+      "tipX": 631,
+      "tipY": 85,
+      "footL": 487,
+      "footR": 706
+    },
+    "stunned": {
+      "tipX": 1014,
+      "tipY": 912,
+      "footL": 488,
+      "footR": 560
+    }
+  }
+}
