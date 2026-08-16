@@ -1,0 +1,77 @@
+{
+  "name": "zhao_yun",
+  "source": "asset_img/cut_atk/idle.png",
+  "width": 676,
+  "height": 622,
+  "ground": 622,
+  "faces": 1,
+  "parts": [
+    {
+      "name": "cape",
+      "file": "cape.webp",
+      "w": 235,
+      "h": 267,
+      "px": 211,
+      "py": 35,
+      "ax": -93.0,
+      "ay": -302
+    },
+    {
+      "name": "legBack",
+      "file": "legBack.webp",
+      "w": 227,
+      "h": 235,
+      "px": 113,
+      "py": 18,
+      "ax": -138.0,
+      "ay": -217
+    },
+    {
+      "name": "legFront",
+      "file": "legFront.webp",
+      "w": 222,
+      "h": 219,
+      "px": 99,
+      "py": 17,
+      "ax": 52.0,
+      "ay": -202
+    },
+    {
+      "name": "upper",
+      "file": "upper.webp",
+      "w": 676,
+      "h": 498,
+      "px": 300,
+      "py": 356,
+      "ax": -38.0,
+      "ay": -212
+    },
+    {
+      "name": "head",
+      "file": "head.webp",
+      "w": 242,
+      "h": 204,
+      "px": 136,
+      "py": 190,
+      "ax": -3.0,
+      "ay": -432
+    }
+  ],
+  "markers": {
+    "weaponTip": {
+      "bone": "upper",
+      "x": 668,
+      "y": 505
+    },
+    "weaponButt": {
+      "bone": "upper",
+      "x": 12,
+      "y": 252
+    },
+    "hand": {
+      "bone": "upper",
+      "x": 395,
+      "y": 395
+    }
+  }
+}

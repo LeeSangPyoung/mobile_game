@@ -1,0 +1,296 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>일기토 — 리그 애니메이션 PoC</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>
+  :root { --gold:#ffd45c; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#100b07; color:#e9dcc2; font:14px/1.6 system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif; }
+  header { padding:14px 18px 6px; }
+  h1 { margin:0 0 2px; font-size:17px; color:var(--gold); letter-spacing:1px; }
+  .sub { color:#a28f6d; font-size:12.5px; }
+  #wrap { padding:10px 18px 20px; }
+  canvas { width:100%; max-width:1120px; display:block; background:#1a1109;
+           border:1px solid #3d2c18; border-radius:6px; image-rendering:auto; }
+  .bar { display:flex; flex-wrap:wrap; gap:7px; align-items:center; margin:12px 0 6px; max-width:1120px; }
+  button { font:inherit; font-weight:700; padding:7px 13px; border-radius:5px; cursor:pointer;
+           border:1px solid #6b4f26; background:#2a1c0d; color:#f0dcb4; }
+  button:hover { background:#3a2712; }
+  button.on { background:linear-gradient(#e8ab2c,#a86a10); color:#2a1200; border-color:#ffe9a8; }
+  .sep { width:1px; height:22px; background:#4a361d; margin:0 4px; }
+  label { display:inline-flex; gap:5px; align-items:center; color:#b9a481; font-size:13px; cursor:pointer; }
+  .note { max-width:1120px; margin-top:10px; color:#9a8664; font-size:12.5px; }
+  .note b { color:var(--gold); }
+  kbd { background:#2a1c0d; border:1px solid #6b4f26; border-bottom-width:2px; border-radius:4px;
+        padding:1px 6px; font:600 12px ui-monospace,monospace; color:#f0dcb4; }
+</style>
+
+<header>
+  <h1>일기토 — 컷 넘기기 vs 리그 애니메이션</h1>
+  <div class="sub">같은 조운, 같은 프레임 데이터. 왼쪽은 지금 방식(그림 5장 교체), 오른쪽은 조각 5개를 보간해서 움직인 것.</div>
+</header>
+
+<div id="wrap">
+  <canvas id="c" width="1120" height="520"></canvas>
+
+  <div class="bar">
+    <button data-move="light">베기 <kbd>J</kbd></button>
+    <button data-move="thrust">찌르기 <kbd>L</kbd></button>
+    <button data-move="heavy">강베기 <kbd>K</kbd></button>
+    <div class="sep"></div>
+    <button data-move="hurt">피격</button>
+    <button data-move="stunned">경직</button>
+    <button data-move="ko">KO</button>
+    <div class="sep"></div>
+    <button id="walk">걷기</button>
+    <div class="sep"></div>
+    <label><input type="checkbox" id="slow"> 1/4 배속</label>
+    <label><input type="checkbox" id="trail" checked> 무기 궤적</label>
+    <label><input type="checkbox" id="bones"> 관절 표시</label>
+    <label><input type="checkbox" id="loop" checked> 반복</label>
+  </div>
+
+  <div class="note">
+    보실 곳 — <b>①</b> 왼쪽은 컷이 바뀔 때마다 크기·발끝 위치가 튀고, 오른쪽은 발이 지면에 붙어 있습니다.
+    <b>②</b> 왼쪽은 칼이 A에서 B로 순간이동하지만, 오른쪽은 궤적이 이어집니다(궤적 표시 켜고 1/4 배속).
+    <b>③</b> 오른쪽 <b>강베기</b>는 감았다가 정점에서 한 박자 멈춥니다 — 상대가 읽을 수 있는 예고(telegraph)입니다.
+    <b>④ 피격 / 경직 / KO</b> 는 성격을 완전히 갈라놨습니다 — 피격은 뒤로 <b>한 번 튕기고 복귀</b>,
+    경직은 <b>앞으로 무너져 고개가 떨어진 채 계속 흔들림</b>, KO는 <b>뒤로 넘어가 바닥에 눕고 정지</b>.
+    <br>
+    <b>창·망토 잘림</b>은 리그 문제가 아니라 원본 문제였습니다. 왼쪽이 쓰는 <code>zhao_yun_pose_sheet</code> 는
+    5명이 한 이미지에 붙어 있어 셀 경계에서 창끝과 망토가 잘려 있습니다(5프레임 전부).
+    오른쪽은 여백이 남아 있는 <code>walk3_stable_v2</code> 로 교체해 잘림이 없습니다 —
+    <b>왼쪽에 남아 있는 잘림이 지금 게임에 그대로 들어가 있는 상태</b>입니다.
+  </div>
+</div>
+
+<script type="module">
+import { loadRig, samplePose, addPose, boneMatrices, drawRig, markerScreen, BONES } from './duel/rig.js';
+import { CLIPS, ATTACK_PHASES } from './duel/clips.js';
+
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const W = cv.width, H = cv.height, GROUND = 452;
+
+// ── 왼쪽: 지금 방식 재현 (duel_v2 의 META/pickFrame 을 그대로 옮김) ──
+const OLD_SRC = {
+  pose:   './assets/arcade_duel/zhao_yun_pose_sheet.webp',
+  light:  './assets/arcade_duel/zhao_yun_attack5_v1.webp',
+  thrust: './assets/arcade_duel/zhao_yun_combo1_v1.webp',
+  heavy:  './assets/arcade_duel/zhao_yun_combo3_v1.webp',
+  walk:   './assets/arcade_duel/zhao_yun_walk6_cutout_v1.webp',
+};
+const OLD_META = {
+  scale: 0.63, anchor: 0.50,
+  pose:   { img:'pose', fw:396, f:[[5,221,391,439],[0,210,396,421],[0,181,396,456],[0,197,396,441],[0,115,396,541]] },
+  walk:   { img:'walk', fw:362, boost:1.08,
+            f:[[17,149,345,420,0,1],[0,157,362,405,0,8],[0,156,362,413,0,1],[0,154,362,416,0,0],[0,166,362,401,0,3],[0,156,360,413,0,1]] },
+  light:  { img:'light', fw:387, boost:1.02, baseH:400,
+            f:[[5,229,382,349,0,0],[0,186,387,388,-2,0],[0,219,387,362,0,0],[0,228,387,356,-4,0],[0,230,359,350,4,0]] },
+  thrust: { img:'thrust', fw:434, boost:1.16, baseH:400,
+            f:[[25,208,409,357,-6,1],[0,207,434,349,0,10],[0,251,434,301,0,14],[0,254,434,296,0,16],[0,211,372,355,28,0]] },
+  heavy:  { img:'heavy', fw:362, boost:1.14, baseH:410,
+            f:[[41,326,321,253,-18,12],[0,250,314,327,32,14],[10,277,352,300,8,14],[0,144,362,434,12,12],[0,304,362,287,12,0],[0,267,312,317,34,7]] },
+};
+const IMG = {};
+for (const [k, src] of Object.entries(OLD_SRC)) { const im = new Image(); im.src = src; IMG[k] = im; }
+const clamp = (v,a,b) => v<a?a:v>b?b:v;
+
+function drawOld(x, move, f) {
+  let set = OLD_META.pose, i = 0;
+  const ph = ATTACK_PHASES[move];
+  if (ph && OLD_META[move]) {
+    set = OLD_META[move];
+    const n = set.f.length, total = ph.startup + ph.active + ph.recovery;
+    let p;
+    if (f < ph.startup) p = (f / ph.startup) * 0.42;
+    else if (f < ph.startup + ph.active) p = 0.42 + ((f - ph.startup) / ph.active) * 0.30;
+    else p = 0.72 + ((f - ph.startup - ph.active) / ph.recovery) * 0.28;
+    i = clamp(Math.floor(p * n), 0, n - 1);
+  } else if (move === 'walk') {
+    set = OLD_META.walk; i = Math.floor(f / 6) % 6;
+  } else if (move === 'hurt' || move === 'stunned' || move === 'ko') {
+    set = OLD_META.pose; i = 4;                 // 피격 전용 컷이 아예 없다
+  }
+  const img = IMG[set.img];
+  if (!img || !img.naturalWidth) return;
+  const [cx, cy, cw, ch, ox = 0, oy = 0] = set.f[i];
+  let scale = OLD_META.scale * (set.boost || 1);
+  if (set.baseH) scale *= clamp(set.baseH / ch, .90, 1.35);
+  const dw = cw * scale, dh = ch * scale;
+  ctx.drawImage(img, i * set.fw + cx, cy, cw, ch,
+                x - dw * OLD_META.anchor + ox * scale, GROUND - dh + oy * scale, dw, dh);
+}
+
+// ── 오른쪽: 리그 ────────────────────────────────────────────────────
+const rig = await loadRig('./assets/duel_rig/zhao_yun', new URLSearchParams(location.search).get('v') || '3');
+const RIG_SCALE = 0.50;   // 새 소스는 542px 키 — 화면 270px 근처로 맞춘다
+
+let move = 'heavy', frame = 0, walking = false;
+let trailPts = [], hitStop = 0, flash = 0, shake = 0;
+
+const clipOf = m => CLIPS[m] || CLIPS.idle;
+const durOf = m => {
+  const ph = ATTACK_PHASES[m];
+  return ph ? ph.startup + ph.active + ph.recovery : clipOf(m).dur;
+};
+
+function play(m) { move = m; frame = 0; trailPts = []; hitStop = 0; flash = 0; }
+
+document.querySelectorAll('[data-move]').forEach(b =>
+  b.onclick = () => { walking = false; document.getElementById('walk').classList.remove('on'); play(b.dataset.move); });
+document.getElementById('walk').onclick = e => {
+  walking = !walking; e.currentTarget.classList.toggle('on', walking); play(walking ? 'walk' : 'idle');
+};
+addEventListener('keydown', e => {
+  const k = { KeyJ:'light', KeyK:'heavy', KeyL:'thrust' }[e.code];
+  if (k) play(k);
+});
+const chk = id => document.getElementById(id).checked;
+
+function tick() {
+  if (hitStop > 0) { hitStop--; return; }
+  frame++;
+  const dur = durOf(move);
+  const ph = ATTACK_PHASES[move];
+
+  // active 진입 = 임팩트. 히트스톱 + 플래시 + 카메라 펀치
+  if (ph && frame === ph.startup + 1) {
+    hitStop = { light:4, thrust:6, heavy:11 }[move] || 5;
+    flash = 1; shake = { light:5, thrust:7, heavy:14 }[move] || 6;
+  }
+  if (frame > dur) {
+    if (chk('loop')) play(move);
+    else if (!walking) { move = 'idle'; frame = 0; }
+    else frame = 0;
+  }
+  flash *= 0.86; shake *= 0.82;
+}
+
+function poseNow() {
+  const clip = clipOf(move), dur = durOf(move);
+  const t = clip.loop ? frame : Math.min(frame, dur);
+  let pose = samplePose({ ...clip, dur }, t);
+  if (move === 'idle' || move === 'walk') {
+    // 숨 — 정지 포즈가 마네킹으로 보이지 않게
+    pose = addPose(pose, { root: { y: Math.sin(frame * .045) * 1.6 } });
+  }
+  return pose;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // 무대
+  const mid = W / 2;
+  ctx.fillStyle = '#241708'; ctx.fillRect(0, GROUND, W, H - GROUND);
+  ctx.strokeStyle = '#4a3418'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, GROUND); ctx.lineTo(W, GROUND); ctx.stroke();
+  ctx.strokeStyle = '#33240f'; ctx.beginPath(); ctx.moveTo(mid, 0); ctx.lineTo(mid, H); ctx.stroke();
+
+  // 지면 기준선 — 발끝이 튀는지 보라는 안내선
+  ctx.setLineDash([5, 7]); ctx.strokeStyle = '#5d4423';
+  ctx.beginPath(); ctx.moveTo(0, GROUND - 265); ctx.lineTo(W, GROUND - 265); ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.font = '700 13px system-ui'; ctx.textAlign = 'center';
+  ctx.fillStyle = '#8d7550';
+  ctx.fillText('지금 — 그림 5장 교체', mid / 2, 26);
+  ctx.fillStyle = '#ffd45c';
+  ctx.fillText('리그 — 조각 5개 보간', mid + mid / 2, 26);
+  ctx.textAlign = 'left';
+
+  const dur = durOf(move);
+  ctx.fillStyle = '#7d6544';
+  ctx.fillText(`${move}  ${Math.min(frame, dur)} / ${dur}f`, 14, H - 12);
+
+  // 왼쪽
+  ctx.save(); ctx.translate(0, 0);
+  drawOld(mid / 2, walking ? 'walk' : move, Math.min(frame, dur));
+  ctx.restore();
+
+  // 오른쪽
+  const pose = poseNow();
+  const mats = boneMatrices(rig, pose);
+  const sx = (Math.random() - .5) * shake, sy = (Math.random() - .5) * shake * .6;
+  const place = { x: mid + mid / 2 + sx, y: GROUND + sy, dir: 1, scale: RIG_SCALE };
+
+  // 무기 궤적 — 실제 창끝 위치를 이어 그린다. 사거리도 여기서 나온다.
+  const tip = markerScreen(rig, pose, place, 'weaponTip', mats);
+  const hand = markerScreen(rig, pose, place, 'hand', mats);
+  if (tip && hand) trailPts.push([tip[0], tip[1], hand[0], hand[1]]);
+  if (trailPts.length > 14) trailPts.shift();
+
+  if (chk('trail') && trailPts.length > 2 && ATTACK_PHASES[move]) {
+    ctx.save();
+    ctx.beginPath();
+    for (const p of trailPts) ctx.lineTo(p[0], p[1]);
+    for (let i = trailPts.length - 1; i >= 0; i--) ctx.lineTo(trailPts[i][2], trailPts[i][3]);
+    ctx.closePath();
+    const g = ctx.createLinearGradient(trailPts[0][0], trailPts[0][1], tip[0], tip[1]);
+    g.addColorStop(0, 'rgba(255,240,190,0)'); g.addColorStop(1, 'rgba(210,235,255,.60)');
+    ctx.fillStyle = g; ctx.fill();
+    ctx.restore();
+  }
+
+  drawRig(ctx, rig, pose, place, { mats });
+
+  if (flash > .04) {
+    ctx.save();
+    ctx.globalAlpha = flash * .5; ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = '#fff3d0';
+    ctx.beginPath(); ctx.ellipse(tip ? tip[0] : place.x, tip ? tip[1] : GROUND - 150,
+                                 90 * flash + 20, 70 * flash + 16, 0, 0, 7); ctx.fill();
+    ctx.restore();
+  }
+
+  if (chk('bones')) {
+    ctx.save(); ctx.lineWidth = 1.5;
+    for (const b in BONES) {
+      const part = rig.byName[b]; if (!part) continue;
+      const p = markerScreen(rig, pose, place, '__x', mats) || null;
+      // 관절 위치 = 조각 pivot 을 화면으로
+      const m = mats[b];
+      const ax = part.ax + rig.width / 2, ay = part.ay + rig.ground;
+      const wx = m[0] * ax + m[2] * ay + m[4], wy = m[1] * ax + m[3] * ay + m[5];
+      const px = place.x + (wx - rig.width / 2) * place.dir * place.scale;
+      const py = place.y + (wy - rig.ground) * place.scale;
+      ctx.fillStyle = '#7ce0ff'; ctx.beginPath(); ctx.arc(px, py, 4, 0, 7); ctx.fill();
+      ctx.fillStyle = '#bfefff'; ctx.font = '600 10px monospace'; ctx.fillText(b, px + 7, py - 5);
+    }
+    if (tip) { ctx.fillStyle = '#ff8a5c'; ctx.beginPath(); ctx.arc(tip[0], tip[1], 5, 0, 7); ctx.fill(); }
+    ctx.restore();
+  }
+}
+
+let acc = 0, last = performance.now();
+function loop(now) {
+  const step = chk('slow') ? 1 / 4 : 1;
+  acc += Math.min(64, now - last) / (1000 / 60); last = now;
+  while (acc >= 1) { for (let i = 0; i < 1; i++) {} acc -= 1; tickScaled(step); }
+  draw();
+  requestAnimationFrame(loop);
+}
+let sub = 0;
+function tickScaled(step) { sub += step; while (sub >= 1) { sub -= 1; tick(); } }
+
+// 캡처 도구용 훅 — 특정 프레임에 세워놓고 스크린샷을 찍는다
+let frozen = false;
+window.__poc = {
+  freeze(m, f) { frozen = true; move = m; frame = f; trailPts = []; hitStop = 0; flash = 0; shake = 0;
+    // 궤적은 누적이라 그 프레임까지의 경로를 다시 밟아 채운다
+    for (let i = Math.max(0, f - 13); i <= f; i++) {
+      frame = i; const ps = poseNow(), ms = boneMatrices(rig, ps);
+      const pl = { x: W / 2 + W / 4, y: GROUND, dir: 1, scale: RIG_SCALE };
+      const tp = markerScreen(rig, ps, pl, 'weaponTip', ms), hd = markerScreen(rig, ps, pl, 'hand', ms);
+      if (tp && hd) trailPts.push([tp[0], tp[1], hd[0], hd[1]]);
+    }
+    frame = f; draw();
+  },
+  resume() { frozen = false; },
+};
+const _tick = tick;
+tick = function () { if (!frozen) _tick(); };
+
+play('heavy');
+requestAnimationFrame(loop);
+</script>

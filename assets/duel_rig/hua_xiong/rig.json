@@ -1,0 +1,77 @@
+{
+  "name": "hua_xiong",
+  "source": "asset_img/cut_hx/idle.png",
+  "width": 741,
+  "height": 562,
+  "ground": 562,
+  "faces": 1,
+  "parts": [
+    {
+      "name": "cape",
+      "file": "cape.webp",
+      "w": 181,
+      "h": 262,
+      "px": 29,
+      "py": 38,
+      "ax": 79.5,
+      "ay": -357
+    },
+    {
+      "name": "legBack",
+      "file": "legBack.webp",
+      "w": 202,
+      "h": 170,
+      "px": 103,
+      "py": 17,
+      "ax": -155.5,
+      "ay": -160
+    },
+    {
+      "name": "legFront",
+      "file": "legFront.webp",
+      "w": 193,
+      "h": 155,
+      "px": 87,
+      "py": 17,
+      "ax": 7.5,
+      "ay": -150
+    },
+    {
+      "name": "upper",
+      "file": "upper.webp",
+      "w": 741,
+      "h": 525,
+      "px": 300,
+      "py": 368,
+      "ax": -70.5,
+      "ay": -157
+    },
+    {
+      "name": "head",
+      "file": "head.webp",
+      "w": 205,
+      "h": 192,
+      "px": 100,
+      "py": 178,
+      "ax": -5.5,
+      "ay": -384
+    }
+  ],
+  "markers": {
+    "weaponTip": {
+      "bone": "upper",
+      "x": 700,
+      "y": 520
+    },
+    "weaponButt": {
+      "bone": "upper",
+      "x": 35,
+      "y": 208
+    },
+    "hand": {
+      "bone": "upper",
+      "x": 330,
+      "y": 300
+    }
+  }
+}

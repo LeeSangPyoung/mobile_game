@@ -31,11 +31,14 @@
 }
 html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;
   background:#070503;color:#ffe9b0;font-family:"Malgun Gothic","Noto Sans KR",system-ui,sans-serif}
-body{display:grid;place-items:center}
+body{display:grid;place-items:stretch}
 
-#wrap{position:relative;width:min(100vw,1100px);aspect-ratio:16/9;max-height:100dvh;
-  background:#000;overflow:hidden;box-shadow:0 0 0 2px #2a1c10,0 20px 70px #000}
-#wrap:fullscreen{width:100vw;height:100dvh;max-height:none}
+/* 세로 전용. 갤럭시(폭 360~412, 19.5:9~20:9)를 기준으로 잡되 고정 비율을 쓰지 않는다 —
+   기기마다 비율이 달라서 aspect-ratio 를 박으면 어딘가에는 반드시 검은 여백이 생긴다.
+   화면을 그대로 채우고, 캔버스 논리 해상도(H)를 화면 비율에 맞춰 JS 가 정한다. */
+#wrap{position:relative;width:100vw;height:100dvh;max-width:min(100vw,560px);margin:0 auto;
+  background:#000;overflow:hidden;box-shadow:0 0 0 2px #2a1c10}
+#wrap:fullscreen{max-width:none}
 canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06}
 
 /* ── HUD ───────────────────────────────────────────────────────────
@@ -81,8 +84,9 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 
 /* 개시 직후 몇 초만 뜨는 조작 안내 — 전투 중 화면에 설명이 하나도 없으면
    플레이어는 무엇을 하는 게임인지 모른 채 얻어맞기만 한다 */
-/* 아래쪽에 둔다 — 위는 개시 배너("일기토")가 쓰는 자리다 */
-#tip{position:absolute;left:50%;bottom:calc(96*var(--u) + var(--safe-b));transform:translateX(-50%);z-index:6;
+/* 아래쪽 끝에 붙인다 — 위는 개시 배너("일기토")가 쓰고,
+   조금만 올려도 서 있는 장수의 다리를 가린다 */
+#tip{position:absolute;left:50%;top:calc(126*var(--u));transform:translateX(-50%);z-index:6;
   padding:calc(6*var(--u)) calc(14*var(--u));white-space:nowrap;pointer-events:none;
   background:#0a0604d0;border:calc(2*var(--u)) solid #8a6c3c;
   font-size:calc(14*var(--u));font-weight:900;color:#f0dcb4;text-shadow:1px 1px 0 #000;
@@ -91,18 +95,31 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 #tip b{color:var(--gold)}
 
 /* ── 모바일 조작 패드 ──────────────────────────────────────────── */
-#pad{position:absolute;left:0;right:0;bottom:0;z-index:7;padding:0 calc(14*var(--u)) calc(10*var(--u) + var(--safe-b));
-  display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none}
+/* 세로 배치: 결투 화면(위 60%) 아래의 빈 영역이 조작부다.
+   가로일 때처럼 화면 맨 아래에만 붙이면 손가락이 캐릭터를 가린다. */
+#pad{position:absolute;left:0;right:0;top:calc(var(--playh) * var(--u));bottom:0;z-index:7;
+  padding:calc(14*var(--u)) calc(14*var(--u)) calc(14*var(--u) + var(--safe-b));
+  display:flex;justify-content:space-between;align-items:center;pointer-events:none}
 #pad.hide{display:none}
-.cluster{display:flex;gap:calc(9*var(--u));align-items:flex-end;pointer-events:auto}
+.cluster{display:flex;gap:calc(12*var(--u));align-items:center;pointer-events:auto}
+/* 공격군은 2×2. 세로 화면 폭(360px)에 버튼 6개를 한 줄로 놓으면 화면 밖으로 나간다. */
+.cluster.acts{display:grid;grid-template-columns:repeat(2,auto);gap:calc(10*var(--u));
+  justify-items:center;align-items:center}
+/* 이동은 십자. 앞뒤(◀▶)에 깊이(▲▼)가 더해져 축이 둘이 된다. */
+.cluster.moves{display:grid;grid-template-columns:repeat(3,auto);gap:calc(6*var(--u));
+  justify-items:center;align-items:center}
+.cluster.moves .up{grid-column:2;grid-row:1}
+.cluster.moves .dn{grid-column:2;grid-row:3}
+.cluster.moves [data-act="left"]{grid-column:1;grid-row:2}
+.cluster.moves [data-act="right"]{grid-column:3;grid-row:2}
 .btn{display:grid;place-items:center;border-radius:50%;border:calc(3*var(--u)) solid #ffe8a8;
   background:radial-gradient(circle at 35% 30%,#5b3a1b,#241206);color:#ffe9b0;
   font-weight:900;text-shadow:1px 1px 0 #000;box-shadow:0 4px 0 #0009,inset 0 2px 6px #ffdca033;
-  /* 터치 타깃은 --u 로만 줄이면 작은 폰에서 못 누른다 — 44px 하한을 따로 둔다 */
-  width:max(44px,calc(64*var(--u)));height:max(44px,calc(64*var(--u)));font-size:max(11px,calc(13*var(--u)));
+  /* 터치 타깃은 --u 로만 줄이면 작은 폰에서 못 누른다 — 56px 하한을 둔다(세로는 자리가 있다) */
+  width:max(52px,calc(70*var(--u)));height:max(52px,calc(70*var(--u)));font-size:max(11px,calc(13*var(--u)));
   white-space:nowrap;letter-spacing:-.5px;line-height:1}
 .btn:active,.btn.on{transform:translateY(3px);box-shadow:0 1px 0 #0009;background:radial-gradient(circle at 35% 30%,#9c6a2a,#3d2109)}
-.btn.big{width:max(54px,calc(80*var(--u)));height:max(54px,calc(80*var(--u)));font-size:max(13px,calc(17*var(--u)))}
+.btn.big{width:max(60px,calc(82*var(--u)));height:max(60px,calc(82*var(--u)));font-size:max(12px,calc(15*var(--u)))}
 .btn.mv{border-color:#a8c8ff;background:radial-gradient(circle at 35% 30%,#1e3a63,#0a1526)}
 .btn.mv:active,.btn.mv.on{background:radial-gradient(circle at 35% 30%,#3c6ba8,#122642)}
 .btn.gd{border-color:#9de2ff}
@@ -139,12 +156,13 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 #util{position:absolute;right:10px;top:calc(10px + clamp(46px,8vw,64px));z-index:6;display:flex;gap:6px}
 #util button{width:34px;height:34px;display:grid;place-items:center;cursor:pointer;font-size:15px;
   border:2px solid #9de2ff;background:#0a1a2ecc;color:#dff1ff}
-@media (max-width:620px){#util{top:auto;bottom:calc(12px + var(--safe-b));right:auto;left:50%;transform:translateX(-50%)}}
+/* 세로 전용: 결투 영역 오른쪽 위. 하단 중앙은 조작 버튼이 쓴다. */
+#util{right:calc(10*var(--u));top:calc(74*var(--u))}
 </style>
 </head>
 <body>
 <div id="wrap">
-  <canvas id="game" width="960" height="540" aria-label="일기토 결투 화면"></canvas>
+  <canvas id="game" width="540" height="1170" aria-label="일기토 결투 화면"></canvas>
 
   <div id="hud">
     <div class="side l" id="sideL">
@@ -160,7 +178,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
     </div>
   </div>
 
-  <div id="util">
+  <div id="util"><button id="dummyBtn" aria-label="상대 정지" title="상대 정지(허수아비)">🧍</button><button id="muteBtn" aria-label="소리 끄기" title="소리">🔊</button>
     <button id="btnPause" title="일시정지" aria-label="일시정지">❚❚</button>
     <button id="btnFull" title="전체화면" aria-label="전체화면">⛶</button>
   </div>
@@ -169,15 +187,17 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
   <div id="tip"></div>
 
   <div id="pad">
-    <div class="cluster">
+    <div class="cluster moves">
+      <button class="btn mv up" data-act="up" aria-label="안쪽으로">▲</button>
       <button class="btn mv" data-act="left" aria-label="왼쪽">◀</button>
       <button class="btn mv" data-act="right" aria-label="오른쪽">▶</button>
+      <button class="btn mv dn" data-act="down" aria-label="앞쪽으로">▼</button>
     </div>
-    <div class="cluster">
+    <div class="cluster acts">
       <button class="btn gd" data-act="guard" aria-label="가드">가드</button>
       <button class="btn" data-act="thrust" aria-label="찌르기">찌르기</button>
       <button class="btn big" data-act="light" aria-label="베기">베기</button>
-      <button class="btn big hv" data-act="heavy" aria-label="강베기">강</button>
+      <button class="btn big hv" data-act="heavy" aria-label="강베기">강베기</button>
     </div>
   </div>
 
@@ -197,8 +217,8 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
       </div>
       <button class="go" id="ovGo">결 투</button>
       <div class="keys">
-        <b>← →</b> 걸음 · <b>← ←</b> 백스텝 · <b>Shift</b> 대시<br>
-        <b>J</b> 베기 · <b>K</b> 강베기 · <b>L</b> 찌르기 · <b>S / ↓</b> 가드 · <b>Esc</b> 일시정지
+        <b>← →</b> 걸음 · <b>← ←</b> 백스텝 · <b>Shift</b> 대시 · <b>↑ ↓</b> 비켜서기<br>
+        <b>J</b> 베기 · <b>K</b> 강베기 · <b>L</b> 찌르기 · <b>S</b> 가드 · <b>Esc</b> 일시정지
       </div>
     </div>
   </div>
@@ -209,18 +229,45 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 // ═══════════════════════════════════════════════════════════════════
 //  0. 상수 · 유틸
 // ═══════════════════════════════════════════════════════════════════
-const W = 960, H = 540;              // 논리 해상도(캔버스 버퍼)
-const GROUND = 430;                  // 월드 지면 y (발끝)
-const STAGE_W = 1400;                // 무대 폭 — 좁게. 도망칠 곳이 없어야 결투가 된다
-const SCREEN_GROUND = H * 0.84;      // 지면이 화면에 찍히는 높이
+// 세로 화면. 폭은 540 으로 고정하고 높이는 기기 비율을 따라간다
+// (갤럭시 S23 360x780 → H≈1170, 큰 기종 412x915 → H≈1199).
+// W 만 고정하면 UI 크기가 기기와 무관하게 일정하고, 남는 세로는 무대와 조작부가 나눠 갖는다.
+const W = 540;
+let H = 1170;                        // resizeCanvas() 가 매번 다시 잡는다
+const GROUND = 430;                  // 월드 지면 y (발끝, z=0 기준)
+// 깊이 축 — 오락실 벨트스크롤(천지를 먹다류)의 그 축이다.
+// 앞뒤로만 움직이면 결투가 1차원 가위바위보가 된다. 위아래로 비켜설 수 있어야
+// '돌아 들어가기 / 축 피하기'가 생기고, 세로 화면의 남는 공간도 그제서야 쓸모가 생긴다.
+let Z_MAX = 108;                     // 무대 안쪽 끝 (0 = 화면 앞쪽) — 배경의 다리 폭에서 산출
+let zRange = 108;                    // drawBackground 가 매 프레임 계산
+// 132 로 잡았더니 캐릭터가 나무 무대를 벗어나 배경 원경 위에 섰다 —
+// 먼 산 옆에 사람이 서니 거인처럼 보였다. 깊이는 '무대 안'에서만 움직여야 한다.
+const Z_HIT = 34;                    // 이 이상 축이 어긋나면 공격이 빗나간다
+const Z_PERSPECTIVE = 0.0013;        // 안쪽으로 갈수록 조금 작게 — 깊이가 읽히게
+const STAGE_W = 900;                 // 무대 폭 — 세로는 화면이 좁다. 더 좁혀서 도망칠 곳을 없앤다
+let SCREEN_GROUND = 0;               // 지면이 화면에 찍히는 높이 — 아래는 조작부 몫으로 비운다
+const PLAY_RATIO = 0.60;             // 화면 위 60% 가 결투, 아래 40% 가 조작부
 const FPS = 60, DT = 1000 / FPS;
 
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+// 깊이를 화면에 반영 — 안쪽(z 큼)일수록 위로 올라가고 살짝 작아진다
+const footY = f => GROUND - f.z;
+const zScale = f => 1 - f.z * Z_PERSPECTIVE;
 const lerp = (a, b, t) => a + (b - a) * t;
 const sign = v => v < 0 ? -1 : 1;
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d', { alpha: false });
+
+// 화면 비율에 맞춰 캔버스 논리 높이를 정한다. 기기마다 세로 비율이 달라서
+// 고정 해상도를 쓰면 어딘가에는 검은 여백이 남는다.
+function resizeCanvas() {
+  const box = canvas.getBoundingClientRect();
+  const ratio = (box.height || 1) / (box.width || 1);
+  H = Math.round(clamp(W * ratio, 900, 1400));
+  SCREEN_GROUND = Math.round(H * PLAY_RATIO);
+  canvas.width = W; canvas.height = H;
+}
 
 // ═══════════════════════════════════════════════════════════════════
 //  1. 에셋 · 스프라이트 메타
@@ -239,7 +286,148 @@ const ASSET_SRC = {
   bWalk:     './assets/arcade_duel/hua_xiong_walk6_cutout_v1.webp',
   bHurt:     './assets/arcade_duel/hua_xiong_hurt3_v1.webp',
   bStun:     './assets/arcade_duel/hua_xiong_stun3_v1.webp',
+
+  // 상태 포즈 — 한 파일에 한 포즈. 컷 좌표도 boost/baseH 보정도 필요 없다.
+  // 전부 같은 규격(768 캔버스 / 키 620px / 지면 y=700 / 중심 x=384)으로 정렬돼 있어서
+  // 그냥 같은 자리에 그리면 발이 지면에 붙는다.
+  sIdle:      './assets/arcade_duel/zhao_yun_states/idle.webp?v=6',
+  sGuard:     './assets/arcade_duel/zhao_yun_states/guard_ready.webp?v=6',
+  sGuardJust: './assets/arcade_duel/zhao_yun_states/guard_just.webp?v=6',
+  sHurtLight: './assets/arcade_duel/zhao_yun_states/hurt_light.webp?v=6',
+  sHurtHeavy: './assets/arcade_duel/zhao_yun_states/hurt_heavy.webp?v=6',
+  sStunned:   './assets/arcade_duel/zhao_yun_states/stunned.webp?v=6',
+  sKoFall:    './assets/arcade_duel/zhao_yun_states/ko_fall.webp?v=6',
+  sKoDown:    './assets/arcade_duel/zhao_yun_states/ko_down.webp?v=6',
+
+  // 공격 — 기술마다 예비/타격/후딜 3컷. duel_v2 의 windup/active/recover 와 1:1.
+  sLightW:  './assets/arcade_duel/zhao_yun_states/slash_windup.webp?v=6',
+  sLightA:  './assets/arcade_duel/zhao_yun_states/slash_impact.webp?v=6',
+  sLightR:  './assets/arcade_duel/zhao_yun_states/slash_recovery.webp?v=6',
+  sThrustW: './assets/arcade_duel/zhao_yun_states/thrust_windup.webp?v=6',
+  sThrustA: './assets/arcade_duel/zhao_yun_states/thrust_impact.webp?v=6',
+  sThrustR: './assets/arcade_duel/zhao_yun_states/thrust_recovery.webp?v=6',
+  sHeavyW:  './assets/arcade_duel/zhao_yun_states/heavy_windup.webp?v=6',
+  sHeavyA:  './assets/arcade_duel/zhao_yun_states/heavy_impact.webp?v=6',
+  sHeavyR:  './assets/arcade_duel/zhao_yun_states/heavy_recovery.webp?v=6',
+
+  // 화웅 — 조운과 같은 규격으로 뽑은 세트. 피격·경직·KO 는 아직 없어서 기존 시트로 폴백한다.
+  hIdle:    './assets/arcade_duel/hua_xiong_states/idle.webp?v=6',
+  hLightW:  './assets/arcade_duel/hua_xiong_states/slash_windup.webp?v=6',
+  hLightA:  './assets/arcade_duel/hua_xiong_states/slash_impact.webp?v=6',
+  hLightR:  './assets/arcade_duel/hua_xiong_states/slash_recovery.webp?v=6',
+  hThrustW: './assets/arcade_duel/hua_xiong_states/thrust_windup.webp?v=6',
+  hThrustA: './assets/arcade_duel/hua_xiong_states/thrust_impact.webp?v=6',
+  hThrustR: './assets/arcade_duel/hua_xiong_states/thrust_recovery.webp?v=6',
+  hHeavyW:  './assets/arcade_duel/hua_xiong_states/heavy_windup.webp?v=6',
+  hHeavyA:  './assets/arcade_duel/hua_xiong_states/heavy_impact.webp?v=6',
+  hHeavyR:  './assets/arcade_duel/hua_xiong_states/heavy_recovery.webp?v=6',
+  hGuard:     './assets/arcade_duel/hua_xiong_states/guard_ready.webp?v=6',
+  hGuardJust: './assets/arcade_duel/hua_xiong_states/guard_just.webp?v=6',
+  hHurtLight: './assets/arcade_duel/hua_xiong_states/hurt_light.webp?v=6',
+  hHurtHeavy: './assets/arcade_duel/hua_xiong_states/hurt_heavy.webp?v=6',
+  hStunned:   './assets/arcade_duel/hua_xiong_states/stunned.webp?v=6',
+  hKoFall:    './assets/arcade_duel/hua_xiong_states/ko_fall.webp?v=6',
+  hKoDown:    './assets/arcade_duel/hua_xiong_states/ko_down.webp?v=6',
 };
+
+// 캐릭터별 상태 → 에셋 키. 없는 항목은 null 이고, 그 상태는 기존 시트가 맡는다.
+const POSE_SET = {
+  player: { idle:'sIdle', guard:'sGuard', guardJust:'sGuardJust',
+            hurtL:'sHurtLight', hurtH:'sHurtHeavy', stunned:'sStunned',
+            koFall:'sKoFall', koDown:'sKoDown',
+            light:['sLightW','sLightA','sLightR'],
+            thrust:['sThrustW','sThrustA','sThrustR'],
+            heavy:['sHeavyW','sHeavyA','sHeavyR'] },
+  boss:   { idle:'hIdle', guard:'hGuard', guardJust:'hGuardJust',
+            hurtL:'hHurtLight', hurtH:'hHurtHeavy', stunned:'hStunned',
+            koFall:'hKoFall', koDown:'hKoDown',
+            light:['hLightW','hLightA','hLightR'],
+            thrust:['hThrustW','hThrustA','hThrustR'],
+            heavy:['hHeavyW','hHeavyA','hHeavyR'] },
+};
+
+// 포즈별 창끝 좌표 — 이펙트를 창에 붙이려면 칼끝이 실제로 어디 있는지 알아야 한다.
+// split_pose_sheet.py 가 그림에서 직접 재서 넣어준 값이다(손으로 안 찍는다).
+let POSE_TIP = {};
+// 캐릭터별 '실제 몸 높이'. 620 같은 가정값을 쓰면 후처리로 크기를 조정한 순간
+// 리그 경로와 어긋나서, 걷다가 공격하면 덩치가 바뀐다.
+const POSE_BODY_H = { player: 620, boss: 620 };
+for (const [who, kind, dir] of [['s', 'player', 'zhao_yun_states'], ['h', 'boss', 'hua_xiong_states']]) {
+  fetch(`./assets/arcade_duel/${dir}/poses.json?v=6`).then(r => r.json())
+    .then(j => {
+      for (const k in (j.poses || {})) POSE_TIP[who + ':' + k] = j.poses[k];
+      if (j.bodyH) POSE_BODY_H[kind] = j.bodyH;
+    })
+    .catch(() => {});
+}
+// 에셋 키 → poses.json 안의 이름. 앞글자(s/h)가 캐릭터를 가른다.
+const POSE_KEY = {
+  sIdle:'idle', sGuard:'guard_ready', sGuardJust:'guard_just',
+  sHurtLight:'hurt_light', sHurtHeavy:'hurt_heavy', sStunned:'stunned',
+  sKoFall:'ko_fall', sKoDown:'ko_down',
+  sLightW:'slash_windup', sLightA:'slash_impact', sLightR:'slash_recovery',
+  sThrustW:'thrust_windup', sThrustA:'thrust_impact', sThrustR:'thrust_recovery',
+  sHeavyW:'heavy_windup', sHeavyA:'heavy_impact', sHeavyR:'heavy_recovery',
+  hIdle:'idle', hGuard:'guard_ready', hGuardJust:'guard_just',
+  hHurtLight:'hurt_light', hHurtHeavy:'hurt_heavy', hStunned:'stunned',
+  hKoFall:'ko_fall', hKoDown:'ko_down',
+  hLightW:'slash_windup', hLightA:'slash_impact', hLightR:'slash_recovery',
+  hThrustW:'thrust_windup', hThrustA:'thrust_impact', hThrustR:'thrust_recovery',
+  hHeavyW:'heavy_windup', hHeavyA:'heavy_impact', hHeavyR:'heavy_recovery',
+};
+
+
+
+// ── 대기·걷기는 리그로 그린다 ────────────────────────────────────
+// 이유: 대기/걷기 시트(pose_sheet, walk6)는 프레임이 전부 셀 경계에서 잘려 있다.
+// 창끝과 망토가 사라진 채로 서 있는 게 "대기 자세가 어색한" 정체였다.
+// 리그는 잘리지 않은 소스(walk3_stable_v2) 조각을 각도로 움직이므로 잘림이 없고,
+// 프레임 사이가 보간돼 발이 지면에서 안 튄다.
+let SFX = null;
+import('./duel/sfx.js').then(m => { SFX = m.SFX; window.__sfx = m; })
+  .catch(e => console.warn('효과음 로드 실패 — 무음으로 계속한다', e));
+const snd = (fn, ...a) => { try { SFX && SFX[fn] && SFX[fn](...a); } catch {} };
+
+// 리그는 캐릭터마다 하나씩. 걷기·피격·경직·KO 를 그림 없이 만들 수 있어서
+// 잘린 옛 시트를 완전히 끊는 수단이기도 하다.
+const RIGS = {};
+let RIGLIB = null, RIGCLIPS = null;
+Promise.all([import('./duel/rig.js'), import('./duel/clips.js')])
+  .then(async ([lib, clips]) => {
+    RIGLIB = lib; RIGCLIPS = clips;
+    const [zy, hx] = await Promise.all([
+      lib.loadRig('./assets/duel_rig/zhao_yun', '3'),
+      lib.loadRig('./assets/duel_rig/hua_xiong', '3'),
+    ]);
+    RIGS.player = zy; RIGS.boss = hx;
+  })
+  .catch(e => console.warn('리그 로드 실패 — 기존 시트로 계속한다', e));
+
+const RIG_TARGET_H = 200;          // 무대에서의 캐릭터 키(상태 포즈와 동일)
+
+// 상태 포즈 규격 — split_pose_sheet.py 의 출력과 반드시 같아야 한다
+const STATE_CW = 1280, STATE_CH = 1024, STATE_H = 620, STATE_GROUND = 880, STATE_CX = 640;
+// 장수별 체격. 정규화가 모든 컷을 같은 키(620px)로 맞춰 주므로 캐릭터 간 덩치 차이는
+// 여기서만 준다 — 생성 모델은 여러 번에 걸쳐 상대적 크기를 일정하게 못 지킨다.
+// 그림에 손대지 않고 숫자 하나로 조정되는 게 장점이다.
+const CHAR_SIZE = { player: 1.00, boss: 1.14 };   // 화웅은 조운보다 머리 하나 크다
+
+// 발 위치 — 대기 자세에서 장화 픽셀을 직접 세어 구한 값(캔버스 1280 기준, 중심 640).
+// 자동 검출을 시도했지만 자세마다 흔들렸다: 바닥에 닿은 무기(화웅의 도끼날,
+// 조운의 창)가 발로 잡히는 데다, 웅크린 자세에선 한쪽 발만 바닥에 닿는다.
+// 그림자는 캐릭터당 한 번만 재면 되는 값이라 실측 상수가 더 정확하고 안전하다.
+//   cx : 두 발의 중심 (캔버스 중앙에서 얼마나 벗어났나)
+//   w  : 왼발 바깥 ~ 오른발 바깥 폭
+const CHAR_FEET = {
+  player: { cx: 612, w: 381 },   // 장화 422~522 / 711~803
+  boss:   { cx: 555, w: 279 },   // 장화 416~523 / 604~695  (도끼날 746~949 는 제외)
+};
+const STATE_TARGET_H = 200;                       // 기준 키(체격 1.00 일 때)
+// 285 는 세로 화면에서 너무 컸다 — 둘이 결투영역을 꽉 채워 숨 쉴 공간이 없었다.
+// 다만 더 줄이면 예비동작(창을 드는 순간)이 안 읽힌다. 읽기가 죽으면 게임이 죽는다.
+// 스프라이트 배율 — 실측 몸높이 기준. 리그 배율과 같은 공식을 쓴다.
+const spriteScale = f => (STATE_TARGET_H * charScale(f)) / (POSE_BODY_H[f.kind] || STATE_H);
+const charScale = f => (CHAR_SIZE[f.kind] || 1);
 
 const META = {
   player: {
@@ -267,7 +455,7 @@ const META = {
 
 // 에셋 총량이 11MB대다. 진행 표시 없이 받으면 첫 방문자는 검은 화면만 본다.
 // 게다가 전부 기다릴 이유가 없다 — 배경과 양쪽 포즈 시트(3.4MB)만 있으면 결투는 성립하고,
-// 걷기·공격·피격 시트는 없는 동안 pickFrame() 이 포즈 프레임으로 대체한다.
+// 상태 포즈는 뒤에서 계속 받는다 — 도착 전 상태는 그림자만 그린다.
 const CORE_ASSETS = ['bg', 'pPose', 'bPose'];
 let assetsReady = false;
 function loadAssets(keys, onProgress) {
@@ -314,6 +502,11 @@ const DIFF = {
 };
 let diff = DIFF.normal;
 
+// 상대를 허수아비로 세워두는 디버그 스위치. 주소에 ?dummy=1 (또는 2) 을 붙이면 켜진다.
+// 콘솔에서 DUMMY 를 바꿔도 즉시 먹는다.
+let DUMMY = +(new URLSearchParams(location.search).get('dummy') || 0);
+window.setDummy = v => { DUMMY = +v || 0; return DUMMY; };
+
 // ═══════════════════════════════════════════════════════════════════
 //  3. 파이터
 // ═══════════════════════════════════════════════════════════════════
@@ -321,6 +514,8 @@ function makeFighter(kind, opts) {
   return {
     kind, name: opts.name, war: opts.war,
     x: opts.x, dir: opts.dir,
+    z: opts.z ?? Z_MAX * 0.5,   // 깊이. 0=앞, Z_MAX=안쪽
+    vz: 0,
     hp: opts.hp, maxHp: opts.hp,
     stam: 100, maxStam: 100,
     vx: 0,
@@ -372,12 +567,13 @@ const canAct = f => !busy(f) && !helpless(f) && f.state !== 'dash' && f.state !=
 // ═══════════════════════════════════════════════════════════════════
 const keys = new Set();
 const tapped = { left: 0, right: 0 };
-const pad = { left: false, right: false, guard: false };
+const pad = { left: false, right: false, up: false, down: false, guard: false };
 let bufAttack = null, bufFrames = 0;      // 선입력 버퍼 — 후딜 중에 눌러도 이어진다
 
 const KEYMAP = {
   ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right',
-  ArrowDown: 'guard', KeyS: 'guard',
+  ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyX: 'down',
+  KeyS: 'guard',
   KeyJ: 'light', KeyK: 'heavy', KeyL: 'thrust',
   Space: 'light', ShiftLeft: 'dash', ShiftRight: 'dash',
 };
@@ -413,12 +609,13 @@ document.querySelectorAll('#pad .btn').forEach(btn => {
   const down = e => {
     e.preventDefault(); btn.classList.add('on');
     if (act === 'left' || act === 'right') { pad[act] = true; onPress(act); }
+    else if (act === 'up' || act === 'down') pad[act] = true;
     else if (act === 'guard') pad.guard = true;
     else onPress(act);
   };
   const up = e => {
     e.preventDefault(); btn.classList.remove('on');
-    if (act === 'left' || act === 'right') pad[act] = false;
+    if (act === 'left' || act === 'right' || act === 'up' || act === 'down') pad[act] = false;
     else if (act === 'guard') pad.guard = false;
   };
   btn.addEventListener('pointerdown', down);
@@ -429,9 +626,12 @@ document.querySelectorAll('#pad .btn').forEach(btn => {
 });
 
 const held = act => {
-  if (act === 'guard') return pad.guard || keys.has('ArrowDown') || keys.has('KeyS');
+  // 주의: ↓ 는 가드가 아니라 깊이(앞으로) 이동이다. 가드는 S / 패드 버튼.
+  if (act === 'guard') return pad.guard || keys.has('KeyS');
   if (act === 'left') return pad.left || keys.has('ArrowLeft') || keys.has('KeyA');
   if (act === 'right') return pad.right || keys.has('ArrowRight') || keys.has('KeyD');
+  if (act === 'up') return pad.up || keys.has('ArrowUp') || keys.has('KeyW');
+  if (act === 'down') return pad.down || keys.has('ArrowDown') || keys.has('KeyX');
   return false;
 };
 
@@ -440,6 +640,7 @@ const held = act => {
 // ═══════════════════════════════════════════════════════════════════
 function startMove(f, key) {
   const m = MOVES[key];
+  snd('swing', key);
   if (!m || !canAct(f)) return false;
   if (f.stam < m.stam) { spendFail(f); return false; }
   f.stam -= m.stam;
@@ -448,15 +649,16 @@ function startMove(f, key) {
 }
 function spendFail(f) {
   if (f === P) banner('기력 부족', '#ff8a5c', .5);
-  puff(f.x, GROUND - 40, 4, '#ff7a4a');
+  puff(f.x, footY(f) - 40, 4, '#ff7a4a');
 }
 function startDash(f, dir) {
+  snd('dash');
   if (!canAct(f) || f.stam < 12) return;
   f.stam -= 12;
   const back = dir !== f.dir;
   f.state = back ? 'backstep' : 'dash'; f.st = 0;
   f.vx = dir * (back ? 8.2 : 10.5);
-  for (let i = 0; i < 6; i++) dust.push({ x: f.x, y: GROUND, vx: -dir * (1 + Math.random() * 3), vy: -Math.random() * 1.6, life: 22, r: 3 + Math.random() * 5 });
+  for (let i = 0; i < 6; i++) dust.push({ x: f.x, y: footY(f), vx: -dir * (1 + Math.random() * 3), vy: -Math.random() * 1.6, life: 22, r: 3 + Math.random() * 5 });
 }
 
 function faceEachOther() {
@@ -469,6 +671,8 @@ function activeNow(f) {
   return f.state === 'active' && !f.hitDone;
 }
 function inReach(att, def) {
+  // 깊이가 어긋나면 헛친다 — 이게 있어야 '비켜서기'가 회피 수단이 된다
+  if (Math.abs(att.z - def.z) > Z_HIT) return false;
   const dx = (def.x - att.x) * att.dir;
   return dx > 0 && dx <= att.move.reach;
 }
@@ -484,6 +688,7 @@ function resolveCombat() {
 }
 
 function clash() {
+  snd('clash');
   P.hitDone = B.hitDone = true;
   P.state = 'recover'; P.st = 0; B.state = 'recover'; B.st = 0;
   P.vx = -P.dir * 7; B.vx = -B.dir * 7;
@@ -500,7 +705,7 @@ function applyHit(att, def) {
   att.hitDone = true;
   const m = att.move;
   const hx = att.x + att.dir * (m.reach * 0.78);
-  const hy = GROUND - 165;
+  const hy = footY(def) - 165;
 
   if (def.inv > 0) return;
 
@@ -513,6 +718,7 @@ function applyHit(att, def) {
     hitStop = 18; cam.punch = .85; shake(11);
     sparkBurst(hx, hy, 22, '#9de2ff', 8);
     ring(hx, hy, 170, '#9de2ff');
+    snd('just');
     banner(def === P ? '저스트가드!' : '흘렸다', '#9de2ff', .95);
     hap++; bumpHap();
     return;
@@ -526,11 +732,13 @@ function applyHit(att, def) {
     def.stam -= m.crush ? 34 : 12;
     def.vx = att.dir * m.push * 0.55;
     hitStop = m.crush ? 12 : 7; shake(m.crush ? 8 : 4);
+    snd('guard', !!m.crush);
     sparkBurst(hx, hy, 12, '#cfe6ff', 5);
     if (def.stam <= 0) {                    // 가드 붕괴
       def.stam = 0;
       def.state = 'stunned'; def.st = 0; def.stunTimer = 48;
       def.guardHeld = false;
+      snd('stun');
       banner('가드 붕괴!', '#ff9a3c', 1);
       shake(13); cam.punch = .8;
     }
@@ -543,32 +751,43 @@ function applyHit(att, def) {
   const dmg = Math.max(3, Math.round(m.dmg * mul));
   def.hp -= dmg;
   if (def === P) stats.taken += dmg; else stats.hits++;
-  def.vx = att.dir * m.push;
+  def.vx = (DUMMY && def === B) ? 0 : att.dir * m.push;
   def.state = 'hurt'; def.st = 0; def.inv = 10; def.hitFlash = 14;
+  // 강타(가드크러시 기술)나 최대체력 12% 이상이면 크게 젖혀지는 피격 포즈
+  def.hurtHeavy = !!m.crush || dmg >= def.maxHp * 0.12;
   def.stun = Math.min(STUN_MAX, def.stun + m.stunAdd);
   def.guardHeld = false;
 
+  snd('hit', !!m.crush);
   hitStop = m.crush ? 16 : 10;
   cam.punch = m.crush ? .9 : .5;
   shake(m.crush ? 12 : 7);
   bloodBurst(hx, hy, m.crush ? 22 : 14);
+  // 맞은 자리에서 빛이 터진다 — 히트스톱이 걸린 몇 프레임을 채워 준다
+  fx.push({ t: 'burst', x: hx, y: hy, r: m.crush ? 150 : 96,
+            life: m.crush ? 16 : 11, max: m.crush ? 16 : 11,
+            color: (auraOf(att) || AURA.light).color });
+  fx.push({ t: 'shock', x: hx, y: hy, r: m.crush ? 190 : 120,
+            life: m.crush ? 22 : 15, max: m.crush ? 22 : 15, dir: att.dir });
   slashArc(att.x + att.dir * 70, hy, att.dir, m.arc);   // 궤적은 '휘두른 사람' 기준
-  damageNum(hx, hy - 60, dmg, m.crush);
+  damageNum(hx, hy - 74, dmg, m.crush);
   hap++; bumpHap();
 
   if (def.stun >= STUN_MAX) {               // 경직 만땅 → 무방비
     def.stun = 0;
     def.state = 'stunned'; def.st = 0; def.stunTimer = 70;
+    snd('stun');
     banner('경직!', '#ffd45c', 1);
   }
   if (def.hp <= 0) knockOut(def);
 }
 
 function knockOut(f) {
+  snd('ko');
   f.hp = 0; f.state = 'ko'; f.st = 0;
   phase = 'over';
   slowmo = 60; hitStop = 24; shake(20); cam.punch = 1.2;
-  bloodBurst(f.x, GROUND - 170, 34);
+  bloodBurst(f.x, footY(f) - 170, 34);
   setTimeout(() => showResult(f === B ? 'win' : 'lose'), 1700);
 }
 
@@ -588,7 +807,11 @@ function stepFighter(f) {
 
   switch (f.state) {
     case 'windup':
-      if (f.st >= f.move.startup) { f.state = 'active'; f.st = 0; }
+      if (f.st >= f.move.startup) {
+        // 궤적은 '감았을 때의 칼끝'에서 시작한다 — 넘어가기 직전에 붙잡아 둔다
+        f.swingFrom = tipOf(f);
+        f.state = 'active'; f.st = 0;
+      }
       break;
     case 'active':
       if (f.st >= f.move.active) { f.state = 'recover'; f.st = 0; }
@@ -601,7 +824,9 @@ function stepFighter(f) {
       if (f.st >= 13) { f.state = 'idle'; f.st = 0; }
       break;
     case 'hurt':
-      if (f.st >= 20) { f.state = 'idle'; f.st = 0; }
+      // 20프레임(0.33초)은 피격 자세가 눈에 들어오기도 전에 끝난다.
+      // 강타는 더 오래 젖혀져 있어야 '크게 맞았다'가 읽힌다.
+      if (f.st >= (f.hurtHeavy ? 27 : 18)) { f.state = 'idle'; f.st = 0; }
       break;
     case 'stunned':
       if (f.st >= f.stunTimer) { f.state = 'idle'; f.st = 0; }
@@ -609,21 +834,74 @@ function stepFighter(f) {
   }
 
   // 물리 — 지면 마찰
+  if (busy(f) || helpless(f)) f.vz *= 0.5;      // 공격·피격 중엔 축을 못 바꾼다
+  f.z = clamp(f.z + f.vz, 0, Z_MAX);
   f.x += f.vx;
   f.vx *= (f.state === 'dash' || f.state === 'backstep') ? 0.90 : 0.80;
   if (Math.abs(f.vx) < 0.05) f.vx = 0;
   f.x = clamp(f.x, 60, STAGE_W - 60);
   f.lean = lerp(f.lean, clamp(f.vx * 0.6, -6, 6), 0.2);
+  // 보폭 누적 — 실제로 움직인 만큼만 다리가 움직여야 발이 안 미끄러진다
+  const before = f.gait || 0;
+  // 앞뒤(vx)만 세면 위아래로만 움직일 때 다리가 멈춘 채 몸만 미끄러진다.
+  // 실제 이동 거리로 재야 어느 방향으로 가든 걸음이 붙는다.
+  f.gait = before + Math.hypot(f.vx, f.vz);
+  // 한 걸음마다 발소리 + 흙먼지. 프레임마다 울리면 소음이 된다 — 보폭 단위로 끊는다.
+  if (f.state === 'walk' && Math.floor(f.gait / 51) !== Math.floor(before / 51)) {
+    snd('step');
+    // 디딜 때마다 먼지가 인다. 없으면 지면을 밟는 게 아니라 떠다니는 것처럼 보인다.
+    for (let i = 0; i < 3; i++) {
+      dust.push({ x: f.x + (Math.random() - .5) * 26, y: footY(f) + 2,
+                  vx: -sign(f.vx || f.dir) * (0.4 + Math.random()), vy: -Math.random() * 0.9,
+                  life: 20, r: 2 + Math.random() * 4 });
+    }
+  }
 }
 
+// 몸 반경 — 체격에 비례한다. 예전엔 205 고정이었는데 캐릭터 크기를 바꾸면 어긋난다.
+const bodyR = f => 74 * charScale(f);
+// 무게 — 체격의 제곱. 큰 쪽이 덜 밀린다. 화웅에게 밀려나는 게 몸으로 느껴져야 한다.
+const mass = f => Math.pow(charScale(f), 2);
+
 function separate() {
-  // 두 장수가 겹치지 않게 밀어낸다 — 붙어서 뚫고 지나가면 결투가 안 된다
-  // 스프라이트 폭이 월드 250px대다. 이보다 좁게 붙이면 두 장수가 서로를 뚫고 겹친다.
-  const d = B.x - P.x, min = 205;
-  if (Math.abs(d) < min) {
-    const push = (min - Math.abs(d)) / 2 * sign(d || 1);
-    P.x -= push; B.x += push;
-    P.x = clamp(P.x, 60, STAGE_W - 60); B.x = clamp(B.x, 60, STAGE_W - 60);
+  if (Math.abs(P.z - B.z) > Z_HIT * 1.4) { P.contact = B.contact = 0; return; }  // 다른 축이면 지나친다
+  const d = B.x - P.x, min = bodyR(P) + bodyR(B);
+  const overlap = min - Math.abs(d);
+  if (overlap <= 0) { P.contact = B.contact = 0; return; }
+
+  const dir = sign(d || 1);
+  // 무게 비율로 나눠 민다 — 반씩 밀면 덩치 차이가 안 느껴진다
+  const mP = mass(P), mB = mass(B), tot = mP + mB;
+  // 한 번에 다 떼지 않고 스프링처럼 밀어낸다. 즉시 분리하면 '순간이동'처럼 보인다.
+  const push = Math.min(overlap, 6) * 0.55;
+  if (!DUMMY) {
+    P.x -= push * (mB / tot) * dir;
+    B.x += push * (mP / tot) * dir;
+  } else {
+    P.x -= push * dir;                       // 허수아비는 안 밀린다
+  }
+  P.x = clamp(P.x, 60, STAGE_W - 60); B.x = clamp(B.x, 60, STAGE_W - 60);
+
+  // 밀고 들어가는 쪽은 속도가 죽는다 — 벽을 미는 저항감
+  if (sign(P.vx) === dir) P.vx *= 0.45;
+  if (sign(B.vx) === -dir) B.vx *= 0.45;
+
+  // 접촉 연출 — 처음 닿는 순간에만 소리·먼지, 이후엔 비비는 느낌만 남긴다
+  const first = !P.contact;
+  P.contact = B.contact = Math.min(1, (P.contact || 0) + 0.25);
+  if (first) {
+    snd('bump');
+    shake(3);
+    const cx = (P.x + B.x) / 2;
+    for (let i = 0; i < 5; i++)
+      dust.push({ x: cx + (Math.random() - .5) * 30, y: footY(P) + 2,
+                  vx: (Math.random() - .5) * 2.4, vy: -Math.random() * 1.4,
+                  life: 24, r: 3 + Math.random() * 5 });
+  } else if (frame % 7 === 0 && (Math.abs(P.vx) > 0.6 || Math.abs(B.vx) > 0.6)) {
+    snd('scrape');
+    dust.push({ x: (P.x + B.x) / 2, y: footY(P) + 2,
+                vx: (Math.random() - .5) * 1.6, vy: -Math.random() * .8,
+                life: 16, r: 2 + Math.random() * 3 });
   }
 }
 
@@ -637,13 +915,23 @@ function updatePlayer() {
   }
 
   if (canAct(P) && !P.guardHeld) {
+    // 깊이 이동 — 앞뒤(x)보다 조금 느리게. 너무 빠르면 축 피하기가 만능이 된다.
+    const u = held('up'), dn = held('down');
+    const movingZ = u !== dn;
+    if (movingZ) P.vz = lerp(P.vz, (u ? 1 : -1) * 2.4, 0.35);
+    else P.vz = lerp(P.vz, 0, 0.3);
+
     const l = held('left'), r = held('right');
-    if (l !== r) {
+    const movingX = l !== r;
+    if (movingX) {
       const dir = l ? -1 : 1;
       const forward = dir === P.dir;
       P.vx = dir * (forward ? 3.4 : 2.6);   // 뒷걸음은 조금 느리다
-      P.state = 'walk'; P.walkClock++;
-    } else if (P.state === 'walk') { P.state = 'idle'; P.st = 0; }
+    }
+    // 걷는 상태는 **두 축을 합쳐서** 판정한다. 앞뒤만 보면 위아래로만 움직일 때
+    // 상태가 idle 로 되돌아가 다리가 멈춘 채 몸만 미끄러진다.
+    if (movingX || movingZ) { P.state = 'walk'; P.walkClock++; }
+    else if (P.state === 'walk') { P.state = 'idle'; P.st = 0; }
   } else if (P.state === 'walk') P.state = 'idle';
 }
 
@@ -655,6 +943,16 @@ function updateAI() {
 
   if (helpless(B) || busy(B) || B.state === 'dash' || B.state === 'backstep') { ai.t++; return; }
   ai.t++;
+
+  // 디버그: 상대를 가만히 세워둔다. 내 동작만 천천히 보고 싶을 때.
+  //   ?dummy=1  가만히 서 있기만 (공격·이동 없음)
+  //   ?dummy=2  거리는 유지하되 공격은 안 함
+  if (DUMMY) {
+    B.vz = 0;
+    if (DUMMY >= 2 && dist > MOVES.thrust.reach) { B.vx = B.dir * 2.6; B.state = 'walk'; B.walkClock++; }
+    else { B.vx = 0; B.state = 'idle'; }
+    return;
+  }
 
   // 플레이어가 후딜에 걸렸다 → 확정 처벌
   if (P.state === 'recover' && dist < 300 && ai.react-- <= 0) {
@@ -676,6 +974,17 @@ function updateAI() {
   }
 
   if (ai.t % 12 === 0) ai.react = diff.react + (Math.random() * 8 | 0);
+
+  // 깊이 정렬 — 축이 어긋나면 아무리 붙어도 안 맞는다.
+  // 무조건 즉시 정렬하면 '비켜서기'가 무의미해지므로, 난이도만큼만 빠르게 따라온다.
+  const dz = P.z - B.z;
+  if (Math.abs(dz) > Z_HIT * 0.55) {
+    B.vz = lerp(B.vz, sign(dz) * (1.5 + diff.aggro * 1.3), 0.3);
+    if (Math.abs(dz) > Z_HIT * 1.6) {          // 많이 어긋났으면 접근보다 정렬이 먼저
+      B.state = 'walk'; B.walkClock++;
+      return;
+    }
+  } else B.vz = lerp(B.vz, 0, 0.35);
 
   // 거리 관리 — '닿는 거리'가 기준이다.
   // 여유(margin)를 두는 이유: 판정은 active 프레임에 나는데 그 사이 상대가 움직인다.
@@ -704,12 +1013,16 @@ function updateAI() {
 }
 
 function updateCamera() {
+  // 배경이 알려준 다리 폭으로 이동 범위를 맞춘다 — 튀지 않게 서서히
+  Z_MAX = lerp(Z_MAX, zRange, 0.15);
   const mid = (P.x + B.x) / 2;
   const dist = Math.abs(P.x - B.x);
   // 가까울수록 당겨 붙는다 — 접근전이 곧 클로즈업.
   // 다만 격투게임은 '두 사람과 그 사이의 간격'이 같이 보여야 읽힌다.
   // 장수 키가 화면의 40%대(먼 거리 37% ~ 붙었을 때 47%)에 오도록 잡은 값.
-  let z = clamp(1.02 - dist / 1400, 0.70, 0.95);
+  // 세로 화면은 가로가 540 뿐이다. '두 장수 + 그 사이'가 항상 들어오도록
+  // 필요한 폭에서 역산한다 — 가로처럼 고정 계수로 잡으면 벌어졌을 때 화면 밖으로 나간다.
+  let z = clamp(W / (dist + 360), 0.60, 1.15);
   if (hitStop > 0) z *= 1 + cam.punch * 0.05;
   cam.zoom = lerp(cam.zoom, z, 0.07);
   const half = W / (2 * cam.zoom);
@@ -798,138 +1111,320 @@ function drawBackground() {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   const bg = A.bg;
   if (!ready(bg)) { ctx.fillStyle = '#1a1008'; ctx.fillRect(0, 0, W, H); return; }
-  // 배경은 카메라보다 느리게(패럴랙스) + 줌은 살짝만 따라간다
+  // 배경은 16:9 가로 그림이다. 세로 캔버스에 높이로 맞추면 좌우가 모자라고,
+  // 폭으로 맞추면 지면선이 화면 한참 아래로 내려간다.
+  // → 폭 기준으로 키우되, **그림 속 지면선을 SCREEN_GROUND 에 맞춰** 세로 위치를 정한다.
+  //   그래야 장수 발밑과 배경 바닥이 붙는다.
   const z = cam.zoom * (1 + cam.punch * .045);
-  // 0.85 = 평상시 줌. 배경은 그 기준에서만 살짝 따라 움직인다(과하면 지면선이 튄다)
-  const scale = (H / bg.naturalHeight) * (1 + (z - 0.85) * 0.45) * 1.06;
+  // 배경 그림에서 '나무 다리'가 차지하는 세로 구간 — 실측값이다.
+  //   앞쪽 끝 80.8% / 안쪽 끝 69.6%  (tools 로 픽셀을 세어 구했다)
+  // 이 값이 틀리면 캐릭터가 다리 밖으로 걸어 나간다.
+  const BG_FRONT = 0.808;              // z=0 일 때 발끝이 놓일 위치
+  const BG_BACK  = 0.696;              // z=Z_MAX 일 때 발끝이 놓일 위치
+  const BG_GROUND = BG_FRONT;
+  // 폭도 채우고 '지면 위 공간'도 채워야 한다. 둘 중 큰 배율을 쓴다 —
+  // 안 그러면 결투 영역 위쪽에 검은 띠가 남는다.
+  const need = Math.max(W / bg.naturalWidth,
+                        SCREEN_GROUND / (bg.naturalHeight * BG_GROUND));
+  const scale = need * 1.06 * (1 + (z - 0.85) * 0.22);
   const bw = bg.naturalWidth * scale, bh = bg.naturalHeight * scale;
-  const px = (cam.x / STAGE_W - .5) * (bw - W) * 0.9;
+  const px = (cam.x / STAGE_W - .5) * Math.max(0, bw - W) * 0.9;
   ctx.imageSmoothingEnabled = true;
-  ctx.drawImage(bg, (W - bw) / 2 - px, H - bh + (H * .04), bw, bh);
-  // 상하 비네트 — 인물이 배경에서 뜨게
+  const bx = (W - bw) / 2 - px;
+  const by = SCREEN_GROUND - bh * BG_GROUND;
+  // 그려진 다리 폭에 맞춰 이동 가능한 깊이를 정한다.
+  // 상수로 박아두면 배경을 바꿀 때마다 캐릭터가 허공을 걷는다.
+  zRange = clamp((bh * (BG_FRONT - BG_BACK)) / Math.max(0.3, z), 40, 200);
+  ctx.drawImage(bg, bx, by, bw, bh);
+  // 배경이 못 덮는 위/아래는 어둠으로 — 세로가 길어 그림만으로는 화면이 안 찬다
+  if (by > 0) { ctx.fillStyle = '#0d0906'; ctx.fillRect(0, 0, W, Math.ceil(by) + 1); }
+  const bottom = by + bh;
+  if (bottom < H) { ctx.fillStyle = '#150d07'; ctx.fillRect(0, Math.floor(bottom), W, H - bottom + 1); }
+  // 상하 비네트 — 인물이 배경에서 뜨게. 조작부 쪽은 더 짙게 눌러 시선을 결투로 모은다
   const g = ctx.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0, 'rgba(6,4,2,.72)'); g.addColorStop(.28, 'rgba(6,4,2,0)');
-  g.addColorStop(.66, 'rgba(6,4,2,0)'); g.addColorStop(1, 'rgba(6,4,2,.80)');
+  g.addColorStop(0, 'rgba(6,4,2,.80)'); g.addColorStop(.18, 'rgba(6,4,2,0)');
+  g.addColorStop(Math.min(.98, PLAY_RATIO * 0.82), 'rgba(6,4,2,0)');
+  g.addColorStop(Math.min(.99, PLAY_RATIO), 'rgba(6,4,2,.55)');
+  g.addColorStop(1, 'rgba(6,4,2,.96)');
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 }
 
-// 상태 → 어떤 시트의 몇 번째 프레임을 그릴지
-function pickFrame(f) {
-  const m = META[f.kind];
-  const walking = f.state === 'walk' || f.state === 'dash' || f.state === 'backstep';
+// NOTE: 예전에는 여기에 pickFrame() 이 있었다 — 스프라이트 시트에서 컷을 골라
+// 그리는 경로다. 두 장수 모두 새 규격 포즈(+리그)로 옮겨 가면서 통째로 삭제했다.
+// 그 경로가 남아 있는 동안엔 '걸을 때만 커지고 공격하면 작아지는' 문제가 계속 났다:
+// 시트는 컷 사각형 기준, 새 포즈는 몸 높이 기준이라 크기 기준이 서로 달랐기 때문이다.
 
-  if (f.kind === 'boss') {
-    if (f.state === 'stunned' || f.state === 'ko') {
-      if (ready(A[m.stun.img])) return { set: m.stun, i: Math.floor(f.st / 9) % 3 };
-    }
-    if (f.state === 'hurt') {
-      if (ready(A[m.hurt.img])) return { set: m.hurt, i: Math.min(2, Math.floor(f.st / 7)) };
-    }
-    if (busy(f)) {
-      // 화웅은 공격 시트가 없다 → 포즈 2(도끼 치켜듦) → 3(내려찍기) → 1(자세 회복)
-      const i = f.state === 'windup' ? 2 : f.state === 'active' ? 3 : 1;
-      return { set: m.pose, i };
-    }
-    if (walking && ready(A[m.walk.img])) return { set: m.walk, i: Math.floor(f.walkClock / 6) % 6 };
-    return { set: m.pose, i: 0 };
+// 지금 이 파이터가 써야 할 상태 포즈. 없으면 null.
+// 캐릭터마다 가진 포즈가 다르다 — 없는 항목은 리그(rigClipFor)가 메운다.
+function statePose(f) {
+  const set = POSE_SET[f.kind];
+  if (!set) return null;
+  const pick = k => { if (!k || !ready(A[k])) return null; f.poseKey = k; return A[k]; };
+  const PHASE = { windup: 0, active: 1, recover: 2 };
+  const atk = f.move && set[f.move.sheet];
+  switch (f.state) {
+    case 'windup':
+    case 'active':
+    case 'recover': return atk ? pick(atk[PHASE[f.state]]) : null;
+    case 'hurt':    return pick(f.hurtHeavy ? set.hurtH : set.hurtL);
+    case 'stunned': return pick(set.stunned);
+    case 'ko':      return pick(f.st < 26 ? set.koFall : set.koDown);
+    default:
+      // 가드는 상태가 아니라 플래그다. 저스트 유효 프레임 동안은 쳐내는 자세.
+      if (f.guardHeld && !busy(f) && !helpless(f))
+        return pick(f.guardT <= GUARD_JUST ? (set.guardJust || set.guard) : set.guard);
+      if (f.state === 'idle') return pick(set.idle);
+      // 걷기 전용 그림이 없으면 대기 자세로 대신한다(리그가 못 맡을 때의 최후 수단)
+      if (f.state === 'walk' || f.state === 'dash' || f.state === 'backstep')
+        return pick(set.walk || set.idle);
+      return null;
   }
+}
 
-  // player
-  if (f.state === 'hurt' || f.state === 'stunned' || f.state === 'ko') return { set: m.pose, i: 4 };
-  if (busy(f)) {
-    const sheet = m[f.move.sheet];
-    if (sheet && ready(A[sheet.img])) {
-      const n = sheet.f.length;
-      let p;                                  // 0..1 진행도 → 시트 프레임
-      if (f.state === 'windup') p = (f.st / f.move.startup) * 0.42;
-      else if (f.state === 'active') p = 0.42 + (f.st / f.move.active) * 0.30;
-      else p = 0.72 + (f.st / f.move.recovery) * 0.28;
-      return { set: sheet, i: clamp(Math.floor(p * n), 0, n - 1) };
-    }
-    return { set: m.pose, i: f.state === 'windup' ? 2 : 3 };
+// 접지 그림자 — '하늘에 떠 있는' 느낌을 없애는 건 거의 전적으로 이것이다.
+//  · 발밑에 딱 붙은 진한 코어  : 발이 지면에 닿았다는 신호
+//  · 그 바깥의 흐린 반그림자   : 부피감
+// 예전 값(폭 60~70, 발보다 4px 아래)은 285px 캐릭터 기준이라 지금은 과하게 넓고 떠 있었다.
+function drawShadow(f) {
+  const s = spriteScale(f) * zScale(f);
+  const feet = CHAR_FEET[f.kind] || { cx: STATE_CX, w: 360 };
+  // 그림자는 **두 발을 덮어야** 한다. 몸통 중심에 찍으면 안 된다 —
+  // 무기까지 포함해 정렬된 탓에 화웅은 발이 중앙에서 85px 벗어나 있고,
+  // 좌우 반전까지 겹쳐 그림자가 발 반대쪽에 찍혔다.
+  let cx = f.x + f.dir * (feet.cx - STATE_CX) * s;
+  let w = (feet.w * 0.5) * s * 1.18;
+  let alpha = 1;
+
+  // 자세에 따라 그림자가 변해야 자연스럽다. 고정 타원은 스티커처럼 보인다.
+  if (busy(f) && f.move) {
+    // 내지르는 동안엔 발이 벌어지고 몸이 앞으로 나간다 → 넓어지고 앞으로 끌린다
+    const t = f.state === 'active' ? 1 : f.state === 'recover' ? 0.7 : 0.25;
+    w *= 1 + 0.30 * t;
+    cx += f.dir * w * 0.18 * t;
+    alpha *= 1 - 0.10 * t;
+  } else if (f.guardHeld) {
+    w *= 0.92;                       // 웅크리면 좁고 진해진다
+    alpha *= 1.12;
+  } else if (f.state === 'hurt') {
+    cx -= f.dir * w * 0.22;          // 밀려난 쪽으로 끌린다
+    alpha *= 0.9;
+  } else if (f.state === 'ko') {
+    // 넘어지는 동안엔 몸이 떠 있다 → 작고 옅게, 바닥에 닿으면 다시 퍼진다
+    const air = clamp(1 - Math.abs(f.st - 16) / 16, 0, 1);
+    w *= 1 - 0.35 * air; alpha *= 1 - 0.45 * air;
+  } else if (f.state === 'idle') {
+    alpha *= 1 + Math.sin(frame * 0.042) * 0.05;   // 호흡에 맞춰 아주 미세하게
   }
-  if (walking && ready(A[m.walk.img])) return { set: m.walk, i: Math.floor(f.walkClock / 6) % 6 };
-  return { set: m.pose, i: 0 };   // 포즈1은 찌르는 자세라 대기/가드에 쓰면 공격처럼 보인다
+  // 안쪽으로 갈수록 빛이 약해 그림자도 옅다
+  alpha *= 1 - f.z / Z_MAX * 0.18;
+
+  const y = footY(f);
+  ctx.save();
+  ctx.translate(cx, y);
+  ctx.scale(1, 0.34);                // 원근에 눌린 타원
+  // 층을 겹쳐 가장자리를 부드럽게 — 단단한 타원 하나면 스티커처럼 보인다.
+  // 바깥으로 갈수록 넓고 옅게, 안쪽은 좁고 진하게.
+  for (const [rad, a0, a1] of [[1.75, .30, 0], [1.15, .46, 0], [0.66, .58, 0]]) {
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, w * rad);
+    g.addColorStop(0, `rgba(0,0,0,${(a0 * alpha).toFixed(3)})`);
+    g.addColorStop(0.62, `rgba(0,0,0,${(a0 * alpha * 0.42).toFixed(3)})`);
+    g.addColorStop(1, `rgba(0,0,0,${a1})`);
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(0, 0, w * rad, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+// 지금 그려진 포즈의 창끝을 무대 좌표로 — 발광·궤적이 붙는 지점.
+function tipOf(f) {
+  const t = POSE_TIP[(f.poseKey || '').charAt(0) + ':' + POSE_KEY[f.poseKey]];
+  if (!t) return null;
+  const s = 1;
+  const zs = spriteScale(f) * zScale(f);
+  return [f.x + f.dir * (t.tipX - STATE_CX) * zs, footY(f) + (t.tipY - STATE_GROUND) * zs];
+}
+
+// 상태 포즈는 규격이 통일돼 있어서 컷 좌표 없이 한 줄로 그린다.
+function drawStatePose(f, img) {
+  const s = spriteScale(f);
+  ctx.save();
+  ctx.translate(f.x, footY(f));
+  ctx.scale(zScale(f), zScale(f));
+  // 대기는 그림 한 장이라 가만 두면 마네킹이다 — 숨을 쉬게 한다.
+  // 위아래로 띄우지 않고 '눌렀다 폈다' 한다. 발이 지면에서 떨어지면 안 된다.
+  if (f.state === 'idle' && !f.guardHeld) {
+    const b = Math.sin(frame * 0.042 + (f === B ? 1.7 : 0));
+    ctx.scale(1 - b * 0.006, 1 + b * 0.012);
+  } else if (f.guardHeld) {
+    const b = Math.sin(frame * 0.075);       // 가드 중엔 더 얕고 빠르게
+    ctx.scale(1, 1 + b * 0.006);
+  }
+  ctx.scale(f.dir, 1);                       // 원본은 오른쪽을 본다
+  if (f.hitFlash > 0 && f.hitFlash % 4 > 1 && f.state !== 'ko') ctx.globalAlpha = .55;
+  ctx.drawImage(img, -STATE_CX * s, -STATE_GROUND * s, STATE_CW * s, STATE_CH * s);
+  ctx.restore();
+}
+
+// 리그로 그릴 수 있는 상태인가 — 대기와 이동만. 공격은 그린 포즈가 훨씬 낫다.
+function rigClipFor(f) {
+  const rig = RIGS[f.kind];
+  if (!rig) return null;
+  const set = POSE_SET[f.kind] || {};
+  // 그려진 포즈가 있으면 그림이 언제나 낫다. 리그는 '그림이 없는 상태'를 메운다.
+  if (f.state === 'hurt')    return set.hurtL ? null : 'hurt';
+  if (f.state === 'stunned') return set.stunned ? null : 'stunned';
+  if (f.state === 'ko')      return set.koFall ? null : 'ko';
+  // 가드 그림이 없는 캐릭터(화웅)는 리그가 맡는다.
+  // 안 그러면 '가드할 때만' 옛 시트로 새서 그 순간 덩치가 바뀐다.
+  if (f.guardHeld) return set.guard ? null : 'guard';
+  if (busy(f) || helpless(f)) return null;
+  if (f.state === 'walk' || f.state === 'dash' || f.state === 'backstep') return 'walk';
+  return null;   // 대기는 그려진 idle 한 장이면 충분하다
+}
+
+function drawRigPose(f, clipName) {
+  const RIG = RIGS[f.kind];
+  const clip = RIGCLIPS.CLIPS[clipName];
+  // 걷기는 걸음 속도에, 1회성 동작은 상태 경과 프레임에 맞춘다
+  const t = clipName === 'walk' ? (f.gait || 0) * 0.62
+          : (clip.loop ? frame : f.st);
+  let pose = RIGLIB.samplePose(clip, t);
+  // 달리는 방향으로 몸이 기운다 — 대시가 '멈춘 채 미끄러지는' 것처럼 보이지 않게
+  const leanX = clamp(f.lean * f.dir, -7, 7);
+  // 깊이로 이동할 땐 몸을 눌렀다 펴고 어깨를 튼다.
+  // 위아래 이동이 '평행이동'으로만 보이던 이유가 이 반응이 없어서였다.
+  const vz = f.vz || 0;
+  const zTilt = clamp(-vz * 1.8, -5, 5);
+  const zBob = Math.abs(vz) > 0.3 ? Math.sin(f.gait * 0.12) * 2.2 : 0;
+  // addPose 는 '더하는' 함수다 — sy 에 1.02 를 넘기면 기본값 1 에 더해져 2배가 된다.
+  // 여기 들어가는 값은 전부 **증분**이어야 한다.
+  pose = RIGLIB.addPose(pose, {
+    root: { rot: leanX + zTilt, y: zBob, sy: Math.abs(vz) * 0.006 },
+    upper: zTilt * 0.5, head: -zTilt * 0.7, cape: -vz * 3.2,
+  });
+  const scale = (RIG_TARGET_H * charScale(f)) / RIG.height;
+  RIGLIB.drawRig(ctx, RIG, pose, { x: f.x, y: footY(f), dir: f.dir, scale: scale * zScale(f) });
+}
+
+// ── 무기 아우라 ────────────────────────────────────────────────
+// 기술마다 색과 세기를 다르게 준다. 색이 다르면 어떤 기술인지 눈으로 구분된다.
+const AURA = {
+  light:  { color: '#bfe6ff', core: '#ffffff', power: 0.55 },
+  thrust: { color: '#9fd0ff', core: '#eaf6ff', power: 0.75 },
+  heavy:  { color: '#ffd06a', core: '#fff3c8', power: 1.20 },
+};
+// 화웅은 도끼다 — 조운의 푸른 기운과 색을 갈라야 누가 뭘 쓰는지 즉시 읽힌다
+const AURA_BOSS = {
+  light:  { color: '#ffb08a', core: '#fff0e0', power: 0.62 },
+  thrust: { color: '#ff9a6a', core: '#ffe6d2', power: 0.80 },
+  heavy:  { color: '#ff6a3c', core: '#ffd8a8', power: 1.30 },
+};
+const auraOf = f => (f.kind === 'boss' ? AURA_BOSS : AURA)[f.move && f.move.sheet];
+
+// 예비동작 동안 창끝에 기가 모인다 — 크게 감을수록 밝아진다.
+// 예고(telegraph)가 눈에 보이는 신호로도 바뀌는 셈이라 읽고 대응하기 쉬워진다.
+function drawWindupAura(f) {
+  if (f.state !== 'windup' || !f.move) return;
+  const a = auraOf(f); if (!a) return;
+  const tip = tipOf(f); if (!tip) return;
+  const t = clamp(f.st / f.move.startup, 0, 1);
+  const r = (16 + 30 * t) * a.power;
+
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  const g = ctx.createRadialGradient(tip[0], tip[1], 0, tip[0], tip[1], r);
+  g.addColorStop(0, a.core); g.addColorStop(.35, a.color); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.globalAlpha = .30 + .55 * t;
+  ctx.beginPath(); ctx.arc(tip[0], tip[1], r, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
+
+  // 주변에서 빨려들어오는 기운 — 정지 프레임에도 '차오르는 중'이 읽힌다
+  const n = Math.round(3 + 5 * t);
+  for (let i = 0; i < n; i++) {
+    const ang = (frame * 0.11 + i * (Math.PI * 2 / n));
+    const d = r * (2.6 - 1.7 * ((frame * 0.05 + i * 0.37) % 1));
+    ctx.globalAlpha = (.5 + .5 * t) * .5;
+    ctx.fillStyle = a.core;
+    ctx.fillRect(tip[0] + Math.cos(ang) * d - 2, tip[1] + Math.sin(ang) * d - 2, 4, 4);
+  }
+  ctx.restore();
+}
+
+// 판정 프레임 동안 예비 자세의 창끝 → 지금 창끝을 잇는 궤적.
+// 두 점 모두 '실제로 그려진' 칼끝이라, 그림이 바뀌어도 궤적이 저절로 맞는다.
+function drawSwingTrail(f) {
+  if (f.state !== 'active' || !f.move) return;
+  const a = auraOf(f); if (!a) return;
+  const to = tipOf(f); if (!to || !f.swingFrom) return;
+  const from = f.swingFrom;
+  const t = clamp(f.st / f.move.active, 0, 1);
+  const fade = 1 - t * 0.65;
+
+  // 두 점을 잇되 바깥으로 부풀린 호 — 직선으로 이으면 찌른 것처럼 보인다
+  const mx = (from[0] + to[0]) / 2, my = (from[1] + to[1]) / 2;
+  const dx = to[0] - from[0], dy = to[1] - from[1];
+  const bow = f.move.sheet === 'thrust' ? 0.05 : 0.34;
+  const cx0 = mx - dy * bow * f.dir, cy0 = my + dx * bow * f.dir;
+
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.lineCap = 'round';
+  for (const [w, col, al] of [[26 * a.power, a.color, .32], [11 * a.power, a.core, .75]]) {
+    ctx.globalAlpha = al * fade;
+    ctx.strokeStyle = col; ctx.lineWidth = w;
+    ctx.shadowColor = a.color; ctx.shadowBlur = 22 * a.power;
+    ctx.beginPath(); ctx.moveTo(from[0], from[1]);
+    ctx.quadraticCurveTo(cx0, cy0, to[0], to[1]); ctx.stroke();
+  }
+  // 칼끝의 빛덩이
+  ctx.globalAlpha = .9 * fade;
+  const g = ctx.createRadialGradient(to[0], to[1], 0, to[0], to[1], 34 * a.power);
+  g.addColorStop(0, a.core); g.addColorStop(.4, a.color); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(to[0], to[1], 34 * a.power, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
 }
 
 function drawFighter(f) {
-  const m = META[f.kind];
-  const { set, i } = pickFrame(f);
-  const img = A[set.img];
-  if (!ready(img)) return;
-  const fr = set.f[i];
-  const [cx, cy, cw, ch, ox = 0, oy = 0, srcI = i] = fr;
-  const boost = set.boost || 1;
-  let scale = m.scale * boost;
-  if (set.baseH) scale *= clamp(set.baseH / ch, .90, 1.35);   // 컷 높이가 들쭉날쭉한 공격 시트 보정
+  const rigClip = rigClipFor(f);
+  if (rigClip) {
+    drawShadow(f);
+    drawRigPose(f, rigClip);
+    drawStunGauge(f);
+    return;
+  }
 
-  // 대기 중 호흡 — 정지 프레임 두 장이 마주 서 있으면 마네킹처럼 보인다
-  const breath = busy(f) || helpless(f) ? 0 : Math.sin(frame * .048 + (f === B ? 2 : 0)) * 3.6;
-  const dw = cw * scale, dh = ch * scale;
+  const sp = statePose(f);
+  if (sp) {
+    drawShadow(f);
+    drawWindupAura(f);          // 창이 빛을 머금는다 (몸 뒤)
+    drawStatePose(f, sp);
+    drawSwingTrail(f);          // 휘두른 자취 (몸 앞)
+    // 저스트가드 유효 프레임은 포즈만으론 못 읽는다 — 빛나는 테두리를 한 겹 얹는다
+    if (f.guardHeld && f.guardT <= GUARD_JUST) {
+      ctx.save();
+      ctx.globalAlpha = .8; ctx.strokeStyle = '#dff6ff';
+      ctx.shadowColor = '#9de2ff'; ctx.shadowBlur = 26; ctx.lineWidth = 9; ctx.lineCap = 'round';
+      ctx.translate(f.x + f.dir * 20, footY(f) - 150); ctx.scale(f.dir, 1);
+      ctx.beginPath(); ctx.arc(0, 0, 112, -0.95, 0.95); ctx.stroke();
+      ctx.restore();
+    }
+    drawStunGauge(f);
+    return;
+  }
 
-  // 그림자
+  // 여기까지 왔다 = 그릴 게 없다(에셋 로딩 중). 그림자만 남겨 자리를 지킨다.
+  // 예전엔 이 자리에서 옛 스프라이트 시트로 흘렀고, 그게 크기 튐의 원인이었다.
+  drawShadow(f);
+}
+
+// 리그·상태 포즈 어느 쪽으로 그렸든 같은 게이지를 쓴다.
+function drawStunGauge(f, cx = f.x, bodyH = 285) {
+  if (!(f.stun > 6) || f.state === 'ko') return;
+  const w = 84, r = f.stun / STUN_MAX, top = footY(f) - bodyH - 16;
   ctx.save();
-  ctx.fillStyle = 'rgba(0,0,0,.46)';
-  ctx.beginPath(); ctx.ellipse(f.x, GROUND + 4, m.shadowW, 12, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(cx - w / 2, top, w, 8);
+  ctx.fillStyle = r > .75 ? '#ff6a3c' : '#ffd45c'; ctx.fillRect(cx - w / 2 + 1, top + 1, (w - 2) * r, 6);
   ctx.restore();
-
-  ctx.save();
-  ctx.translate(f.x, GROUND + breath);
-  ctx.scale(f.dir, 1);
-
-  // 앞으로 실리는 무게 — windup 때 뒤로 당겼다가 active 때 밀고 나간다
-  let lunge = 0, tilt = f.lean * f.dir * 0.14;
-  if (f.state === 'windup') { const p = f.st / f.move.startup; lunge = -10 * Math.sin(p * Math.PI * .5); tilt -= 3 * p; }
-  else if (f.state === 'active') { const p = f.st / f.move.active; lunge = 26 * Math.sin(p * Math.PI * .8); tilt += 5 * p; }
-  else if (f.state === 'recover') { lunge = 12 * (1 - f.st / f.move.recovery); }
-  else if (f.state === 'hurt') { tilt = -9; }
-  else if (f.state === 'stunned') { tilt = Math.sin(frame * .3) * 6; }
-  else if (f.state === 'ko') { tilt = -70 * clamp(f.st / 26, 0, 1); }
-  ctx.translate(lunge, 0);
-  ctx.rotate(tilt * Math.PI / 180);
-
-  // 대시 잔상
-  if (f.state === 'dash' || f.state === 'backstep') {
-    ctx.save(); ctx.globalAlpha = .22; ctx.translate(-sign(f.vx) * f.dir * 26, 0);
-    ctx.drawImage(img, srcI * set.fw + cx, cy, cw, ch, -dw * m.anchor + ox * scale, -dh + oy * scale, dw, dh);
-    ctx.restore();
-  }
-
-  if (f.hitFlash > 0 && f.hitFlash % 4 > 1 && f.state !== 'ko') ctx.globalAlpha = .55;
-  ctx.imageSmoothingEnabled = true;
-  ctx.drawImage(img, srcI * set.fw + cx, cy, cw, ch, -dw * m.anchor + ox * scale, -dh + oy * scale, dw, dh);
-  ctx.globalAlpha = 1;
-  ctx.restore();
-
-  // 가드 — 몸 앞을 감싸는 초승달. 저스트가드 유효 프레임 동안은 밝게 탄다.
-  if (f.guardHeld) {
-    const just = f.guardT <= GUARD_JUST;
-    const cx0 = f.x + f.dir * 20, cy0 = GROUND - 150;
-    ctx.save();
-    ctx.translate(cx0, cy0); ctx.scale(f.dir, 1);
-    ctx.strokeStyle = just ? '#dff6ff' : '#7fb6e0';
-    ctx.lineCap = 'round';
-    if (just) { ctx.shadowColor = '#9de2ff'; ctx.shadowBlur = 28; }
-    ctx.globalAlpha = just ? .95 : .42;
-    ctx.lineWidth = just ? 10 : 5;
-    ctx.beginPath(); ctx.arc(0, 0, 118, -1.05, 1.05); ctx.stroke();
-    ctx.globalAlpha = just ? .45 : .18;
-    ctx.lineWidth = just ? 22 : 12;
-    ctx.beginPath(); ctx.arc(0, 0, 118, -0.85, 0.85); ctx.stroke();
-    ctx.restore();
-  }
-  // 경직 게이지 — 실제로 그려진 몸 위에 얹는다.
-  // f.x 는 논리 중심이고 컷 사각형은 무기 쪽으로 치우쳐 있어서, 그대로 쓰면 게이지가 옆으로 샌다.
-  if (f.stun > 6 && f.state !== 'ko') {
-    const visCx = f.x + f.dir * (dw * (0.5 - m.anchor) + ox * scale);
-    // 컷 사각형에 머리 위 여백이 많이 붙은 프레임(피격 포즈 등)이 있어 dh 를 그대로 쓰면
-    // 게이지가 허공에 뜬다 — 실제 키 근처로 상한을 건다.
-    const w = 84, r = f.stun / STUN_MAX, top = GROUND - Math.min(dh, 300) - 16;
-    ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(visCx - w / 2, top, w, 8);
-    ctx.fillStyle = r > .75 ? '#ff6a3c' : '#ffd45c'; ctx.fillRect(visCx - w / 2 + 1, top + 1, (w - 2) * r, 6);
-    ctx.restore();
-  }
 }
 
 function drawFx() {
@@ -941,6 +1436,31 @@ function drawFx() {
     } else if (p.t === 'blood') {
       ctx.globalAlpha = a; ctx.fillStyle = p.color;
       ctx.fillRect(p.x - 2, p.y - 2, 6, 6);
+    } else if (p.t === 'burst') {
+      // 가산합성 섬광. 히트스톱으로 화면이 멈춘 동안 '터졌다'를 대신 말해 준다.
+      const k = 1 - p.life / p.max;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = (1 - k) * .95;
+      const r = p.r * (0.35 + k * 0.9);
+      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
+      g.addColorStop(0, '#ffffff'); g.addColorStop(.28, p.color); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+      // 십자 섬광 — 원만 있으면 뭉툭하다
+      ctx.globalAlpha = (1 - k) * .8; ctx.fillStyle = '#fff8e0';
+      const L = r * 1.9, T = Math.max(2, r * .09 * (1 - k));
+      ctx.fillRect(p.x - L, p.y - T / 2, L * 2, T);
+      ctx.fillRect(p.x - T / 2, p.y - L * .45, T, L * .9);
+      ctx.restore();
+    } else if (p.t === 'shock') {
+      // 진행 방향으로 눌린 충격파 고리 — 정면 원보다 '밀려났다'가 읽힌다
+      const k = 1 - p.life / p.max;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = (1 - k) * .55;
+      ctx.strokeStyle = '#fff2cf'; ctx.lineWidth = Math.max(1, 9 * (1 - k));
+      ctx.translate(p.x, p.y); ctx.scale(1 + k * .5, (1 - k * .35) * .55);
+      ctx.beginPath(); ctx.arc(0, 0, p.r * (0.2 + k), 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
     } else if (p.t === 'ring') {
       const t = 1 - p.life / p.max;
       ctx.globalAlpha = (1 - t) * .9; ctx.strokeStyle = p.color; ctx.lineWidth = 6 * (1 - t) + 1;
@@ -969,12 +1489,24 @@ function drawFx() {
       }
       ctx.restore();
     } else if (p.t === 'num') {
+      // 캐릭터를 줄인 만큼 타격의 쾌감은 숫자가 떠안는다.
+      // 튀어나올 때 크게 부풀었다가(pop) 제 크기로 가라앉는다.
       const t = 1 - p.life / p.max, k = 1 / cam.zoom;
-      ctx.globalAlpha = clamp(2 - t * 2.4, 0, 1);
-      ctx.font = `900 ${(p.big ? 34 : 26) * k}px "Malgun Gothic",system-ui`;
-      ctx.textAlign = 'center';
-      ctx.lineWidth = 5 * k; ctx.strokeStyle = '#2a0a04'; ctx.strokeText(p.v, p.x, p.y);
-      ctx.fillStyle = p.big ? '#ffd45c' : '#fff2cc'; ctx.fillText(p.v, p.x, p.y);
+      const pop = t < .18 ? 1 + (1 - t / .18) * 0.85 : 1;
+      const size = (p.big ? 52 : 38) * k * pop;
+      ctx.globalAlpha = clamp(2.2 - t * 2.6, 0, 1);
+      ctx.save();
+      ctx.translate(p.x, p.y); ctx.rotate((p.big ? -0.06 : -0.03));
+      ctx.font = `900 ${size}px "Malgun Gothic",system-ui`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = size * 0.20; ctx.strokeStyle = '#2a0a04'; ctx.strokeText(p.v, 0, 0);
+      ctx.lineWidth = size * 0.09; ctx.strokeStyle = p.big ? '#7a3a00' : '#4a2a10'; ctx.strokeText(p.v, 0, 0);
+      const g = ctx.createLinearGradient(0, -size * .6, 0, size * .6);
+      if (p.big) { g.addColorStop(0, '#fff6c0'); g.addColorStop(.5, '#ffd045'); g.addColorStop(1, '#ff8a1e'); }
+      else { g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#ffe1a6'); }
+      ctx.fillStyle = g; ctx.fillText(p.v, 0, 0);
+      ctx.restore();
     }
   }
   ctx.globalAlpha = 1;
@@ -986,10 +1518,23 @@ function drawFx() {
 function render() {
   drawBackground();
   worldTransform();
-  // 지면 그림자 띠
-  ctx.fillStyle = 'rgba(10,6,3,.35)';
-  ctx.fillRect(cam.x - W, GROUND + 8, W * 2, 200);
-  const order = P.x <= B.x ? [P, B] : [B, P];
+  // ── 결투 무대 바닥 ──────────────────────────────────────────
+  // 배경 그림의 바닥에 의존하면 깊이 범위와 절대 안 맞는다(캐릭터가 원경으로 올라간다).
+  // 움직일 수 있는 깊이 구간을 그대로 바닥으로 그려서, 어디까지가 무대인지 눈에 보이게 한다.
+  const zBack = GROUND - Z_MAX, x0 = cam.x - W, ww = W * 2;
+  // 바닥은 배경의 나무 다리가 이미 그려져 있다. 위에 또 칠하면 지저분해지므로
+  // 깊이감만 얕게 보강한다 — 안쪽을 살짝 어둡게, 경계에 가는 선.
+  const fg = ctx.createLinearGradient(0, zBack, 0, GROUND + 10);
+  fg.addColorStop(0, 'rgba(12,7,3,.34)');       // 안쪽은 그늘 — 깊이가 읽힌다
+  fg.addColorStop(1, 'rgba(12,7,3,0)');
+  ctx.fillStyle = fg;
+  ctx.fillRect(x0, zBack, ww, Z_MAX + 12);
+  ctx.fillStyle = 'rgba(255,224,150,.10)'; ctx.fillRect(x0, zBack, ww, 1);
+  ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.fillRect(x0, GROUND + 8, ww, 1);
+  // 무대 밖 — 다리 아래는 어둡게 눌러 '여기부턴 못 간다'가 보이게
+  ctx.fillStyle = 'rgba(10,6,3,.45)';
+  ctx.fillRect(x0, GROUND + 16, ww, 200);   // 발밑 그림자를 덮지 않게 조금 내린다
+  const order = P.z >= B.z ? [P, B] : [B, P];   // 안쪽(z 큼)을 먼저 = 뒤에 깔린다
   drawFighter(order[0]); drawFighter(order[1]);
   drawFx();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -1065,6 +1610,7 @@ function showTip(html, ms = 4200) {
 
 function startFight() {
   if (!assetsReady) return;          // 로딩 중엔 시작 금지
+  window.__sfx?.resume();            // 사용자 조작 시점에만 오디오가 열린다
   $('overlay').hidden = true;
   $('ovVs').style.display = '';
   resetMatch();
@@ -1099,11 +1645,34 @@ $('btnFull').addEventListener('click', () => {
   if (document.fullscreenElement) document.exitFullscreen();
   else w.requestFullscreen?.();
 });
+// 상대를 세워두는 토글 — 동작을 눈으로 확인할 때 쓴다.
+// 주소에 ?dummy 를 붙이는 건 매번 번거롭다.
+$('dummyBtn').addEventListener('click', () => {
+  DUMMY = DUMMY ? 0 : 1;
+  const b = $('dummyBtn');
+  b.textContent = DUMMY ? '🧍' : '⚔️';
+  b.style.borderColor = DUMMY ? '#ffd45c' : '#9de2ff';
+  b.title = DUMMY ? '상대 정지 중 — 누르면 다시 싸운다' : '상대 정지(허수아비)';
+  banner(DUMMY ? '상대 정지' : '상대 재개', '#9de2ff', .7);
+});
+
+$('muteBtn').addEventListener('click', () => {
+  const m = window.__sfx; if (!m) return;
+  m.resume();
+  const off = !m.isMuted();
+  m.setMuted(off);
+  $('muteBtn').textContent = off ? '🔇' : '🔊';
+  $('muteBtn').setAttribute('aria-label', off ? '소리 켜기' : '소리 끄기');
+});
+
 // HUD 크기 단위 — 캔버스 설계 해상도 1px 이 실제로 몇 px 인가
 const wrapEl = document.getElementById('wrap');
 function syncUnit() {
-  const u = wrapEl.clientHeight / H;
+  resizeCanvas();
+  // 세로에서는 '폭' 기준이어야 한다. 높이 기준으로 잡으면 길쭉한 기기에서 UI가 거대해진다.
+  const u = wrapEl.clientWidth / W;
   document.documentElement.style.setProperty('--u', u.toFixed(4) + 'px');
+  document.documentElement.style.setProperty('--playh', (H * PLAY_RATIO).toFixed(1));
 }
 new ResizeObserver(syncUnit).observe(wrapEl);
 syncUnit();
@@ -1111,8 +1680,11 @@ syncUnit();
 // 조작계 감지는 '실제로 무엇을 썼는가'로 — 로드 시점의 미디어쿼리만 믿으면
 // 태블릿·에뮬레이터·터치 가능한 노트북에서 틀린 UI가 뜬다.
 const padEl = $('pad'), keysEl = document.querySelector('.keys');
+padEl.classList.remove('hide');
 function useTouch() { touchMode = true; padEl.classList.remove('hide'); keysEl.style.display = 'none'; }
-function useKeys() { touchMode = false; padEl.classList.add('hide'); keysEl.style.display = ''; }
+// 세로 전용이라 패드는 항상 보인다 — 아래 40%가 원래 조작부 자리다.
+// 키보드를 쓰더라도 패드를 숨기면 그 영역이 텅 빈 채로 남는다.
+function useKeys() { touchMode = false; keysEl.style.display = ''; }
 addEventListener('touchstart', useTouch, { passive: true, once: true });
 addEventListener('keydown', useKeys, { once: true });
 if (matchMedia('(pointer:coarse)').matches) useTouch(); else useKeys();
