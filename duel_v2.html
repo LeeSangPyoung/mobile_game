@@ -1,0 +1,1095 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>일기토 — 결투</title>
+<!--
+  duel_v2.html — 일기토 1:1 격투 액션 (신규, 기존 duel*.html 과 독립)
+
+  기존안이 '장난' 처럼 보인 원인은 규칙이 아니라 프레이밍이었다.
+  장수가 화면 높이의 15%짜리 콩알로 그려지면 창이 부딪혀도 무게가 안 실린다.
+  그래서 이 버전의 1순위 설계는 카메라다:
+    · 장수 키 = 화면 높이의 52~72% (기존 대비 3.5배)
+    · 무대 폭을 좁혀(1400px) 항상 상대 사정거리 안 — 배회 구간 제거
+    · 거리에 따라 줌이 붙었다 떨어지는 격투게임 카메라
+
+  전투는 사무라이 쇼다운 계열의 '한 방이 무거운' 병기전:
+    약베기 / 강베기 / 찌르기 3종 + 가드 + 저스트가드(패링) + 대시/백스텝 + 기력.
+    같은 프레임에 서로의 칼이 닿으면 합(合) — 화면이 멎고 클로즈업이 들어간다.
+
+  스프라이트는 assets/arcade_duel/* 재활용. 프레임 사각형 좌표는
+  arcade_duel_test.html 에서 손으로 맞춘 값이라 그대로 가져왔다.
+  화웅은 공격 시트가 없어 포즈 시트 프레임(2→3→4)을 조합해 공격을 만든다.
+-->
+<style>
+*{box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent}
+:root{
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --gold:#ffd45c; --paper:#fff0b5; --ink:#0a0705;
+  --u:1px;   /* 캔버스 1 설계px = 화면 몇 px 인가. JS 가 매 리사이즈마다 갱신 */
+}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;
+  background:#070503;color:#ffe9b0;font-family:"Malgun Gothic","Noto Sans KR",system-ui,sans-serif}
+body{display:grid;place-items:center}
+
+#wrap{position:relative;width:min(100vw,1100px);aspect-ratio:16/9;max-height:100dvh;
+  background:#000;overflow:hidden;box-shadow:0 0 0 2px #2a1c10,0 20px 70px #000}
+#wrap:fullscreen{width:100vw;height:100dvh;max-height:none}
+canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06}
+
+/* ── HUD ───────────────────────────────────────────────────────────
+   --u = 캔버스 설계 해상도(960x540) 1px 이 실제 화면에서 차지하는 크기.
+   HUD를 vw 로 잡으면 '넓고 낮은' 창(가로 모바일)에서 글자가 화면을 잡아먹는다.
+   캔버스와 같은 단위를 쓰면 어떤 창 크기에서도 비율이 그대로 유지된다. */
+#hud{position:absolute;left:0;right:0;top:0;padding:calc(10*var(--u)) calc(14*var(--u));z-index:5;pointer-events:none;
+  display:grid;grid-template-columns:1fr auto 1fr;gap:calc(16*var(--u));align-items:start}
+.side{min-width:0}
+.nameRow{display:flex;align-items:baseline;gap:calc(8*var(--u));font-weight:900;
+  text-shadow:calc(2*var(--u)) calc(2*var(--u)) 0 #000;margin-bottom:calc(4*var(--u))}
+.side.r .nameRow{flex-direction:row-reverse}
+.nameRow b{font-size:calc(19*var(--u));letter-spacing:calc(1*var(--u));color:#fff3c4;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nameRow i{font-style:normal;font-size:calc(12*var(--u));color:#f0c05a}
+.hpTrack{position:relative;height:calc(18*var(--u));padding:calc(2*var(--u));background:#0a0503;
+  border:calc(2*var(--u)) solid #c9a86a;box-shadow:inset 0 2px 6px #000,0 2px 0 #000}
+.hpLoss{position:absolute;inset:calc(2*var(--u));background:#e8563a;transition:width .45s ease .12s;width:100%}
+.hpFill{position:absolute;inset:calc(2*var(--u));background:linear-gradient(#8fe87a,#2f8f45);transition:width .12s linear;width:100%}
+.side.r .hpLoss,.side.r .hpFill{right:calc(2*var(--u));left:auto}
+.side.r .hpFill{background:linear-gradient(#ffb257,#a8391f)}
+.spTrack{height:calc(5*var(--u));margin-top:calc(3*var(--u));background:#0a0503;border:1px solid #6b5734}
+.spFill{height:100%;width:100%;background:linear-gradient(90deg,#79d4ff,#f5e08a);transition:width .1s linear}
+.side.r .spFill{margin-left:auto;background:linear-gradient(90deg,#f5e08a,#ff9a5c)}
+.side.low .spFill{background:linear-gradient(90deg,#ff4a2c,#ff9a45)}
+
+#center{display:grid;justify-items:center;gap:calc(2*var(--u));min-width:calc(88*var(--u));
+  padding:calc(3*var(--u)) calc(8*var(--u)) calc(5*var(--u));
+  background:#120a04d9;border:calc(2*var(--u)) solid #c9a86a;box-shadow:0 2px 0 #000}
+#clock{font-size:calc(32*var(--u));font-weight:900;color:#fff1a8;text-shadow:2px 2px 0 #000;line-height:1}
+#hapCount{font-size:calc(13*var(--u));font-weight:900;letter-spacing:calc(2*var(--u));color:#e8c268;text-shadow:1px 1px 0 #000}
+#hapCount.flash{animation:hapPop .3s ease}
+@keyframes hapPop{0%{transform:scale(1.5);color:#fff}100%{transform:scale(1);color:#e8c268}}
+
+/* ── 중앙 배너(합/패링/KO) ─────────────────────────────────────── */
+/* 배너는 인물 위가 아니라 인물보다 위쪽에 — 결정적 순간에 얼굴을 가리면 안 된다 */
+#banner{position:absolute;left:0;right:0;top:19%;z-index:6;text-align:center;pointer-events:none;
+  font-size:calc(58*var(--u));font-weight:900;letter-spacing:calc(8*var(--u));color:#fff3c4;opacity:0;
+  text-shadow:0 0 18px #ff9a2e,4px 5px 0 #3a0f06,-2px -2px 0 #3a0f06,0 0 40px #000}
+#banner.show{animation:bannerIn .8s cubic-bezier(.16,1,.3,1)}
+@keyframes bannerIn{0%{opacity:0;transform:scale(2.4) rotate(-4deg)}22%{opacity:1;transform:scale(1) rotate(0)}
+  72%{opacity:1}100%{opacity:0;transform:scale(1.08)}}
+
+/* ── 모바일 조작 패드 ──────────────────────────────────────────── */
+#pad{position:absolute;left:0;right:0;bottom:0;z-index:7;padding:0 calc(14*var(--u)) calc(10*var(--u) + var(--safe-b));
+  display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none}
+#pad.hide{display:none}
+.cluster{display:flex;gap:calc(9*var(--u));align-items:flex-end;pointer-events:auto}
+.btn{display:grid;place-items:center;border-radius:50%;border:calc(3*var(--u)) solid #ffe8a8;
+  background:radial-gradient(circle at 35% 30%,#5b3a1b,#241206);color:#ffe9b0;
+  font-weight:900;text-shadow:1px 1px 0 #000;box-shadow:0 4px 0 #0009,inset 0 2px 6px #ffdca033;
+  /* 터치 타깃은 --u 로만 줄이면 작은 폰에서 못 누른다 — 44px 하한을 따로 둔다 */
+  width:max(44px,calc(64*var(--u)));height:max(44px,calc(64*var(--u)));font-size:max(11px,calc(13*var(--u)));
+  white-space:nowrap;letter-spacing:-.5px;line-height:1}
+.btn:active,.btn.on{transform:translateY(3px);box-shadow:0 1px 0 #0009;background:radial-gradient(circle at 35% 30%,#9c6a2a,#3d2109)}
+.btn.big{width:max(54px,calc(80*var(--u)));height:max(54px,calc(80*var(--u)));font-size:max(13px,calc(17*var(--u)))}
+.btn.mv{border-color:#a8c8ff;background:radial-gradient(circle at 35% 30%,#1e3a63,#0a1526)}
+.btn.mv:active,.btn.mv.on{background:radial-gradient(circle at 35% 30%,#3c6ba8,#122642)}
+.btn.gd{border-color:#9de2ff}
+.btn.hv{border-color:#ff9a5c}
+
+/* ── 오버레이(시작/결과) ───────────────────────────────────────── */
+#overlay{position:absolute;inset:0;z-index:12;display:grid;place-items:center;padding:20px;
+  background:radial-gradient(circle at 50% 45%,#1b0d05e0,#050302f2);overflow-y:auto}
+#overlay[hidden]{display:none}
+.card{width:min(460px,94%);padding:clamp(18px,3vw,28px);text-align:center;
+  border:3px solid var(--gold);outline:3px solid #2a1608;
+  background:linear-gradient(180deg,#3a1f0cf2,#14090392);box-shadow:0 18px 60px #000,inset 0 0 0 2px #ffd45c33}
+.card h1{margin:0 0 6px;font-size:clamp(26px,5vw,40px);letter-spacing:10px;color:var(--gold);text-shadow:3px 4px 0 #000}
+.card p{margin:0 0 16px;font-size:clamp(11px,1.7vw,14px);line-height:1.8;color:#f0dcb4;word-break:keep-all}
+.vs{display:flex;justify-content:center;align-items:center;gap:14px;margin:0 0 16px;font-weight:900}
+.vs .who{font-size:clamp(15px,2.6vw,21px);color:#fff3c4;text-shadow:2px 2px 0 #000}
+.vs .who small{display:block;font-size:11px;color:#e0ac4e;letter-spacing:1px;margin-top:2px}
+.vs .x{font-size:clamp(18px,3vw,26px);color:#c9503a;text-shadow:0 0 12px #ff5a2e}
+.row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.pick{min-height:42px;padding:8px 16px;font:inherit;font-weight:900;cursor:pointer;
+  border:2px solid #b99450;background:#20120699;color:#e8d3a4}
+.pick.on{border-color:var(--gold);background:#7a4a12;color:#fff6d2;box-shadow:0 0 14px #ffb43a66}
+.go{min-height:52px;padding:12px 34px;font:inherit;font-size:clamp(14px,2.2vw,18px);font-weight:900;cursor:pointer;
+  border:3px solid #fff0ad;background:linear-gradient(#e8ab2c,#a86a10);color:#2a1200;
+  box-shadow:0 5px 0 #4a2a06,0 10px 26px #000a;letter-spacing:4px}
+.go:active{transform:translateY(4px);box-shadow:0 1px 0 #4a2a06}
+.go:focus-visible,.pick:focus-visible{outline:3px solid #9de2ff;outline-offset:3px}
+.keys{margin-top:14px;font-size:clamp(10px,1.5vw,12px);color:#b79a6d;line-height:1.9}
+.keys b{color:#ffd45c}
+
+/* ── 우상단 유틸 ───────────────────────────────────────────────── */
+#util{position:absolute;right:10px;top:calc(10px + clamp(46px,8vw,64px));z-index:6;display:flex;gap:6px}
+#util button{width:34px;height:34px;display:grid;place-items:center;cursor:pointer;font-size:15px;
+  border:2px solid #9de2ff;background:#0a1a2ecc;color:#dff1ff}
+@media (max-width:620px){#util{top:auto;bottom:calc(12px + var(--safe-b));right:auto;left:50%;transform:translateX(-50%)}}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="game" width="960" height="540" aria-label="일기토 결투 화면"></canvas>
+
+  <div id="hud">
+    <div class="side l" id="sideL">
+      <div class="nameRow"><b id="nameL">조운</b><i id="warL">무력 96</i></div>
+      <div class="hpTrack"><div class="hpLoss" id="hpLossL"></div><div class="hpFill" id="hpL"></div></div>
+      <div class="spTrack"><div class="spFill" id="spL"></div></div>
+    </div>
+    <div id="center"><div id="clock">60</div><div id="hapCount">0 합</div></div>
+    <div class="side r" id="sideR">
+      <div class="nameRow"><b id="nameR">화웅</b><i id="warR">무력 88</i></div>
+      <div class="hpTrack"><div class="hpLoss" id="hpLossR"></div><div class="hpFill" id="hpR"></div></div>
+      <div class="spTrack"><div class="spFill" id="spR"></div></div>
+    </div>
+  </div>
+
+  <div id="util">
+    <button id="btnPause" title="일시정지" aria-label="일시정지">❚❚</button>
+    <button id="btnFull" title="전체화면" aria-label="전체화면">⛶</button>
+  </div>
+
+  <div id="banner" aria-live="polite"></div>
+
+  <div id="pad">
+    <div class="cluster">
+      <button class="btn mv" data-act="left" aria-label="왼쪽">◀</button>
+      <button class="btn mv" data-act="right" aria-label="오른쪽">▶</button>
+    </div>
+    <div class="cluster">
+      <button class="btn gd" data-act="guard" aria-label="가드">가드</button>
+      <button class="btn" data-act="thrust" aria-label="찌르기">찌르기</button>
+      <button class="btn big" data-act="light" aria-label="베기">베기</button>
+      <button class="btn big hv" data-act="heavy" aria-label="강베기">강</button>
+    </div>
+  </div>
+
+  <div id="overlay">
+    <div class="card">
+      <h1 id="ovTitle">일 기 토</h1>
+      <div class="vs" id="ovVs">
+        <div class="who">조운<small>무력 96</small></div>
+        <div class="x">⚔</div>
+        <div class="who">화웅<small>무력 88</small></div>
+      </div>
+      <p id="ovText">칼이 맞부딪는 순간을 읽어라. 강베기는 무겁고 느리다.<br>막기 직전에 가드를 넣으면 <b>저스트가드</b> — 상대가 크게 흐트러진다.</p>
+      <div class="row" id="ovDiff">
+        <button class="pick" data-diff="easy">쉬움</button>
+        <button class="pick on" data-diff="normal">보통</button>
+        <button class="pick" data-diff="hard">어려움</button>
+      </div>
+      <button class="go" id="ovGo">결 투</button>
+      <div class="keys">
+        <b>← →</b> 걸음 · <b>← ←</b> 백스텝 · <b>Shift</b> 대시<br>
+        <b>J</b> 베기 · <b>K</b> 강베기 · <b>L</b> 찌르기 · <b>S / ↓</b> 가드 · <b>Esc</b> 일시정지
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// ═══════════════════════════════════════════════════════════════════
+//  0. 상수 · 유틸
+// ═══════════════════════════════════════════════════════════════════
+const W = 960, H = 540;              // 논리 해상도(캔버스 버퍼)
+const GROUND = 430;                  // 월드 지면 y (발끝)
+const STAGE_W = 1400;                // 무대 폭 — 좁게. 도망칠 곳이 없어야 결투가 된다
+const SCREEN_GROUND = H * 0.84;      // 지면이 화면에 찍히는 높이
+const FPS = 60, DT = 1000 / FPS;
+
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, t) => a + (b - a) * t;
+const sign = v => v < 0 ? -1 : 1;
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d', { alpha: false });
+
+// ═══════════════════════════════════════════════════════════════════
+//  1. 에셋 · 스프라이트 메타
+//     frames: [cutX, cutY, cutW, cutH, offX, offY, srcFrameIndex]
+//     (arcade_duel_test.html 에서 손으로 맞춘 값 — 좌표는 그대로 가져옴)
+// ═══════════════════════════════════════════════════════════════════
+const A = {};
+const ASSET_SRC = {
+  bg:        './assets/arcade_duel/pixel_war_stage_v1.webp',
+  pPose:     './assets/arcade_duel/zhao_yun_pose_sheet.webp',
+  pWalk:     './assets/arcade_duel/zhao_yun_walk6_cutout_v1.webp',
+  pLight:    './assets/arcade_duel/zhao_yun_attack5_v1.webp',
+  pThrust:   './assets/arcade_duel/zhao_yun_combo1_v1.webp',
+  pHeavy:    './assets/arcade_duel/zhao_yun_combo3_v1.webp',
+  bPose:     './assets/arcade_duel/hua_xiong_pose_sheet.webp',
+  bWalk:     './assets/arcade_duel/hua_xiong_walk6_cutout_v1.webp',
+  bHurt:     './assets/arcade_duel/hua_xiong_hurt3_v1.webp',
+  bStun:     './assets/arcade_duel/hua_xiong_stun3_v1.webp',
+};
+
+const META = {
+  player: {
+    // 화면상 목표 키 ≈ 285px (지면~머리). 소스 프레임이 440px대라 축소 렌더 → 선이 깨지지 않는다.
+    scale: 0.63, anchor: 0.50, shadowW: 60,
+    pose:   { img: 'pPose', fw: 396, f: [[5,221,391,439],[0,210,396,421],[0,181,396,456],[0,197,396,441],[0,115,396,541]] },
+    walk:   { img: 'pWalk', fw: 362, boost: 1.08,
+              f: [[17,149,345,420,0,1],[0,157,362,405,0,8],[0,156,362,413,0,1],[0,154,362,416,0,0],[0,166,362,401,0,3],[0,156,360,413,0,1]] },
+    light:  { img: 'pLight', fw: 387, boost: 1.02, baseH: 400,
+              f: [[5,229,382,349,0,0],[0,186,387,388,-2,0],[0,219,387,362,0,0],[0,228,387,356,-4,0],[0,230,359,350,4,0]] },
+    thrust: { img: 'pThrust', fw: 434, boost: 1.16, baseH: 400,
+              f: [[25,208,409,357,-6,1],[0,207,434,349,0,10],[0,251,434,301,0,14],[0,254,434,296,0,16],[0,211,372,355,28,0]] },
+    heavy:  { img: 'pHeavy', fw: 362, boost: 1.14, baseH: 410,
+              f: [[41,326,321,253,-18,12],[0,250,314,327,32,14],[10,277,352,300,8,14],[0,144,362,434,12,12],[0,304,362,287,12,0],[0,267,312,317,34,7]] },
+  },
+  boss: {
+    scale: 0.70, anchor: 0.52, shadowW: 70,
+    pose:   { img: 'bPose', fw: 434, f: [[2,257,432,389],[0,210,434,419],[0,89,434,547],[0,177,434,483],[0,247,434,382]] },
+    walk:   { img: 'bWalk', fw: 362, boost: 1.12,
+              f: [[0,184,362,354,0,1],[0,185,362,354,0,0],[0,178,362,357,0,4],[0,179,362,359,0,1],[0,199,362,339,0,1],[0,185,362,350,0,4]] },
+    hurt:   { img: 'bHurt', fw: 682, f: [[61,148,571,502,-8,28],[41,143,641,535,-14,0],[0,207,645,469,12,2]] },
+    stun:   { img: 'bStun', fw: 682, f: [[80,109,596,545,-20,5],[44,177,553,482,12,0],[12,118,588,537,22,4]] },
+  },
+};
+
+function loadAssets() {
+  const keys = Object.keys(ASSET_SRC);
+  let done = 0;
+  return new Promise(resolve => {
+    keys.forEach(k => {
+      const img = new Image();
+      A[k] = img;
+      const tick = () => { if (++done === keys.length) resolve(); };
+      img.onload = tick;
+      img.onerror = tick;   // 하나 빠져도 결투는 계속된다(해당 모션만 포즈 시트로 대체)
+      img.src = ASSET_SRC[k];
+    });
+  });
+}
+const ready = img => !!(img && img.complete && img.naturalWidth);
+
+// ═══════════════════════════════════════════════════════════════════
+//  2. 기술표 — 프레임 단위(60fps). 여기 숫자가 곧 손맛이다.
+//     startup: 칼이 나가기까지 / active: 판정 / recovery: 후딜
+// ═══════════════════════════════════════════════════════════════════
+// 사정거리는 '중심 간 거리' 기준. 두 장수가 겹치지 않는 최소 간격(SEPARATE)이 160이라
+// 어떤 기술도 그보다 짧으면 영영 닿지 않는다 — 아래 값은 전부 그 위에서 잡았다.
+const MOVES = {
+  light:  { startup: 8,  active: 4, recovery: 13, dmg: 9,  reach: 190, push: 5,  stam: 8,
+            label: '베기',   guardChip: 1.5, stunAdd: 6,  sheet: 'light',  arc: 'wide'  },
+  thrust: { startup: 13, active: 5, recovery: 19, dmg: 14, reach: 258, push: 9,  stam: 14,
+            label: '찌르기', guardChip: 3,   stunAdd: 10, sheet: 'thrust', arc: 'line'  },
+  heavy:  { startup: 21, active: 6, recovery: 26, dmg: 24, reach: 212, push: 22, stam: 24,
+            label: '강베기', guardChip: 9,   stunAdd: 22, sheet: 'heavy',  arc: 'heavy',
+            crush: true },   // 가드해도 기력을 크게 깎는다 — 계속 막기만 하면 무너진다
+};
+const GUARD_JUST = 6;        // 가드 입력 후 이 프레임 안에 맞으면 저스트가드
+const STUN_MAX = 100;        // 경직 게이지. 꽉 차면 무방비 — 확정타 기회
+
+const DIFF = {
+  easy:   { label:'쉬움',   dmgOut:1.15, dmgIn:0.78, react:22, aggro:0.42, guard:0.55, parry:0.06 },
+  normal: { label:'보통',   dmgOut:1.00, dmgIn:1.00, react:15, aggro:0.62, guard:0.72, parry:0.16 },
+  hard:   { label:'어려움', dmgOut:0.88, dmgIn:1.20, react:10, aggro:0.80, guard:0.86, parry:0.30 },
+};
+let diff = DIFF.normal;
+
+// ═══════════════════════════════════════════════════════════════════
+//  3. 파이터
+// ═══════════════════════════════════════════════════════════════════
+function makeFighter(kind, opts) {
+  return {
+    kind, name: opts.name, war: opts.war,
+    x: opts.x, dir: opts.dir,
+    hp: opts.hp, maxHp: opts.hp,
+    stam: 100, maxStam: 100,
+    vx: 0,
+    state: 'idle',      // idle walk dash backstep windup active recover guard hurt stunned ko
+    st: 0,              // 현재 상태 경과 프레임
+    move: null,         // 진행 중인 기술
+    hitDone: false,
+    guardHeld: false, guardT: 0,
+    stun: 0, stunTimer: 0,
+    inv: 0, hitFlash: 0,
+    walkClock: 0,
+    lean: 0,
+    ai: { t: 0, plan: 'wait', react: 0 },
+  };
+}
+
+let P, B;                     // player / boss
+let cam = { x: STAGE_W / 2, zoom: 1, shakeX: 0, shakeY: 0, punch: 0 };
+let frame = 0, hitStop = 0, slowmo = 0;
+let hap = 0;                  // 합(合) — 칼이 실제로 맞부딪히거나 유효타가 난 횟수
+let clockFrames = 60 * FPS;
+let phase = 'title';          // title | fight | paused | over
+let fx = [], dust = [];
+let stats = { hits: 0, guards: 0, justs: 0, clashes: 0, taken: 0 };
+
+function resetMatch() {
+  P = makeFighter('player', { name: '조운', war: 96, x: STAGE_W / 2 - 190, dir: 1, hp: 120 });
+  B = makeFighter('boss',   { name: '화웅', war: 88, x: STAGE_W / 2 + 190, dir: -1, hp: 150 });
+  cam = { x: STAGE_W / 2, zoom: 1, shakeX: 0, shakeY: 0, punch: 0 };
+  frame = 0; hitStop = 0; slowmo = 0; hap = 0; clockFrames = 60 * FPS;
+  fx = []; dust = [];
+  stats = { hits: 0, guards: 0, justs: 0, clashes: 0, taken: 0 };
+  document.getElementById('nameL').textContent = P.name;
+  document.getElementById('warL').textContent = '무력 ' + P.war;
+  document.getElementById('nameR').textContent = B.name;
+  document.getElementById('warR').textContent = '무력 ' + B.war;
+  syncHud(true);
+}
+
+// 무력차는 데미지에 '은근히' 반영 — 조작으로 뒤집을 수 있는 폭으로만.
+const warMul = (a, d) => Math.pow(a.war / d.war, 0.55);
+
+const busy = f => f.state === 'windup' || f.state === 'active' || f.state === 'recover';
+const helpless = f => f.state === 'hurt' || f.state === 'stunned' || f.state === 'ko';
+const canAct = f => !busy(f) && !helpless(f) && f.state !== 'dash' && f.state !== 'backstep';
+
+// ═══════════════════════════════════════════════════════════════════
+//  4. 입력
+// ═══════════════════════════════════════════════════════════════════
+const keys = new Set();
+const tapped = { left: 0, right: 0 };
+const pad = { left: false, right: false, guard: false };
+let bufAttack = null, bufFrames = 0;      // 선입력 버퍼 — 후딜 중에 눌러도 이어진다
+
+const KEYMAP = {
+  ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right',
+  ArrowDown: 'guard', KeyS: 'guard',
+  KeyJ: 'light', KeyK: 'heavy', KeyL: 'thrust',
+  Space: 'light', ShiftLeft: 'dash', ShiftRight: 'dash',
+};
+
+addEventListener('keydown', e => {
+  if (e.code === 'Escape') { togglePause(); e.preventDefault(); return; }
+  const act = KEYMAP[e.code];
+  if (!act) return;
+  e.preventDefault();
+  if (keys.has(e.code)) return;           // 리핏 무시
+  keys.add(e.code);
+  onPress(act);
+});
+addEventListener('keyup', e => { keys.delete(e.code); });
+
+function onPress(act) {
+  if (phase !== 'fight') return;
+  if (act === 'left' || act === 'right') {
+    // 같은 방향 두 번 = 대시(앞) / 뒤로 두 번 = 백스텝
+    const now = frame;
+    if (now - tapped[act] < 20) { startDash(P, act === 'left' ? -1 : 1); tapped[act] = -99; }
+    else tapped[act] = now;
+  } else if (act === 'dash') {
+    startDash(P, P.dir);
+  } else if (MOVES[act]) {
+    bufAttack = act; bufFrames = 8;
+  }
+}
+
+// 모바일 패드
+document.querySelectorAll('#pad .btn').forEach(btn => {
+  const act = btn.dataset.act;
+  const down = e => {
+    e.preventDefault(); btn.classList.add('on');
+    if (act === 'left' || act === 'right') { pad[act] = true; onPress(act); }
+    else if (act === 'guard') pad.guard = true;
+    else onPress(act);
+  };
+  const up = e => {
+    e.preventDefault(); btn.classList.remove('on');
+    if (act === 'left' || act === 'right') pad[act] = false;
+    else if (act === 'guard') pad.guard = false;
+  };
+  btn.addEventListener('pointerdown', down);
+  btn.addEventListener('pointerup', up);
+  btn.addEventListener('pointercancel', up);
+  btn.addEventListener('pointerleave', up);
+  btn.addEventListener('contextmenu', e => e.preventDefault());
+});
+
+const held = act => {
+  if (act === 'guard') return pad.guard || keys.has('ArrowDown') || keys.has('KeyS');
+  if (act === 'left') return pad.left || keys.has('ArrowLeft') || keys.has('KeyA');
+  if (act === 'right') return pad.right || keys.has('ArrowRight') || keys.has('KeyD');
+  return false;
+};
+
+// ═══════════════════════════════════════════════════════════════════
+//  5. 행동
+// ═══════════════════════════════════════════════════════════════════
+function startMove(f, key) {
+  const m = MOVES[key];
+  if (!m || !canAct(f)) return false;
+  if (f.stam < m.stam) { spendFail(f); return false; }
+  f.stam -= m.stam;
+  f.state = 'windup'; f.st = 0; f.move = m; f.moveKey = key; f.hitDone = false;
+  return true;
+}
+function spendFail(f) {
+  if (f === P) banner('기력 부족', '#ff8a5c', .5);
+  puff(f.x, GROUND - 40, 4, '#ff7a4a');
+}
+function startDash(f, dir) {
+  if (!canAct(f) || f.stam < 12) return;
+  f.stam -= 12;
+  const back = dir !== f.dir;
+  f.state = back ? 'backstep' : 'dash'; f.st = 0;
+  f.vx = dir * (back ? 8.2 : 10.5);
+  for (let i = 0; i < 6; i++) dust.push({ x: f.x, y: GROUND, vx: -dir * (1 + Math.random() * 3), vy: -Math.random() * 1.6, life: 22, r: 3 + Math.random() * 5 });
+}
+
+function faceEachOther() {
+  if (!busy(P) && !helpless(P)) P.dir = sign(B.x - P.x);
+  if (!busy(B) && !helpless(B)) B.dir = sign(P.x - B.x);
+}
+
+// ── 판정 ────────────────────────────────────────────────────────────
+function activeNow(f) {
+  return f.state === 'active' && !f.hitDone;
+}
+function inReach(att, def) {
+  const dx = (def.x - att.x) * att.dir;
+  return dx > 0 && dx <= att.move.reach;
+}
+
+function resolveCombat() {
+  // 합(合) — 같은 프레임에 서로의 칼이 서로에게 닿으면 부딪힌다
+  if (activeNow(P) && activeNow(B) && inReach(P, B) && inReach(B, P)) {
+    clash();
+    return;
+  }
+  if (activeNow(P) && inReach(P, B)) applyHit(P, B);
+  if (activeNow(B) && inReach(B, P)) applyHit(B, P);
+}
+
+function clash() {
+  P.hitDone = B.hitDone = true;
+  P.state = 'recover'; P.st = 0; B.state = 'recover'; B.st = 0;
+  P.vx = -P.dir * 7; B.vx = -B.dir * 7;
+  const mx = (P.x + B.x) / 2;
+  hitStop = 22; cam.punch = 1.0; shake(14);
+  sparkBurst(mx, GROUND - 150, 26, '#fff6c8', 9);
+  ring(mx, GROUND - 150, 200, '#ffe071');
+  hap++; stats.clashes++;
+  banner('合', '#fff3c4', 1);
+  bumpHap();
+}
+
+function applyHit(att, def) {
+  att.hitDone = true;
+  const m = att.move;
+  const hx = att.x + att.dir * (m.reach * 0.78);
+  const hy = GROUND - 165;
+
+  if (def.inv > 0) return;
+
+  // 저스트가드 — 가드를 '눌러둔' 게 아니라 '맞춰 넣은' 경우
+  if (def.guardHeld && def.guardT <= GUARD_JUST && !helpless(def)) {
+    stats.justs += def === P ? 1 : 0;
+    att.state = 'stunned'; att.st = 0; att.stunTimer = 42;
+    att.vx = -att.dir * 6;
+    def.stam = Math.min(def.maxStam, def.stam + 14);
+    hitStop = 18; cam.punch = .85; shake(11);
+    sparkBurst(hx, hy, 22, '#9de2ff', 8);
+    ring(hx, hy, 170, '#9de2ff');
+    banner(def === P ? '저스트가드!' : '흘렸다', '#9de2ff', .95);
+    hap++; bumpHap();
+    return;
+  }
+
+  // 일반 가드
+  if (def.guardHeld && !helpless(def) && !busy(def)) {
+    stats.guards += def === P ? 1 : 0;
+    const chip = m.guardChip * (def === P ? diff.dmgIn : diff.dmgOut) * 0.6;
+    def.hp -= chip;
+    def.stam -= m.crush ? 34 : 12;
+    def.vx = att.dir * m.push * 0.55;
+    hitStop = m.crush ? 12 : 7; shake(m.crush ? 8 : 4);
+    sparkBurst(hx, hy, 12, '#cfe6ff', 5);
+    if (def.stam <= 0) {                    // 가드 붕괴
+      def.stam = 0;
+      def.state = 'stunned'; def.st = 0; def.stunTimer = 48;
+      def.guardHeld = false;
+      banner('가드 붕괴!', '#ff9a3c', 1);
+      shake(13); cam.punch = .8;
+    }
+    hap++; bumpHap();
+    return;
+  }
+
+  // 유효타
+  const mul = warMul(att, def) * (att === P ? diff.dmgOut : diff.dmgIn);
+  const dmg = Math.max(3, Math.round(m.dmg * mul));
+  def.hp -= dmg;
+  if (def === P) stats.taken += dmg; else stats.hits++;
+  def.vx = att.dir * m.push;
+  def.state = 'hurt'; def.st = 0; def.inv = 10; def.hitFlash = 14;
+  def.stun = Math.min(STUN_MAX, def.stun + m.stunAdd);
+  def.guardHeld = false;
+
+  hitStop = m.crush ? 16 : 10;
+  cam.punch = m.crush ? .9 : .5;
+  shake(m.crush ? 12 : 7);
+  bloodBurst(hx, hy, m.crush ? 22 : 14);
+  slashArc(att.x + att.dir * 70, hy, att.dir, m.arc);   // 궤적은 '휘두른 사람' 기준
+  damageNum(hx, hy - 60, dmg, m.crush);
+  hap++; bumpHap();
+
+  if (def.stun >= STUN_MAX) {               // 경직 만땅 → 무방비
+    def.stun = 0;
+    def.state = 'stunned'; def.st = 0; def.stunTimer = 70;
+    banner('경직!', '#ffd45c', 1);
+  }
+  if (def.hp <= 0) knockOut(def);
+}
+
+function knockOut(f) {
+  f.hp = 0; f.state = 'ko'; f.st = 0;
+  phase = 'over';
+  slowmo = 60; hitStop = 24; shake(20); cam.punch = 1.2;
+  bloodBurst(f.x, GROUND - 170, 34);
+  setTimeout(() => showResult(f === B ? 'win' : 'lose'), 1700);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  6. 갱신
+// ═══════════════════════════════════════════════════════════════════
+function stepFighter(f) {
+  f.st++;
+  if (f.inv > 0) f.inv--;
+  if (f.hitFlash > 0) f.hitFlash--;
+  if (f.guardHeld) f.guardT++; else f.guardT = 0;
+
+  // 기력 회복 — 공격/가드 중엔 거의 안 찬다
+  const regen = busy(f) ? 0.05 : f.guardHeld ? 0.12 : helpless(f) ? 0.25 : 0.42;
+  f.stam = clamp(f.stam + regen, 0, f.maxStam);
+  f.stun = Math.max(0, f.stun - 0.14);
+
+  switch (f.state) {
+    case 'windup':
+      if (f.st >= f.move.startup) { f.state = 'active'; f.st = 0; }
+      break;
+    case 'active':
+      if (f.st >= f.move.active) { f.state = 'recover'; f.st = 0; }
+      break;
+    case 'recover':
+      if (f.st >= f.move.recovery) { f.state = 'idle'; f.st = 0; f.move = null; }
+      break;
+    case 'dash':
+    case 'backstep':
+      if (f.st >= 13) { f.state = 'idle'; f.st = 0; }
+      break;
+    case 'hurt':
+      if (f.st >= 20) { f.state = 'idle'; f.st = 0; }
+      break;
+    case 'stunned':
+      if (f.st >= f.stunTimer) { f.state = 'idle'; f.st = 0; }
+      break;
+  }
+
+  // 물리 — 지면 마찰
+  f.x += f.vx;
+  f.vx *= (f.state === 'dash' || f.state === 'backstep') ? 0.90 : 0.80;
+  if (Math.abs(f.vx) < 0.05) f.vx = 0;
+  f.x = clamp(f.x, 60, STAGE_W - 60);
+  f.lean = lerp(f.lean, clamp(f.vx * 0.6, -6, 6), 0.2);
+}
+
+function separate() {
+  // 두 장수가 겹치지 않게 밀어낸다 — 붙어서 뚫고 지나가면 결투가 안 된다
+  // 스프라이트 폭이 크다 — 90px대로 붙이면 두 장수가 서로를 뚫고 겹쳐 보인다
+  const d = B.x - P.x, min = 160;
+  if (Math.abs(d) < min) {
+    const push = (min - Math.abs(d)) / 2 * sign(d || 1);
+    P.x -= push; B.x += push;
+    P.x = clamp(P.x, 60, STAGE_W - 60); B.x = clamp(B.x, 60, STAGE_W - 60);
+  }
+}
+
+function updatePlayer() {
+  P.guardHeld = held('guard') && canAct(P);
+  if (!P.guardHeld) P.guardT = 0;
+
+  if (bufFrames > 0) {
+    bufFrames--;
+    if (canAct(P) && startMove(P, bufAttack)) { bufAttack = null; bufFrames = 0; }
+  }
+
+  if (canAct(P) && !P.guardHeld) {
+    const l = held('left'), r = held('right');
+    if (l !== r) {
+      const dir = l ? -1 : 1;
+      const forward = dir === P.dir;
+      P.vx = dir * (forward ? 3.4 : 2.6);   // 뒷걸음은 조금 느리다
+      P.state = 'walk'; P.walkClock++;
+    } else if (P.state === 'walk') { P.state = 'idle'; P.st = 0; }
+  } else if (P.state === 'walk') P.state = 'idle';
+}
+
+// ── AI: 거리 관리 → 견제 → 후딜 처벌 ───────────────────────────────
+function updateAI() {
+  const ai = B.ai;
+  const dist = Math.abs(P.x - B.x);
+  B.guardHeld = false;
+
+  if (helpless(B) || busy(B) || B.state === 'dash' || B.state === 'backstep') { ai.t++; return; }
+  ai.t++;
+
+  // 플레이어가 후딜에 걸렸다 → 확정 처벌
+  if (P.state === 'recover' && dist < 250 && ai.react-- <= 0) {
+    if (dist < MOVES.heavy.reach && B.stam > MOVES.heavy.stam && Math.random() < .55) { startMove(B, 'heavy'); return; }
+    if (dist < MOVES.thrust.reach) { startMove(B, 'thrust'); return; }
+  }
+  // 플레이어가 무방비 → 강베기
+  if (helpless(P) && dist < MOVES.heavy.reach + 30 && B.stam > MOVES.heavy.stam) { startMove(B, 'heavy'); return; }
+
+  // 플레이어가 칼을 뽑았다 → 막거나 뺀다
+  if (P.state === 'windup' && dist < 280) {
+    if (ai.react > 0) { ai.react--; }
+    else if (Math.random() < diff.guard) {
+      B.guardHeld = true;
+      if (B.guardT === 0) B.guardT = Math.random() < diff.parry ? 0 : GUARD_JUST + 4;  // 가끔 저스트가드
+      B.guardT++;
+      return;
+    } else if (Math.random() < .25) { startDash(B, -B.dir); return; }
+  }
+
+  if (ai.t % 12 === 0) ai.react = diff.react + (Math.random() * 8 | 0);
+
+  // 거리 관리 — '닿는 거리'가 기준이다.
+  // 여유(margin)를 두는 이유: 판정은 active 프레임에 나는데 그 사이 상대가 움직인다.
+  const MARGIN = 18;
+  const canReach = k => dist <= MOVES[k].reach - MARGIN;
+  const inPocket = dist <= MOVES.thrust.reach - MARGIN;   // 가장 긴 기술이 닿는 범위
+
+  if (!inPocket) {
+    // 아직 못 닿는다 → 붙는다. 멀면 대시로 거리를 지운다
+    if (dist > 360 && B.stam > 22 && Math.random() < diff.aggro * .35) startDash(B, B.dir);
+    else { B.vx = B.dir * 3.1; B.state = 'walk'; B.walkClock++; }
+    return;
+  }
+  if (dist < 172) {                       // 너무 붙었다 → 도끼를 휘두를 공간을 만든다
+    B.vx = -B.dir * 2.4; B.state = 'walk'; B.walkClock++;
+    return;
+  }
+  // 닿는 거리 — 무엇으로 칠지는 거리가 정한다
+  if (ai.t % 9 === 0 && Math.random() < diff.aggro) {
+    const roll = Math.random();
+    if (canReach('light') && roll < .42) startMove(B, 'light');
+    else if (canReach('heavy') && roll < .74 && B.stam > MOVES.heavy.stam + 10) startMove(B, 'heavy');
+    else if (canReach('thrust')) startMove(B, 'thrust');
+    else if (canReach('light')) startMove(B, 'light');
+  } else if (B.state === 'walk') { B.state = 'idle'; }
+}
+
+function updateCamera() {
+  const mid = (P.x + B.x) / 2;
+  const dist = Math.abs(P.x - B.x);
+  // 가까울수록 당겨 붙는다 — 접근전이 곧 클로즈업.
+  // 다만 격투게임은 '두 사람과 그 사이의 간격'이 같이 보여야 읽힌다.
+  // 장수 키가 화면의 40%대(먼 거리 37% ~ 붙었을 때 47%)에 오도록 잡은 값.
+  let z = clamp(1.02 - dist / 1400, 0.70, 0.95);
+  if (hitStop > 0) z *= 1 + cam.punch * 0.05;
+  cam.zoom = lerp(cam.zoom, z, 0.07);
+  const half = W / (2 * cam.zoom);
+  cam.x = lerp(cam.x, clamp(mid, half, STAGE_W - half), 0.10);
+  cam.punch = Math.max(0, cam.punch - 0.06);
+  cam.shakeX *= 0.86; cam.shakeY *= 0.86;
+}
+function shake(v) { cam.shakeX = v; cam.shakeY = v * 0.6; }
+
+function update() {
+  if (phase !== 'fight' && phase !== 'over') return;
+
+  if (hitStop > 0) { hitStop--; updateCamera(); stepFx(); return; }
+
+  frame++;
+  if (phase === 'fight') {
+    clockFrames--;
+    if (clockFrames <= 0) { clockFrames = 0; timeUp(); return; }
+    updatePlayer();
+    updateAI();
+  }
+  faceEachOther();
+  stepFighter(P); stepFighter(B);
+  separate();
+  if (phase === 'fight') resolveCombat();
+  updateCamera();
+  stepFx();
+  syncHud(false);
+}
+
+function timeUp() {
+  phase = 'over';
+  const pr = P.hp / P.maxHp, br = B.hp / B.maxHp;
+  banner('시간 종료', '#ffd45c', 1);
+  setTimeout(() => showResult(pr > br ? 'win' : pr < br ? 'lose' : 'draw'), 1400);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  7. 이펙트
+// ═══════════════════════════════════════════════════════════════════
+function sparkBurst(x, y, n, color, speed) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, s = (0.4 + Math.random()) * speed;
+    fx.push({ t: 'spark', x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 1, life: 16 + Math.random() * 14, color });
+  }
+}
+function bloodBurst(x, y, n) {
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI / 2 + (Math.random() - .5) * 2.6, s = 2 + Math.random() * 7;
+    fx.push({ t: 'blood', x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 22 + Math.random() * 18, color: '#c22a1c' });
+  }
+}
+function ring(x, y, r, color) { fx.push({ t: 'ring', x, y, r0: r * .25, r, life: 16, max: 16, color }); }
+function slashArc(x, y, dir, kind) { fx.push({ t: 'arc', x, y, dir, kind, life: 12, max: 12 }); }
+function damageNum(x, y, v, big) { fx.push({ t: 'num', x, y, v, big, life: 42, max: 42 }); }
+function puff(x, y, n, color) { for (let i = 0; i < n; i++) fx.push({ t: 'spark', x, y, vx: (Math.random() - .5) * 3, vy: -Math.random() * 2, life: 18, color }); }
+
+function stepFx() {
+  for (let i = fx.length - 1; i >= 0; i--) {
+    const p = fx[i];
+    if (p.t === 'spark' || p.t === 'blood') { p.x += p.vx; p.y += p.vy; p.vy += p.t === 'blood' ? .42 : .18; p.vx *= .96; }
+    if (p.t === 'num') p.y -= 1.1;
+    if (--p.life <= 0) fx.splice(i, 1);
+  }
+  for (let i = dust.length - 1; i >= 0; i--) {
+    const d = dust[i];
+    d.x += d.vx; d.y += d.vy; d.vy += .06; d.vx *= .97;
+    if (--d.life <= 0) dust.splice(i, 1);
+  }
+  if (fx.length > 320) fx.splice(0, fx.length - 320);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  8. 렌더
+// ═══════════════════════════════════════════════════════════════════
+function worldTransform() {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const sx = (Math.random() - .5) * cam.shakeX, sy = (Math.random() - .5) * cam.shakeY;
+  ctx.translate(W / 2 + sx, SCREEN_GROUND + sy);
+  const z = cam.zoom * (1 + cam.punch * 0.045);
+  ctx.scale(z, z);
+  ctx.translate(-cam.x, -GROUND);
+}
+
+function drawBackground() {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const bg = A.bg;
+  if (!ready(bg)) { ctx.fillStyle = '#1a1008'; ctx.fillRect(0, 0, W, H); return; }
+  // 배경은 카메라보다 느리게(패럴랙스) + 줌은 살짝만 따라간다
+  const z = cam.zoom * (1 + cam.punch * .045);
+  // 0.85 = 평상시 줌. 배경은 그 기준에서만 살짝 따라 움직인다(과하면 지면선이 튄다)
+  const scale = (H / bg.naturalHeight) * (1 + (z - 0.85) * 0.45) * 1.06;
+  const bw = bg.naturalWidth * scale, bh = bg.naturalHeight * scale;
+  const px = (cam.x / STAGE_W - .5) * (bw - W) * 0.9;
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(bg, (W - bw) / 2 - px, H - bh + (H * .04), bw, bh);
+  // 상하 비네트 — 인물이 배경에서 뜨게
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, 'rgba(6,4,2,.72)'); g.addColorStop(.28, 'rgba(6,4,2,0)');
+  g.addColorStop(.66, 'rgba(6,4,2,0)'); g.addColorStop(1, 'rgba(6,4,2,.80)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+
+// 상태 → 어떤 시트의 몇 번째 프레임을 그릴지
+function pickFrame(f) {
+  const m = META[f.kind];
+  const walking = f.state === 'walk' || f.state === 'dash' || f.state === 'backstep';
+
+  if (f.kind === 'boss') {
+    if (f.state === 'stunned' || f.state === 'ko') {
+      if (ready(A[m.stun.img])) return { set: m.stun, i: Math.floor(f.st / 9) % 3 };
+    }
+    if (f.state === 'hurt') {
+      if (ready(A[m.hurt.img])) return { set: m.hurt, i: Math.min(2, Math.floor(f.st / 7)) };
+    }
+    if (busy(f)) {
+      // 화웅은 공격 시트가 없다 → 포즈 2(도끼 치켜듦) → 3(내려찍기) → 1(자세 회복)
+      const i = f.state === 'windup' ? 2 : f.state === 'active' ? 3 : 1;
+      return { set: m.pose, i };
+    }
+    if (walking && ready(A[m.walk.img])) return { set: m.walk, i: Math.floor(f.walkClock / 6) % 6 };
+    return { set: m.pose, i: 0 };
+  }
+
+  // player
+  if (f.state === 'hurt' || f.state === 'stunned' || f.state === 'ko') return { set: m.pose, i: 4 };
+  if (busy(f)) {
+    const sheet = m[f.move.sheet];
+    if (sheet && ready(A[sheet.img])) {
+      const n = sheet.f.length;
+      let p;                                  // 0..1 진행도 → 시트 프레임
+      if (f.state === 'windup') p = (f.st / f.move.startup) * 0.42;
+      else if (f.state === 'active') p = 0.42 + (f.st / f.move.active) * 0.30;
+      else p = 0.72 + (f.st / f.move.recovery) * 0.28;
+      return { set: sheet, i: clamp(Math.floor(p * n), 0, n - 1) };
+    }
+    return { set: m.pose, i: f.state === 'windup' ? 2 : 3 };
+  }
+  if (walking && ready(A[m.walk.img])) return { set: m.walk, i: Math.floor(f.walkClock / 6) % 6 };
+  return { set: m.pose, i: 0 };   // 포즈1은 찌르는 자세라 대기/가드에 쓰면 공격처럼 보인다
+}
+
+function drawFighter(f) {
+  const m = META[f.kind];
+  const { set, i } = pickFrame(f);
+  const img = A[set.img];
+  if (!ready(img)) return;
+  const fr = set.f[i];
+  const [cx, cy, cw, ch, ox = 0, oy = 0, srcI = i] = fr;
+  const boost = set.boost || 1;
+  let scale = m.scale * boost;
+  if (set.baseH) scale *= clamp(set.baseH / ch, .90, 1.35);   // 컷 높이가 들쭉날쭉한 공격 시트 보정
+
+  // 대기 중 호흡 — 정지 프레임 두 장이 마주 서 있으면 마네킹처럼 보인다
+  const breath = busy(f) || helpless(f) ? 0 : Math.sin(frame * .048 + (f === B ? 2 : 0)) * 3.6;
+  const dw = cw * scale, dh = ch * scale;
+
+  // 그림자
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,.46)';
+  ctx.beginPath(); ctx.ellipse(f.x, GROUND + 4, m.shadowW, 12, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(f.x, GROUND + breath);
+  ctx.scale(f.dir, 1);
+
+  // 앞으로 실리는 무게 — windup 때 뒤로 당겼다가 active 때 밀고 나간다
+  let lunge = 0, tilt = f.lean * f.dir * 0.14;
+  if (f.state === 'windup') { const p = f.st / f.move.startup; lunge = -10 * Math.sin(p * Math.PI * .5); tilt -= 3 * p; }
+  else if (f.state === 'active') { const p = f.st / f.move.active; lunge = 26 * Math.sin(p * Math.PI * .8); tilt += 5 * p; }
+  else if (f.state === 'recover') { lunge = 12 * (1 - f.st / f.move.recovery); }
+  else if (f.state === 'hurt') { tilt = -9; }
+  else if (f.state === 'stunned') { tilt = Math.sin(frame * .3) * 6; }
+  else if (f.state === 'ko') { tilt = -70 * clamp(f.st / 26, 0, 1); }
+  ctx.translate(lunge, 0);
+  ctx.rotate(tilt * Math.PI / 180);
+
+  // 대시 잔상
+  if (f.state === 'dash' || f.state === 'backstep') {
+    ctx.save(); ctx.globalAlpha = .22; ctx.translate(-sign(f.vx) * f.dir * 26, 0);
+    ctx.drawImage(img, srcI * set.fw + cx, cy, cw, ch, -dw * m.anchor + ox * scale, -dh + oy * scale, dw, dh);
+    ctx.restore();
+  }
+
+  if (f.hitFlash > 0 && f.hitFlash % 4 > 1 && f.state !== 'ko') ctx.globalAlpha = .55;
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(img, srcI * set.fw + cx, cy, cw, ch, -dw * m.anchor + ox * scale, -dh + oy * scale, dw, dh);
+  ctx.globalAlpha = 1;
+  ctx.restore();
+
+  // 가드 — 몸 앞을 감싸는 초승달. 저스트가드 유효 프레임 동안은 밝게 탄다.
+  if (f.guardHeld) {
+    const just = f.guardT <= GUARD_JUST;
+    const cx0 = f.x + f.dir * 20, cy0 = GROUND - 150;
+    ctx.save();
+    ctx.translate(cx0, cy0); ctx.scale(f.dir, 1);
+    ctx.strokeStyle = just ? '#dff6ff' : '#7fb6e0';
+    ctx.lineCap = 'round';
+    if (just) { ctx.shadowColor = '#9de2ff'; ctx.shadowBlur = 28; }
+    ctx.globalAlpha = just ? .95 : .42;
+    ctx.lineWidth = just ? 10 : 5;
+    ctx.beginPath(); ctx.arc(0, 0, 118, -1.05, 1.05); ctx.stroke();
+    ctx.globalAlpha = just ? .45 : .18;
+    ctx.lineWidth = just ? 22 : 12;
+    ctx.beginPath(); ctx.arc(0, 0, 118, -0.85, 0.85); ctx.stroke();
+    ctx.restore();
+  }
+  // 경직 게이지 — 실제로 그려진 몸 위에 얹는다.
+  // f.x 는 논리 중심이고 컷 사각형은 무기 쪽으로 치우쳐 있어서, 그대로 쓰면 게이지가 옆으로 샌다.
+  if (f.stun > 6 && f.state !== 'ko') {
+    const visCx = f.x + f.dir * (dw * (0.5 - m.anchor) + ox * scale);
+    const w = 84, r = f.stun / STUN_MAX, top = GROUND - dh - 22;
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(visCx - w / 2, top, w, 8);
+    ctx.fillStyle = r > .75 ? '#ff6a3c' : '#ffd45c'; ctx.fillRect(visCx - w / 2 + 1, top + 1, (w - 2) * r, 6);
+    ctx.restore();
+  }
+}
+
+function drawFx() {
+  for (const p of fx) {
+    const a = clamp(p.life / (p.max || 30), 0, 1);
+    if (p.t === 'spark') {
+      ctx.globalAlpha = a; ctx.fillStyle = p.color;
+      ctx.fillRect(p.x - 2, p.y - 2, 5, 5);
+    } else if (p.t === 'blood') {
+      ctx.globalAlpha = a; ctx.fillStyle = p.color;
+      ctx.fillRect(p.x - 2, p.y - 2, 6, 6);
+    } else if (p.t === 'ring') {
+      const t = 1 - p.life / p.max;
+      ctx.globalAlpha = (1 - t) * .9; ctx.strokeStyle = p.color; ctx.lineWidth = 6 * (1 - t) + 1;
+      ctx.beginPath(); ctx.arc(p.x, p.y, lerp(p.r0, p.r, t), 0, Math.PI * 2); ctx.stroke();
+    } else if (p.t === 'arc') {
+      // 초승달 궤적. 선 굵기는 화면 기준으로 고정(줌이 바뀌어도 두께가 튀지 않게)
+      const t = 1 - p.life / p.max, k = 1 / cam.zoom;
+      ctx.save(); ctx.globalAlpha = (1 - t) * .85; ctx.translate(p.x, p.y); ctx.scale(p.dir, 1);
+      ctx.strokeStyle = '#fff8dc'; ctx.lineCap = 'round';
+      ctx.lineWidth = (p.kind === 'heavy' ? 13 : p.kind === 'line' ? 6 : 9) * k * (1 - t * .5);
+      ctx.beginPath();
+      if (p.kind === 'line') { ctx.moveTo(-40, 0); ctx.lineTo(120 + t * 70, 0); }
+      else {
+        const r = (p.kind === 'heavy' ? 108 : 82) * (0.85 + t * .35);
+        ctx.arc(-14, -6, r, -1.15 + t * .45, 0.55 + t * .45);
+      }
+      ctx.stroke(); ctx.restore();
+    } else if (p.t === 'num') {
+      const t = 1 - p.life / p.max, k = 1 / cam.zoom;
+      ctx.globalAlpha = clamp(2 - t * 2.4, 0, 1);
+      ctx.font = `900 ${(p.big ? 34 : 26) * k}px "Malgun Gothic",system-ui`;
+      ctx.textAlign = 'center';
+      ctx.lineWidth = 5 * k; ctx.strokeStyle = '#2a0a04'; ctx.strokeText(p.v, p.x, p.y);
+      ctx.fillStyle = p.big ? '#ffd45c' : '#fff2cc'; ctx.fillText(p.v, p.x, p.y);
+    }
+  }
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = 'rgba(120,96,64,.5)';
+  for (const d of dust) { ctx.globalAlpha = clamp(d.life / 22, 0, 1) * .5; ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, 6.283); ctx.fill(); }
+  ctx.globalAlpha = 1;
+}
+
+function render() {
+  drawBackground();
+  worldTransform();
+  // 지면 그림자 띠
+  ctx.fillStyle = 'rgba(10,6,3,.35)';
+  ctx.fillRect(cam.x - W, GROUND + 8, W * 2, 200);
+  const order = P.x <= B.x ? [P, B] : [B, P];
+  drawFighter(order[0]); drawFighter(order[1]);
+  drawFx();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  // 히트스톱 순간 화면 플래시
+  if (hitStop > 14) { ctx.globalAlpha = (hitStop - 14) / 22; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  9. HUD · 배너 · 오버레이
+// ═══════════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+function syncHud(force) {
+  $('hpL').style.width = clamp(P.hp / P.maxHp, 0, 1) * 100 + '%';
+  $('hpR').style.width = clamp(B.hp / B.maxHp, 0, 1) * 100 + '%';
+  $('hpLossL').style.width = clamp(P.hp / P.maxHp, 0, 1) * 100 + '%';
+  $('hpLossR').style.width = clamp(B.hp / B.maxHp, 0, 1) * 100 + '%';
+  $('spL').style.width = clamp(P.stam / P.maxStam, 0, 1) * 100 + '%';
+  $('spR').style.width = clamp(B.stam / B.maxStam, 0, 1) * 100 + '%';
+  $('sideL').classList.toggle('low', P.stam < 25);
+  $('sideR').classList.toggle('low', B.stam < 25);
+  const sec = Math.ceil(clockFrames / FPS);
+  const clk = $('clock');
+  if (force || clk.textContent !== String(sec)) clk.textContent = sec;
+}
+function bumpHap() {
+  const el = $('hapCount');
+  el.textContent = hap + ' 합';
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+}
+let bannerT = 0;
+function banner(text, color, weight) {
+  if (weight < bannerT) return;
+  bannerT = weight;
+  const el = $('banner');
+  el.textContent = text; el.style.color = color;
+  el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+  setTimeout(() => { bannerT = 0; }, 700);
+}
+
+// 받침 유무로 목적격 조사를 고른다 — "화웅을(를)" 같은 표기를 안 쓰기 위해
+function eul(word) {
+  const c = word.charCodeAt(word.length - 1);
+  if (c < 0xac00 || c > 0xd7a3) return '을';
+  return (c - 0xac00) % 28 ? '을' : '를';
+}
+
+function showResult(kind) {
+  const ov = $('overlay');
+  const title = kind === 'win' ? '승 리' : kind === 'lose' ? '패 배' : '무 승 부';
+  const line = kind === 'win'
+    ? `${hap}합 만에 ${B.name}${eul(B.name)} 베었다.`
+    : kind === 'lose' ? `${hap}합을 겨루었으나 ${B.name}에게 당했다.`
+    : `${hap}합을 겨루었으나 승부가 나지 않았다.`;
+  $('ovTitle').textContent = title;
+  $('ovVs').style.display = 'none';
+  $('ovText').innerHTML = `${line}<br><br>
+    유효타 <b>${stats.hits}</b> · 가드 <b>${stats.guards}</b> · 저스트가드 <b>${stats.justs}</b> · 격돌 <b>${stats.clashes}</b><br>
+    받은 피해 <b>${stats.taken}</b> · 남은 체력 <b>${Math.max(0, Math.round(P.hp))}</b>`;
+  $('ovGo').textContent = '다 시';
+  ov.hidden = false;
+  phase = 'result';
+}
+
+function startFight() {
+  $('overlay').hidden = true;
+  $('ovVs').style.display = '';
+  resetMatch();
+  phase = 'fight';
+  banner('일 기 토', '#ffd45c', 1);
+}
+
+// 난이도 선택
+document.querySelectorAll('#ovDiff .pick').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#ovDiff .pick').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    diff = DIFF[b.dataset.diff];
+  });
+});
+// 오버레이 버튼은 하나 — 문맥(시작/재개/재시작)에 따라 갈린다
+$('ovGo').addEventListener('click', () => {
+  if (phase === 'paused') { $('overlay').hidden = true; phase = 'fight'; }
+  else startFight();
+});
+
+function togglePause() {
+  if (phase === 'fight') { phase = 'paused'; $('ovTitle').textContent = '일시정지'; $('ovVs').style.display = 'none'; $('ovText').textContent = '숨을 고른다.'; $('ovGo').textContent = '계 속'; $('overlay').hidden = false; }
+  else if (phase === 'paused') { $('overlay').hidden = true; phase = 'fight'; }
+}
+$('btnPause').addEventListener('click', togglePause);
+$('btnFull').addEventListener('click', () => {
+  const w = document.getElementById('wrap');
+  if (document.fullscreenElement) document.exitFullscreen();
+  else w.requestFullscreen?.();
+});
+// HUD 크기 단위 — 캔버스 설계 해상도 1px 이 실제로 몇 px 인가
+const wrapEl = document.getElementById('wrap');
+function syncUnit() {
+  const u = wrapEl.clientHeight / H;
+  document.documentElement.style.setProperty('--u', u.toFixed(4) + 'px');
+}
+new ResizeObserver(syncUnit).observe(wrapEl);
+syncUnit();
+
+// 조작계 감지는 '실제로 무엇을 썼는가'로 — 로드 시점의 미디어쿼리만 믿으면
+// 태블릿·에뮬레이터·터치 가능한 노트북에서 틀린 UI가 뜬다.
+const padEl = $('pad'), keysEl = document.querySelector('.keys');
+function useTouch() { padEl.classList.remove('hide'); keysEl.style.display = 'none'; }
+function useKeys() { padEl.classList.add('hide'); keysEl.style.display = ''; }
+addEventListener('touchstart', useTouch, { passive: true, once: true });
+addEventListener('keydown', useKeys, { once: true });
+if (matchMedia('(pointer:coarse)').matches) useTouch(); else useKeys();
+
+// ═══════════════════════════════════════════════════════════════════
+//  10. 루프
+// ═══════════════════════════════════════════════════════════════════
+let acc = 0, last = 0;
+function loop(now) {
+  requestAnimationFrame(loop);
+  if (!last) last = now;
+  let elapsed = Math.min(now - last, 100);
+  last = now;
+  if (slowmo > 0) { slowmo--; elapsed *= 0.32; }
+  acc += elapsed;
+  let guard = 0;
+  while (acc >= DT && guard++ < 5) { update(); acc -= DT; }
+  render();
+}
+
+loadAssets().then(() => {
+  resetMatch();
+  render();
+  requestAnimationFrame(loop);
+});
+</script>
+</body>
+</html>
