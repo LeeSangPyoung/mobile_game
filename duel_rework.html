@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>일기토 — 고전 전술극 리워크</title>
+<link rel="preload" as="image" href="./assets/duel_rework/lu-bu-attack-v3-block.png">
+<link rel="preload" as="image" href="./assets/duel_rework/dong-zhuo-attack-v3-block.png">
+<link rel="preload" as="image" href="./assets/duel_rework/lu-bu-windup-v4.png">
+<link rel="preload" as="image" href="./assets/duel_rework/dong-zhuo-windup-v4.png">
+<style>
+:root{--ink:#17110c;--gold:#ffd45c;--paper:#fff0b5;--red:#b63535;--blue:#2666a5}
+*{box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0c0908;color:#f7edcf;font-family:"Malgun Gothic","Noto Sans KR",system-ui,sans-serif}
+button{font:inherit}
+#game{position:relative;width:min(100vw,1280px);height:100dvh;margin:auto;overflow:hidden;background:#25170f;isolation:isolate;cursor:pointer}
+#bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;image-rendering:pixelated;filter:saturate(.96) brightness(.76)}
+#game:after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(#08070688 0%,transparent 23%,transparent 62%,#080706cc 100%),radial-gradient(circle at 50% 48%,transparent 34%,#08060499 100%)}
+.grain{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.16;background-image:repeating-linear-gradient(0deg,#0000 0 2px,#000 3px 3px)}
+#hud{position:absolute;z-index:10;left:14px;right:14px;top:12px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:118px;align-items:start}
+.unit{display:grid;grid-template-columns:64px minmax(0,1fr);width:100%;max-width:100%;min-width:0;height:70px;background:linear-gradient(180deg,#2875bdf2,#153657f2);border:3px solid #d4edff;outline:3px solid #152438;box-shadow:inset 0 4px #ffffff30,0 5px 16px #000a;border-radius:5px;overflow:hidden}
+.unit.enemy{grid-template-columns:1fr 64px;background:linear-gradient(180deg,#8b343bf2,#421b23f2)}
+.portrait{height:64px;overflow:hidden;border-right:2px solid #8da2bd;background:#090807}
+.enemy .portrait{order:2;border-right:0;border-left:2px solid #b48a75}
+.portrait img{width:100%;height:100%;object-fit:cover;object-position:50% 26%;transform:scale(2.55);image-rendering:pixelated}
+.enemy .portrait img{object-position:50% 23%;transform:scale(2.45)}
+.unit-body{padding:7px 9px 8px;min-width:0;overflow:hidden}.enemy .unit-body{text-align:right}
+.name{display:flex;justify-content:space-between;align-items:center;gap:8px;min-width:0;font-weight:900;text-shadow:0 2px #000;white-space:nowrap}.enemy .name{flex-direction:row-reverse}
+.name span{overflow:hidden;text-overflow:ellipsis;font-size:16px}.name small{flex:0 0 auto;color:#f0c968;font-size:11px}
+.hp{height:14px;margin-top:6px;padding:2px;background:#080706;border:1px solid #c4af7b;box-shadow:inset 0 2px 4px #000}
+.hp>i{display:block;width:100%;height:100%;background:linear-gradient(#76df87,#24864c);transition:width .45s}.enemy .hp>i{margin-left:auto;background:linear-gradient(#e77763,#9d2926)}
+#round{position:absolute;left:50%;top:3px;transform:translateX(-50%);min-width:88px;padding:7px 9px;text-align:center;color:#f5d884;background:#18110cf2;border:2px solid #9e7b42;outline:2px solid #2b1b12;font-size:12px;font-weight:900;letter-spacing:2px;box-shadow:0 4px 10px #0008}
+#field{position:absolute;z-index:4;inset:85px 0 150px}
+.fighter{position:absolute;bottom:5%;width:31.2%;height:70.4%;display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 12px 8px #000b);transform-origin:50% 82%;will-change:transform,filter;animation:idleBob 1.7s ease-in-out infinite alternate}
+.fighter img{max-width:100%;max-height:100%;object-fit:contain;image-rendering:pixelated}
+#hero{left:13%}#enemy{right:13%}
+#hero.windup{animation:windupA .22s cubic-bezier(.2,.8,.2,1) forwards}#enemy.windup{animation:windupB .22s cubic-bezier(.2,.8,.2,1) forwards}
+#hero.attack{animation:chargeA .48s cubic-bezier(.15,.8,.18,1)}#enemy.attack{animation:chargeB .48s cubic-bezier(.15,.8,.18,1)}
+#hero.hurt{animation:hurtA .62s steps(3)}#enemy.hurt{animation:hurtB .62s steps(3)}.fighter.win{animation:win .75s ease-in-out infinite alternate;filter:drop-shadow(0 0 18px #ffd45c) drop-shadow(0 12px 8px #000b)}.fighter.lose{animation:lose .85s ease-in forwards}
+@keyframes idleBob{to{transform:translateY(-4px) rotate(.35deg)}}
+@keyframes windupA{to{transform:translateX(-7%) translateY(3%) rotate(-3deg) scale(.97)}}
+@keyframes windupB{to{transform:translateX(7%) translateY(3%) rotate(3deg) scale(.97)}}
+@keyframes chargeA{0%{transform:translateX(-7%) translateY(3%) rotate(-3deg) scale(.97)}38%{transform:translateX(30%) translateY(-2%) rotate(5deg) scale(1.05)}52%{transform:translateX(35%) translateY(-3%) rotate(7deg) scale(1.07)}60%{transform:translateX(35%) translateY(-3%) rotate(7deg) scale(1.07)}100%{transform:translateX(0) rotate(0)}}
+@keyframes chargeB{0%{transform:translateX(7%) translateY(3%) rotate(3deg) scale(.97)}38%{transform:translateX(-30%) translateY(-2%) rotate(-5deg) scale(1.05)}52%{transform:translateX(-35%) translateY(-3%) rotate(-7deg) scale(1.07)}60%{transform:translateX(-35%) translateY(-3%) rotate(-7deg) scale(1.07)}100%{transform:translateX(0) rotate(0)}}
+@keyframes hurtA{0%,18%{transform:translateX(0);filter:brightness(1)}19%,34%{transform:translateX(-8%) rotate(-5deg);filter:brightness(2.6) sepia(1) saturate(5)}65%{transform:translateX(-13%) rotate(-7deg)}100%{transform:translateX(0);filter:brightness(1)}}
+@keyframes hurtB{0%,18%{transform:translateX(0);filter:brightness(1)}19%,34%{transform:translateX(8%) rotate(5deg);filter:brightness(2.6) sepia(1) saturate(5)}65%{transform:translateX(13%) rotate(7deg)}100%{transform:translateX(0);filter:brightness(1)}}
+@keyframes win{to{transform:translateY(-8px)}}
+@keyframes lose{35%{transform:translateY(2%) rotate(8deg);filter:brightness(.7)}100%{transform:translateY(18%) translateX(12%) rotate(16deg);opacity:.3;filter:brightness(.35)}}
+#shadowA,#shadowB{position:absolute;bottom:3%;width:24%;height:4%;border-radius:50%;background:#0008;filter:blur(5px)}#shadowA{left:14%}#shadowB{right:14%}
+#slash{position:absolute;z-index:9;left:50%;top:44%;width:19%;height:9px;border-radius:50%;background:#fff7ce;box-shadow:0 0 16px #ffcc54,0 0 38px #f33;transform:translate(-50%,-50%) rotate(-35deg) scaleX(0);opacity:0}
+#slash:after{content:"";position:absolute;inset:-16px -8px;border-top:5px solid #ffd267;border-radius:50%;filter:drop-shadow(0 0 7px #ff6b32)}
+#slash.show{animation:slash .34s cubic-bezier(.1,.8,.2,1)}@keyframes slash{0%{opacity:0;transform:translate(-50%,-50%) rotate(38deg) scaleX(.1)}18%{opacity:1}58%{opacity:1;transform:translate(-50%,-50%) rotate(-38deg) scaleX(1.8)}100%{opacity:0;transform:translate(-50%,-50%) rotate(-48deg) scaleX(2.25)}}
+#game.impact{animation:impactShake .3s steps(2)}#game.impact:before{content:"";position:absolute;inset:0;z-index:25;background:#fff3c9;pointer-events:none;animation:impactFlash .2s ease-out forwards}
+@keyframes impactShake{0%{transform:translate(0)}20%{transform:translate(-10px,5px)}40%{transform:translate(8px,-4px)}60%{transform:translate(-5px,3px)}100%{transform:translate(0)}}
+@keyframes impactFlash{0%{opacity:.9}30%{opacity:.24}100%{opacity:0}}
+#callout{position:absolute;z-index:12;left:0;right:0;top:28%;text-align:center;font-size:clamp(28px,6vw,64px);font-weight:900;color:#ffe096;letter-spacing:.18em;text-shadow:0 4px #4b120b,0 0 24px #f15;opacity:0;transform:scale(1.5)}
+#callout.show{animation:call .72s ease-out}@keyframes call{15%,70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.9)}}
+#panel{position:absolute;z-index:15;left:14px;right:14px;bottom:12px;padding:10px 12px 12px;background:linear-gradient(180deg,#2481c8f5,#123d67f8);border:3px solid #d4edff;outline:3px solid #172234;box-shadow:inset 0 4px #ffffff2b,0 8px 22px #000b;border-radius:6px}
+.instruction{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;font-size:12px;font-weight:900;color:#ead9ad}.instruction b{color:#ffd46a;letter-spacing:2px;white-space:nowrap}
+.duelPrompt{display:grid;grid-template-columns:92px minmax(0,1fr) 92px;gap:8px;align-items:stretch}
+.stanceBox,.actionBox{min-height:55px;padding:8px;background:#090807;border:2px solid #b99a61;box-shadow:inset 0 3px 9px #000;border-radius:4px}
+.stanceBox{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ffbbb0;text-align:center}.stanceBox small,.actionBox small{font-size:10px;color:#d9caa3}.stanceBox b{margin-top:2px;font-size:20px;letter-spacing:2px;text-shadow:0 2px #000;color:#ffd46a}
+.actionBox{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#d8ebff}.actionBox b{margin-top:2px;font-size:18px;color:#fff6ca;text-shadow:0 2px #000}
+.bladePad{position:relative;min-height:72px;background:linear-gradient(180deg,#17110c,#070605);border:2px solid #d6bb77;box-shadow:inset 0 4px 12px #000,0 0 0 1px #2b1b12;overflow:hidden;border-radius:5px;touch-action:none}
+.bladePad:before{content:"";position:absolute;inset:9px;border:1px dashed #9f7c3f66;border-radius:3px}
+.bladePad:after{content:"베기";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-weight:900;font-size:26px;letter-spacing:10px;color:#ffe298;text-shadow:0 2px #4b120b,0 0 18px #f60}
+.bladePad.guard:after{content:"막기";color:#bff1ff}.bladePad.hit:after{content:"반격";color:#fff4bd}.bladePad.fail:after{content:"피격";color:#ff9a86}
+.actionGuide{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:7px}
+.actionGuide span{padding:5px 3px;text-align:center;background:#071018;border:1px solid #78a6c8;color:#d9edff;font-size:10px;font-weight:900;border-radius:3px}
+#hint{text-align:center;margin-top:6px;font-size:9px;color:#c8bd9eaa}
+#result{display:none;position:absolute;z-index:30;inset:0;background:#090705dc;place-items:center;padding:24px;cursor:default}
+#result.show{display:grid}.result-box{width:min(440px,100%);padding:28px;text-align:center;background:linear-gradient(#efe0b7,#cbb57e);color:#291c11;border:5px double #694723;box-shadow:0 15px 50px #000}.result-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}.result-stats b{padding:9px;background:#332415;color:#ffe6a6;border:2px solid #765127}
+.result-box h1{margin:0 0 10px;font-size:42px;letter-spacing:8px}.result-box p{line-height:1.7}.result-box button{padding:11px 24px;border:2px solid #422a14;background:#7d2d25;color:#fff0cf;font-weight:900;cursor:pointer}
+@media(max-width:650px){#hud{left:8px;right:8px;top:8px;grid-template-columns:repeat(2,minmax(0,1fr));gap:58px}.unit{grid-template-columns:52px minmax(0,1fr);height:60px}.unit.enemy{grid-template-columns:minmax(0,1fr) 52px}.portrait{height:54px}.unit-body{padding:6px 7px}.name span{font-size:14px}.name small{font-size:9px}.hp{height:12px;margin-top:5px}#round{top:64px;padding:5px 8px;min-width:78px;font-size:11px}.fighter{width:44%;height:53%;bottom:10%}#hero{left:3%}#enemy{right:3%}#field{inset:86px 0 154px}#panel{left:7px;right:7px;bottom:7px}.instruction{font-size:11px}.duelPrompt{grid-template-columns:72px minmax(0,1fr) 72px;gap:6px}.stanceBox b,.actionBox b{font-size:15px}.bladePad:after{font-size:22px;letter-spacing:6px}#bg{object-position:center}}
+@media(max-width:460px){#hud{display:block}.unit{position:absolute;left:0;top:0;width:calc(50% - 27px);grid-template-columns:46px minmax(0,1fr)}.unit.enemy{left:auto;right:0;grid-template-columns:minmax(0,1fr) 46px}.portrait{height:54px}.unit-body{padding:6px 5px}.name span{font-size:12px}.name small{font-size:8px}.instruction b{letter-spacing:0}.meterLabel{font-size:9px}.meterLabel b{font-size:9px}}
+</style>
+</head>
+<body>
+<main id="game" aria-label="일기토 게임">
+ <img id="bg" src="./assets/duel_rework/battlefield-v2-block.png" alt="">
+ <div class="grain"></div>
+ <header id="hud">
+  <section class="unit"><div class="portrait"><img src="./assets/duel_rework/lu-bu-v2-block.png" alt="여포"></div><div class="unit-body"><div class="name"><span>여포</span><small>무력 100</small></div><div class="hp"><i id="hpA"></i></div></div></section>
+  <div id="round">제 1 합</div>
+  <section class="unit enemy"><div class="portrait"><img src="./assets/duel_rework/dong-zhuo-v2-block.png" alt="동탁"></div><div class="unit-body"><div class="name"><span>동탁</span><small>무력 74</small></div><div class="hp"><i id="hpB"></i></div></div></section>
+ </header>
+ <section id="field">
+  <div id="shadowA"></div><div id="shadowB"></div>
+  <div id="hero" class="fighter"><img src="./assets/duel_rework/lu-bu-v2-block.png" data-idle="./assets/duel_rework/lu-bu-v2-block.png" data-windup="./assets/duel_rework/lu-bu-windup-v4.png" data-attack="./assets/duel_rework/lu-bu-attack-v3-block.png" alt="기마 여포"></div>
+  <div id="enemy" class="fighter"><img src="./assets/duel_rework/dong-zhuo-v2-block.png" data-idle="./assets/duel_rework/dong-zhuo-v2-block.png" data-windup="./assets/duel_rework/dong-zhuo-windup-v4.png" data-attack="./assets/duel_rework/dong-zhuo-attack-v3-block.png" alt="기마 동탁"></div>
+  <div id="slash"></div><div id="callout">일 격!</div>
+ </section>
+ <section id="panel">
+  <div class="instruction"><span>상대 자세를 보고 칼로 응수하십시오</span><b id="status">승부 준비</b></div>
+  <div class="duelPrompt">
+    <div class="stanceBox"><small>동탁 자세</small><b id="enemyMove">대기</b></div>
+    <div class="bladePad" id="bladePad" aria-label="칼 조작 영역"></div>
+    <div class="actionBox"><small>내 응수</small><b id="myAction">대기</b></div>
+  </div>
+  <div class="actionGuide"><span>탭: 찌르기</span><span>위: 올려베기</span><span>아래: 내려베기</span><span>길게: 막기</span></div>
+  <div id="hint">상단은 내려베기, 하단은 올려베기, 찌르기는 탭으로 받아치기</div>
+ </section>
+ <div id="result"><div class="result-box"><h1></h1><p></p><div class="result-stats"><b id="finalA"></b><b id="finalB"></b></div><button id="again">다시 붙는다</button></div></div>
+</main>
+<script>
+const $=s=>document.querySelector(s), game=$('#game'), status=$('#status'), pad=$('#bladePad');
+const moves=[
+ {id:'high',label:'상단',counter:'down',hint:'내려베기'},
+ {id:'low',label:'하단',counter:'up',hint:'올려베기'},
+ {id:'thrust',label:'찌르기',counter:'tap',hint:'찌르기'}
+];
+const actionLabel={tap:'찌르기',up:'올려베기',down:'내려베기',left:'횡베기',right:'횡베기',guard:'막기',none:'무방비'};
+let hpA=100,hpB=100,round=1,bestA=0,bestB=0,phase='idle',currentMove=null,playerAction='none',downAt=0,startX=0,startY=0,holdTimer=null,resolveTimer=null;
+
+function setImg(el,state){const img=el.querySelector('img');img.src=img.dataset[state]||img.dataset.idle}
+function clearCombatClasses(){['windup','attack','hurt','win','lose'].forEach(c=>document.querySelectorAll('.fighter').forEach(el=>el.classList.remove(c)));game.classList.remove('impact');$('#slash').classList.remove('show');$('#callout').classList.remove('show');pad.classList.remove('guard','hit','fail')}
+function setAction(action){if(phase!=='read'&&phase!=='danger')return;playerAction=action;$('#myAction').textContent=actionLabel[action]||actionLabel.none;pad.classList.toggle('guard',action==='guard');status.textContent=action==='guard'?'막아라!':'베어라!'}
+function begin(){
+ if(hpA<=0||hpB<=0)return;
+ clearCombatClasses();
+ currentMove=moves[Math.floor(Math.random()*moves.length)];
+ playerAction='none';phase='read';
+ $('#round').textContent=`제 ${round} 합`;$('#enemyMove').textContent='주시';$('#myAction').textContent='대기';status.textContent='상대 자세를 읽어라';
+ setTimeout(()=>{if(phase!=='read')return;$('#enemyMove').textContent=currentMove.label;status.textContent=`동탁 ${currentMove.label}! ${currentMove.hint}로 응수`;$('#enemy').classList.add('windup');setImg($('#enemy'),'windup');phase='danger'},420);
+ resolveTimer=setTimeout(resolveExchange,1380);
+}
+function resolveExchange(){
+ if(phase!=='read'&&phase!=='danger')return;
+ phase='resolve';
+ clearTimeout(holdTimer);
+ const correct=playerAction===currentMove.counter;
+ const guarded=playerAction==='guard';
+ const whiff=playerAction==='none';
+ let heroHits=correct;
+ let dmg=0;
+ if(correct){dmg=24+Math.floor(Math.random()*10);bestA++;counterAttack(dmg,'간 파!')}
+ else if(guarded){dmg=7+Math.floor(Math.random()*5);enemyAttack(dmg,'막 음!',true)}
+ else{dmg=whiff?24+Math.floor(Math.random()*9):17+Math.floor(Math.random()*8);enemyAttack(dmg,whiff?'허 점!':'늦 었 다!',false)}
+ bestB+=heroHits?0:1;
+ setTimeout(()=>{round++;if(hpA<=0||hpB<=0)finish();else begin()},1450);
+}
+function counterAttack(dmg,text){
+ pad.classList.add('hit');status.textContent=`${actionLabel[playerAction]} 성공`;
+ const hero=$('#hero'),enemy=$('#enemy'),img=hero.querySelector('img');
+ setImg(hero,'windup');hero.classList.add('windup');
+ setTimeout(()=>{setImg(hero,'attack');hero.classList.remove('windup');hero.classList.add('attack')},180);
+ setTimeout(()=>{hpB=Math.max(0,hpB-dmg);$('#hpB').style.width=hpB+'%';enemy.classList.add('hurt');flash(text);},420);
+ setTimeout(()=>{setImg(hero,'idle');hero.classList.remove('attack');enemy.classList.remove('hurt')},980);
+}
+function enemyAttack(dmg,text,guarded){
+ pad.classList.add(guarded?'hit':'fail');status.textContent=guarded?`방어 성공, ${dmg} 피해`:`동탁의 ${currentMove.label}`;
+ const hero=$('#hero'),enemy=$('#enemy');
+ setTimeout(()=>{setImg(enemy,'attack');enemy.classList.remove('windup');enemy.classList.add('attack')},160);
+ setTimeout(()=>{hpA=Math.max(0,hpA-dmg);$('#hpA').style.width=hpA+'%';hero.classList.add('hurt');flash(text);},430);
+ setTimeout(()=>{setImg(enemy,'idle');enemy.classList.remove('attack','windup');hero.classList.remove('hurt')},990);
+}
+function flash(text){game.classList.add('impact');$('#slash').classList.add('show');$('#callout').textContent=text;$('#callout').classList.add('show');setTimeout(()=>game.classList.remove('impact'),320);setTimeout(()=>{$('#slash').classList.remove('show');$('#callout').classList.remove('show')},720)}
+function finish(){phase='done';clearTimeout(resolveTimer);const win=hpA>0,winner=$(win?'#hero':'#enemy'),loser=$(win?'#enemy':'#hero');winner.classList.add('win');loser.classList.add('lose');$('#result h1').textContent=win?'승 리':'패 배';$('#result p').innerHTML=`${round-1}합 만에 일기토가 끝났습니다.`;$('#finalA').innerHTML=`여포<br>체력 ${hpA}<br>반격 ${bestA}회`;$('#finalB').innerHTML=`동탁<br>체력 ${hpB}<br>유효타 ${bestB}회`;setTimeout(()=>$('#result').classList.add('show'),800)}
+function restart(){hpA=hpB=100;round=1;bestA=bestB=0;phase='idle';$('#hpA').style.width=$('#hpB').style.width='100%';$('#enemyMove').textContent='대기';$('#myAction').textContent='대기';$('#round').textContent='제 1 합';$('#result').classList.remove('show');clearCombatClasses();setImg($('#hero'),'idle');setImg($('#enemy'),'idle');setTimeout(begin,350)}
+function pointerAction(dx,dy,held){
+ if(held)return 'guard';
+ if(Math.abs(dx)<22&&Math.abs(dy)<22)return 'tap';
+ if(Math.abs(dy)>Math.abs(dx))return dy<0?'up':'down';
+ return dx<0?'left':'right';
+}
+pad.addEventListener('pointerdown',e=>{if(phase==='done')return;downAt=performance.now();startX=e.clientX;startY=e.clientY;pad.setPointerCapture(e.pointerId);clearTimeout(holdTimer);holdTimer=setTimeout(()=>setAction('guard'),260)});
+pad.addEventListener('pointerup',e=>{if(phase==='done')return;clearTimeout(holdTimer);const held=performance.now()-downAt>260;const action=pointerAction(e.clientX-startX,e.clientY-startY,held);if(playerAction!=='guard'||!held)setAction(action)});
+window.addEventListener('keydown',e=>{const map={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',Space:'tap',Enter:'tap',ShiftLeft:'guard',ShiftRight:'guard'};if(map[e.code]){e.preventDefault();setAction(map[e.code])}});
+game.addEventListener('pointerdown',e=>{if(e.target.closest('#result'))return;if(e.target.closest('#bladePad'))return});
+$('#again').addEventListener('click',e=>{e.stopPropagation();restart()});
+setTimeout(begin,700);
+</script>
+</body>
+</html>
