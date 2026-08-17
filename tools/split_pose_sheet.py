@@ -76,6 +76,15 @@ def chroma_key(rgb):
         rgb[:] = rgb2
     fg = ~key
     fg = ndimage.binary_opening(fg, np.ones((3, 3)))      # 초록 위 잔점 제거
+    # 컷 번호(①②…)를 **닫힘 연산 전에** 지운다.
+    # 닫힘을 먼저 하면 번호가 무기 끝과 이어져 캐릭터의 일부가 되고,
+    # 그 뒤엔 '작은 조각' 필터로 못 걸러낸다(관우 시트에서 ⑪⑭⑰ 가 그렇게 남았다).
+    lbl, n = ndimage.label(fg)
+    if n:
+        sizes = ndimage.sum(fg, lbl, range(1, n + 1))
+        small = [i + 1 for i in range(n) if sizes[i] < 2600]
+        if small:
+            fg = fg & ~np.isin(lbl, small)
     fg = ndimage.binary_closing(fg, np.ones((5, 5)))
     fg = ndimage.binary_fill_holes(fg)
     return fg
@@ -172,7 +181,7 @@ def _valley_cuts(cols, edge_margin=120, min_cell=200, depth=0.22):
     return out
 
 
-def split_components(fg, body_area=18000, drop_area=1200):
+def split_components(fg, body_area=18000, drop_area=1200, erode=9):
     """연결요소로 나누고, 떨어져 나온 무기 조각은 가장 가까운 몸에 붙인다.
 
     투영으로만 자르면 두 가지가 어긋난다.
@@ -191,7 +200,7 @@ def split_components(fg, body_area=18000, drop_area=1200):
         tiny = np.isin(olbl, [i + 1 for i in range(on) if osz[i] < drop_area])
         fg = fg & ~tiny
 
-    seeds = ndimage.binary_erosion(fg, np.ones((9, 9)))
+    seeds = ndimage.binary_erosion(fg, np.ones((erode, erode)))
     slbl, sn = ndimage.label(seeds)
     if sn:
         # 각 전경 픽셀을 가장 가까운 씨앗 라벨로 — 끊긴 덩어리를 원래 크기로 복원
@@ -349,10 +358,24 @@ def normalize_set(pieces, names, out_dir, ref=0, lift=None, fit_body=True):
         # 몸통 바닥을 지면에, 몸통 중심을 기준선에
         dx = round(CX - m[1])
         dy = round(BASELINE - m[0]) - lift.get(name, 0)
+        # 캔버스를 벗어나면 **딱 들어갈 만큼만** 줄인다.
+        # 어림잡아 줄이면 그 컷만 작아져서(관우 guard_just 가 -13%) 크기가 튄다.
+        for t in [1 - i * 0.015 for i in range(15)]:
+            if t < 1:
+                w2, h2 = max(1, round(w * t)), max(1, round(h * t))
+                rr = r.resize((w2, h2), Image.LANCZOS)
+                mm = body_metrics(rr)
+                ddx, ddy = round(CX - mm[1]), round(BASELINE - mm[0]) - lift.get(name, 0)
+            else:
+                rr, w2, h2, ddx, ddy = r, w, h, dx, dy
+            if ddx >= 0 and ddy >= 0 and ddx + w2 <= CANVAS_W and ddy + h2 <= CANVAS_H:
+                if t < 1:
+                    print(f'  · {name}: 캔버스에 맞춰 {t:.3f} 배로 줄였다')
+                r, dx, dy = rr, ddx, ddy
+                break
+        else:
+            print(f'  ! {name}: 캔버스를 크게 벗어난다 — 다시 뽑는 편이 낫다')
         canvas.alpha_composite(r, (dx, dy))
-        # 캔버스 밖으로 나간 게 있으면 규격이 잘못된 것 — 조용히 잘리면 안 된다
-        if dx < 0 or dy < 0 or dx + w > CANVAS_W or dy + h > CANVAS_H:
-            print(f'  ! {name}: 캔버스를 벗어난다 — 잘림 발생 (CANVAS 를 키워야 한다)')
         path = os.path.join(out_dir, f'{name}.png')
         canvas.save(path)
         out_paths.append(path)
@@ -390,7 +413,17 @@ def main():
         print('  초록 배경 감지 → 크로마키로 분리')
     else:
         fg = remove_background(rgb)
+    # 무기 끝끼리 맞닿아 두 인물이 한 덩어리가 되는 일이 있다(관우의 언월도).
+    # 이름 개수를 아는 경우, 그 수가 나올 때까지 침식을 조금씩 키운다.
+    want = len([n for n in (args.names or '').split(',') if n.strip()])
     blobs = split_components(fg)
+    if want and len(blobs) != want:
+        for e in (13, 17, 21, 25):
+            trial = split_components(fg, erode=e)
+            if len(trial) == want:
+                print(f'  · 인물이 붙어 있었다 → 분리 강도 {e} 로 재시도해 {want}개 확보')
+                blobs = trial
+                break
     print(f'{os.path.basename(args.sheet)} → 컷 {len(blobs)}개')
 
     pieces, names = [], []

@@ -15,10 +15,64 @@ REF_DIR = os.path.join(ROOT, 'asset_img', 'refs')
 
 # 발주 프롬프트 — 조운·화웅에서 실제로 통한 형식.
 # {NAME}/{WEAPON} 만 장수별로 갈아 끼운다.
+PROMPT_0 = """The attached image is my character reference: {NAME}, a Three Kingdoms general.
+Study it carefully — same face, same helmet, same armor pattern and colors,
+same cape, same weapon. Chibi proportions, ornate detailed armor,
+painterly game art style.
+
+CAMERA — this is the single most important rule, more important than
+anything else below:
+Every pose is a SIDE VIEW, like a 2D fighting game sprite (Street Fighter,
+King of Fighters, Samurai Shodown). The character's shoulders are
+PERPENDICULAR to the camera. We see the PROFILE of the face — one eye, one
+ear, the nose in silhouette. One arm is nearer the camera and partly covers
+the torso. The chest does NOT face the viewer. The feet point to the right.
+
+The attached reference is a FRONT-FACING portrait. Use it ONLY for the
+character's identity — face, armor pattern, colors, cape, weapon design.
+Do NOT copy its camera angle and do NOT copy its standing pose.
+
+Draw this SAME character in 4 poses on ONE image, numbered 1 to 4:
+
+1  IDLE — a side-on combat stance, knees bent, weight settled, body turned
+   so the shoulder points at the opponent. The weapon is held ACROSS the
+   body, angled and ready to strike — not planted upright, not resting.
+   He is about to fight, not posing for a portrait.
+   The weapon must NOT touch the ground.
+2  WALK 1 — mid-stride, front foot planting on the ground, rear foot lifted
+   behind, body leaning slightly forward, cape trailing back.
+3  WALK 2 — mid-stride, both legs passing each other, body at the highest
+   point of the step.
+4  WALK 3 — mid-stride, rear foot planting, front foot lifted forward.
+   The mirror of pose 2.
+
+STRICT RULES
+- Background: solid pure green (#00FF00), completely flat, no gradient,
+  no texture, no shadow, no ground.
+- ALL 4 figures at the SAME size and SAME scale. Draw them LARGE — one row
+  of 4, filling the image height.
+- Do NOT draw grid lines, frames or separators. Plain green between figures.
+- Nothing cropped: weapon, cape and helmet fully inside with green margin.
+- Character only. No slash trails, no motion blur, no effects, no dust,
+  no shadows, no text or labels other than the numbers.
+- Identical costume in every pose."""
+
 PROMPT_1 = """The attached image is my character reference: {NAME}, a Three Kingdoms general.
 Study it carefully — same face, same helmet, same armor pattern and colors,
 same cape, same weapon. Chibi proportions, ornate detailed armor,
 painterly game art style.
+
+CAMERA — this is the single most important rule, more important than
+anything else below:
+Every pose is a SIDE VIEW, like a 2D fighting game sprite (Street Fighter,
+King of Fighters, Samurai Shodown). The character's shoulders are
+PERPENDICULAR to the camera. We see the PROFILE of the face — one eye, one
+ear, the nose in silhouette. One arm is nearer the camera and partly covers
+the torso. The chest does NOT face the viewer. The feet point to the right.
+
+The attached reference is a FRONT-FACING portrait. Use it ONLY for the
+character's identity — face, armor pattern, colors, cape, weapon design.
+Do NOT copy its camera angle and do NOT copy its standing pose.
 
 Draw this SAME character in 10 poses on ONE image, numbered 1 to 10:
 
@@ -63,6 +117,18 @@ PROMPT_2 = """The attached image is my character reference: {NAME}, a Three King
 Study it carefully — same face, same helmet, same armor pattern and colors,
 same cape, same weapon. Chibi proportions, ornate detailed armor,
 painterly game art style.
+
+CAMERA — this is the single most important rule, more important than
+anything else below:
+Every pose is a SIDE VIEW, like a 2D fighting game sprite (Street Fighter,
+King of Fighters, Samurai Shodown). The character's shoulders are
+PERPENDICULAR to the camera. We see the PROFILE of the face — one eye, one
+ear, the nose in silhouette. One arm is nearer the camera and partly covers
+the torso. The chest does NOT face the viewer. The feet point to the right.
+
+The attached reference is a FRONT-FACING portrait. Use it ONLY for the
+character's identity — face, armor pattern, colors, cape, weapon design.
+Do NOT copy its camera angle and do NOT copy its standing pose.
 
 This is the SECOND batch for the same character. Keep the exact same costume,
 the same size and the same framing as the first batch.
@@ -154,6 +220,9 @@ HTML = '''<!doctype html><meta charset="utf-8">
    color:#f0dcb4;text-decoration:none;cursor:pointer}
  .btns a:hover,.btns button:hover{background:#3a2712}
  .top70{outline:2px solid #7a5a1e}
+ .done{border-color:#5c7a3a}
+ .tag{background:#7a3a1e;color:#ffdcc0;font-size:11px;font-weight:800;padding:3px 8px}
+ .tag.ok{background:#2f4a1e;color:#cfe8b0}
  dialog{background:#1b120a;color:#e9dcc2;border:1px solid #6b4f26;border-radius:10px;
    max-width:920px;width:94vw}
  dialog h3{margin:12px 14px;font-size:14px;color:var(--gold)}
@@ -173,6 +242,8 @@ HTML = '''<!doctype html><meta charset="utf-8">
     <select id="filt">
       <option value="all">전체</option>
       <option value="top">전투력 상위 70</option>
+      <option value="fix">대기·걷기 교정 필요</option>
+      <option value="todo">아직 안 만든 장수</option>
     </select>
     <span id="cnt" class="sub"></span>
   </div>
@@ -188,20 +259,23 @@ HTML = '''<!doctype html><meta charset="utf-8">
 </dialog>
 <script>
 const DATA = __DATA__;
-const P1 = __P1__, P2 = __P2__;
+const P0 = __P0__, P1 = __P1__, P2 = __P2__;
 const grid = document.getElementById('grid');
 const q = document.getElementById('q'), filt = document.getElementById('filt');
 function render() {
   const t = q.value.trim().toLowerCase(), f = filt.value;
   const rows = DATA.filter(g => (f !== 'top' || g.rank <= 70)
+    && (f !== 'fix' || g.fix) && (f !== 'todo' || !g.has)
     && (!t || g.name.toLowerCase().includes(t) || g.id.includes(t)));
   grid.innerHTML = rows.map(g => `
-    <div class="card${g.rank <= 70 ? ' top70' : ''}">
+    <div class="card${g.rank <= 70 ? ' top70' : ''}${g.has ? ' done' : ''}">
+      ${g.fix ? '<div class="tag">대기·걷기 교정</div>' : (g.has ? '<div class="tag ok">완료</div>' : '')}
       <img src="./asset_img/refs/${g.id}.png" loading="lazy" alt="${g.name}">
       <div class="meta"><span class="rk">${g.rank}위</span>
         <div class="nm">${g.name}</div><div class="id">${g.id}</div></div>
       <div class="btns">
         <a href="./asset_img/refs/${g.id}.png" download>이미지 받기</a>
+        <button data-id="${g.id}" data-name="${g.name}" data-p="0">대기·걷기</button>
         <button data-id="${g.id}" data-name="${g.name}" data-p="1">1차</button>
         <button data-id="${g.id}" data-name="${g.name}" data-p="2">2차</button>
       </div>
@@ -210,8 +284,9 @@ function render() {
   grid.querySelectorAll('button[data-id]').forEach(b => b.onclick = () => {
     document.getElementById('dlgT').textContent =
       b.dataset.name + ' (' + b.dataset.id + ') — 첨부할 파일: asset_img/refs/' + b.dataset.id + '.png';
-    const src = b.dataset.p === '2' ? P2 : P1;
-    document.getElementById('dlgT').textContent += '  ·  ' + b.dataset.p + '차 (10컷)';
+    const src = b.dataset.p === '2' ? P2 : (b.dataset.p === '0' ? P0 : P1);
+    document.getElementById('dlgT').textContent +=
+      b.dataset.p === '0' ? '  ·  대기·걷기 4컷 (측면 교정)' : '  ·  ' + b.dataset.p + '차 (10컷)';
     document.getElementById('dlgX').value = src.split('{NAME}').join(b.dataset.name);
     document.getElementById('dlg').showModal();
   });
@@ -229,10 +304,19 @@ render();
 
 def main():
     rows = load_roster()
-    data = [{'id': r['id'], 'name': r['name'], 'rank': i + 1}
-            for i, r in enumerate(rows)
-            if os.path.exists(os.path.join(REF_DIR, r['id'] + '.png'))]
+    ST = os.path.join(ROOT, 'assets', 'arcade_duel')
+    SIDE_OK = {'zhao_yun', 'hua_xiong'}          # 이미 측면으로 그려진 장수
+    data = []
+    for i, r in enumerate(rows):
+        if not os.path.exists(os.path.join(REF_DIR, r['id'] + '.png')):
+            continue
+        has = os.path.isdir(os.path.join(ST, r['id'] + '_states'))
+        data.append({'id': r['id'], 'name': r['name'], 'rank': i + 1,
+                     'has': has,
+                     # 세트는 있는데 정면으로 그려진 장수 = 대기·걷기 교정 대상
+                     'fix': has and r['id'] not in SIDE_OK})
     html = (HTML.replace('__DATA__', json.dumps(data, ensure_ascii=False))
+                .replace('__P0__', json.dumps(PROMPT_0, ensure_ascii=False))
                 .replace('__P1__', json.dumps(PROMPT_1, ensure_ascii=False))
                 .replace('__P2__', json.dumps(PROMPT_2, ensure_ascii=False)))
     out = os.path.join(ROOT, 'duel_refs.html')

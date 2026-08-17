@@ -12,6 +12,7 @@ split_pose_sheet.py 와 harmonize_poses.py 를 순서대로 부르고 검증까�
 import argparse
 import glob
 import os
+import json
 import shutil
 import statistics
 import subprocess
@@ -61,16 +62,58 @@ def verify(out_dir):
         by, _ = np.nonzero(lbl == int(np.argmax(sizes)) + 1)
         if name != 'ko_fall' and abs(by.max() - 880) > 4:
             problems.append(f'{name}: 발끝이 지면에서 {by.max() - 880:+d}px 떠 있다')
-        core = ndimage.binary_erosion(a, np.ones((17, 17)))
-        cl, cn = ndimage.label(core)
-        if cn:
-            cores.append(float(np.sqrt(ndimage.sum(core, cl, range(1, cn + 1)).max())))
+        # 누운·뜬 자세는 실루엣이 원래 작다 — 크기 편차 계산에서 뺀다.
+        # (여포 ko_down 이 -12% 로 잡혀 멀쩡한 세트가 경고를 받았다)
+        if name not in ('ko_down', 'ko_fall'):
+            core = ndimage.binary_erosion(a, np.ones((17, 17)))
+            cl, cn = ndimage.label(core)
+            if cn:
+                cores.append(float(np.sqrt(ndimage.sum(core, cl, range(1, cn + 1)).max())))
     if cores:
         spread = (max(cores) - min(cores)) / statistics.mean(cores) * 100
-        print(f'   몸통 크기 편차 {spread:.0f}%  ({min(cores):.0f}~{max(cores):.0f})')
+        print(f'   몸통 크기 편차 {spread:.0f}%  ({min(cores):.0f}~{max(cores):.0f})  ※ KO 자세 제외')
         if spread > 14:
             problems.append(f'몸통 편차 {spread:.0f}% — 그림 배율이 흔들린다(14% 이하 권장)')
     return problems
+
+
+def fix_attack_order(out_dir):
+    """공격 3단계가 뒤섞인 경우 바로잡는다.
+
+    타격(impact)은 무기가 가장 앞으로 나간 순간이어야 한다. 생성 결과가
+    가끔 순서를 바꿔 그려서(후딜이 타격보다 앞으로 뻗음) 휘두르는 방향이
+    거꾸로 보인다. 무기끝 x좌표는 이미 재 놓았으므로 그것으로 판정·교체한다.
+
+    예비는 '가장 뒤로 당긴' 프레임이므로 함께 정렬한다.
+    """
+    pj = os.path.join(out_dir, 'poses.json')
+    if not os.path.exists(pj):
+        return []
+    meta = json.load(open(pj))
+    poses = meta.get('poses', {})
+    fixed = []
+    for mv in ('slash', 'thrust', 'heavy'):
+        names = [f'{mv}_{s}' for s in ('windup', 'impact', 'recovery')]
+        tips = [poses.get(n, {}).get('tipX') for n in names]
+        if any(t is None for t in tips):
+            continue
+        if tips[1] >= max(tips[0], tips[2]):
+            continue                       # 타격이 가장 앞 — 정상
+        # 가장 앞으로 뻗은 것을 타격, 가장 뒤를 예비로
+        order = sorted(range(3), key=lambda i: tips[i])
+        new = [names[order[0]], names[order[2]], names[order[1]]]
+        if new == names:
+            continue
+        imgs = {n: Image.open(os.path.join(out_dir, n + '.webp')).convert('RGBA')
+                for n in names}
+        keep = {n: dict(poses.get(n, {})) for n in names}
+        for dst, src in zip(names, new):
+            imgs[src].save(os.path.join(out_dir, dst + '.webp'), quality=90, method=6)
+            poses[dst] = keep[src]
+        fixed.append(f'{mv}: ' + ' → '.join(s.split("_")[-1] for s in new))
+    if fixed:
+        json.dump(meta, open(pj, 'w'), ensure_ascii=False, indent=1)
+    return fixed
 
 
 def main():
@@ -107,6 +150,12 @@ def main():
     out = os.path.join(ROOT, 'assets', 'arcade_duel', f'{args.gid}_states')
     print('[통일]')
     run([os.path.join(TOOLS, 'harmonize_poses.py')] + kept + ['--out', out])
+
+    swapped = fix_attack_order(out)
+    if swapped:
+        print('[공격 순서 교정] 타격이 가장 앞으로 뻗도록 재배치')
+        for x in swapped:
+            print('   · ' + x)
 
     print('[검증]')
     problems = verify(out)

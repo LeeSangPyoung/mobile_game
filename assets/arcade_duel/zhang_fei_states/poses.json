@@ -1,0 +1,129 @@
+{
+ "canvasW": 1280,
+ "canvasH": 1024,
+ "cx": 640,
+ "ground": 880,
+ "bodyH": 664,
+ "poses": {
+  "idle": {
+   "tipX": 409,
+   "tipY": 218,
+   "footL": 519,
+   "footR": 602
+  },
+  "slash_impact": {
+   "tipX": 1005,
+   "tipY": 565,
+   "footL": 299,
+   "footR": 404
+  },
+  "slash_recovery": {
+   "tipX": 390,
+   "tipY": 873,
+   "footL": 373,
+   "footR": 573
+  },
+  "slash_windup": {
+   "tipX": 281,
+   "tipY": 891,
+   "footL": 601,
+   "footR": 641
+  },
+  "thrust_impact": {
+   "tipX": 1071,
+   "tipY": 969,
+   "footL": 767,
+   "footR": 1072
+  },
+  "thrust_recovery": {
+   "tipX": 937,
+   "tipY": 861,
+   "footL": 433,
+   "footR": 484
+  },
+  "thrust_windup": {
+   "tipX": 729,
+   "tipY": 268,
+   "footL": 521,
+   "footR": 620
+  },
+  "walk1": {
+   "tipX": 946,
+   "tipY": 855,
+   "footL": 807,
+   "footR": 947
+  },
+  "walk2": {
+   "tipX": 847,
+   "tipY": 869,
+   "footL": 469,
+   "footR": 864
+  },
+  "walk3": {
+   "tipX": 922,
+   "tipY": 714,
+   "footL": 705,
+   "footR": 816
+  },
+  "guard_just": {
+   "tipX": 1005,
+   "tipY": 565,
+   "footL": 299,
+   "footR": 404
+  },
+  "guard_ready": {
+   "tipX": 922,
+   "tipY": 714,
+   "footL": 705,
+   "footR": 816
+  },
+  "heavy_impact": {
+   "tipX": 946,
+   "tipY": 855,
+   "footL": 807,
+   "footR": 947
+  },
+  "heavy_recovery": {
+   "tipX": 847,
+   "tipY": 869,
+   "footL": 469,
+   "footR": 864
+  },
+  "heavy_windup": {
+   "tipX": 409,
+   "tipY": 218,
+   "footL": 519,
+   "footR": 602
+  },
+  "hurt_heavy": {
+   "tipX": 281,
+   "tipY": 891,
+   "footL": 601,
+   "footR": 641
+  },
+  "hurt_light": {
+   "tipX": 390,
+   "tipY": 873,
+   "footL": 373,
+   "footR": 573
+  },
+  "ko_down": {
+   "tipX": 1071,
+   "tipY": 969,
+   "footL": 767,
+   "footR": 1072
+  },
+  "ko_fall": {
+   "tipX": 729,
+   "tipY": 142,
+   "footL": 521,
+   "footR": 620
+  },
+  "stunned": {
+   "tipX": 937,
+   "tipY": 861,
+   "footL": 433,
+   "footR": 484
+  }
+ }
+}

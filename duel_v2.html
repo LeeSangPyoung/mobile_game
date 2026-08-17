@@ -1725,7 +1725,7 @@ fetch('./assets/arcade_duel/generals.json?v=1').then(r => r.json()).then(list =>
     const el = $(sel);
     el.innerHTML = list.map(g =>
       `<option value="${g.id}"${g.id === DEFAULT_SIDE[side] ? ' selected' : ''}>` +
-      `${g.name}${g.full ? '' : ' (부분)'}</option>`).join('');
+      `${g.name}${g.side ? '' : ' · 정면'}${g.full ? '' : ' · 부분'}</option>`).join('');
   }
 }).catch(() => { $('pickWrap').style.display = 'none'; });
 
