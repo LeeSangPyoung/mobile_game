@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>dev start · 챕터5</title></head>
+<body style="font-family:sans-serif;background:#1a0f08;color:#e8d4a8;padding:24px">
+<p>튜토리얼 완료 + 챕터5 진행 상태로 세팅 중…</p>
+<script>
+(function(){
+  // 1~4챕터(인덱스 1~80) 3별 클리어, 5챕터(81~100) 오픈 상태
+  var stars = {};
+  for (var i = 1; i <= 100; i++) stars[i] = 3;   // 캠페인 별 존재 → unlocked 되돌림 방지
+  var save = {
+    stars: stars,
+    unlocked: 101,                // 1~5챕터 클리어, 6챕터 시작 해금 (= 챕터5 전부 플레이 가능)
+    gold: 50000,
+    starsAvailable: 300,
+    tutorialDone: true,
+    tutorialPrompted: true,
+    starterPicked: true,
+    tutorialStageMigrated: true,
+    goldResetV3: true,
+    upgrades: { castleAtk: 0, castleDef: 0, prodRate: 0, unitAtk: 0, unitDef: 0 }
+  };
+  try { localStorage.setItem('save', JSON.stringify(save)); } catch (e) {}
+  location.replace('/');
+})();
+</script>
+</body></html>

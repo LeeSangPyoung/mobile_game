@@ -60,8 +60,8 @@
         castles:[
           {x:0.50,y:0.62,owner:1,name:'성도',size:1.16,trait:'prod',primary:'spear',troops:{spear:95,cavalry:28,archer:24}},
           {x:0.50,y:0.46,owner:0,name:'낙양',size:1.06,trait:'prod',primary:'spear',troops:{spear:6,cavalry:4,archer:4}},
-          {x:0.38,y:0.31,owner:2,name:'호뢰관',size:1.0,trait:'prod',primary:'cavalry',troops:{spear:2,cavalry:11,archer:3}},
-          {x:0.62,y:0.31,owner:2,name:'업성',size:1.0,trait:'prod',primary:'cavalry',troops:{spear:2,cavalry:11,archer:3}}
+          {x:0.28,y:0.31,owner:2,name:'호뢰관',size:1.0,trait:'prod',primary:'cavalry',troops:{spear:2,cavalry:11,archer:3}},
+          {x:0.72,y:0.31,owner:2,name:'업성',size:1.0,trait:'prod',primary:'cavalry',troops:{spear:2,cavalry:11,archer:3}}
         ],
         edges:[
           {a:'성도',b:'낙양',type:'straight',sign:1},
