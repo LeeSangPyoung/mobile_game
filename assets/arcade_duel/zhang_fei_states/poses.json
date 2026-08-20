@@ -16,32 +16,24 @@
    "footR": 404
   },
   "slash_recovery": {
-   "tipX": 390,
-   "tipY": 873,
-   "footL": 373,
-   "footR": 573
+   "tipX": 975,
+   "tipY": 802
   },
   "slash_windup": {
-   "tipX": 281,
-   "tipY": 891,
-   "footL": 601,
-   "footR": 641
+   "tipX": 962,
+   "tipY": 210
   },
   "thrust_impact": {
    "tipX": 1144,
    "tipY": 637
   },
   "thrust_recovery": {
-   "tipX": 937,
-   "tipY": 861,
-   "footL": 433,
-   "footR": 484
+   "tipX": 997,
+   "tipY": 757
   },
   "thrust_windup": {
-   "tipX": 729,
-   "tipY": 268,
-   "footL": 521,
-   "footR": 620
+   "tipX": 428,
+   "tipY": 877
   },
   "walk1": {
    "tipX": 951,
