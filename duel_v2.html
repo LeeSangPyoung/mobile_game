@@ -421,7 +421,10 @@ async function loadGeneral(gid, side, opts = {}) {
     heavy: [pre + 'heavy_windup', pre + 'heavy_impact', pre + 'heavy_recovery'],
   };
   CHAR_SIZE[side] = opts.size || 1.0;
-  CHAR_FEET[side] = opts.feet || { cx: STATE_CX, w: 320 };
+  // 접지 그림자 위치. 기본값(중심 640·폭 320)은 어느 장수와도 안 맞는다 —
+  // 실측하면 중심이 최대 52px 어긋나고 폭도 110~200px 더 넓다.
+  // tools/walk_cycle.py 가 대기 자세에서 재어 poses.json 에 적어 둔다.
+  CHAR_FEET[side] = meta.feet || opts.feet || { cx: STATE_CX, w: 320 };
   return true;
 }
 

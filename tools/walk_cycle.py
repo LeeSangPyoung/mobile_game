@@ -68,6 +68,30 @@ def head_x(path):
     return float(hx.mean()) if len(hx) else None
 
 
+def feet_of(path):
+    """대기 자세에서 두 발의 중심과 폭을 잰다 — 접지 그림자를 발밑에 놓기 위한 값.
+
+    지면에 닿은 띠에서 **가장 바깥 두 덩어리**를 발로 본다. 망토 자락이 두 발
+    사이로 늘어져 같이 걸리는 경우가 있는데(감녕은 379-482 / 587-702 / 762-897 로
+    가운데가 망토다), 큰 것부터 고르면 발 하나와 망토를 짝지어 버린다.
+    서 있는 자세에서 지면에 닿는 것 중 가장 바깥은 언제나 두 발이다.
+    """
+    a = np.array(Image.open(path).convert('RGBA').getchannel('A')) > 16
+    lbl, n = ndimage.label(a)
+    if not n:
+        return None
+    m = lbl == int(np.argmax(ndimage.sum(a, lbl, range(1, n + 1)))) + 1
+    ys, _ = np.nonzero(m)
+    cols = m[ys.max() - 40:ys.max() + 1, :].any(axis=0)
+    cl, cn = ndimage.label(cols[None, :])
+    if not cn:
+        return None
+    runs = [np.nonzero(cl[0] == i)[0] for i in range(1, cn + 1)]
+    lo = min(int(r.min()) for r in runs)
+    hi = max(int(r.max()) for r in runs)
+    return {'cx': round((lo + hi) / 2), 'w': hi - lo}
+
+
 def cycle_for(gid):
     d = os.path.join(STATES, gid + '_states')
     pj = os.path.join(d, 'poses.json')
@@ -117,6 +141,9 @@ def cycle_for(gid):
     if heads:
         avg = sum(heads.values()) / len(heads)
         meta['walkAlign'] = {w: round(avg - v) for w, v in heads.items()}
+    ft = feet_of(os.path.join(d, 'idle.webp'))
+    if ft:
+        meta['feet'] = ft
     meta['walkCycle'] = cycle
     # 한 걸음에 그림이 나아가는 거리(캔버스 px). 게임이 이 값만큼만 이동시키면
     # 보폭이 크든 작든 디딘 발이 미끄러지지 않는다.

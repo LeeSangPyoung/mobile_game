@@ -134,5 +134,9 @@
   "walk1",
   "walk4"
  ],
- "walkStep": 188
+ "walkStep": 188,
+ "feet": {
+  "cx": 602,
+  "w": 470
+ }
 }
