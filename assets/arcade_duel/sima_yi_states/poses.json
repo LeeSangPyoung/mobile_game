@@ -1,0 +1,110 @@
+{
+ "canvasW": 1280,
+ "canvasH": 1024,
+ "cx": 640,
+ "ground": 880,
+ "height": 620,
+ "poses": {
+  "idle": {
+   "tipX": 915,
+   "tipY": 873
+  },
+  "walk1": {
+   "tipX": 943,
+   "tipY": 871
+  },
+  "walk2": {
+   "tipX": 679,
+   "tipY": 262
+  },
+  "walk3": {
+   "tipX": 685,
+   "tipY": 262
+  },
+  "walk4": {
+   "tipX": 659,
+   "tipY": 259
+  },
+  "heavy_impact": {
+   "tipX": 891,
+   "tipY": 878
+  },
+  "heavy_recovery": {
+   "tipX": 996,
+   "tipY": 859
+  },
+  "heavy_windup": {
+   "tipX": 879,
+   "tipY": 872
+  },
+  "slash_impact": {
+   "tipX": 996,
+   "tipY": 592
+  },
+  "slash_recovery": {
+   "tipX": 704,
+   "tipY": 325
+  },
+  "slash_windup": {
+   "tipX": 400,
+   "tipY": 309
+  },
+  "thrust_impact": {
+   "tipX": 1045,
+   "tipY": 567
+  },
+  "thrust_recovery": {
+   "tipX": 957,
+   "tipY": 722
+  },
+  "thrust_windup": {
+   "tipX": 753,
+   "tipY": 375
+  },
+  "guard_just": {
+   "tipX": 1045,
+   "tipY": 576
+  },
+  "guard_ready": {
+   "tipX": 414,
+   "tipY": 877
+  },
+  "hurt_heavy": {
+   "tipX": 944,
+   "tipY": 702
+  },
+  "hurt_light": {
+   "tipX": 908,
+   "tipY": 858
+  },
+  "ko_down": {
+   "tipX": 1125,
+   "tipY": 948
+  },
+  "ko_fall": {
+   "tipX": 1120,
+   "tipY": 575
+  },
+  "stunned": {
+   "tipX": 856,
+   "tipY": 328
+  }
+ },
+ "walkAlign": {
+  "walk1": -19,
+  "walk2": 9,
+  "walk3": -5,
+  "walk4": 14
+ },
+ "feet": {
+  "cx": 676,
+  "w": 481
+ },
+ "walkCycle": [
+  "walk1",
+  "walk4",
+  "walk3",
+  "walk2"
+ ],
+ "walkStep": 55
+}

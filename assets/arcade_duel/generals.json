@@ -118,5 +118,13 @@
   "full": true,
   "size": 1.05,
   "side": true
+ },
+ {
+  "id": "sima_yi",
+  "name": "사마의",
+  "cuts": 21,
+  "full": true,
+  "size": 0.96,
+  "side": true
  }
 ]
