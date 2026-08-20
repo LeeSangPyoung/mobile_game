@@ -206,5 +206,13 @@
   "full": true,
   "size": 1.05,
   "side": true
+ },
+ {
+  "id": "xiahou_yuan",
+  "name": "하후연",
+  "cuts": 21,
+  "full": true,
+  "size": 1.05,
+  "side": true
  }
 ]
