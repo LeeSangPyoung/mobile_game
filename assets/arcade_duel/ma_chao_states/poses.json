@@ -6,7 +6,7 @@
  "bodyH": 596,
  "poses": {
   "idle": {
-   "tipX": 994,
+   "tipX": 993,
    "tipY": 675
   },
   "slash_impact": {
@@ -16,8 +16,8 @@
    "footR": 456
   },
   "slash_recovery": {
-   "tipX": 405,
-   "tipY": 839,
+   "tipX": 756,
+   "tipY": 321,
    "footL": 416,
    "footR": 600
   },
@@ -34,8 +34,8 @@
    "footR": 871
   },
   "thrust_recovery": {
-   "tipX": 318,
-   "tipY": 876,
+   "tipX": 978,
+   "tipY": 557,
    "footL": 729,
    "footR": 841
   },
@@ -46,25 +46,25 @@
    "footR": 831
   },
   "walk1": {
-   "tipX": 314,
-   "tipY": 778
+   "tipX": 973,
+   "tipY": 591
   },
   "walk2": {
-   "tipX": 942,
+   "tipX": 941,
    "tipY": 591
   },
   "walk3": {
-   "tipX": 364,
+   "tipX": 363,
    "tipY": 790
   },
   "guard_just": {
-   "tipX": 981,
-   "tipY": 458,
+   "tipX": 982,
+   "tipY": 459,
    "footL": 697,
    "footR": 787
   },
   "guard_ready": {
-   "tipX": 983,
+   "tipX": 984,
    "tipY": 702,
    "footL": 699,
    "footR": 808
@@ -77,19 +77,19 @@
   },
   "heavy_recovery": {
    "tipX": 866,
-   "tipY": 267,
+   "tipY": 266,
    "footL": 691,
    "footR": 800
   },
   "heavy_windup": {
    "tipX": 421,
-   "tipY": 213,
+   "tipY": 212,
    "footL": 507,
    "footR": 593
   },
   "hurt_heavy": {
-   "tipX": 924,
-   "tipY": 650,
+   "tipX": 925,
+   "tipY": 649,
    "footL": 522,
    "footR": 679
   },
@@ -107,7 +107,7 @@
   },
   "ko_fall": {
    "tipX": 728,
-   "tipY": 155,
+   "tipY": 154,
    "footL": 504,
    "footR": 723
   },
@@ -119,7 +119,7 @@
   },
   "walk4": {
    "tipX": 900,
-   "tipY": 591
+   "tipY": 592
   }
  },
  "walkCycle": [

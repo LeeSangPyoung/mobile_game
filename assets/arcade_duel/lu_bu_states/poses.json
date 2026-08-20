@@ -6,24 +6,24 @@
  "bodyH": 636,
  "poses": {
   "idle": {
-   "tipX": 948,
+   "tipX": 949,
    "tipY": 656
   },
   "slash_impact": {
-   "tipX": 418,
-   "tipY": 874,
+   "tipX": 904,
+   "tipY": 868,
    "footL": 789,
    "footR": 904
   },
   "slash_recovery": {
-   "tipX": 193,
-   "tipY": 552,
+   "tipX": 795,
+   "tipY": 307,
    "footL": 790,
    "footR": 901
   },
   "slash_windup": {
-   "tipX": 371,
-   "tipY": 299,
+   "tipX": 351,
+   "tipY": 322,
    "footL": 549,
    "footR": 618
   },
@@ -34,27 +34,27 @@
    "footR": 711
   },
   "thrust_recovery": {
-   "tipX": 583,
-   "tipY": 260,
+   "tipX": 610,
+   "tipY": 263,
    "footL": 421,
    "footR": 495
   },
   "thrust_windup": {
-   "tipX": 883,
-   "tipY": 880,
+   "tipX": 884,
+   "tipY": 881,
    "footL": 759,
    "footR": 884
   },
   "walk1": {
-   "tipX": 955,
-   "tipY": 652
+   "tipX": 956,
+   "tipY": 653
   },
   "walk2": {
-   "tipX": 597,
-   "tipY": 267
+   "tipX": 598,
+   "tipY": 266
   },
   "walk3": {
-   "tipX": 940,
+   "tipX": 941,
    "tipY": 649
   },
   "guard_just": {
@@ -64,38 +64,38 @@
    "footR": 409
   },
   "guard_ready": {
-   "tipX": 942,
+   "tipX": 943,
    "tipY": 688,
    "footL": 396,
    "footR": 795
   },
   "heavy_impact": {
    "tipX": 902,
-   "tipY": 880,
+   "tipY": 881,
    "footL": 719,
    "footR": 903
   },
   "heavy_recovery": {
    "tipX": 839,
-   "tipY": 880,
+   "tipY": 881,
    "footL": 497,
    "footR": 850
   },
   "heavy_windup": {
-   "tipX": 368,
+   "tipX": 369,
    "tipY": 276,
    "footL": 548,
    "footR": 624
   },
   "hurt_heavy": {
-   "tipX": 341,
+   "tipX": 340,
    "tipY": 865,
    "footL": 340,
    "footR": 620
   },
   "hurt_light": {
-   "tipX": 921,
-   "tipY": 682,
+   "tipX": 922,
+   "tipY": 681,
    "footL": 361,
    "footR": 563
   },
@@ -106,20 +106,20 @@
    "footR": 1013
   },
   "ko_fall": {
-   "tipX": 910,
-   "tipY": 201,
+   "tipX": 911,
+   "tipY": 202,
    "footL": 541,
    "footR": 678
   },
   "stunned": {
-   "tipX": 923,
-   "tipY": 880,
+   "tipX": 924,
+   "tipY": 881,
    "footL": 829,
    "footR": 924
   },
   "walk4": {
-   "tipX": 595,
-   "tipY": 265
+   "tipX": 597,
+   "tipY": 264
   }
  },
  "walkCycle": [

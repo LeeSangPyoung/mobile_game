@@ -6,59 +6,59 @@
  "bodyH": 587,
  "poses": {
   "idle": {
-   "tipX": 989,
-   "tipY": 539
+   "tipX": 990,
+   "tipY": 538
   },
   "slash_impact": {
-   "tipX": 967,
-   "tipY": 485,
+   "tipX": 968,
+   "tipY": 486,
    "footL": 717,
    "footR": 821
   },
   "slash_recovery": {
-   "tipX": 814,
+   "tipX": 815,
    "tipY": 880,
    "footL": 440,
    "footR": 547
   },
   "slash_windup": {
-   "tipX": 912,
+   "tipX": 913,
    "tipY": 875,
    "footL": 467,
    "footR": 540
   },
   "thrust_impact": {
-   "tipX": 1036,
-   "tipY": 563,
+   "tipX": 1037,
+   "tipY": 564,
    "footL": 641,
    "footR": 756
   },
   "thrust_recovery": {
-   "tipX": 944,
+   "tipX": 945,
    "tipY": 540,
    "footL": 706,
    "footR": 816
   },
   "thrust_windup": {
-   "tipX": 887,
+   "tipX": 888,
    "tipY": 871,
    "footL": 782,
    "footR": 888
   },
   "walk1": {
    "tipX": 980,
-   "tipY": 532
+   "tipY": 531
   },
   "walk2": {
-   "tipX": 945,
-   "tipY": 525
+   "tipX": 946,
+   "tipY": 524
   },
   "walk3": {
    "tipX": 979,
-   "tipY": 529
+   "tipY": 528
   },
   "guard_just": {
-   "tipX": 971,
+   "tipX": 970,
    "tipY": 454,
    "footL": 655,
    "footR": 738
@@ -70,20 +70,20 @@
    "footR": 825
   },
   "heavy_impact": {
-   "tipX": 887,
+   "tipX": 886,
    "tipY": 863,
    "footL": 745,
    "footR": 890
   },
   "heavy_recovery": {
-   "tipX": 394,
-   "tipY": 860,
+   "tipX": 638,
+   "tipY": 255,
    "footL": 393,
    "footR": 509
   },
   "heavy_windup": {
-   "tipX": 378,
-   "tipY": 852,
+   "tipX": 377,
+   "tipY": 851,
    "footL": 721,
    "footR": 885
   },
@@ -101,13 +101,13 @@
   },
   "ko_down": {
    "tipX": 1127,
-   "tipY": 920,
+   "tipY": 919,
    "footL": 900,
    "footR": 1027
   },
   "ko_fall": {
-   "tipX": 725,
-   "tipY": 176,
+   "tipX": 724,
+   "tipY": 175,
    "footL": 479,
    "footR": 663
   },
@@ -118,8 +118,8 @@
    "footR": 567
   },
   "walk4": {
-   "tipX": 922,
-   "tipY": 527
+   "tipX": 923,
+   "tipY": 526
   }
  },
  "walkCycle": [

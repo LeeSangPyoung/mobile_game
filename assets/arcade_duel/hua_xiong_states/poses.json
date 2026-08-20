@@ -6,120 +6,120 @@
  "bodyH": 511,
  "poses": {
   "heavy_impact": {
-   "tipX": 1104,
-   "tipY": 857,
+   "tipX": 1105,
+   "tipY": 856,
    "footL": 865,
    "footR": 1105
   },
   "heavy_recovery": {
    "tipX": 946,
-   "tipY": 501,
+   "tipY": 500,
    "footL": 709,
    "footR": 785
   },
   "heavy_windup": {
-   "tipX": 547,
-   "tipY": 316,
+   "tipX": 548,
+   "tipY": 315,
    "footL": 699,
    "footR": 866
   },
   "idle": {
    "tipX": 873,
-   "tipY": 876
+   "tipY": 875
   },
   "slash_impact": {
-   "tipX": 1042,
-   "tipY": 705,
+   "tipX": 1043,
+   "tipY": 704,
    "footL": 237,
    "footR": 311
   },
   "slash_recovery": {
-   "tipX": 951,
-   "tipY": 840,
+   "tipX": 952,
+   "tipY": 838,
    "footL": 765,
    "footR": 937
   },
   "slash_windup": {
-   "tipX": 327,
-   "tipY": 871,
+   "tipX": 328,
+   "tipY": 870,
    "footL": 685,
    "footR": 751
   },
   "thrust_impact": {
-   "tipX": 1219,
+   "tipX": 1220,
    "tipY": 587,
    "footL": 502,
    "footR": 619
   },
   "thrust_recovery": {
-   "tipX": 1059,
-   "tipY": 794,
+   "tipX": 1060,
+   "tipY": 792,
    "footL": 572,
    "footR": 664
   },
   "thrust_windup": {
    "tipX": 269,
-   "tipY": 784,
+   "tipY": 782,
    "footL": 494,
    "footR": 597
   },
   "guard_just": {
    "tipX": 890,
-   "tipY": 762,
+   "tipY": 761,
    "footL": 480,
    "footR": 544
   },
   "guard_ready": {
-   "tipX": 913,
-   "tipY": 703,
+   "tipX": 914,
+   "tipY": 701,
    "footL": 463,
    "footR": 523
   },
   "hurt_heavy": {
    "tipX": 859,
-   "tipY": 853,
+   "tipY": 852,
    "footL": 711,
    "footR": 859
   },
   "hurt_light": {
    "tipX": 884,
-   "tipY": 796,
+   "tipY": 795,
    "footL": 532,
    "footR": 829
   },
   "ko_down": {
    "tipX": 1043,
-   "tipY": 819,
+   "tipY": 817,
    "footL": 854,
    "footR": 1004
   },
   "ko_fall": {
    "tipX": 1096,
-   "tipY": 477,
+   "tipY": 476,
    "footL": 523,
    "footR": 748
   },
   "stunned": {
    "tipX": 734,
-   "tipY": 879,
+   "tipY": 878,
    "footL": 638,
    "footR": 735
   },
   "walk1": {
    "tipX": 272,
-   "tipY": 670
+   "tipY": 669
   },
   "walk2": {
    "tipX": 87,
-   "tipY": 644
+   "tipY": 643
   },
   "walk3": {
    "tipX": 412,
-   "tipY": 863
+   "tipY": 862
   },
   "walk4": {
-   "tipX": 199,
-   "tipY": 664
+   "tipX": 198,
+   "tipY": 663
   }
  },
  "walkAlign": {

@@ -6,8 +6,8 @@
  "bodyH": 622,
  "poses": {
   "idle": {
-   "tipX": 977,
-   "tipY": 487
+   "tipX": 978,
+   "tipY": 488
   },
   "slash_impact": {
    "tipX": 971,
@@ -16,8 +16,8 @@
    "footR": 431
   },
   "slash_recovery": {
-   "tipX": 444,
-   "tipY": 331,
+   "tipX": 875,
+   "tipY": 786,
    "footL": 454,
    "footR": 786
   },
@@ -29,7 +29,7 @@
   },
   "thrust_impact": {
    "tipX": 1065,
-   "tipY": 521,
+   "tipY": 522,
    "footL": 628,
    "footR": 750
   },
@@ -40,79 +40,79 @@
    "footR": 840
   },
   "thrust_windup": {
-   "tipX": 884,
+   "tipX": 885,
    "tipY": 877,
    "footL": 438,
    "footR": 518
   },
   "walk1": {
    "tipX": 964,
-   "tipY": 451
+   "tipY": 452
   },
   "walk2": {
    "tipX": 911,
-   "tipY": 444
+   "tipY": 445
   },
   "walk3": {
-   "tipX": 970,
-   "tipY": 442
+   "tipX": 971,
+   "tipY": 443
   },
   "guard_just": {
-   "tipX": 991,
-   "tipY": 409,
+   "tipX": 992,
+   "tipY": 410,
    "footL": 627,
    "footR": 716
   },
   "guard_ready": {
-   "tipX": 961,
-   "tipY": 660,
+   "tipX": 962,
+   "tipY": 662,
    "footL": 370,
    "footR": 846
   },
   "heavy_impact": {
-   "tipX": 915,
-   "tipY": 879,
+   "tipX": 916,
+   "tipY": 878,
    "footL": 761,
    "footR": 916
   },
   "heavy_recovery": {
-   "tipX": 400,
-   "tipY": 753,
+   "tipX": 885,
+   "tipY": 842,
    "footL": 804,
    "footR": 852
   },
   "heavy_windup": {
-   "tipX": 420,
+   "tipX": 421,
    "tipY": 203,
    "footL": 478,
    "footR": 563
   },
   "hurt_heavy": {
-   "tipX": 912,
+   "tipX": 913,
    "tipY": 628,
    "footL": 457,
    "footR": 699
   },
   "hurt_light": {
-   "tipX": 901,
-   "tipY": 772,
+   "tipX": 902,
+   "tipY": 773,
    "footL": 477,
    "footR": 675
   },
   "ko_down": {
-   "tipX": 1096,
-   "tipY": 893,
+   "tipX": 1097,
+   "tipY": 894,
    "footL": 781,
    "footR": 1046
   },
   "ko_fall": {
-   "tipX": 679,
+   "tipX": 680,
    "tipY": 156,
    "footL": 503,
    "footR": 672
   },
   "stunned": {
-   "tipX": 948,
+   "tipX": 949,
    "tipY": 877,
    "footL": 416,
    "footR": 949
