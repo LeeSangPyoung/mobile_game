@@ -190,5 +190,13 @@
   "full": true,
   "size": 1.0,
   "side": true
+ },
+ {
+  "id": "xiahou_dun",
+  "name": "하후돈",
+  "cuts": 21,
+  "full": true,
+  "size": 1.05,
+  "side": true
  }
 ]
