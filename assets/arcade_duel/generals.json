@@ -110,5 +110,13 @@
   "full": true,
   "size": 0.98,
   "side": true
+ },
+ {
+  "id": "yan_liang",
+  "name": "안량",
+  "cuts": 21,
+  "full": true,
+  "size": 1.05,
+  "side": true
  }
 ]

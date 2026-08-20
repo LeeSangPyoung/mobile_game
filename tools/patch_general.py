@@ -80,10 +80,13 @@ def main():
     shutil.copy(sheet, dst)
     print(f'[분리] {os.path.basename(sheet)}')
     r = subprocess.run([sys.executable, os.path.join(TOOLS, 'split_pose_sheet.py'),
-                        dst, '--out', cut, '--names', ','.join(names),
-                        # 발주서가 '네 컷 모두 같은 크기'를 못박는다. 여기서 또 보정하면
-                        # 두 발을 모은 통과 자세를 '작다'고 오판해 키워 버린다.
-                        '--no-fit-body'],
+                        dst, '--out', cut, '--names', ','.join(names)]
+                       # 걷기가 든 시트만 보정을 끈다.
+                       # 두 발을 모은 통과 자세는 몸통 지표가 작게 나와 '작게 그렸다'로
+                       # 오판되고, 그대로 두면 그 컷만 커진다(여포 walk2 가 16% 커졌다).
+                       # 걷기가 없는 시트(공격·반응)는 보정이 필요하다 — 안량 공격 9컷은
+                       # 컷 간 크기 편차가 27% 였고 보정을 켜니 5% 가 됐다.
+                       + (['--no-fit-body'] if any(n.startswith('walk') for n in names) else []),
                        capture_output=True, text=True, cwd=ROOT)
     for line in (r.stdout + r.stderr).splitlines():
         if any(k in line for k in ('컷', '보정', '!', '배율')):
