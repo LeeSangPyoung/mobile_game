@@ -26,7 +26,9 @@ from scipy import ndimage
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOOLS = os.path.join(ROOT, 'tools')
 CANVAS_W, CANVAS_H, CX, BASELINE = 1280, 1024, 640, 880
-DEFAULT_NAMES = ['idle', 'walk1', 'walk2', 'walk3']
+# 걷기 4컷 = 앞접지·통과·뒷접지·통과(반대 다리). 반복 프레임이 없는 표준 사이클이다.
+# 3컷이면 통과 컷을 두 번 써야 해서 '두 장면이 번갈아 나온다'고 읽힌다.
+DEFAULT_NAMES = ['idle', 'walk1', 'walk2', 'walk3', 'walk4']
 
 
 def core_size(img):
@@ -78,7 +80,10 @@ def main():
     shutil.copy(sheet, dst)
     print(f'[분리] {os.path.basename(sheet)}')
     r = subprocess.run([sys.executable, os.path.join(TOOLS, 'split_pose_sheet.py'),
-                        dst, '--out', cut, '--names', ','.join(names)],
+                        dst, '--out', cut, '--names', ','.join(names),
+                        # 발주서가 '네 컷 모두 같은 크기'를 못박는다. 여기서 또 보정하면
+                        # 두 발을 모은 통과 자세를 '작다'고 오판해 키워 버린다.
+                        '--no-fit-body'],
                        capture_output=True, text=True, cwd=ROOT)
     for line in (r.stdout + r.stderr).splitlines():
         if any(k in line for k in ('컷', '보정', '!', '배율')):

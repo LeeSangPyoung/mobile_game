@@ -401,6 +401,12 @@ def main():
     ap.add_argument('--raw-only', action='store_true', help='정렬 없이 잘라내기만')
     ap.add_argument('--names', help='쉼표로 구분한 컷 이름 (순서대로)')
     ap.add_argument('--lift', default='', help='공중 동작 띄우기. 예: ko_fall=90')
+    # 대기·걷기 4컷 시트는 발주서가 '네 컷 모두 같은 크기·같은 머리 높이'를 못박는다.
+    # 그런데 몸통 크기는 망토가 펼쳐진 정도에 따라 변해서, 두 발을 모은 통과 자세를
+    # '작다'고 오판해 키워 버린다(여포 walk2 가 다른 컷보다 16% 커졌다).
+    # 이미 규격이 보장된 시트에서는 컷별 보정을 끄는 게 맞다.
+    ap.add_argument('--no-fit-body', action='store_true',
+                    help='컷별 크기 보정을 끈다 (규격이 보장된 시트용)')
     args = ap.parse_args()
 
     os.makedirs(args.out, exist_ok=True)
@@ -450,7 +456,7 @@ def main():
     for token in filter(None, (t.strip() for t in args.lift.split(','))):
         k, _, v = token.partition('=')
         lift[k.strip()] = int(v)
-    normalize_set(pieces, names, args.out, lift=lift)
+    normalize_set(pieces, names, args.out, lift=lift, fit_body=not args.no_fit_body)
 
 
 if __name__ == '__main__':

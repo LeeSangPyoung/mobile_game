@@ -6,10 +6,8 @@
  "bodyH": 596,
  "poses": {
   "idle": {
-   "tipX": 936,
-   "tipY": 772,
-   "footL": 457,
-   "footR": 529
+   "tipX": 994,
+   "tipY": 675
   },
   "slash_impact": {
    "tipX": 1006,
@@ -48,22 +46,16 @@
    "footR": 831
   },
   "walk1": {
-   "tipX": 920,
-   "tipY": 826,
-   "footL": 752,
-   "footR": 848
+   "tipX": 314,
+   "tipY": 778
   },
   "walk2": {
-   "tipX": 946,
-   "tipY": 811,
-   "footL": 718,
-   "footR": 819
+   "tipX": 942,
+   "tipY": 591
   },
   "walk3": {
-   "tipX": 936,
-   "tipY": 839,
-   "footL": 711,
-   "footR": 810
+   "tipX": 364,
+   "tipY": 790
   },
   "guard_just": {
    "tipX": 981,
@@ -124,6 +116,23 @@
    "tipY": 880,
    "footL": 773,
    "footR": 931
+  },
+  "walk4": {
+   "tipX": 900,
+   "tipY": 591
   }
+ },
+ "walkCycle": [
+  "walk1",
+  "walk2",
+  "walk3",
+  "walk4"
+ ],
+ "walkStep": 101,
+ "walkAlign": {
+  "walk1": -7,
+  "walk2": 21,
+  "walk3": -66,
+  "walk4": 52
  }
 }

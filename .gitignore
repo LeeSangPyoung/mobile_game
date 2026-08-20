@@ -77,3 +77,7 @@ asset_img/cut*/
 
 # 장수 레퍼런스 — fullbody 아트에서 언제든 재생성 (tools/make_duel_ref.py)
 asset_img/refs/
+
+# patch_general.py 가 남기는 중간 산출물 (원본 시트와 분리 컷)
+asset_img/patch_*/
+asset_img/**/*_patch_green.png

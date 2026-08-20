@@ -2,7 +2,7 @@
  {
   "id": "guan_yu",
   "name": "관우",
-  "cuts": 20,
+  "cuts": 21,
   "full": true,
   "size": 1.06,
   "side": true
@@ -10,7 +10,7 @@
  {
   "id": "lu_bu",
   "name": "여포",
-  "cuts": 20,
+  "cuts": 21,
   "full": true,
   "size": 1.1,
   "side": true
@@ -18,7 +18,7 @@
  {
   "id": "zhang_fei",
   "name": "장비",
-  "cuts": 20,
+  "cuts": 21,
   "full": true,
   "size": 1.08,
   "side": true
@@ -26,7 +26,7 @@
  {
   "id": "cao_cao",
   "name": "조조",
-  "cuts": 20,
+  "cuts": 21,
   "full": true,
   "size": 1.02,
   "side": true
@@ -34,81 +34,81 @@
  {
   "id": "zhao_yun",
   "name": "조운",
-  "cuts": 17,
-  "full": false,
+  "cuts": 21,
+  "full": true,
   "size": 1.0,
   "side": true
  },
  {
   "id": "hua_xiong",
   "name": "화웅",
-  "cuts": 17,
-  "full": false,
+  "cuts": 21,
+  "full": true,
   "size": 1.14,
   "side": true
  },
  {
   "id": "gan_ning",
   "name": "감녕",
-  "cuts": 20,
+  "cuts": 21,
   "full": true,
   "size": 1.0,
-  "side": false
+  "side": true
  },
  {
   "id": "ma_chao",
   "name": "마초",
-  "cuts": 20,
+  "cuts": 21,
   "full": true,
   "size": 1.0,
-  "side": false
+  "side": true
  },
  {
   "id": "liu_bei",
   "name": "유비",
-  "cuts": 20,
+  "cuts": 21,
   "full": true,
   "size": 1.0,
-  "side": false
+  "side": true
  },
  {
   "id": "zhang_liao",
   "name": "장료",
-  "cuts": 20,
+  "cuts": 21,
   "full": true,
   "size": 1.0,
-  "side": false
+  "side": true
  },
  {
   "id": "dian_wei",
   "name": "전위",
-  "cuts": 20,
+  "cuts": 21,
   "full": true,
   "size": 1.1,
-  "side": false
+  "side": true
  },
  {
   "id": "taishi_ci",
   "name": "태사자",
-  "cuts": 20,
+  "cuts": 21,
   "full": true,
   "size": 1.0,
-  "side": false
+  "side": true
  },
  {
   "id": "xu_chu",
   "name": "허저",
-  "cuts": 20,
+  "cuts": 21,
   "full": true,
   "size": 1.12,
-  "side": false
+  "side": true
  },
  {
   "id": "huang_zhong",
   "name": "황충",
-  "cuts": 20,
+  "cuts": 21,
   "full": true,
   "size": 0.98,
-  "side": false
+  "side": true
  }
 ]

@@ -1,129 +1,138 @@
 {
-  "canvasW": 1280,
-  "canvasH": 1024,
-  "cx": 640,
-  "ground": 880,
-  "bodyH": 636,
-  "poses": {
-    "idle": {
-      "tipX": 413,
-      "tipY": 246,
-      "footL": 509,
-      "footR": 869
-    },
-    "slash_impact": {
-      "tipX": 418,
-      "tipY": 874,
-      "footL": 789,
-      "footR": 904
-    },
-    "slash_recovery": {
-      "tipX": 193,
-      "tipY": 552,
-      "footL": 790,
-      "footR": 901
-    },
-    "slash_windup": {
-      "tipX": 371,
-      "tipY": 299,
-      "footL": 549,
-      "footR": 618
-    },
-    "thrust_impact": {
-      "tipX": 1106,
-      "tipY": 636,
-      "footL": 595,
-      "footR": 711
-    },
-    "thrust_recovery": {
-      "tipX": 583,
-      "tipY": 260,
-      "footL": 421,
-      "footR": 495
-    },
-    "thrust_windup": {
-      "tipX": 883,
-      "tipY": 880,
-      "footL": 759,
-      "footR": 884
-    },
-    "walk1": {
-      "tipX": 959,
-      "tipY": 346,
-      "footL": 683,
-      "footR": 786
-    },
-    "walk2": {
-      "tipX": 976,
-      "tipY": 507,
-      "footL": 704,
-      "footR": 808
-    },
-    "walk3": {
-      "tipX": 842,
-      "tipY": 861,
-      "footL": 507,
-      "footR": 559
-    },
-    "guard_just": {
-      "tipX": 1034,
-      "tipY": 581,
-      "footL": 320,
-      "footR": 409
-    },
-    "guard_ready": {
-      "tipX": 942,
-      "tipY": 688,
-      "footL": 396,
-      "footR": 795
-    },
-    "heavy_impact": {
-      "tipX": 902,
-      "tipY": 880,
-      "footL": 719,
-      "footR": 903
-    },
-    "heavy_recovery": {
-      "tipX": 839,
-      "tipY": 880,
-      "footL": 497,
-      "footR": 850
-    },
-    "heavy_windup": {
-      "tipX": 368,
-      "tipY": 276,
-      "footL": 548,
-      "footR": 624
-    },
-    "hurt_heavy": {
-      "tipX": 341,
-      "tipY": 865,
-      "footL": 340,
-      "footR": 620
-    },
-    "hurt_light": {
-      "tipX": 921,
-      "tipY": 682,
-      "footL": 361,
-      "footR": 563
-    },
-    "ko_down": {
-      "tipX": 1125,
-      "tipY": 943,
-      "footL": 809,
-      "footR": 1013
-    },
-    "ko_fall": {
-      "tipX": 910,
-      "tipY": 201,
-      "footL": 541,
-      "footR": 678
-    },
-    "stunned": {
-      "tipX": 923,
-      "tipY": 880,
-      "footL": 829,
-      "footR": 924
-    }
+ "canvasW": 1280,
+ "canvasH": 1024,
+ "cx": 640,
+ "ground": 880,
+ "bodyH": 636,
+ "poses": {
+  "idle": {
+   "tipX": 948,
+   "tipY": 656
+  },
+  "slash_impact": {
+   "tipX": 418,
+   "tipY": 874,
+   "footL": 789,
+   "footR": 904
+  },
+  "slash_recovery": {
+   "tipX": 193,
+   "tipY": 552,
+   "footL": 790,
+   "footR": 901
+  },
+  "slash_windup": {
+   "tipX": 371,
+   "tipY": 299,
+   "footL": 549,
+   "footR": 618
+  },
+  "thrust_impact": {
+   "tipX": 1106,
+   "tipY": 636,
+   "footL": 595,
+   "footR": 711
+  },
+  "thrust_recovery": {
+   "tipX": 583,
+   "tipY": 260,
+   "footL": 421,
+   "footR": 495
+  },
+  "thrust_windup": {
+   "tipX": 883,
+   "tipY": 880,
+   "footL": 759,
+   "footR": 884
+  },
+  "walk1": {
+   "tipX": 955,
+   "tipY": 652
+  },
+  "walk2": {
+   "tipX": 597,
+   "tipY": 267
+  },
+  "walk3": {
+   "tipX": 940,
+   "tipY": 649
+  },
+  "guard_just": {
+   "tipX": 1034,
+   "tipY": 581,
+   "footL": 320,
+   "footR": 409
+  },
+  "guard_ready": {
+   "tipX": 942,
+   "tipY": 688,
+   "footL": 396,
+   "footR": 795
+  },
+  "heavy_impact": {
+   "tipX": 902,
+   "tipY": 880,
+   "footL": 719,
+   "footR": 903
+  },
+  "heavy_recovery": {
+   "tipX": 839,
+   "tipY": 880,
+   "footL": 497,
+   "footR": 850
+  },
+  "heavy_windup": {
+   "tipX": 368,
+   "tipY": 276,
+   "footL": 548,
+   "footR": 624
+  },
+  "hurt_heavy": {
+   "tipX": 341,
+   "tipY": 865,
+   "footL": 340,
+   "footR": 620
+  },
+  "hurt_light": {
+   "tipX": 921,
+   "tipY": 682,
+   "footL": 361,
+   "footR": 563
+  },
+  "ko_down": {
+   "tipX": 1125,
+   "tipY": 943,
+   "footL": 809,
+   "footR": 1013
+  },
+  "ko_fall": {
+   "tipX": 910,
+   "tipY": 201,
+   "footL": 541,
+   "footR": 678
+  },
+  "stunned": {
+   "tipX": 923,
+   "tipY": 880,
+   "footL": 829,
+   "footR": 924
+  },
+  "walk4": {
+   "tipX": 595,
+   "tipY": 265
   }
+ },
+ "walkCycle": [
+  "walk3",
+  "walk2",
+  "walk1",
+  "walk4"
+ ],
+ "walkStep": 60,
+ "walkAlign": {
+  "walk1": 7,
+  "walk2": -14,
+  "walk3": 19,
+  "walk4": -13
+ }
 }

@@ -41,12 +41,42 @@ def run(args):
     return r.returncode == 0
 
 
+def _narrowest_walk(out_dir):
+    """걷기 컷 중 '통과 자세'(두 발이 모인 것)들의 이름 집합.
+
+    다리를 모으고 망토가 접히면 침식 후 덩어리가 작게 나온다. 실제 크기는
+    정상인데 '이 컷만 작게 그렸다'로 오판하므로 크기 편차 계산에서 뺀다.
+    (KO 자세를 빼는 것과 같은 이유다.)
+    """
+    spans = {}
+    for w in ('walk1', 'walk2', 'walk3', 'walk4'):
+        f = os.path.join(out_dir, w + '.webp')
+        if not os.path.exists(f):
+            continue
+        a = np.array(Image.open(f).convert('RGBA').getchannel('A')) > 16
+        lbl, n = ndimage.label(a)
+        if not n:
+            continue
+        m = lbl == int(np.argmax(ndimage.sum(a, lbl, range(1, n + 1)))) + 1
+        ys, _ = np.nonzero(m)
+        bx = np.nonzero(m[ys.max() - 40:ys.max() + 1, :])[1]
+        if not len(bx):
+            continue
+        spans[w] = bx.max() - bx.min()
+    if not spans:
+        return set()
+    widest = max(spans.values())
+    return {w for w, v in spans.items() if v < widest * 0.55}
+
+
 def verify(out_dir):
     """장수마다 자동으로 돌리는 검사. 전부 실제로 터졌던 문제들이다."""
     files = sorted(glob.glob(os.path.join(out_dir, '*.webp')))
+    narrow_walk = _narrowest_walk(out_dir)
     problems, cores = [], []
-    if len(files) != 20:
-        problems.append(f'컷이 {len(files)}개 (20개여야 한다)')
+    # 20컷이 기본. 걷기를 4컷으로 받으면 21컷이 된다(통과 자세가 두 번 재생되지 않는다).
+    if len(files) not in (20, 21):
+        problems.append(f'컷이 {len(files)}개 (20 또는 21개여야 한다)')
     for f in files:
         name = os.path.basename(f)[:-5]
         im = Image.open(f).convert('RGBA')
@@ -64,7 +94,9 @@ def verify(out_dir):
             problems.append(f'{name}: 발끝이 지면에서 {by.max() - 880:+d}px 떠 있다')
         # 누운·뜬 자세는 실루엣이 원래 작다 — 크기 편차 계산에서 뺀다.
         # (여포 ko_down 이 -12% 로 잡혀 멀쩡한 세트가 경고를 받았다)
-        if name not in ('ko_down', 'ko_fall'):
+        # 통과 자세(walk 중 두 발이 가장 모인 컷)도 뺀다. 다리를 모으고 망토가 접혀서
+        # 침식 후 덩어리가 작게 나올 뿐, 실제 크기는 정상이다(여포가 -15% 로 잡혔다).
+        if name not in ('ko_down', 'ko_fall') and name not in narrow_walk:
             core = ndimage.binary_erosion(a, np.ones((17, 17)))
             cl, cn = ndimage.label(core)
             if cn:

@@ -24,10 +24,8 @@
    "footR": 866
   },
   "idle": {
-   "tipX": 976,
-   "tipY": 832,
-   "footL": 416,
-   "footR": 523
+   "tipX": 873,
+   "tipY": 876
   },
   "slash_impact": {
    "tipX": 1042,
@@ -106,6 +104,35 @@
    "tipY": 879,
    "footL": 638,
    "footR": 735
+  },
+  "walk1": {
+   "tipX": 272,
+   "tipY": 670
+  },
+  "walk2": {
+   "tipX": 87,
+   "tipY": 644
+  },
+  "walk3": {
+   "tipX": 412,
+   "tipY": 863
+  },
+  "walk4": {
+   "tipX": 199,
+   "tipY": 664
   }
- }
+ },
+ "walkAlign": {
+  "walk1": -108,
+  "walk2": 112,
+  "walk3": 13,
+  "walk4": -17
+ },
+ "walkCycle": [
+  "walk3",
+  "walk4",
+  "walk1",
+  "walk2"
+ ],
+ "walkStep": 28
 }

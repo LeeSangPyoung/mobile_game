@@ -284,6 +284,14 @@ function resizeCanvas() {
 //     (arcade_duel_test.html 에서 손으로 맞춘 값 — 좌표는 그대로 가져옴)
 // ═══════════════════════════════════════════════════════════════════
 const A = {};
+
+// 그림을 갈아 끼웠는데 게임엔 옛 그림이 계속 나오던 문제.
+// 주소 뒤 ?v= 가 고정이라 파일이 바뀌어도 URL 이 같았고, 브라우저가 캐시를 그대로 썼다.
+// 로컬에서 볼 땐 매번 새로 받는다 — 발주 결과를 확인하는 게 이 화면의 용도다.
+const LOCAL_DEV = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+const AV = LOCAL_DEV ? Date.now() : 7;
+const bust = u => u.replace(/\?v=[^&]*/, '') + '?v=' + AV;
+
 const ASSET_SRC = {
   bg:        './assets/arcade_duel/pixel_war_stage_v1.webp',
   pPose:     './assets/arcade_duel/zhao_yun_pose_sheet.webp',
@@ -343,24 +351,68 @@ const ASSET_SRC = {
 // 20컷 완본을 갖춘 장수를 폴더 하나로 불러온다.
 // 조운·화웅은 예전 방식(에셋 키를 코드에 나열)으로 남아 있지만,
 // 앞으로 추가되는 장수는 이 경로만 쓴다 — 코드 편집 0줄.
-const FULL_POSES = ['idle', 'walk1', 'walk2', 'walk3',
+const FULL_POSES = ['idle', 'walk1', 'walk2', 'walk3', 'walk4',
   'slash_windup', 'slash_impact', 'slash_recovery',
   'thrust_windup', 'thrust_impact', 'thrust_recovery',
   'heavy_windup', 'heavy_impact', 'heavy_recovery',
   'guard_ready', 'guard_just', 'hurt_light', 'hurt_heavy',
   'stunned', 'ko_fall', 'ko_down'];
 
+// 걷기 한 주기는 **두 걸음**이다 — 앞발 접지 · 통과 · 뒷발 접지 · 통과.
+// walk1/2/3 은 시트에서 왼쪽부터 자른 순서일 뿐이라 그대로 1-2-3 으로 돌리면
+// 통과 자세가 한 번만 나와 절뚝인다(발소리는 주기당 2번인데 그림은 3장이었다).
+// 실제 순서는 tools/walk_cycle.py 가 발 위치를 재서 poses.json 에 적어 둔다.
+const WALK_CYCLE_DIST = 102;                 // 한 주기에 나아가는 거리(= 두 걸음) — 기본값
+// 그려진 보폭은 장수마다 다르다. 고정 거리로 프레임을 넘기면 보폭이 좁은 장수는
+// 발이 앞으로 미끄러지고(여포 21px), 넓은 장수는 뒤로 끌린다(장비 40px).
+// tools/walk_cycle.py 가 잰 '한 걸음에 그림이 나아가는 거리'를 그대로 쓴다.
+const WALK_STEP = {};                        // kind → 캔버스 px
+// 걷기 컷별 좌우 정렬 보정(캔버스 px). 컷마다 몸 위치가 어긋나면 걸을 때 캐릭터가
+// 좌우로 튄다 — 그림을 고치지 않고 그릴 때 밀어서 맞춘다.
+const WALK_ALIGN = {};                       // kind → { 컷이름: dx }
+const walkCycleDist = f => {
+  const st = WALK_STEP[f.kind];
+  if (!st) return WALK_CYCLE_DIST;
+  // 두 걸음이 한 주기. 그림이 망가진 장수(보폭 5px)까지 따라가면 프레임이 떨리므로 가둔다.
+  // 하한이 중요하다. 보폭이 짧은 장수까지 그대로 따라가면 주기가 짧아져
+  // 초당 13회씩 그림이 바뀐다 — 미끄러짐은 없어져도 '각기로 움직인다'가 된다.
+  // 발 미끄러짐보다 교체 속도가 눈에 훨씬 잘 띈다. 80년대 2D 격투가 택한 쪽도 이것이다.
+  return clamp(st * spriteScale(f) * 2, 150, 260);
+};
+// 4컷이 있으면 반복 없는 진짜 사이클이 된다: 앞접지·통과·뒷접지·통과(반대 다리).
+// 3컷뿐이면 통과 컷을 두 번 쓸 수밖에 없고, 그러면 '두 장면이 번갈아 나온다'고 읽힌다.
+const walkCycle = meta => (Array.isArray(meta && meta.walkCycle) && meta.walkCycle.length)
+  ? meta.walkCycle : ['walk1', 'walk2', 'walk3', 'walk2'];
+
 async function loadGeneral(gid, side, opts = {}) {
   const dir = `./assets/arcade_duel/${gid}_states`;
   const pre = 'g' + gid.replace(/[^a-z]/g, '') + '_';
+  // decode() 까지 기다린다. onload 만 보고 그리면 크롬이 디코딩 전 프레임을 그냥 건너뛴다 —
+  // 각 컷을 처음 쓰는 순간 한 번씩 캐릭터가 사라져 보이던 원인이다(걷기 시작할 때 특히).
   await Promise.all(FULL_POSES.map(n => new Promise(res => {
     const img = new Image();
-    img.onload = img.onerror = () => { A[pre + n] = img; res(); };
-    img.src = `${dir}/${n}.webp?v=1`;
+    const done = () => { A[pre + n] = img; res(); };
+    img.onload = () => { (img.decode ? img.decode() : Promise.resolve()).then(done, done); };
+    img.onerror = done;
+    img.src = bust(`${dir}/${n}.webp`);
     POSE_KEY[pre + n] = n;
   })));
+  // 창끝 좌표·실측 몸높이·걷기 순서. 빼먹으면 아우라가 허공에서 나고 덩치가 어긋난다.
+  let meta = {};
+  try {
+    meta = await (await fetch(bust(`${dir}/poses.json`))).json();
+    for (const k in (meta.poses || {})) POSE_TIP[pre.charAt(0) + gid + ':' + k] = meta.poses[k];
+    if (meta.bodyH) POSE_BODY_H[side] = meta.bodyH;
+    if (meta.walkStep) WALK_STEP[side] = meta.walkStep;
+    if (meta.walkAlign) WALK_ALIGN[side] = meta.walkAlign;
+    TIP_NS[side] = pre.charAt(0) + gid;
+  } catch (e) { console.warn(gid + ' 좌표 로드 실패', e); }
+  // 걷기 컷이 없는 장수(조운·화웅 17컷)는 walk 를 비워 둔다 — 리그가 맡는다.
+  // 빈 배열을 넘기면 프레임 index 가 NaN 이 되어 아무것도 안 그려진다.
+  const walkKeys = walkCycle(meta).map(n => pre + n).filter(k => ready(A[k]));
+  SIDE_GID[side] = gid;
   POSE_SET[side] = {
-    idle: pre + 'idle', walk: [pre + 'walk1', pre + 'walk2', pre + 'walk3'],
+    idle: pre + 'idle', walk: walkKeys.length ? walkKeys : null,
     guard: pre + 'guard_ready', guardJust: pre + 'guard_just',
     hurtL: pre + 'hurt_light', hurtH: pre + 'hurt_heavy', stunned: pre + 'stunned',
     koFall: pre + 'ko_fall', koDown: pre + 'ko_down',
@@ -368,13 +420,6 @@ async function loadGeneral(gid, side, opts = {}) {
     thrust: [pre + 'thrust_windup', pre + 'thrust_impact', pre + 'thrust_recovery'],
     heavy: [pre + 'heavy_windup', pre + 'heavy_impact', pre + 'heavy_recovery'],
   };
-  // 창끝 좌표와 실측 몸높이 — 빼먹으면 아우라가 허공에서 나고 덩치가 어긋난다
-  try {
-    const j = await (await fetch(`${dir}/poses.json?v=1`)).json();
-    for (const k in (j.poses || {})) POSE_TIP[pre.charAt(0) + gid + ':' + k] = j.poses[k];
-    if (j.bodyH) POSE_BODY_H[side] = j.bodyH;
-    TIP_NS[side] = pre.charAt(0) + gid;
-  } catch (e) { console.warn(gid + ' 좌표 로드 실패', e); }
   CHAR_SIZE[side] = opts.size || 1.0;
   CHAR_FEET[side] = opts.feet || { cx: STATE_CX, w: 320 };
   return true;
@@ -403,7 +448,7 @@ let POSE_TIP = {};
 // 리그 경로와 어긋나서, 걷다가 공격하면 덩치가 바뀐다.
 const POSE_BODY_H = { player: 620, boss: 620 };
 for (const [who, kind, dir] of [['s', 'player', 'zhao_yun_states'], ['h', 'boss', 'hua_xiong_states']]) {
-  fetch(`./assets/arcade_duel/${dir}/poses.json?v=6`).then(r => r.json())
+  fetch(bust(`./assets/arcade_duel/${dir}/poses.json`)).then(r => r.json())
     .then(j => {
       for (const k in (j.poses || {})) POSE_TIP[who + ':' + k] = j.poses[k];
       if (j.bodyH) POSE_BODY_H[kind] = j.bodyH;
@@ -441,6 +486,9 @@ const snd = (fn, ...a) => { try { SFX && SFX[fn] && SFX[fn](...a); } catch {} };
 
 // 리그는 캐릭터마다 하나씩. 걷기·피격·경직·KO 를 그림 없이 만들 수 있어서
 // 잘린 옛 시트를 완전히 끊는 수단이기도 하다.
+// 리그는 **장수별**로 건다. 진영(player/boss)에 걸면 조운을 상대로 고른 순간
+// 화웅 리그가 조운 그림 위에 그려진다.
+const SIDE_GID = { player: 'zhao_yun', boss: 'hua_xiong' };
 const RIGS = {};
 let RIGLIB = null, RIGCLIPS = null;
 Promise.all([import('./duel/rig.js'), import('./duel/clips.js')])
@@ -450,7 +498,7 @@ Promise.all([import('./duel/rig.js'), import('./duel/clips.js')])
       lib.loadRig('./assets/duel_rig/zhao_yun', '3'),
       lib.loadRig('./assets/duel_rig/hua_xiong', '3'),
     ]);
-    RIGS.player = zy; RIGS.boss = hx;
+    RIGS.zhao_yun = zy; RIGS.hua_xiong = hx;
     // 실험: ?boss=<장수id> 로 상대를 갈아 끼운다.
     // 전신 아트 한 장으로 자동 생성한 리그가 실제로 쓸 만한지 확인하는 통로 —
     // 그려진 포즈가 없으니 공격도 리그가 흉내낸다.
@@ -465,7 +513,7 @@ Promise.all([import('./duel/rig.js'), import('./duel/clips.js')])
       else {
         // 완본이 없다 — 전신 아트로 자동 생성한 리그로라도 세운다
         try {
-          RIGS.boss = await lib.loadRig(`./assets/duel_rig/${alt}`, '1');
+          RIGS[alt] = await lib.loadRig(`./assets/duel_rig/${alt}`, '1'); SIDE_GID.boss = alt;
           POSE_SET.boss = {}; CHAR_FEET.boss = { cx: STATE_CX, w: 300 };
           B.name = alt; syncHud(true);
         } catch (e) { console.warn('대체 보스 로드 실패', alt, e); }
@@ -540,9 +588,10 @@ function loadAssets(keys, onProgress) {
         onProgress?.(done / keys.length);
         if (done === keys.length) resolve();
       };
-      img.onload = tick;
+      // decode() 를 기다려야 첫 렌더에서 안 그려지고 넘어가는 일이 없다
+      img.onload = () => { (img.decode ? img.decode() : Promise.resolve()).then(tick, tick); };
       img.onerror = tick;   // 하나 빠져도 결투는 계속된다(해당 모션만 포즈 시트로 대체)
-      img.src = ASSET_SRC[k];
+      img.src = bust(ASSET_SRC[k]);
     });
   });
 }
@@ -1255,8 +1304,16 @@ function statePose(f) {
       if (f.state === 'walk' || f.state === 'dash' || f.state === 'backstep') {
         // 걷기 컷이 있으면 보폭에 맞춰 넘긴다 — 리그가 필요 없어지는 지점.
         // 발이 미끄러지지 않도록 이동 거리(gait)로 프레임을 고른다.
-        if (Array.isArray(set.walk))
-          return pick(set.walk[Math.floor((f.gait || 0) / 34) % set.walk.length]);
+        // 한 주기(WALK_CYCLE_DIST)를 컷 수로 나눈다 — 3컷이든 4비트든 보폭은 같다.
+        // 대시·백스텝은 컷을 넘기지 않는다.
+        // 속도가 걷기의 2.5~3배라 같은 규칙으로 넘기면 초당 25~42회가 되어 깜빡인다.
+        // 게다가 뒤로 가는데 앞으로 걷는 그림이 돌아간다. 한 자세로 미끄러지는 게 맞다 —
+        // 기울기(lean)와 흙먼지가 이미 속도감을 만든다.
+        if (Array.isArray(set.walk) && f.state !== 'dash' && f.state !== 'backstep') {
+          const step = walkCycleDist(f) / set.walk.length;
+          return pick(set.walk[Math.floor((f.gait || 0) / step) % set.walk.length]);
+        }
+        if (Array.isArray(set.walk)) return pick(set.walk[0]);   // 대시·백스텝 — 접지 자세 고정
         return pick(set.walk || set.idle);
       }
       return null;
@@ -1342,6 +1399,9 @@ function drawStatePose(f, img) {
     ctx.scale(1, 1 + b * 0.006);
   }
   ctx.scale(f.dir, 1);                       // 원본은 오른쪽을 본다
+  // 걷기 컷의 좌우 어긋남 보정 — 반전 뒤에 적용해야 방향이 맞는다
+  const al = (WALK_ALIGN[f.kind] || {})[POSE_KEY[f.poseKey]];
+  if (al) ctx.translate(al * s, 0);
   if (f.hitFlash > 0 && f.hitFlash % 4 > 1 && f.state !== 'ko') ctx.globalAlpha = .55;
   ctx.drawImage(img, -STATE_CX * s, -STATE_GROUND * s, STATE_CW * s, STATE_CH * s);
   ctx.restore();
@@ -1349,7 +1409,7 @@ function drawStatePose(f, img) {
 
 // 리그로 그릴 수 있는 상태인가 — 대기와 이동만. 공격은 그린 포즈가 훨씬 낫다.
 function rigClipFor(f) {
-  const rig = RIGS[f.kind];
+  const rig = RIGS[SIDE_GID[f.kind]];
   if (!rig) return null;
   const set = POSE_SET[f.kind] || {};
   // 그려진 포즈가 있으면 그림이 언제나 낫다. 리그는 '그림이 없는 상태'를 메운다.
@@ -1369,7 +1429,7 @@ function rigClipFor(f) {
 }
 
 function drawRigPose(f, clipName) {
-  const RIG = RIGS[f.kind];
+  const RIG = RIGS[SIDE_GID[f.kind]];
   const clip = RIGCLIPS.CLIPS[clipName];
   // 걷기는 걸음 속도에, 1회성 동작은 상태 경과 프레임에 맞춘다
   const t = clipName === 'walk' ? (f.gait || 0) * 0.62
@@ -1719,7 +1779,7 @@ document.querySelectorAll('#ovDiff .pick').forEach(b => {
 // 20컷 완본은 폴더만 있으면 뜬다. 목록은 generals.json 이 알려준다.
 let ROSTER = [];
 const DEFAULT_SIDE = { player: 'zhao_yun', boss: 'hua_xiong' };
-fetch('./assets/arcade_duel/generals.json?v=1').then(r => r.json()).then(list => {
+fetch(bust('./assets/arcade_duel/generals.json')).then(r => r.json()).then(list => {
   ROSTER = list;
   for (const [sel, side] of [['pickP', 'player'], ['pickB', 'boss']]) {
     const el = $(sel);
@@ -1735,8 +1795,8 @@ async function applyPicks() {
   for (const [sel, side] of [['pickP', 'player'], ['pickB', 'boss']]) {
     const gid = $(sel).value;
     const g = ROSTER.find(x => x.id === gid);
-    if (!g || !g.full) continue;                    // 부분 세트는 기존 경로 유지
-    await loadGeneral(gid, side, { size: g.size });
+    if (!g) continue;
+    await loadGeneral(gid, side, { size: g.size });   // 17컷 장수도 폴더에서 읽는다
     // resetMatch() 가 기본값으로 되돌리므로 여기 저장해 둔다
     SIDE_INFO[side].name = g.name;
     if (g.war) SIDE_INFO[side].war = g.war;
