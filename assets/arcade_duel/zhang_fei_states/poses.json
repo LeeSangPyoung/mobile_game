@@ -48,10 +48,8 @@
    "tipY": 597
   },
   "guard_just": {
-   "tipX": 1005,
-   "tipY": 565,
-   "footL": 299,
-   "footR": 404
+   "tipX": 952,
+   "tipY": 449
   },
   "guard_ready": {
    "tipX": 922,
