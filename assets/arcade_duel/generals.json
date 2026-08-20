@@ -134,5 +134,13 @@
   "full": true,
   "size": 1.0,
   "side": true
+ },
+ {
+  "id": "xu_huang",
+  "name": "서황",
+  "cuts": 21,
+  "full": true,
+  "size": 1.04,
+  "side": true
  }
 ]
