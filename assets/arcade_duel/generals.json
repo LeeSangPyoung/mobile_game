@@ -174,5 +174,13 @@
   "full": true,
   "size": 1.08,
   "side": true
+ },
+ {
+  "id": "wei_yan",
+  "name": "위연",
+  "cuts": 21,
+  "full": true,
+  "size": 1.03,
+  "side": true
  }
 ]
