@@ -150,5 +150,13 @@
   "full": true,
   "size": 1.06,
   "side": true
+ },
+ {
+  "id": "zhou_tai",
+  "name": "주태",
+  "cuts": 21,
+  "full": true,
+  "size": 1.02,
+  "side": true
  }
 ]
