@@ -198,5 +198,13 @@
   "full": true,
   "size": 1.05,
   "side": true
+ },
+ {
+  "id": "jiang_wei",
+  "name": "강유",
+  "cuts": 21,
+  "full": true,
+  "size": 1.05,
+  "side": true
  }
 ]
