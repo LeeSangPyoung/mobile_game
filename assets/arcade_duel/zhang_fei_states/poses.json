@@ -28,10 +28,8 @@
    "footR": 641
   },
   "thrust_impact": {
-   "tipX": 1071,
-   "tipY": 969,
-   "footL": 767,
-   "footR": 1072
+   "tipX": 1144,
+   "tipY": 637
   },
   "thrust_recovery": {
    "tipX": 937,
