@@ -158,5 +158,13 @@
   "full": true,
   "size": 1.02,
   "side": true
+ },
+ {
+  "id": "cao_zhen",
+  "name": "조진",
+  "cuts": 21,
+  "full": true,
+  "size": 1.0,
+  "side": true
  }
 ]
