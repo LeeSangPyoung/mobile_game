@@ -166,5 +166,13 @@
   "full": true,
   "size": 1.0,
   "side": true
+ },
+ {
+  "id": "cao_zhang",
+  "name": "조창",
+  "cuts": 21,
+  "full": true,
+  "size": 1.08,
+  "side": true
  }
 ]
