@@ -126,5 +126,13 @@
   "full": true,
   "size": 0.96,
   "side": true
+ },
+ {
+  "id": "sun_ce",
+  "name": "손책",
+  "cuts": 21,
+  "full": true,
+  "size": 1.0,
+  "side": true
  }
 ]
