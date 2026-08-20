@@ -214,5 +214,13 @@
   "full": true,
   "size": 1.05,
   "side": true
+ },
+ {
+  "id": "lu_xun",
+  "name": "육손",
+  "cuts": 21,
+  "full": true,
+  "size": 1.05,
+  "side": true
  }
 ]
