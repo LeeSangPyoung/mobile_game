@@ -142,5 +142,13 @@
   "full": true,
   "size": 1.04,
   "side": true
+ },
+ {
+  "id": "wen_chou",
+  "name": "문추",
+  "cuts": 21,
+  "full": true,
+  "size": 1.06,
+  "side": true
  }
 ]
