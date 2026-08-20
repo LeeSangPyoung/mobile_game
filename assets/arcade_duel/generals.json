@@ -182,5 +182,13 @@
   "full": true,
   "size": 1.03,
   "side": true
+ },
+ {
+  "id": "zhang_he",
+  "name": "장합",
+  "cuts": 21,
+  "full": true,
+  "size": 1.0,
+  "side": true
  }
 ]
