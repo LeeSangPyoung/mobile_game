@@ -246,5 +246,13 @@
   "full": true,
   "size": 1.05,
   "side": true
+ },
+ {
+  "id": "yue_jin",
+  "name": "악진",
+  "cuts": 21,
+  "full": true,
+  "size": 1.05,
+  "side": true
  }
 ]
