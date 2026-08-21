@@ -230,5 +230,13 @@
   "full": true,
   "size": 1.05,
   "side": true
+ },
+ {
+  "id": "deng_ai",
+  "name": "등애",
+  "cuts": 21,
+  "full": true,
+  "size": 1.05,
+  "side": true
  }
 ]
