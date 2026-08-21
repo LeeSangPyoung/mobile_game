@@ -222,5 +222,13 @@
   "full": true,
   "size": 1.05,
   "side": true
+ },
+ {
+  "id": "cao_ren",
+  "name": "조인",
+  "cuts": 21,
+  "full": true,
+  "size": 1.05,
+  "side": true
  }
 ]
