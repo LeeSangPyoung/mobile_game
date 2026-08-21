@@ -238,5 +238,13 @@
   "full": true,
   "size": 1.05,
   "side": true
+ },
+ {
+  "id": "sun_jian",
+  "name": "손견",
+  "cuts": 21,
+  "full": true,
+  "size": 1.05,
+  "side": true
  }
 ]
