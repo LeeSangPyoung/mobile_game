@@ -217,10 +217,18 @@ def split_components(fg, body_area=18000, drop_area=1200, erode=9):
     orphans = [i for i in range(n) if drop_area <= sizes[i] < body_area]
 
     owner = {b: [b] for b in bodies}
-    for o in orphans:
+    # 인물은 모두 오른쪽을 보고 무기를 **앞으로** 뻗는다. 그래서 떨어져 나온
+    # 날은 주인의 오른쪽에 놓이고, 거리만 보면 오른쪽 옆 인물에게 넘어간다
+    # (장료 walk3 의 날이 walk4 에 붙어 walk3 은 자루만 남았다).
+    # 조각의 왼쪽에 있는 몸에 가중치를 준다.
+    def claim(o):
         oy, ox = cents[o]
-        best = min(bodies, key=lambda b: (cents[b][0] - oy) ** 2 + (cents[b][1] - ox) ** 2)
-        owner[best].append(o)
+        def cost(b):
+            d = ((cents[b][0] - oy) ** 2 + (cents[b][1] - ox) ** 2) ** 0.5
+            return d * (0.55 if cents[b][1] < ox else 1.0)
+        return min(bodies, key=cost)
+    for o in orphans:
+        owner[claim(o)].append(o)
 
     out = []
     for b in bodies:
