@@ -254,5 +254,13 @@
   "full": true,
   "size": 1.05,
   "side": true
+ },
+ {
+  "id": "xiahou_ba",
+  "name": "하후패",
+  "cuts": 21,
+  "full": true,
+  "size": 1.05,
+  "side": true
  }
 ]
