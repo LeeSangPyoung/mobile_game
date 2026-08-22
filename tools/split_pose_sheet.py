@@ -450,9 +450,13 @@ def main():
     if args.names:
         given = [s.strip() for s in args.names.split(',') if s.strip()]
         if len(given) != len(pieces):
-            print(f'  ! 이름 {len(given)}개 / 컷 {len(pieces)}개 — 개수가 안 맞아 기본 이름을 쓴다')
-        else:
-            names = given
+            # 예전에는 경고만 내고 기본 이름(pose_01…)으로 저장했는데, 그러면
+            # 엉뚱한 시트가 조용히 설치된다(우금 폴더에 공격 시트가 두 번
+            # 들어가 pose_01~09 가 생겼다). 개수가 다르면 아무것도 쓰지 않는다.
+            print(f'  ✗ 이름 {len(given)}개 / 컷 {len(pieces)}개 — 개수가 다르다. '
+                  f'시트를 잘못 골랐는지 확인할 것. 아무것도 저장하지 않았다.')
+            raise SystemExit(2)
+        names = given
 
     if args.raw_only:
         for piece, name in zip(pieces, names):
