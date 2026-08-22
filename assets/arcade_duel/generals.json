@@ -302,5 +302,13 @@
   "full": true,
   "size": 1.03,
   "side": true
+ },
+ {
+  "id": "guan_xing",
+  "name": "관흥",
+  "cuts": 21,
+  "full": true,
+  "size": 1.04,
+  "side": true
  }
 ]
