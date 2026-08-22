@@ -310,5 +310,13 @@
   "full": true,
   "size": 1.04,
   "side": true
+ },
+ {
+  "id": "ma_teng",
+  "name": "마등",
+  "cuts": 21,
+  "full": true,
+  "size": 1.05,
+  "side": true
  }
 ]
