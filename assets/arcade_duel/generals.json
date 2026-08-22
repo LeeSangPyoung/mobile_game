@@ -326,5 +326,13 @@
   "full": true,
   "size": 1.06,
   "side": true
+ },
+ {
+  "id": "zhang_xiu",
+  "name": "장수",
+  "cuts": 21,
+  "full": true,
+  "size": 1.04,
+  "side": true
  }
 ]
