@@ -318,5 +318,13 @@
   "full": true,
   "size": 1.05,
   "side": true
+ },
+ {
+  "id": "li_jue",
+  "name": "이각",
+  "cuts": 21,
+  "full": true,
+  "size": 1.06,
+  "side": true
  }
 ]
