@@ -278,5 +278,13 @@
   "full": true,
   "size": 1.08,
   "side": true
+ },
+ {
+  "id": "zhou_yu",
+  "name": "주유",
+  "cuts": 21,
+  "full": true,
+  "size": 1.02,
+  "side": true
  }
 ]
