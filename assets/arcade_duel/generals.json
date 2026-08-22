@@ -334,5 +334,13 @@
   "full": true,
   "size": 1.04,
   "side": true
+ },
+ {
+  "id": "gongsun_zan",
+  "name": "공손찬",
+  "cuts": 21,
+  "full": true,
+  "size": 1.03,
+  "side": true
  }
 ]
