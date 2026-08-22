@@ -663,7 +663,10 @@ function makeFighter(kind, opts) {
     z: opts.z ?? Z_MAX * 0.5,   // 깊이. 0=앞, Z_MAX=안쪽
     vz: 0,
     hp: opts.hp, maxHp: opts.hp,
-    stam: 100, maxStam: 100,
+    stam: opts.stam || 100, maxStam: opts.stam || 100,
+    // 공속 배수 — 무기가 길수록 느리다(장병기 1.12 / 단병기 0.88).
+    // 리치만 주고 속도를 같게 두면 긴 무기가 일방적으로 유리해진다.
+    spd: opts.spd || 1,
     vx: 0,
     state: 'idle',      // idle walk dash backstep windup active recover guard hurt stunned ko
     st: 0,              // 현재 상태 경과 프레임
@@ -689,14 +692,14 @@ let stats = { hits: 0, guards: 0, justs: 0, clashes: 0, taken: 0 };
 
 // 선택한 장수 — 시작 화면에서 고른 값. 없으면 기본(조운·화웅).
 const SIDE_INFO = {
-  player: { name: '조운', war: 96, hp: 120 },
-  boss:   { name: '화웅', war: 88, hp: 150 },
+  player: { name: '조운', war: 96, hp: 120, spd: 1, stam: 100 },
+  boss:   { name: '화웅', war: 88, hp: 150, spd: 1, stam: 100 },
 };
 
 function resetMatch() {
   const pi = SIDE_INFO.player, bi = SIDE_INFO.boss;
-  P = makeFighter('player', { name: pi.name, war: pi.war, x: STAGE_W / 2 - 190, dir: 1, hp: pi.hp });
-  B = makeFighter('boss',   { name: bi.name, war: bi.war, x: STAGE_W / 2 + 190, dir: -1, hp: bi.hp });
+  P = makeFighter('player', { name: pi.name, war: pi.war, x: STAGE_W / 2 - 190, dir: 1, hp: pi.hp, spd: pi.spd, stam: pi.stam });
+  B = makeFighter('boss',   { name: bi.name, war: bi.war, x: STAGE_W / 2 + 190, dir: -1, hp: bi.hp, spd: bi.spd, stam: bi.stam });
   cam = { x: STAGE_W / 2, zoom: 1, shakeX: 0, shakeY: 0, punch: 0 };
   frame = 0; hitStop = 0; slowmo = 0; hap = 0; clockFrames = 60 * FPS;
   fx = []; dust = [];
@@ -963,17 +966,17 @@ function stepFighter(f) {
 
   switch (f.state) {
     case 'windup':
-      if (f.st >= f.move.startup) {
+      if (f.st >= f.move.startup * f.spd) {
         // 궤적은 '감았을 때의 칼끝'에서 시작한다 — 넘어가기 직전에 붙잡아 둔다
         f.swingFrom = tipOf(f);
         f.state = 'active'; f.st = 0;
       }
       break;
     case 'active':
-      if (f.st >= f.move.active) { f.state = 'recover'; f.st = 0; }
+      if (f.st >= f.move.active) { f.state = 'recover'; f.st = 0; }   // 판정 지속은 공통
       break;
     case 'recover':
-      if (f.st >= f.move.recovery) { f.state = 'idle'; f.st = 0; f.move = null; }
+      if (f.st >= f.move.recovery * f.spd) { f.state = 'idle'; f.st = 0; f.move = null; }
       break;
     case 'dash':
     case 'backstep':
@@ -1838,6 +1841,8 @@ async function applyPicks() {
     SIDE_INFO[side].name = g.name;
     if (g.war) SIDE_INFO[side].war = g.war;
     if (g.hp) SIDE_INFO[side].hp = g.hp;
+    if (g.spd) SIDE_INFO[side].spd = g.spd;
+    if (g.stam) SIDE_INFO[side].stam = g.stam;
   }
 }
 
