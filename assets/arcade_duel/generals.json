@@ -262,5 +262,13 @@
   "full": true,
   "size": 1.05,
   "side": true
+ },
+ {
+  "id": "ling_tong",
+  "name": "능통",
+  "cuts": 21,
+  "full": true,
+  "size": 1.02,
+  "side": true
  }
 ]
