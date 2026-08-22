@@ -10,20 +10,20 @@
    "tipY": 656
   },
   "slash_impact": {
-   "tipX": 904,
-   "tipY": 868,
+   "tipX": 1103,
+   "tipY": 564,
    "footL": 789,
    "footR": 904
   },
   "slash_recovery": {
-   "tipX": 795,
-   "tipY": 307,
+   "tipX": 997,
+   "tipY": 856,
    "footL": 790,
    "footR": 901
   },
   "slash_windup": {
-   "tipX": 351,
-   "tipY": 322,
+   "tipX": 332,
+   "tipY": 214,
    "footL": 549,
    "footR": 618
   },
@@ -123,20 +123,20 @@
   }
  },
  "walkCycle": [
-  "walk3",
-  "walk2",
   "walk1",
-  "walk4"
+  "walk4",
+  "walk3",
+  "walk2"
  ],
- "walkStep": 60,
+ "walkStep": 78,
  "walkAlign": {
-  "walk1": 7,
-  "walk2": -14,
-  "walk3": 19,
-  "walk4": -13
+  "walk1": -24,
+  "walk2": 25,
+  "walk3": -22,
+  "walk4": 22
  },
  "feet": {
-  "cx": 609,
-  "w": 432
+  "cx": 579,
+  "w": 454
  }
 }
