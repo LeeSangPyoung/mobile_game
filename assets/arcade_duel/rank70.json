@@ -1,0 +1,422 @@
+[
+ {
+  "rank": 1,
+  "id": "lu_bu",
+  "name": "여포",
+  "art": true
+ },
+ {
+  "rank": 2,
+  "id": "guan_yu",
+  "name": "관우",
+  "art": true
+ },
+ {
+  "rank": 3,
+  "id": "zhang_fei",
+  "name": "장비",
+  "art": true
+ },
+ {
+  "rank": 4,
+  "id": "zhao_yun",
+  "name": "조운",
+  "art": true
+ },
+ {
+  "rank": 5,
+  "id": "ma_chao",
+  "name": "마초",
+  "art": true
+ },
+ {
+  "rank": 6,
+  "id": "dian_wei",
+  "name": "전위",
+  "art": true
+ },
+ {
+  "rank": 7,
+  "id": "xu_chu",
+  "name": "허저",
+  "art": true
+ },
+ {
+  "rank": 8,
+  "id": "huang_zhong",
+  "name": "황충",
+  "art": true
+ },
+ {
+  "rank": 9,
+  "id": "sun_ce",
+  "name": "손책",
+  "art": true
+ },
+ {
+  "rank": 10,
+  "id": "taishi_ci",
+  "name": "태사자",
+  "art": true
+ },
+ {
+  "rank": 11,
+  "id": "zhang_liao",
+  "name": "장료",
+  "art": true
+ },
+ {
+  "rank": 12,
+  "id": "yan_liang",
+  "name": "안량",
+  "art": true
+ },
+ {
+  "rank": 13,
+  "id": "wen_chou",
+  "name": "문추",
+  "art": true
+ },
+ {
+  "rank": 14,
+  "id": "gan_ning",
+  "name": "감녕",
+  "art": true
+ },
+ {
+  "rank": 15,
+  "id": "xiahou_dun",
+  "name": "하후돈",
+  "art": true
+ },
+ {
+  "rank": 16,
+  "id": "zhang_he",
+  "name": "장합",
+  "art": true
+ },
+ {
+  "rank": 17,
+  "id": "xu_huang",
+  "name": "서황",
+  "art": true
+ },
+ {
+  "rank": 18,
+  "id": "wei_yan",
+  "name": "위연",
+  "art": true
+ },
+ {
+  "rank": 19,
+  "id": "zhou_tai",
+  "name": "주태",
+  "art": true
+ },
+ {
+  "rank": 20,
+  "id": "cao_zhang",
+  "name": "조창",
+  "art": true
+ },
+ {
+  "rank": 21,
+  "id": "hua_xiong",
+  "name": "화웅",
+  "art": true
+ },
+ {
+  "rank": 22,
+  "id": "cao_ren",
+  "name": "조인",
+  "art": true
+ },
+ {
+  "rank": 23,
+  "id": "gao_shun",
+  "name": "고순",
+  "art": false
+ },
+ {
+  "rank": 24,
+  "id": "ling_tong",
+  "name": "능통",
+  "art": true
+ },
+ {
+  "rank": 25,
+  "id": "jiang_wei",
+  "name": "강유",
+  "art": true
+ },
+ {
+  "rank": 26,
+  "id": "xiahou_yuan",
+  "name": "하후연",
+  "art": true
+ },
+ {
+  "rank": 27,
+  "id": "dong_zhuo",
+  "name": "동탁",
+  "art": true
+ },
+ {
+  "rank": 28,
+  "id": "lu_xun",
+  "name": "육손",
+  "art": true
+ },
+ {
+  "rank": 29,
+  "id": "cao_zhen",
+  "name": "조진",
+  "art": true
+ },
+ {
+  "rank": 30,
+  "id": "deng_ai",
+  "name": "등애",
+  "art": true
+ },
+ {
+  "rank": 31,
+  "id": "sun_jian",
+  "name": "손견",
+  "art": true
+ },
+ {
+  "rank": 32,
+  "id": "yue_jin",
+  "name": "악진",
+  "art": true
+ },
+ {
+  "rank": 33,
+  "id": "xiahou_ba",
+  "name": "하후패",
+  "art": true
+ },
+ {
+  "rank": 34,
+  "id": "zhou_yu",
+  "name": "주유",
+  "art": true
+ },
+ {
+  "rank": 35,
+  "id": "meng_huo",
+  "name": "맹획",
+  "art": true
+ },
+ {
+  "rank": 36,
+  "id": "ji_ling",
+  "name": "기령",
+  "art": true
+ },
+ {
+  "rank": 37,
+  "id": "guan_xing",
+  "name": "관흥",
+  "art": true
+ },
+ {
+  "rank": 38,
+  "id": "ma_teng",
+  "name": "마등",
+  "art": true
+ },
+ {
+  "rank": 39,
+  "id": "li_jue",
+  "name": "이각",
+  "art": true
+ },
+ {
+  "rank": 40,
+  "id": "zhang_xiu",
+  "name": "장수",
+  "art": true
+ },
+ {
+  "rank": 41,
+  "id": "gongsun_zan",
+  "name": "공손찬",
+  "art": true
+ },
+ {
+  "rank": 42,
+  "id": "ma_dai",
+  "name": "마대",
+  "art": true
+ },
+ {
+  "rank": 43,
+  "id": "zhang_ba",
+  "name": "장패",
+  "art": false
+ },
+ {
+  "rank": 44,
+  "id": "pan_zhang",
+  "name": "반장",
+  "art": true
+ },
+ {
+  "rank": 45,
+  "id": "zhang_ren",
+  "name": "장임",
+  "art": true
+ },
+ {
+  "rank": 46,
+  "id": "liu_bei",
+  "name": "유비",
+  "art": true
+ },
+ {
+  "rank": 47,
+  "id": "cao_cao",
+  "name": "조조",
+  "art": true
+ },
+ {
+  "rank": 48,
+  "id": "huang_gai",
+  "name": "황개",
+  "art": true
+ },
+ {
+  "rank": 49,
+  "id": "sun_quan",
+  "name": "손권",
+  "art": true
+ },
+ {
+  "rank": 50,
+  "id": "yu_jin",
+  "name": "우금",
+  "art": true
+ },
+ {
+  "rank": 51,
+  "id": "guo_huai",
+  "name": "곽회",
+  "art": true
+ },
+ {
+  "rank": 52,
+  "id": "cao_xiu",
+  "name": "조휴",
+  "art": true
+ },
+ {
+  "rank": 53,
+  "id": "man_chong",
+  "name": "만총",
+  "art": true
+ },
+ {
+  "rank": 54,
+  "id": "wang_ping",
+  "name": "왕평",
+  "art": true
+ },
+ {
+  "rank": 55,
+  "id": "wen_pin",
+  "name": "문빙",
+  "art": true
+ },
+ {
+  "rank": 56,
+  "id": "xu_sheng",
+  "name": "서성",
+  "art": true
+ },
+ {
+  "rank": 57,
+  "id": "yuan_shao",
+  "name": "원소",
+  "art": true
+ },
+ {
+  "rank": 58,
+  "id": "guo_si",
+  "name": "곽사",
+  "art": true
+ },
+ {
+  "rank": 59,
+  "id": "cao_hong",
+  "name": "조홍",
+  "art": true
+ },
+ {
+  "rank": 60,
+  "id": "cao_pi",
+  "name": "조비",
+  "art": true
+ },
+ {
+  "rank": 61,
+  "id": "ding_feng",
+  "name": "정봉",
+  "art": true
+ },
+ {
+  "rank": 62,
+  "id": "han_dang",
+  "name": "한당",
+  "art": true
+ },
+ {
+  "rank": 63,
+  "id": "cheng_pu",
+  "name": "정보",
+  "art": true
+ },
+ {
+  "rank": 64,
+  "id": "zhang_bao",
+  "name": "장포",
+  "art": true
+ },
+ {
+  "rank": 65,
+  "id": "li_dian",
+  "name": "이전",
+  "art": true
+ },
+ {
+  "rank": 66,
+  "id": "zhu_ran",
+  "name": "주연",
+  "art": true
+ },
+ {
+  "rank": 67,
+  "id": "yan_yan",
+  "name": "엄안",
+  "art": true
+ },
+ {
+  "rank": 68,
+  "id": "zhuge_liang",
+  "name": "제갈량",
+  "art": true
+ },
+ {
+  "rank": 69,
+  "id": "sima_yi",
+  "name": "사마의",
+  "art": true
+ },
+ {
+  "rank": 70,
+  "id": "pang_tong",
+  "name": "방통",
+  "art": true
+ }
+]
