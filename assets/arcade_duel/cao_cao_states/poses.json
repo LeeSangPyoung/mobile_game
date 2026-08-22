@@ -128,15 +128,15 @@
   "walk3",
   "walk2"
  ],
- "walkStep": 89,
+ "walkStep": 92,
  "walkAlign": {
-  "walk1": -26,
-  "walk2": 22,
-  "walk3": -17,
-  "walk4": 21
+  "walk1": -5,
+  "walk2": -24,
+  "walk3": 14,
+  "walk4": 15
  },
  "feet": {
-  "cx": 634,
-  "w": 479
+  "cx": 700,
+  "w": 430
  }
 }
