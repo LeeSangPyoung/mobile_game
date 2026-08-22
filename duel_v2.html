@@ -253,7 +253,15 @@ let zRange = 108;                    // drawBackground 가 매 프레임 계산
 // 먼 산 옆에 사람이 서니 거인처럼 보였다. 깊이는 '무대 안'에서만 움직여야 한다.
 const Z_HIT = 34;                    // 이 이상 축이 어긋나면 공격이 빗나간다
 const Z_PERSPECTIVE = 0.0013;        // 안쪽으로 갈수록 조금 작게 — 깊이가 읽히게
-const STAGE_W = 900;                 // 무대 폭 — 세로는 화면이 좁다. 더 좁혀서 도망칠 곳을 없앤다
+const STAGE_W = 1200;                // 무대 폭.
+// 900 이던 시절엔 최소 줌 0.60 에서 보이는 폭이 540/0.60 = 900 — 무대 전체가
+// 딱 한 화면이었다. 물러나도 화면이 안 바뀌니 닭장에서 싸우는 느낌이 났다.
+const EDGE = 60;                     // 벽까지 남기는 여백 (f.x 클램프와 같은 값)
+const CAM_PAD = 360;                 // 두 장수 바깥으로 남길 여유 — 줌 식의 상수와 같다
+// 최소 줌은 무대 폭에서 역산한다. 눈대중으로 0.46 을 넣었더니 최대로 벌어졌을 때
+// (1400-120=1280) 인물이 화면 밖으로 나갔다. 아래 값이면 어떤 거리에서도
+// 두 장수와 그 사이가 항상 들어온다.
+const Z_MIN = W / ((STAGE_W - EDGE * 2) + CAM_PAD);
 let SCREEN_GROUND = 0;               // 지면이 화면에 찍히는 높이 — 아래는 조작부 몫으로 비운다
 const PLAY_RATIO = 0.60;             // 화면 위 60% 가 결투, 아래 40% 가 조작부
 const FPS = 60, DT = 1000 / FPS;
@@ -983,7 +991,7 @@ function stepFighter(f) {
   f.x += f.vx;
   f.vx *= (f.state === 'dash' || f.state === 'backstep') ? 0.90 : 0.80;
   if (Math.abs(f.vx) < 0.05) f.vx = 0;
-  f.x = clamp(f.x, 60, STAGE_W - 60);
+  f.x = clamp(f.x, EDGE, STAGE_W - EDGE);
   f.lean = lerp(f.lean, clamp(f.vx * 0.6, -6, 6), 0.2);
   // 보폭 누적 — 실제로 움직인 만큼만 다리가 움직여야 발이 안 미끄러진다
   const before = f.gait || 0;
@@ -1024,7 +1032,7 @@ function separate() {
   } else {
     P.x -= push * dir;                       // 허수아비는 안 밀린다
   }
-  P.x = clamp(P.x, 60, STAGE_W - 60); B.x = clamp(B.x, 60, STAGE_W - 60);
+  P.x = clamp(P.x, EDGE, STAGE_W - EDGE); B.x = clamp(B.x, EDGE, STAGE_W - EDGE);
 
   // 밀고 들어가는 쪽은 속도가 죽는다 — 벽을 미는 저항감
   if (sign(P.vx) === dir) P.vx *= 0.45;
@@ -1166,11 +1174,16 @@ function updateCamera() {
   // 장수 키가 화면의 40%대(먼 거리 37% ~ 붙었을 때 47%)에 오도록 잡은 값.
   // 세로 화면은 가로가 540 뿐이다. '두 장수 + 그 사이'가 항상 들어오도록
   // 필요한 폭에서 역산한다 — 가로처럼 고정 계수로 잡으면 벌어졌을 때 화면 밖으로 나간다.
-  let z = clamp(W / (dist + 360), 0.60, 1.15);
+  let z = clamp(W / (dist + CAM_PAD), Z_MIN, 1.15);
   if (hitStop > 0) z *= 1 + cam.punch * 0.05;
   cam.zoom = lerp(cam.zoom, z, 0.07);
   const half = W / (2 * cam.zoom);
-  cam.x = lerp(cam.x, clamp(mid, half, STAGE_W - half), 0.10);
+  // 보이는 폭이 무대보다 넓어지면 clamp 의 하한이 상한보다 커져 값이 뒤집힌다
+  // (half 720 / STAGE_W-half 480 → clamp(600,720,480) 이 720 을 돌려준다).
+  // 그러면 카메라가 한쪽으로 120px 밀려 반대편 장수가 화면에서 잘렸다.
+  // 무대가 다 보이는 상황이면 그냥 가운데를 잡는다.
+  const target = half * 2 >= STAGE_W ? STAGE_W / 2 : clamp(mid, half, STAGE_W - half);
+  cam.x = lerp(cam.x, target, 0.10);
   cam.punch = Math.max(0, cam.punch - 0.06);
   cam.shakeX *= 0.86; cam.shakeY *= 0.86;
 }
