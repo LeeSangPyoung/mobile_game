@@ -91,10 +91,10 @@
   }
  },
  "walkAlign": {
-  "walk1": -22,
-  "walk2": 26,
-  "walk3": -35,
-  "walk4": 31
+  "walk1": -14,
+  "walk2": 17,
+  "walk3": -27,
+  "walk4": 24
  },
  "feet": {
   "cx": 630,
