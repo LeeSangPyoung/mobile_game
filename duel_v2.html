@@ -253,7 +253,7 @@ let zRange = 108;                    // drawBackground 가 매 프레임 계산
 // 먼 산 옆에 사람이 서니 거인처럼 보였다. 깊이는 '무대 안'에서만 움직여야 한다.
 const Z_HIT = 34;                    // 이 이상 축이 어긋나면 공격이 빗나간다
 const Z_PERSPECTIVE = 0.0013;        // 안쪽으로 갈수록 조금 작게 — 깊이가 읽히게
-const STAGE_W = 1200;                // 무대 폭.
+const STAGE_W = 1600;                // 무대 폭.
 // 900 이던 시절엔 최소 줌 0.60 에서 보이는 폭이 540/0.60 = 900 — 무대 전체가
 // 딱 한 화면이었다. 물러나도 화면이 안 바뀌니 닭장에서 싸우는 느낌이 났다.
 const EDGE = 60;                     // 벽까지 남기는 여백 (f.x 클램프와 같은 값)
@@ -261,7 +261,11 @@ const EDGE = 60;                     // 벽까지 남기는 여백 (f.x 클램�
 // 가로지르는 데 3.8s 였던 것이 5.3s 가 되어 접근전이 오기까지 지루해진다.
 // gait 가 이동 거리로 쌓이므로 속도를 올려도 발은 미끄러지지 않는다.
 const WALK_F = 4.2, WALK_B = 3.2;    // 전진 / 후진
-const CAM_PAD = 360;                 // 두 장수 바깥으로 남길 여유 — 줌 식의 상수와 같다
+const CAM_PAD = 460;                 // 두 장수 바깥으로 남길 여유 — 줌 식의 상수와 같다
+// 최대 줌. 1.15 였을 때는 붙었을 때 0.95 까지 올라가 인물 키가 화면 폭의
+// 35% 를 넘었다 — 둘 다 거인처럼 보였다. 0.62 면 124px(23%)로, 두 사람과
+// 그 사이의 간격이 같이 읽힌다.
+const Z_CAP = 0.62;
 // 최소 줌은 무대 폭에서 역산한다. 눈대중으로 0.46 을 넣었더니 최대로 벌어졌을 때
 // (1400-120=1280) 인물이 화면 밖으로 나갔다. 아래 값이면 어떤 거리에서도
 // 두 장수와 그 사이가 항상 들어온다.
@@ -305,7 +309,7 @@ const AV = LOCAL_DEV ? Date.now() : 7;
 const bust = u => u.replace(/\?v=[^&]*/, '') + '?v=' + AV;
 
 const ASSET_SRC = {
-  bg:        './assets/arcade_duel/pixel_war_stage_v1.webp',
+  bg:        './assets/arcade_duel/pixel_war_stage_v2.webp',
   pPose:     './assets/arcade_duel/zhao_yun_pose_sheet.webp',
   pWalk:     './assets/arcade_duel/zhao_yun_walk6_cutout_v1.webp',
   pLight:    './assets/arcade_duel/zhao_yun_attack5_v1.webp',
@@ -1184,7 +1188,7 @@ function updateCamera() {
   // 장수 키가 화면의 40%대(먼 거리 37% ~ 붙었을 때 47%)에 오도록 잡은 값.
   // 세로 화면은 가로가 540 뿐이다. '두 장수 + 그 사이'가 항상 들어오도록
   // 필요한 폭에서 역산한다 — 가로처럼 고정 계수로 잡으면 벌어졌을 때 화면 밖으로 나간다.
-  let z = clamp(W / (dist + CAM_PAD), Z_MIN, 1.15);
+  let z = clamp(W / (dist + CAM_PAD), Z_MIN, Z_CAP);
   if (hitStop > 0) z *= 1 + cam.punch * 0.05;
   cam.zoom = lerp(cam.zoom, z, 0.07);
   const half = W / (2 * cam.zoom);
@@ -1286,8 +1290,11 @@ function drawBackground() {
   // 배경 그림에서 '나무 다리'가 차지하는 세로 구간 — 실측값이다.
   //   앞쪽 끝 80.8% / 안쪽 끝 69.6%  (tools 로 픽셀을 세어 구했다)
   // 이 값이 틀리면 캐릭터가 다리 밖으로 걸어 나간다.
-  const BG_FRONT = 0.808;              // z=0 일 때 발끝이 놓일 위치
-  const BG_BACK  = 0.696;              // z=Z_MAX 일 때 발끝이 놓일 위치
+  // v2 배경 — v1 은 나무 무대 띠가 이미지 높이의 11% 뿐이라 상하 이동이
+  // 108px 로 막혔다. 무대 판만 세로로 2.15배 늘려 21% 로 넓혔다(v1 의 다른
+  // 부분은 그대로다). 이 두 값은 그 새 그림에서 잰 것이다.
+  const BG_FRONT = 0.830;              // z=0 일 때 발끝이 놓일 위치
+  const BG_BACK  = 0.616;              // z=Z_MAX 일 때 발끝이 놓일 위치
   const BG_GROUND = BG_FRONT;
   // 폭도 채우고 '지면 위 공간'도 채워야 한다. 둘 중 큰 배율을 쓴다 —
   // 안 그러면 결투 영역 위쪽에 검은 띠가 남는다.
@@ -1301,7 +1308,11 @@ function drawBackground() {
   const by = SCREEN_GROUND - bh * BG_GROUND;
   // 그려진 다리 폭에 맞춰 이동 가능한 깊이를 정한다.
   // 상수로 박아두면 배경을 바꿀 때마다 캐릭터가 허공을 걷는다.
-  zRange = clamp((bh * (BG_FRONT - BG_BACK)) / Math.max(0.3, z), 40, 200);
+  // 상한 200 은 v1 배경(무대 띠가 11%)일 때 잡은 값이라 v2 에서는 그림이
+  // 허용하는 깊이를 다 못 썼다. 340 으로 올려 그림이 정하게 둔다.
+  // 0.88 은 안쪽 여백이다 — 그대로 쓰면 Z_MAX 에서 발끝이 무대 뒤 경계선에
+  // 정확히 얹혀 흙 위에 선 것처럼 보인다.
+  zRange = clamp((bh * (BG_FRONT - BG_BACK)) * 0.88 / Math.max(0.3, z), 40, 340);
   ctx.drawImage(bg, bx, by, bw, bh);
   // 배경이 못 덮는 위/아래는 어둠으로 — 세로가 길어 그림만으로는 화면이 안 찬다
   if (by > 0) { ctx.fillStyle = '#0d0906'; ctx.fillRect(0, 0, W, Math.ceil(by) + 1); }
