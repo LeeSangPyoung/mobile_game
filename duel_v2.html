@@ -403,6 +403,7 @@ async function loadGeneral(gid, side, opts = {}) {
     meta = await (await fetch(bust(`${dir}/poses.json`))).json();
     for (const k in (meta.poses || {})) POSE_TIP[pre.charAt(0) + gid + ':' + k] = meta.poses[k];
     if (meta.bodyH) POSE_BODY_H[side] = meta.bodyH;
+    CHAR_REACH[side] = meta.reach || null;
     if (meta.walkStep) WALK_STEP[side] = meta.walkStep;
     if (meta.walkAlign) WALK_ALIGN[side] = meta.walkAlign;
     TIP_NS[side] = pre.charAt(0) + gid;
@@ -450,6 +451,16 @@ let POSE_TIP = {};
 // 캐릭터별 '실제 몸 높이'. 620 같은 가정값을 쓰면 후처리로 크기를 조정한 순간
 // 리그 경로와 어긋나서, 걷다가 공격하면 덩치가 바뀐다.
 const POSE_BODY_H = { player: 620, boss: 620 };
+// 장수별 사정거리. 없으면 MOVES 의 기준값을 쓴다.
+// 판정이 무기와 무관하게 고정이던 시절엔 49명 중 48명이 '무기가 닿기 전에
+// 맞는' 상태였다(마초 찌르기는 175px 모자랐다). tools/fit_reach.py 가
+// 타격 컷의 창끝을 재서 poses.json 에 적어 둔다.
+const CHAR_REACH = { player: null, boss: null };
+const reachOf = (f, key) => {
+  const r = CHAR_REACH[f.kind];
+  const k = key === 'light' ? 'slash' : key;
+  return (r && r[k]) || MOVES[key].reach;
+};
 for (const [who, kind, dir] of [['s', 'player', 'zhao_yun_states'], ['h', 'boss', 'hua_xiong_states']]) {
   fetch(bust(`./assets/arcade_duel/${dir}/poses.json`)).then(r => r.json())
     .then(j => {
@@ -804,7 +815,7 @@ function inReach(att, def) {
   // 깊이가 어긋나면 헛친다 — 이게 있어야 '비켜서기'가 회피 수단이 된다
   if (Math.abs(att.z - def.z) > Z_HIT) return false;
   const dx = (def.x - att.x) * att.dir;
-  return dx > 0 && dx <= att.move.reach;
+  return dx > 0 && dx <= reachOf(att, att.moveKey);
 }
 
 function resolveCombat() {
@@ -834,7 +845,10 @@ function clash() {
 function applyHit(att, def) {
   att.hitDone = true;
   const m = att.move;
-  const hx = att.x + att.dir * (m.reach * 0.78);
+  // 이펙트는 '판정 거리의 78%' 가 아니라 **실제 그려진 창끝**에 붙인다.
+  // 고정 거리로 잡으면 무기가 짧은 장수는 허공에서 불꽃이 튄다.
+  const tp = tipOf(att);
+  const hx = tp ? tp[0] : att.x + att.dir * (reachOf(att, att.moveKey) * 0.78);
   const hy = footY(def) - 165;
 
   if (def.inv > 0) return;
@@ -1079,18 +1093,18 @@ function updateAI() {
   //   ?dummy=2  거리는 유지하되 공격은 안 함
   if (DUMMY) {
     B.vz = 0;
-    if (DUMMY >= 2 && dist > MOVES.thrust.reach) { B.vx = B.dir * 2.6; B.state = 'walk'; B.walkClock++; }
+    if (DUMMY >= 2 && dist > reachOf(B, 'thrust')) { B.vx = B.dir * 2.6; B.state = 'walk'; B.walkClock++; }
     else { B.vx = 0; B.state = 'idle'; }
     return;
   }
 
   // 플레이어가 후딜에 걸렸다 → 확정 처벌
   if (P.state === 'recover' && dist < 300 && ai.react-- <= 0) {
-    if (dist < MOVES.heavy.reach && B.stam > MOVES.heavy.stam && Math.random() < .55) { startMove(B, 'heavy'); return; }
-    if (dist < MOVES.thrust.reach) { startMove(B, 'thrust'); return; }
+    if (dist < reachOf(B, 'heavy') && B.stam > MOVES.heavy.stam && Math.random() < .55) { startMove(B, 'heavy'); return; }
+    if (dist < reachOf(B, 'thrust')) { startMove(B, 'thrust'); return; }
   }
   // 플레이어가 무방비 → 강베기
-  if (helpless(P) && dist < MOVES.heavy.reach + 30 && B.stam > MOVES.heavy.stam) { startMove(B, 'heavy'); return; }
+  if (helpless(P) && dist < reachOf(B, 'heavy') + 30 && B.stam > MOVES.heavy.stam) { startMove(B, 'heavy'); return; }
 
   // 플레이어가 칼을 뽑았다 → 막거나 뺀다
   if (P.state === 'windup' && dist < 330) {
@@ -1119,8 +1133,8 @@ function updateAI() {
   // 거리 관리 — '닿는 거리'가 기준이다.
   // 여유(margin)를 두는 이유: 판정은 active 프레임에 나는데 그 사이 상대가 움직인다.
   const MARGIN = 24;
-  const canReach = k => dist <= MOVES[k].reach - MARGIN;
-  const inPocket = dist <= MOVES.thrust.reach - MARGIN;   // 가장 긴 기술이 닿는 범위
+  const canReach = k => dist <= reachOf(B, k) - MARGIN;
+  const inPocket = dist <= reachOf(B, 'thrust') - MARGIN;   // 가장 긴 기술이 닿는 범위
 
   if (!inPocket) {
     // 아직 못 닿는다 → 붙는다. 멀면 대시로 거리를 지운다
