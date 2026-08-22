@@ -342,5 +342,13 @@
   "full": true,
   "size": 1.03,
   "side": true
+ },
+ {
+  "id": "ma_dai",
+  "name": "마대",
+  "cuts": 21,
+  "full": true,
+  "size": 1.03,
+  "side": true
  }
 ]
