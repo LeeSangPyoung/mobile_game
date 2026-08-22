@@ -286,5 +286,13 @@
   "full": true,
   "size": 1.02,
   "side": true
+ },
+ {
+  "id": "meng_huo",
+  "name": "맹획",
+  "cuts": 21,
+  "full": true,
+  "size": 1.08,
+  "side": true
  }
 ]
