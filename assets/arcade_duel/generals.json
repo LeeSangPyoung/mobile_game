@@ -366,5 +366,13 @@
   "full": true,
   "size": 1.03,
   "side": true
+ },
+ {
+  "id": "huang_gai",
+  "name": "황개",
+  "cuts": 21,
+  "full": true,
+  "size": 1.05,
+  "side": true
  }
 ]
