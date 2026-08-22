@@ -3,7 +3,7 @@
  "canvasH": 1024,
  "cx": 640,
  "ground": 880,
- "bodyH": 592,
+ "bodyH": 573,
  "poses": {
   "idle": {
    "tipX": 918,

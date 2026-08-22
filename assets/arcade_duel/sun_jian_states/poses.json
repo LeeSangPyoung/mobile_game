@@ -106,5 +106,6 @@
   "walk1",
   "walk2"
  ],
- "walkStep": 127
+ "walkStep": 127,
+ "bodyH": 621
 }

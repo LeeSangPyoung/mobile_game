@@ -6,24 +6,24 @@
  "height": 620,
  "poses": {
   "idle": {
-   "tipX": 946,
-   "tipY": 311
+   "tipX": 972,
+   "tipY": 278
   },
   "walk1": {
-   "tipX": 922,
-   "tipY": 336
+   "tipX": 972,
+   "tipY": 278
   },
   "walk2": {
-   "tipX": 844,
-   "tipY": 319
+   "tipX": 950,
+   "tipY": 285
   },
   "walk3": {
-   "tipX": 923,
-   "tipY": 330
+   "tipX": 970,
+   "tipY": 283
   },
   "walk4": {
-   "tipX": 850,
-   "tipY": 324
+   "tipX": 950,
+   "tipY": 291
   },
   "guard_just": {
    "tipX": 932,
@@ -78,7 +78,7 @@
    "tipY": 307
   },
   "thrust_impact": {
-   "tipX": 1278,
+   "tipX": 1250,
    "tipY": 521
   },
   "thrust_recovery": {
@@ -106,5 +106,6 @@
   "walk3",
   "walk2"
  ],
- "walkStep": 53
+ "walkStep": 53,
+ "bodyH": 692
 }
