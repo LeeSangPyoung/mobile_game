@@ -270,5 +270,13 @@
   "full": true,
   "size": 1.02,
   "side": true
+ },
+ {
+  "id": "dong_zhuo",
+  "name": "동탁",
+  "cuts": 21,
+  "full": true,
+  "size": 1.08,
+  "side": true
  }
 ]
