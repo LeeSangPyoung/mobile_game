@@ -123,20 +123,20 @@
   }
  },
  "walkCycle": [
-  "walk3",
-  "walk4",
   "walk1",
-  "walk2"
+  "walk2",
+  "walk3",
+  "walk4"
  ],
- "walkStep": 32,
+ "walkStep": 40,
  "walkAlign": {
-  "walk1": -9,
-  "walk2": 6,
-  "walk3": -3,
+  "walk1": -6,
+  "walk2": 8,
+  "walk3": -9,
   "walk4": 7
  },
  "feet": {
-  "cx": 600,
-  "w": 477
+  "cx": 625,
+  "w": 432
  }
 }
