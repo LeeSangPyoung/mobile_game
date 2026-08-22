@@ -294,5 +294,13 @@
   "full": true,
   "size": 1.08,
   "side": true
+ },
+ {
+  "id": "ji_ling",
+  "name": "기령",
+  "cuts": 21,
+  "full": true,
+  "size": 1.03,
+  "side": true
  }
 ]
