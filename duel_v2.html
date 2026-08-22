@@ -257,6 +257,10 @@ const STAGE_W = 1200;                // 무대 폭.
 // 900 이던 시절엔 최소 줌 0.60 에서 보이는 폭이 540/0.60 = 900 — 무대 전체가
 // 딱 한 화면이었다. 물러나도 화면이 안 바뀌니 닭장에서 싸우는 느낌이 났다.
 const EDGE = 60;                     // 벽까지 남기는 여백 (f.x 클램프와 같은 값)
+// 걸음 속도. 무대를 900 → 1200 으로 넓히면서 같이 올렸다 — 3.4 로 두면
+// 가로지르는 데 3.8s 였던 것이 5.3s 가 되어 접근전이 오기까지 지루해진다.
+// gait 가 이동 거리로 쌓이므로 속도를 올려도 발은 미끄러지지 않는다.
+const WALK_F = 4.2, WALK_B = 3.2;    // 전진 / 후진
 const CAM_PAD = 360;                 // 두 장수 바깥으로 남길 여유 — 줌 식의 상수와 같다
 // 최소 줌은 무대 폭에서 역산한다. 눈대중으로 0.46 을 넣었더니 최대로 벌어졌을 때
 // (1400-120=1280) 인물이 화면 밖으로 나갔다. 아래 값이면 어떤 거리에서도
@@ -1078,7 +1082,7 @@ function updatePlayer() {
     if (movingX) {
       const dir = l ? -1 : 1;
       const forward = dir === P.dir;
-      P.vx = dir * (forward ? 3.4 : 2.6);   // 뒷걸음은 조금 느리다
+      P.vx = dir * (forward ? WALK_F : WALK_B);   // 뒷걸음은 조금 느리다
     }
     // 걷는 상태는 **두 축을 합쳐서** 판정한다. 앞뒤만 보면 위아래로만 움직일 때
     // 상태가 idle 로 되돌아가 다리가 멈춘 채 몸만 미끄러진다.
@@ -1101,13 +1105,16 @@ function updateAI() {
   //   ?dummy=2  거리는 유지하되 공격은 안 함
   if (DUMMY) {
     B.vz = 0;
-    if (DUMMY >= 2 && dist > reachOf(B, 'thrust')) { B.vx = B.dir * 2.6; B.state = 'walk'; B.walkClock++; }
+    if (DUMMY >= 2 && dist > reachOf(B, 'thrust')) { B.vx = B.dir * WALK_B; B.state = 'walk'; B.walkClock++; }
     else { B.vx = 0; B.state = 'idle'; }
     return;
   }
 
   // 플레이어가 후딜에 걸렸다 → 확정 처벌
-  if (P.state === 'recover' && dist < 300 && ai.react-- <= 0) {
+  // 예전엔 300·330·420 같은 상수였는데, 무대와 리치가 바뀌면 같이 틀어진다.
+  // 자기 리치를 기준으로 잡으면 창을 쓰는 장수는 더 멀리서 반응한다.
+  const RT = reachOf(B, 'thrust');
+  if (P.state === 'recover' && dist < RT && ai.react-- <= 0) {
     if (dist < reachOf(B, 'heavy') && B.stam > MOVES.heavy.stam && Math.random() < .55) { startMove(B, 'heavy'); return; }
     if (dist < reachOf(B, 'thrust')) { startMove(B, 'thrust'); return; }
   }
@@ -1115,7 +1122,7 @@ function updateAI() {
   if (helpless(P) && dist < reachOf(B, 'heavy') + 30 && B.stam > MOVES.heavy.stam) { startMove(B, 'heavy'); return; }
 
   // 플레이어가 칼을 뽑았다 → 막거나 뺀다
-  if (P.state === 'windup' && dist < 330) {
+  if (P.state === 'windup' && dist < RT + 30) {
     if (ai.react > 0) { ai.react--; }
     else if (Math.random() < diff.guard) {
       B.guardHeld = true;
@@ -1146,12 +1153,12 @@ function updateAI() {
 
   if (!inPocket) {
     // 아직 못 닿는다 → 붙는다. 멀면 대시로 거리를 지운다
-    if (dist > 420 && B.stam > 22 && Math.random() < diff.aggro * .35) startDash(B, B.dir);
+    if (dist > RT + 90 && B.stam > 22 && Math.random() < diff.aggro * .35) startDash(B, B.dir);
     else { B.vx = B.dir * 3.1; B.state = 'walk'; B.walkClock++; }
     return;
   }
   if (dist < 218) {                       // 너무 붙었다 → 도끼를 휘두를 공간을 만든다
-    B.vx = -B.dir * 2.4; B.state = 'walk'; B.walkClock++;
+    B.vx = -B.dir * (WALK_B * 0.92); B.state = 'walk'; B.walkClock++;
     return;
   }
   // 닿는 거리 — 무엇으로 칠지는 거리가 정한다
