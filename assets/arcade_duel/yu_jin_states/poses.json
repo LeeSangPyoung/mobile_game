@@ -1,0 +1,146 @@
+{
+ "canvasW": 1280,
+ "canvasH": 1024,
+ "cx": 640,
+ "ground": 880,
+ "height": 620,
+ "poses": {
+  "idle": {
+   "tipX": 993,
+   "tipY": 469
+  },
+  "walk1": {
+   "tipX": 991,
+   "tipY": 470
+  },
+  "walk2": {
+   "tipX": 919,
+   "tipY": 484
+  },
+  "walk3": {
+   "tipX": 984,
+   "tipY": 469
+  },
+  "walk4": {
+   "tipX": 958,
+   "tipY": 474
+  },
+  "heavy_impact": {
+   "tipX": 981,
+   "tipY": 879
+  },
+  "heavy_recovery": {
+   "tipX": 968,
+   "tipY": 879
+  },
+  "heavy_windup": {
+   "tipX": 893,
+   "tipY": 875
+  },
+  "pose_01": {
+   "tipX": 895,
+   "tipY": 877
+  },
+  "pose_02": {
+   "tipX": 1081,
+   "tipY": 603
+  },
+  "pose_03": {
+   "tipX": 408,
+   "tipY": 876
+  },
+  "pose_04": {
+   "tipX": 368,
+   "tipY": 833
+  },
+  "pose_05": {
+   "tipX": 1091,
+   "tipY": 583
+  },
+  "pose_06": {
+   "tipX": 1024,
+   "tipY": 616
+  },
+  "pose_07": {
+   "tipX": 893,
+   "tipY": 875
+  },
+  "pose_08": {
+   "tipX": 981,
+   "tipY": 879
+  },
+  "pose_09": {
+   "tipX": 968,
+   "tipY": 879
+  },
+  "slash_impact": {
+   "tipX": 1081,
+   "tipY": 603
+  },
+  "slash_recovery": {
+   "tipX": 782,
+   "tipY": 323
+  },
+  "slash_windup": {
+   "tipX": 895,
+   "tipY": 877
+  },
+  "thrust_impact": {
+   "tipX": 1091,
+   "tipY": 583
+  },
+  "thrust_recovery": {
+   "tipX": 1024,
+   "tipY": 616
+  },
+  "thrust_windup": {
+   "tipX": 368,
+   "tipY": 833
+  },
+  "guard_just": {
+   "tipX": 719,
+   "tipY": 264
+  },
+  "guard_ready": {
+   "tipX": 664,
+   "tipY": 261
+  },
+  "hurt_heavy": {
+   "tipX": 975,
+   "tipY": 669
+  },
+  "hurt_light": {
+   "tipX": 847,
+   "tipY": 855
+  },
+  "ko_down": {
+   "tipX": 988,
+   "tipY": 928
+  },
+  "ko_fall": {
+   "tipX": 1148,
+   "tipY": 949
+  },
+  "stunned": {
+   "tipX": 775,
+   "tipY": 313
+  }
+ },
+ "walkAlign": {
+  "walk1": -29,
+  "walk2": 49,
+  "walk3": 2,
+  "walk4": -22
+ },
+ "feet": {
+  "cx": 566,
+  "w": 430
+ },
+ "walkCycle": [
+  "walk1",
+  "walk4",
+  "walk3",
+  "walk2"
+ ],
+ "walkStep": 52
+}

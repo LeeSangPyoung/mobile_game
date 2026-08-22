@@ -382,5 +382,13 @@
   "full": true,
   "size": 1.03,
   "side": true
+ },
+ {
+  "id": "yu_jin",
+  "name": "우금",
+  "cuts": 21,
+  "full": true,
+  "size": 1.03,
+  "side": true
  }
 ]
