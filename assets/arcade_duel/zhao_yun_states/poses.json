@@ -140,8 +140,8 @@
   "w": 470
  },
  "reach": {
-  "slash": 269,
-  "thrust": 347,
-  "heavy": 293
+  "slash": 255,
+  "thrust": 305,
+  "heavy": 240
  }
 }

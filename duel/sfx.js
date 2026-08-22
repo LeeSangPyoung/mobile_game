@@ -22,7 +22,11 @@ export function init() {
 
 // 브라우저는 사용자 조작 전에는 소리를 막는다 — 결투 시작 버튼에서 부른다
 export function resume() { init(); if (ctx && ctx.state === 'suspended') ctx.resume(); }
-export function setMuted(v) { muted = !!v; if (master) master.gain.value = muted ? 0 : 0.9; }
+export function setMuted(v) {
+  muted = !!v;
+  if (master) master.gain.value = muted ? 0 : 0.9;
+  if (bgm) bgm.volume = muted ? 0 : 0.32;   // 음소거 버튼 하나로 BGM 까지
+}
 export function isMuted() { return muted; }
 
 const now = () => ctx.currentTime;
@@ -64,6 +68,25 @@ function noiseHit(t0, { peak = .5, attack = .004, decay = .18,
   src.start(t0); src.stop(t0 + attack + decay + .05);
 }
 
+// 휘두르는 바람소리 — 필터 주파수를 올렸다 내리며 도플러처럼 스쳐 지나간다.
+// 짧은 노이즈 버스트(noiseHit)만 쓰면 '틱' 소리로만 들린다 — 공격할 때마다
+// 울리는 소리라 이게 게임 전체의 인상을 정한다.
+function whoosh(t0, { peak = .5, dur = .26, f0 = 400, fPeak = 2600, f1 = 300, q = 4 } = {}) {
+  const src = noise();
+  const flt = ctx.createBiquadFilter();
+  flt.type = 'bandpass'; flt.Q.value = q;
+  flt.frequency.setValueAtTime(f0, t0);
+  flt.frequency.exponentialRampToValueAtTime(fPeak, t0 + dur * 0.42);
+  flt.frequency.exponentialRampToValueAtTime(Math.max(60, f1), t0 + dur);
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(peak * 0.35, t0 + dur * 0.14);
+  g.gain.exponentialRampToValueAtTime(peak, t0 + dur * 0.48);   // 스쳐 지나가는 정점
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  src.connect(flt); flt.connect(g); g.connect(master);
+  src.start(t0); src.stop(t0 + dur + .05);
+}
+
 // 사인/삼각 톤 — 충격의 '무게'를 담당한다
 function tone(t0, { freq = 160, to = 60, peak = .5, attack = .004, decay = .22, type = 'sine' } = {}) {
   const o = ctx.createOscillator();
@@ -80,21 +103,31 @@ export const SFX = {
   swing(kind = 'light') {
     if (!ctx || muted) return;
     const t = now();
-    const p = { light:  { f0: 3200, f1: 900,  peak: .22, decay: .13 },
-                thrust: { f0: 4200, f1: 1400, peak: .20, decay: .10 },
-                heavy:  { f0: 1500, f1: 300,  peak: .34, decay: .26 } }[kind] || {};
-    noiseHit(t, { type: 'bandpass', q: 1.2, ...p });
-    if (kind === 'heavy') tone(t, { freq: 120, to: 48, peak: .16, decay: .3, type: 'triangle' });
+    // 기술마다 '무게'가 다르다 — 가벼움은 높고 빠르게, 강타는 낮고 길게.
+    const p = { light:  { dur: .20, fPeak: 3000, peak: .38, q: 3.5 },
+                thrust: { dur: .16, fPeak: 4200, peak: .34, q: 7   },  // 찌르기는 날카롭게
+                heavy:  { dur: .34, fPeak: 1500, peak: .55, q: 2.2 } }[kind] || {};
+    whoosh(t, p);
+    // 몸통 — 이게 있어야 '틱'이 아니라 '휙'으로 들린다
+    tone(t + .02, { freq: kind === 'heavy' ? 150 : 260, to: kind === 'heavy' ? 44 : 90,
+                    peak: kind === 'heavy' ? .22 : .12,
+                    attack: .02, decay: kind === 'heavy' ? .30 : .16, type: 'triangle' });
   },
 
   // 유효타 — 둔탁한 충격 + 살을 가르는 쇳소리
   hit(heavy = false) {
     if (!ctx || muted) return;
     const t = now();
-    tone(t, { freq: heavy ? 130 : 190, to: heavy ? 40 : 62,
-              peak: heavy ? .95 : .62, attack: .002, decay: heavy ? .34 : .2 });
-    noiseHit(t + .004, { type: 'highpass', f0: 1800, f1: 500, q: .8,
-                         peak: heavy ? .55 : .34, decay: heavy ? .22 : .13 });
+    // 세 겹으로 쌓는다 — 저역 충격(북) + 중역 몸통(살) + 고역 쇳소리(칼).
+    // 예전엔 톤 하나 + 노이즈 하나뿐이라 휘두르는 소리에 묻혔다.
+    tone(t, { freq: heavy ? 96 : 150, to: heavy ? 34 : 52,
+              peak: heavy ? 1.0 : .72, attack: .002, decay: heavy ? .40 : .24 });
+    noiseHit(t, { type: 'lowpass', f0: heavy ? 900 : 1200, f1: 160, q: .8,
+                  peak: heavy ? .60 : .38, decay: heavy ? .20 : .12 });
+    noiseHit(t + .006, { type: 'highpass', f0: 5200, f1: 1800, q: 1.2,
+                         peak: heavy ? .40 : .26, decay: heavy ? .16 : .10 });
+    if (heavy) tone(t + .03, { freq: 2100, to: 900, peak: .14, attack: .003,
+                               decay: .5, type: 'sine' });   // 여운
   },
 
   // 가드 — 금속끼리 부딪히는 짧고 단단한 소리
@@ -168,3 +201,32 @@ export const SFX = {
     noiseHit(now(), { type: 'bandpass', f0: 900, f1: 2600, q: 1.5, peak: .16, decay: .16 });
   },
 };
+
+// ── 배경음 ──────────────────────────────────────────────────────────
+// 효과음은 WebAudio 로 합성하지만 BGM 은 파일이다 — 합성으로 3분짜리 곡을
+// 만들 수는 없다. assets/audio/battle_qazijamjam.mp3 (CC0, OpenGameArt).
+// 효과음이 묻히지 않게 기본 볼륨을 0.32 로 낮게 잡았다.
+let bgm = null;
+export function bgmStart(src = './assets/audio/battle_qazijamjam.mp3', vol = 0.32) {
+  try {
+    if (!bgm) {
+      bgm = new Audio(src);
+      bgm.loop = true;
+      bgm.preload = 'auto';
+    }
+    bgm.volume = muted ? 0 : vol;
+    // 이미 재생 중이면 건드리지 않는다 — 라운드마다 처음으로 되감으면 거슬린다
+    if (bgm.paused) bgm.play().catch(() => {});
+  } catch {}
+}
+export function bgmState() { return bgm ? { src: bgm.src.split('/').pop(), paused: bgm.paused, vol: bgm.volume } : null; }
+export function bgmStop(fade = 500) {
+  if (!bgm || bgm.paused) return;
+  const v0 = bgm.volume, t0 = performance.now();
+  const step = () => {
+    const k = Math.min(1, (performance.now() - t0) / fade);
+    bgm.volume = v0 * (1 - k);
+    if (k < 1) requestAnimationFrame(step); else { bgm.pause(); bgm.currentTime = 0; }
+  };
+  step();
+}

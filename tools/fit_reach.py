@@ -25,8 +25,8 @@ import statistics
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATES = os.path.join(ROOT, 'assets', 'arcade_duel')
 CX, TARGET_H = 640, 200
-BASE = {'slash': 240, 'thrust': 310, 'heavy': 262}   # duel_v2.html 의 MOVES.reach
-LO, HI, FLOOR = 0.88, 1.12, 225
+BASE = {'slash': 223, 'thrust': 238, 'heavy': 194}   # duel_v2.html 의 MOVES.reach
+LO, HI, FLOOR = 0.65, 1.40, 160   # 하한은 몸통 반지름 합(148)보다 조금 위
 
 
 def main():

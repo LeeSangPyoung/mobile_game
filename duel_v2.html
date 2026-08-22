@@ -106,8 +106,19 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 .cluster.acts{display:grid;grid-template-columns:repeat(2,auto);gap:calc(10*var(--u));
   justify-items:center;align-items:center}
 /* 이동은 십자. 앞뒤(◀▶)에 깊이(▲▼)가 더해져 축이 둘이 된다. */
-.cluster.moves{display:grid;grid-template-columns:repeat(3,auto);gap:calc(6*var(--u));
-  justify-items:center;align-items:center}
+.cluster.moves{display:flex;align-items:center;justify-content:center}
+#stick{position:relative;width:calc(112*var(--u));height:calc(112*var(--u));border-radius:50%;
+  background:radial-gradient(circle at 50% 42%,rgba(80,130,190,.30),rgba(18,32,52,.55));
+  border:calc(2*var(--u)) solid rgba(157,226,255,.55);
+  box-shadow:0 calc(3*var(--u)) calc(10*var(--u)) rgba(0,0,0,.45) inset;
+  touch-action:none}
+#stickKnob{position:absolute;left:50%;top:50%;width:calc(50*var(--u));height:calc(50*var(--u));
+  margin:calc(-25*var(--u)) 0 0 calc(-25*var(--u));border-radius:50%;
+  background:radial-gradient(circle at 42% 36%,#dff1ff,#6ba4d6 62%,#2d5c8c);
+  border:calc(2*var(--u)) solid rgba(255,255,255,.65);
+  box-shadow:0 calc(2*var(--u)) calc(6*var(--u)) rgba(0,0,0,.5);
+  transition:transform .06s linear;pointer-events:none}
+#stick.on{border-color:#ffd45c}
 .cluster.moves .up{grid-column:2;grid-row:1}
 .cluster.moves .dn{grid-column:2;grid-row:3}
 .cluster.moves [data-act="left"]{grid-column:1;grid-row:2}
@@ -192,11 +203,10 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
   <div id="tip"></div>
 
   <div id="pad">
+    <!-- 아날로그 스틱. 십자키 4버튼은 손가락을 정확히 얹어야 해서 폰에서
+         조작이 어려웠다 — 누른 자리가 곧 중심이 되고 끌면 그 방향으로 간다. -->
     <div class="cluster moves">
-      <button class="btn mv up" data-act="up" aria-label="안쪽으로">▲</button>
-      <button class="btn mv" data-act="left" aria-label="왼쪽">◀</button>
-      <button class="btn mv" data-act="right" aria-label="오른쪽">▶</button>
-      <button class="btn mv dn" data-act="down" aria-label="앞쪽으로">▼</button>
+      <div id="stick" aria-label="이동"><div id="stickKnob"></div></div>
     </div>
     <div class="cluster acts">
       <button class="btn gd" data-act="guard" aria-label="가드">가드</button>
@@ -631,14 +641,20 @@ const ready = img => !!(img && img.complete && img.naturalWidth);
 //  2. 기술표 — 프레임 단위(60fps). 여기 숫자가 곧 손맛이다.
 //     startup: 칼이 나가기까지 / active: 판정 / recovery: 후딜
 // ═══════════════════════════════════════════════════════════════════
-// 사정거리는 '중심 간 거리' 기준. 두 장수가 겹치지 않는 최소 간격(SEPARATE=205)이 하한이라
-// 어떤 기술도 그보다 짧으면 영영 닿지 않는다 — 아래 값은 전부 그 위에서 잡았다.
+// 사정거리는 '중심 간 거리' 기준. 하한은 두 장수가 겹치지 않는 최소 간격,
+// 즉 bodyR(P)+bodyR(B) = 148 이다(주석에 있던 SEPARATE=205 는 낡은 값이었다).
+//
+// 240/310/262 는 그림보다 한참 관대했다. 타격 컷의 창끝을 재보면 무기가
+// 몸 중심에서 나가는 거리는 베기 149 · 찌르기 164 · 강타 120(중앙값, 화면 px)
+// 이고, 상대 몸통 반지름 74 를 더해도 223/238/194 다. 그래서 49명 중 48명이
+// '무기가 닿기도 전에 맞는' 상태였다 — 마초 찌르기는 175px 모자랐다.
+// 아래는 그 실측값이다. 장수별 편차는 poses.json 의 reach 가 따로 준다.
 const MOVES = {
-  light:  { startup: 8,  active: 4, recovery: 13, dmg: 9,  reach: 240, push: 5,  stam: 8,
+  light:  { startup: 8,  active: 4, recovery: 13, dmg: 9,  reach: 223, push: 5,  stam: 8,
             label: '베기',   guardChip: 1.5, stunAdd: 6,  sheet: 'light',  arc: 'wide'  },
-  thrust: { startup: 13, active: 5, recovery: 19, dmg: 14, reach: 310, push: 9,  stam: 14,
+  thrust: { startup: 13, active: 5, recovery: 19, dmg: 14, reach: 238, push: 9,  stam: 14,
             label: '찌르기', guardChip: 3,   stunAdd: 10, sheet: 'thrust', arc: 'line'  },
-  heavy:  { startup: 21, active: 6, recovery: 26, dmg: 24, reach: 262, push: 22, stam: 24,
+  heavy:  { startup: 21, active: 6, recovery: 26, dmg: 24, reach: 194, push: 22, stam: 24,
             label: '강베기', guardChip: 9,   stunAdd: 22, sheet: 'heavy',  arc: 'heavy',
             crush: true },   // 가드해도 기력을 크게 깎는다 — 계속 막기만 하면 무너진다
 };
@@ -1808,6 +1824,7 @@ function showTip(html, ms = 4200) {
 function startFight() {
   if (!assetsReady) return;          // 로딩 중엔 시작 금지
   window.__sfx?.resume();            // 사용자 조작 시점에만 오디오가 열린다
+    window.__sfx?.bgmStart();          // 배경음 — 같은 조작에 묶어야 모바일에서 오디오가 열린다
   $('overlay').hidden = true;
   $('ovVs').style.display = '';
   resetMatch();
@@ -1916,6 +1933,67 @@ function useTouch() { touchMode = true; padEl.classList.remove('hide'); keysEl.s
 // 세로 전용이라 패드는 항상 보인다 — 아래 40%가 원래 조작부 자리다.
 // 키보드를 쓰더라도 패드를 숨기면 그 영역이 텅 빈 채로 남는다.
 function useKeys() { touchMode = false; keysEl.style.display = ''; }
+
+// ── 아날로그 스틱 ───────────────────────────────────────────────────
+// 십자키는 손가락을 버튼 위에 정확히 얹어야 해서 폰에서 조작이 어려웠다.
+// 스틱은 (1) 원 안 아무 데나 눌러도 그 지점이 중심이 되고 (2) 손가락이
+// 원 밖으로 나가도 끝까지 따라오며 (3) 대각선이 자연스럽게 나온다.
+// 죽은 구역(DEAD)을 둬야 가만히 쥐고 있을 때 캐릭터가 떨지 않는다.
+(() => {
+  const el = $('stick'), knob = $('stickKnob');
+  if (!el) return;
+  const DEAD = 0.22;                 // 이 아래는 입력 없음
+  const MAXR = 34;                   // 노브가 움직이는 최대 반지름(논리 px)
+  let pid = null, cx = 0, cy = 0, unit = 1;
+
+  const setKnob = (dx, dy) => {
+    knob.style.transform = `translate(${dx * MAXR}px, ${dy * MAXR}px)`;
+  };
+  const clear = () => {
+    pad.left = pad.right = pad.up = pad.down = false;
+    setKnob(0, 0); el.classList.remove('on');
+  };
+
+  const move = (e) => {
+    if (pid === null || e.pointerId !== pid) return;
+    const dx = (e.clientX - cx) / unit, dy = (e.clientY - cy) / unit;
+    const len = Math.hypot(dx, dy) || 1;
+    const k = Math.min(1, len / 46);              // 46px 이면 최대 입력
+    const nx = dx / len * k, ny = dy / len * k;
+    setKnob(nx, ny);
+    // 축마다 따로 판정한다 — 대각선이면 둘 다 켜진다
+    pad.left  = nx < -DEAD;
+    pad.right = nx >  DEAD;
+    pad.up    = ny < -DEAD;          // 위로 = 무대 안쪽
+    pad.down  = ny >  DEAD;
+    // 빠르게 튕기면 대시 — 십자키 시절의 '같은 방향 두 번'을 대체한다
+    if (Math.abs(nx) > 0.92) {
+      const dir = nx > 0 ? 1 : -1;
+      if (dashArm !== dir) { dashArm = dir; startDash(P, dir); }
+    } else if (Math.abs(nx) < 0.5) dashArm = 0;
+  };
+  let dashArm = 0;
+
+  el.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    pid = e.pointerId;
+    try { el.setPointerCapture(pid); } catch {}   // 캡처 실패해도 조작은 되게
+    const r = el.getBoundingClientRect();
+    unit = r.width / 112;            // CSS 에서 112*var(--u) 로 잡아 둔 지름
+    cx = r.left + r.width / 2; cy = r.top + r.height / 2;
+    el.classList.add('on');
+    move(e);
+  });
+  el.addEventListener('pointermove', move);
+  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+    el.addEventListener(ev, e => {
+      if (pid === null || e.pointerId !== pid) return;
+      pid = null; dashArm = 0; clear();
+    });
+  }
+  el.addEventListener('contextmenu', e => e.preventDefault());
+})();
+
 addEventListener('touchstart', useTouch, { passive: true, once: true });
 addEventListener('keydown', useKeys, { once: true });
 if (matchMedia('(pointer:coarse)').matches) useTouch(); else useKeys();
