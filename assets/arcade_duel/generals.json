@@ -374,5 +374,13 @@
   "full": true,
   "size": 1.05,
   "side": true
+ },
+ {
+  "id": "sun_quan",
+  "name": "손권",
+  "cuts": 21,
+  "full": true,
+  "size": 1.03,
+  "side": true
  }
 ]
