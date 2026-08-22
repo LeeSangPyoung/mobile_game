@@ -16,8 +16,8 @@
    "footR": 896
   },
   "slash_recovery": {
-   "tipX": 890,
-   "tipY": 857,
+   "tipX": 959,
+   "tipY": 875,
    "footL": 429,
    "footR": 501
   },
@@ -58,8 +58,8 @@
    "tipY": 870
   },
   "guard_just": {
-   "tipX": 1124,
-   "tipY": 481,
+   "tipX": 1103,
+   "tipY": 491,
    "footL": 748,
    "footR": 845
   },
@@ -112,8 +112,8 @@
    "footR": 656
   },
   "stunned": {
-   "tipX": 1007,
-   "tipY": 911,
+   "tipX": 978,
+   "tipY": 861,
    "footL": 501,
    "footR": 582
   },
