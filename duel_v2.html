@@ -111,33 +111,92 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 .cluster.acts [data-act="guard"]{grid-column:1;grid-row:2}
 .cluster.acts [data-act="thrust"]{grid-column:3;grid-row:2}
 .cluster.acts [data-act="light"]{grid-column:2;grid-row:3}
+/* 조작 패드 — '유리 아래 금속'.
+   예전 것이 싸구려로 보인 이유는 셋이었다.
+     · box-shadow 0 4px 0 로 만든 딱딱한 가짜 입체 → 스티커처럼 보인다
+     · 형광색 테두리를 100% 로 두른 것 → 장난감
+     · 버튼 밑의 글자 라벨('강베기','가드') → 실제 패드는 기호만 쓴다
+   그리고 조사해 보니(Apple HIG · 모바일 컨트롤 가이드) 공통으로 말하는 게
+   있었다: 조작부는 화면을 가리는 존재라 **평소엔 물러나 있어야 한다**.
+   그래서 쉴 때 55%, 손을 대면 100% 로 살아난다. */
+#pad{transition:opacity .22s ease}
+#pad:not(.live){opacity:.55}
+
 .ps{position:relative;display:grid;place-items:center;border-radius:50%;
-  width:max(62px,calc(86*var(--u)));height:max(62px,calc(86*var(--u)));
-  background:radial-gradient(circle at 38% 30%,#3a4453,#141a24 70%,#080b11);
-  border:calc(2.5*var(--u)) solid var(--c);
-  box-shadow:0 calc(4*var(--u)) 0 #0009, inset 0 calc(2*var(--u)) calc(8*var(--u)) #ffffff1a;
-  color:var(--c);font-weight:900;text-shadow:0 1px 2px #000;line-height:1;
+  /* Apple HIG 최소 탭 영역 44pt — 그 아래로는 절대 안 내려가게 max() 로 잠근다 */
+  width:max(58px,calc(84*var(--u)));height:max(58px,calc(84*var(--u)));
+  background:
+    radial-gradient(120% 96% at 50% -14%,rgba(255,255,255,.16),rgba(255,255,255,0) 52%),
+    radial-gradient(96% 96% at 50% 116%,color-mix(in srgb,var(--c) 26%,transparent),rgba(0,0,0,0) 68%),
+    linear-gradient(180deg,rgba(30,36,46,.80),rgba(9,12,18,.86));
+  border:1px solid color-mix(in srgb,var(--c) 46%,rgba(255,255,255,.10));
+  box-shadow:
+    0 calc(6*var(--u)) calc(16*var(--u)) rgba(0,0,0,.50),
+    0 0 0 1px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.20),
+    inset 0 calc(-6*var(--u)) calc(12*var(--u)) rgba(0,0,0,.40);
+  color:var(--c);font-weight:700;line-height:1;
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  transition:transform .09s cubic-bezier(.3,.8,.4,1),box-shadow .12s ease,filter .12s ease;
   touch-action:none;-webkit-tap-highlight-color:transparent}
-.ps .sym{font-size:max(20px,calc(28*var(--u)));display:block}
-.ps .lb{font-size:max(9px,calc(11*var(--u)));color:#e8eef7;opacity:.92;
-  margin-top:calc(2*var(--u));letter-spacing:-.5px;white-space:nowrap}
-.ps:active,.ps.on{transform:translateY(calc(3*var(--u)));
-  box-shadow:0 calc(1*var(--u)) 0 #0009, inset 0 calc(2*var(--u)) calc(8*var(--u)) #ffffff33;
-  background:radial-gradient(circle at 38% 30%,#5d6b80,#222c3a 70%,#111722)}
-/* 이동은 십자. 앞뒤(◀▶)에 깊이(▲▼)가 더해져 축이 둘이 된다. */
-.cluster.moves{display:flex;align-items:center;justify-content:center}
-#stick{position:relative;width:max(120px,calc(168*var(--u)));height:max(120px,calc(168*var(--u)));border-radius:50%;
-  background:radial-gradient(circle at 50% 42%,rgba(80,130,190,.30),rgba(18,32,52,.55));
-  border:calc(2*var(--u)) solid rgba(157,226,255,.55);
-  box-shadow:0 calc(3*var(--u)) calc(10*var(--u)) rgba(0,0,0,.45) inset;
+/* 위쪽 하이라이트 — 유리에 빛이 걸린 선. 이 한 줄이 '금속판'과 '유리'를 가른다 */
+.ps::before{content:'';position:absolute;inset:2px;border-radius:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 42%);
+  pointer-events:none}
+.ps .sym{font-size:max(21px,calc(30*var(--u)));display:block;
+  filter:drop-shadow(0 0 calc(7*var(--u)) color-mix(in srgb,var(--c) 60%,transparent))}
+.ps:active,.ps.on{transform:scale(.93);
+  background:
+    radial-gradient(120% 96% at 50% -14%,rgba(255,255,255,.10),rgba(255,255,255,0) 52%),
+    radial-gradient(88% 88% at 50% 50%,color-mix(in srgb,var(--c) 42%,transparent),rgba(0,0,0,0) 74%),
+    linear-gradient(180deg,rgba(22,28,38,.88),rgba(6,9,14,.92));
+  border-color:color-mix(in srgb,var(--c) 88%,white);
+  box-shadow:
+    0 calc(2*var(--u)) calc(7*var(--u)) rgba(0,0,0,.55),
+    0 0 calc(20*var(--u)) color-mix(in srgb,var(--c) 55%,transparent),
+    inset 0 calc(3*var(--u)) calc(10*var(--u)) rgba(0,0,0,.55)}
+
+/* 이동 — 아날로그. 조사한 바로는 액션 게임엔 '고정형'이 권장되지만
+   (손가락이 자리를 찾아 헤매지 않으니까), 고정형은 정확히 그 자리를
+   눌러야 한다는 게 문제였다. 둘을 섞는다: 집 자리는 늘 흐리게 보여 주되
+   왼쪽 영역 아무 데나 짚으면 거기가 중심이 된다. */
+.cluster.moves{position:relative;display:flex;align-items:center;justify-content:center}
+/* 중심 정렬은 음수 마진이 아니라 translate 로 한다.
+   크기가 max(120px, 168u) 인데 마진을 max(-60px, -84u) 로 쓰면 두 max 가
+   서로 다른 쪽을 고르는 구간이 생긴다 — 실제로 28px 어긋나 있었다. */
+#stickHome{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:max(120px,calc(168*var(--u)));height:max(120px,calc(168*var(--u)));
+  border-radius:50%;border:1px dashed rgba(190,220,255,.16);pointer-events:none}
+#stick{position:relative;
+  width:max(120px,calc(168*var(--u)));height:max(120px,calc(168*var(--u)));border-radius:50%;
+  background:
+    radial-gradient(100% 100% at 50% 0%,rgba(255,255,255,.10),rgba(255,255,255,0) 46%),
+    radial-gradient(closest-side,rgba(24,38,58,.50),rgba(10,16,26,.66));
+  border:1px solid rgba(160,205,245,.26);
+  box-shadow:0 calc(6*var(--u)) calc(18*var(--u)) rgba(0,0,0,.45),
+             inset 0 calc(3*var(--u)) calc(14*var(--u)) rgba(0,0,0,.50),
+             inset 0 1px 0 rgba(255,255,255,.14);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  transition:border-color .14s ease,box-shadow .14s ease;
   touch-action:none}
-#stickKnob{position:absolute;left:50%;top:50%;width:max(56px,calc(78*var(--u)));height:max(56px,calc(78*var(--u)));
-  margin:max(-28px,calc(-39*var(--u))) 0 0 max(-28px,calc(-39*var(--u)));border-radius:50%;
-  background:radial-gradient(circle at 42% 36%,#dff1ff,#6ba4d6 62%,#2d5c8c);
-  border:calc(2*var(--u)) solid rgba(255,255,255,.65);
-  box-shadow:0 calc(2*var(--u)) calc(6*var(--u)) rgba(0,0,0,.5);
-  transition:transform .06s linear;pointer-events:none}
-#stick.on{border-color:#ffd45c}
+/* 안쪽 눈금 링 — 어디까지 밀면 최대인지 눈으로 보인다 */
+#stickRing{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:62%;height:62%;border-radius:50%;
+  border:1px solid rgba(190,220,255,.13);pointer-events:none}
+#stickKnob{position:absolute;left:50%;top:50%;
+  width:max(54px,calc(76*var(--u)));height:max(54px,calc(76*var(--u)));
+  margin:0;border-radius:50%;
+  background:
+    radial-gradient(90% 78% at 38% 26%,rgba(255,255,255,.92),rgba(255,255,255,.10) 46%,rgba(255,255,255,0) 62%),
+    radial-gradient(closest-side,rgba(150,196,240,.62),rgba(40,70,110,.72));
+  border:1px solid rgba(226,242,255,.42);
+  box-shadow:0 calc(3*var(--u)) calc(10*var(--u)) rgba(0,0,0,.55),
+             inset 0 calc(-3*var(--u)) calc(8*var(--u)) rgba(0,0,0,.35);
+  transition:transform .05s linear;pointer-events:none}
+#stick.on{border-color:rgba(255,212,92,.62);
+  box-shadow:0 calc(6*var(--u)) calc(18*var(--u)) rgba(0,0,0,.45),
+             0 0 calc(22*var(--u)) rgba(255,190,80,.22),
+             inset 0 calc(3*var(--u)) calc(14*var(--u)) rgba(0,0,0,.50)}
 .cluster.moves .up{grid-column:2;grid-row:1}
 .cluster.moves .dn{grid-column:2;grid-row:3}
 .cluster.moves [data-act="left"]{grid-column:1;grid-row:2}
@@ -200,39 +259,93 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
    장수마다 다른 것이 남는다 — 21컷씩 그려 넣은 로스터가 처음으로
    '다른 인물들'이 되는 자리다. */
 #intro{position:absolute;inset:0;z-index:13;overflow:hidden;
-  background:radial-gradient(120% 80% at 50% 40%,rgba(20,12,6,.30),rgba(8,5,3,.86));
-  font-family:inherit;-webkit-tap-highlight-color:transparent}
-/* 조이스틱·버튼이 화면 아래 35% 를 쓴다. 초상이 거기까지 내려오면
-   이름이 스틱 위에 겹친다 — 그래서 바닥을 38% 로 올리고 폭도 줄였다. */
-#intro .ifig{position:absolute;bottom:27%;width:45%;opacity:0;
-  transition:opacity .34s ease,transform .44s cubic-bezier(.2,.9,.3,1)}
-#intro .ifig.l{left:1%;transform:translateX(-24%)}
-#intro .ifig.r{right:1%;transform:translateX(24%)}
+  background:#0a0604;font-family:inherit;-webkit-tap-highlight-color:transparent}
+
+/* 배경 — 결투 무대를 흐려서 깐다. 새 그림을 안 만들고도 '그 전장에서
+   마주 섰다'가 된다. 검은 화면에 초상만 띄우면 허전하다. */
+#intro .ibg{position:absolute;inset:-6%;
+  background:url('./assets/arcade_duel/pixel_war_stage_v2.webp') center/cover no-repeat;
+  filter:blur(9px) brightness(.42) saturate(.85);
+  transform:scale(1.06);animation:iZoom 3.2s ease-out both}
+@keyframes iZoom{from{transform:scale(1.16)}to{transform:scale(1.06)}}
+
+/* 진영 색 — 왼쪽은 붉게, 오른쪽은 푸르게. 대각으로 갈라 '대치'를 만든다 */
+#intro .ivs{position:absolute;inset:0;
+  background:
+    linear-gradient(101deg,rgba(168,42,26,.34) 0 44%,rgba(0,0,0,0) 47%,
+                    rgba(0,0,0,0) 53%,rgba(34,86,158,.32) 56% 100%),
+    radial-gradient(115% 78% at 50% 42%,rgba(0,0,0,0) 30%,rgba(6,4,2,.82) 100%)}
+
+/* 큰 글자를 배경에 아주 옅게 — 화면 중앙의 빈 곳을 채운다 */
+#intro .iglyph{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
+  font-size:min(74vw,52vh);font-weight:900;line-height:1;color:rgba(255,196,110,.055);
+  letter-spacing:0;pointer-events:none;user-select:none}
+
+/* 불티 — 전장의 공기. 여덟 개면 충분하고, 더 넣으면 폰에서 무겁다 */
+#intro .iembers{position:absolute;inset:0;pointer-events:none}
+#intro .iembers i{position:absolute;bottom:-6%;width:3px;height:3px;border-radius:50%;
+  background:#ffb459;box-shadow:0 0 8px 2px rgba(255,150,60,.55);opacity:0;
+  animation:iEmber 4.2s linear infinite}
+#intro .iembers i:nth-child(1){left:12%;animation-delay:.0s}
+#intro .iembers i:nth-child(2){left:26%;animation-delay:.9s;transform:scale(.7)}
+#intro .iembers i:nth-child(3){left:38%;animation-delay:1.9s}
+#intro .iembers i:nth-child(4){left:49%;animation-delay:.45s;transform:scale(1.3)}
+#intro .iembers i:nth-child(5){left:61%;animation-delay:2.4s;transform:scale(.8)}
+#intro .iembers i:nth-child(6){left:73%;animation-delay:1.35s}
+#intro .iembers i:nth-child(7){left:84%;animation-delay:.2s;transform:scale(1.15)}
+#intro .iembers i:nth-child(8){left:93%;animation-delay:3.0s;transform:scale(.65)}
+@keyframes iEmber{
+  0%{opacity:0;transform:translateY(0)}
+  12%{opacity:.9}
+  85%{opacity:.5}
+  100%{opacity:0;transform:translateY(-96vh) translateX(14px)}}
+
+/* 격자 — 말상자 / 초상 / 제목이 각자 자기 행을 갖는다.
+   예전엔 셋 다 절대 위치라 화면이 길어지면 말상자가 얼굴을 덮었다. */
+#intro .iwrap{position:absolute;inset:0;display:grid;
+  grid-template-rows:minmax(0,1.05fr) minmax(0,2fr) auto;
+  padding:max(14px,3vh) 0 max(30px,5vh);gap:1vh}
+
+#intro .ibubbles{position:relative;min-height:0}
+#intro .iline{position:absolute;max-width:63%;padding:10px 14px;border-radius:13px;
+  font-size:clamp(13px,3.8vw,18px);line-height:1.42;font-weight:600;
+  background:linear-gradient(180deg,rgba(28,20,12,.95),rgba(12,8,5,.95));
+  color:#f8eeda;border:1px solid rgba(255,205,120,.38);
+  box-shadow:0 8px 24px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,220,160,.12);
+  opacity:0;transform:translateY(10px);
+  transition:opacity .22s ease,transform .3s cubic-bezier(.2,.9,.3,1)}
+#intro .iline::after{content:'';position:absolute;bottom:-7px;width:0;height:0;
+  border:7px solid transparent;border-top-color:rgba(12,8,5,.95)}
+#intro .iline.l{left:4%;top:0;border-bottom-left-radius:4px}
+#intro .iline.l::after{left:20px}
+#intro .iline.r{right:4%;bottom:0;text-align:right;border-bottom-right-radius:4px}
+#intro .iline.r::after{right:20px}
+#intro .iline.in{opacity:1;transform:translateY(0)}
+
+#intro .ifigs{display:grid;grid-template-columns:1fr 1fr;align-items:end;min-height:0}
+#intro .ifig{display:flex;flex-direction:column;justify-content:flex-end;min-height:0;
+  opacity:0;transition:opacity .34s ease,transform .46s cubic-bezier(.2,.9,.3,1)}
+#intro .ifig.l{transform:translateX(-22%)}
+#intro .ifig.r{transform:translateX(22%)}
 #intro .ifig.in{opacity:1;transform:translateX(0)}
-#intro .ifig img{width:100%;display:block;filter:drop-shadow(0 8px 22px rgba(0,0,0,.75))}
+#intro .ifig img{width:100%;min-height:0;flex:1;object-fit:contain;object-position:bottom;
+  display:block;filter:drop-shadow(0 10px 26px rgba(0,0,0,.8))}
 #intro .ifig.r img{transform:scaleX(-1)}
-#intro .iname{text-align:center;margin-top:-4px;font-size:clamp(15px,4.6vw,22px);
+#intro .iname{text-align:center;margin-top:6px;font-size:clamp(15px,4.4vw,22px);
   font-weight:800;color:#ffe6a8;letter-spacing:.16em;
   text-shadow:0 2px 0 #2a1a08,0 0 16px rgba(255,190,90,.45)}
-#intro .iline{position:absolute;max-width:60%;padding:11px 15px;border-radius:12px;
-  font-size:clamp(13px,3.9vw,18px);line-height:1.45;font-weight:600;
-  background:rgba(14,10,6,.90);color:#f6ead4;border:1px solid rgba(255,208,120,.34);
-  box-shadow:0 6px 20px rgba(0,0,0,.6);opacity:0;transform:translateY(8px);
-  transition:opacity .22s ease,transform .28s cubic-bezier(.2,.9,.3,1)}
-#intro .iline.in{opacity:1;transform:translateY(0)}
-#intro .iline.l{left:4%;top:10%;border-bottom-left-radius:3px}
-#intro .iline.r{right:4%;top:26%;text-align:right;border-bottom-right-radius:3px}
-/* 초상 위에 얹으면 금색 갑옷 위 금색 글자라 안 읽히고 얼굴을 가린다.
-   이름 아래 빈 공간에 띠로 깐다 — 얼굴을 안 건드리는 유일한 자리다. */
-#intro .ititle{position:absolute;left:0;right:0;top:79%;text-align:center;z-index:2;
-  padding:10px 0;
-  background:linear-gradient(90deg,transparent,rgba(8,5,3,.90) 10%,
-             rgba(8,5,3,.90) 90%,transparent);
-  font-size:clamp(34px,12vw,66px);font-weight:900;letter-spacing:.2em;color:#ffd45c;
+
+/* 제목 — 초상 위에 얹으면 금색 갑옷 위 금색 글자라 안 읽히고 얼굴도 가린다.
+   자기 행을 주면 어느 화면 비율에서든 겹치지 않는다. */
+#intro .ititle{text-align:center;padding:8px 0;
+  background:linear-gradient(90deg,transparent,rgba(8,5,3,.92) 10%,
+             rgba(8,5,3,.92) 90%,transparent);
+  font-size:clamp(30px,11vw,60px);font-weight:900;letter-spacing:.2em;color:#ffd45c;
   text-shadow:0 4px 0 #6b3a08,0 0 34px rgba(255,180,60,.6);
-  opacity:0;transform:translateY(-50%) scale(1.5);
+  opacity:0;transform:scale(1.5);
   transition:opacity .16s ease,transform .3s cubic-bezier(.15,1.3,.4,1)}
-#intro .ititle.in{opacity:1;transform:translateY(-50%) scale(1)}
+#intro .ititle.in{opacity:1;transform:scale(1)}
+
 /* 개막 동안엔 HUD 와 조작 패드를 감춘다. 반투명 막 아래로 비치면
    '연출'이 아니라 '화면이 어두워진 게임'으로 보인다. */
 body.introing #hud,
@@ -272,23 +385,36 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
     <!-- 아날로그 스틱. 십자키 4버튼은 손가락을 정확히 얹어야 해서 폰에서
          조작이 어려웠다 — 누른 자리가 곧 중심이 되고 끌면 그 방향으로 간다. -->
     <div class="cluster moves">
-      <div id="stick" aria-label="이동"><div id="stickKnob"></div></div>
+      <div id="stickHome"></div>
+      <div id="stick" aria-label="이동"><div id="stickRing"></div><div id="stickKnob"></div></div>
     </div>
     <div class="cluster acts">
-      <button class="ps" data-act="heavy"  style="--c:#3fd08a" aria-label="강베기"><span class="sym">&#9651;</span><span class="lb">강베기</span></button>
-      <button class="ps" data-act="guard"  style="--c:#ff7ecb" aria-label="가드"><span class="sym">&#9633;</span><span class="lb">가드</span></button>
-      <button class="ps" data-act="thrust" style="--c:#ff6070" aria-label="찌르기"><span class="sym">&#9675;</span><span class="lb">찌르기</span></button>
-      <button class="ps" data-act="light"  style="--c:#63aaff" aria-label="베기"><span class="sym">&#10005;</span><span class="lb">베기</span></button>
+      <button class="ps" data-act="heavy"  style="--c:#4ee39c" aria-label="강베기"><span class="sym">&#9651;</span></button>
+      <button class="ps" data-act="guard"  style="--c:#ff92d4" aria-label="가드"><span class="sym">&#9633;</span></button>
+      <button class="ps" data-act="thrust" style="--c:#ff7280" aria-label="찌르기"><span class="sym">&#9675;</span></button>
+      <button class="ps" data-act="light"  style="--c:#7cbcff" aria-label="베기"><span class="sym">&#10005;</span></button>
     </div>
   </div>
 
   <!-- 개막 — 두 장수가 한 마디씩 주고받는다. 아무 데나 누르면 건너뛴다. -->
   <div id="intro" hidden>
-    <div class="ifig l"><img id="iImgL" alt=""><div class="iname" id="iNameL"></div></div>
-    <div class="ifig r"><img id="iImgR" alt=""><div class="iname" id="iNameR"></div></div>
-    <div class="iline l" id="iLineL"></div>
-    <div class="iline r" id="iLineR"></div>
-    <div class="ititle" id="iTitle">一 騎 討</div>
+    <div class="ibg"></div>
+    <div class="ivs"></div>
+    <div class="iglyph">鬪</div>
+    <div class="iembers"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <!-- 격자로 짠다. 절대 위치로 잡으면 화면 비율이 바뀌는 순간 말상자가
+         얼굴을 덮는다 — 실제로 그렇게 됐다. 행을 나누면 구조적으로 안 겹친다. -->
+    <div class="iwrap">
+      <div class="ibubbles">
+        <div class="iline l" id="iLineL"></div>
+        <div class="iline r" id="iLineR"></div>
+      </div>
+      <div class="ifigs">
+        <div class="ifig l"><img id="iImgL" alt=""><div class="iname" id="iNameL"></div></div>
+        <div class="ifig r"><img id="iImgR" alt=""><div class="iname" id="iNameR"></div></div>
+      </div>
+      <div class="ititle" id="iTitle">一 騎 討</div>
+    </div>
     <div class="iskip">화면을 누르면 건너뜁니다</div>
   </div>
 
@@ -870,10 +996,25 @@ function onPress(act) {
 }
 
 // 모바일 패드
+// 조작부는 화면을 가리는 존재라 평소엔 물러나 있어야 한다(조사한 가이드의 공통).
+// 손을 대면 살아나고, 3초 안 만지면 다시 흐려진다.
+let padLiveT = 0;
+function padLive() {
+  const el = $('pad');
+  if (!el) return;
+  el.classList.add('live');
+  clearTimeout(padLiveT);
+  padLiveT = setTimeout(() => el.classList.remove('live'), 3000);
+}
+// 촉각 — 폰에는 버튼의 '딸깍'이 없다. 짧은 진동이 그 자리를 메운다.
+// iOS 사파리는 무시하지만 해가 없다.
+const buzz = ms => { try { navigator.vibrate?.(ms); } catch {} };
+
 document.querySelectorAll('#pad .btn, #pad .ps').forEach(btn => {
   const act = btn.dataset.act;
   const down = e => {
     e.preventDefault(); btn.classList.add('on');
+    padLive(); buzz(act === 'heavy' ? 16 : act === 'guard' ? 8 : 11);
     if (act === 'left' || act === 'right') { pad[act] = true; onPress(act); }
     else if (act === 'up' || act === 'down') pad[act] = true;
     else if (act === 'guard') pad.guard = true;
@@ -2018,9 +2159,9 @@ async function startFight() {
   resetMatch();                      // 개막 중 남은 입력·타이머를 지우고 새로 선다
   phase = 'fight';
   banner('일 기 토', '#ffd45c', 1);
-  showTip(touchMode
-    ? '<b>베기</b>로 두드리고 <b>가드</b>로 막아라 · 맞는 순간 가드 = <b>저스트가드</b>'
-    : '<b>J</b> 베기 · <b>K</b> 강베기 · <b>L</b> 찌르기 · <b>S</b> 가드 — 맞는 순간 가드가 <b>저스트가드</b>', 5200);
+  // 조작 안내는 띄우지 않는다. 개막에서 이름과 대사를 보여 준 직후에
+  // 'J 베기 · K 강베기' 같은 설명이 뜨면 연출이 통째로 깨진다.
+  padLive();
 }
 
 // 난이도 선택
@@ -2150,8 +2291,9 @@ function useKeys() { touchMode = false; keysEl.style.display = ''; }
   const MAXR = 34;                   // 노브가 움직이는 최대 반지름(논리 px)
   let pid = null, cx = 0, cy = 0, unit = 1;
 
+  // 노브는 translate 로 중심을 잡는다(마진 대신). 밀린 양은 거기에 더한다.
   const setKnob = (dx, dy) => {
-    knob.style.transform = `translate(${dx * MAXR}px, ${dy * MAXR}px)`;
+    knob.style.transform = `translate(calc(-50% + ${dx * MAXR}px), calc(-50% + ${dy * MAXR}px))`;
   };
   const clear = () => {
     pad.left = pad.right = pad.up = pad.down = false;
@@ -2178,22 +2320,49 @@ function useKeys() { touchMode = false; keysEl.style.display = ''; }
   };
   let dashArm = 0;
 
-  el.addEventListener('pointerdown', e => {
+  // 고정형 스틱은 '어디를 눌러야 하는지' 가 분명해서 액션 게임에 권장되지만,
+  // 정확히 그 자리를 짚어야 한다는 게 폰에서는 그대로 부담이 된다.
+  // 둘을 섞는다 — 집 자리는 점선으로 늘 보이고(고정형의 장점), 왼쪽 영역
+  // 아무 데나 짚으면 스틱이 거기로 옮겨 온다(동적형의 장점).
+  const home = el.parentElement;
+  const place = (e) => {
+    const hr = home.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    const half = r.width / 2;
+    // 손가락이 구역 밖에 가깝게 닿아도 스틱이 잘리지 않도록 가둔다
+    const px = clamp(e.clientX, hr.left + half, hr.right - half);
+    const py = clamp(e.clientY, hr.top + half, hr.bottom - half);
+    el.style.left = (px - hr.left - half) + 'px';
+    el.style.top  = (py - hr.top - half) + 'px';
+    el.style.position = 'absolute';
+    el.style.margin = '0';
+  };
+  const gohome = () => { el.style.position = ''; el.style.left = el.style.top = ''; };
+
+  const grab = e => {
     e.preventDefault();
+    if (pid !== null) return;
     pid = e.pointerId;
+    place(e);
     try { el.setPointerCapture(pid); } catch {}   // 캡처 실패해도 조작은 되게
     const r = el.getBoundingClientRect();
     unit = r.width / 112;            // CSS 에서 112*var(--u) 로 잡아 둔 지름
     cx = r.left + r.width / 2; cy = r.top + r.height / 2;
     el.classList.add('on');
+    padLive();
     move(e);
-  });
+  };
+  // 스틱 자신뿐 아니라 '왼쪽 구역' 전체가 받는다
+  home.addEventListener('pointerdown', grab);
   el.addEventListener('pointermove', move);
+  home.addEventListener('pointermove', move);
   for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) {
-    el.addEventListener(ev, e => {
+    const up = e => {
       if (pid === null || e.pointerId !== pid) return;
-      pid = null; dashArm = 0; clear();
-    });
+      pid = null; dashArm = 0; clear(); gohome();
+    };
+    el.addEventListener(ev, up);
+    home.addEventListener(ev, up);
   }
   el.addEventListener('contextmenu', e => e.preventDefault());
 })();
