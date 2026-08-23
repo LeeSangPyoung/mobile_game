@@ -1048,7 +1048,14 @@ function stepFighter(f) {
   }
 
   // 물리 — 지면 마찰
-  if (busy(f) || helpless(f)) f.vz *= 0.5;      // 공격·피격 중엔 축을 못 바꾼다
+  // vz 에는 상시 마찰이 없다. 평소엔 updatePlayer 가 매 프레임 0 으로 당겨서
+  // 멈추는데, 가드를 누르면 그 코드를 통째로 건너뛴다 — 그래서 위/아래로
+  // 움직이다 가드를 누르면 속도가 그대로 남아 방향키를 떼도 무대 끝까지
+  // 미끄러졌다(120프레임에 118px, vz 가 2.4 로 고정). 빙판이었다.
+  // 가드는 발을 묶는 자세다. 앞뒤(vx)도 같이 죽인다.
+  if (busy(f) || helpless(f) || f.guardHeld) f.vz *= 0.5;
+  if (f.guardHeld) f.vx *= 0.5;
+  if (Math.abs(f.vz) < 0.05) f.vz = 0;
   f.z = clamp(f.z + f.vz, 0, Z_MAX);
   f.x += f.vx;
   f.vx *= (f.state === 'dash' || f.state === 'backstep') ? 0.90 : 0.80;
