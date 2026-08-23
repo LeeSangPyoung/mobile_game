@@ -1,0 +1,42 @@
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>일기토 효과음 시청</title>
+<style>
+ body{margin:0;background:#140e08;color:#f2e4cf;font:16px/1.5 system-ui,-apple-system,sans-serif;padding:18px}
+ h1{font-size:19px;margin:0 0 4px} p{opacity:.7;font-size:13px;margin:0 0 18px}
+ .row{display:flex;gap:10px;margin-bottom:10px;align-items:center}
+ button{flex:1;padding:16px 10px;font-size:16px;font-weight:700;border:0;border-radius:12px;
+   background:#3a2a18;color:#ffd98a;box-shadow:0 2px 0 #1d1409}
+ button:active{transform:translateY(2px);box-shadow:none}
+ .b2{background:#22303a;color:#9fd8ff}
+ small{opacity:.55;font-size:12px;display:block;margin:14px 0 4px}
+</style>
+<h1>일기토 효과음 — 새로 만든 것</h1>
+<p>휘두르는 소리에서 쇳소리를 뺐습니다. 쇠는 <b>부딪혔을 때만</b> 웁니다.</p>
+<small>휘두르기 (공기만)</small>
+<div class="row"><button data-s="swing" data-a="light">베기</button>
+<button data-s="swing" data-a="thrust">찌르기</button>
+<button data-s="swing" data-a="heavy">강베기</button></div>
+<small>맞았을 때 (살·충격)</small>
+<div class="row"><button data-s="hit" data-a="">유효타</button>
+<button data-s="hit" data-a="1">강타</button></div>
+<small>막았을 때 (여기가 쇳소리 자리)</small>
+<div class="row b2"><button class="b2" data-s="guard" data-a="">가드</button>
+<button class="b2" data-s="guard" data-a="1">가드 붕괴</button>
+<button class="b2" data-s="clash" data-a="">合</button></div>
+<small>기타</small>
+<div class="row"><button data-s="just" data-a="">저스트가드</button>
+<button data-s="stun" data-a="">경직</button>
+<button data-s="ko" data-a="">KO</button></div>
+<small>연타 — 실제 결투처럼 빠르게 (깡통 소리가 나는지 여기서 확인)</small>
+<div class="row"><button id="burst">베기 8연타</button><button id="burst2">난타 20회</button></div>
+<script type="module">
+import * as S from './sfx.js';
+S.init();
+const play=(n,a)=>{ S.resume(); S.SFX[n] && S.SFX[n](a==='light'||a==='thrust'||a==='heavy'?a:!!a); };
+document.querySelectorAll('button[data-s]').forEach(b=>
+  b.onclick=()=>play(b.dataset.s, b.dataset.a));
+burst.onclick=()=>{ S.resume(); for(let i=0;i<8;i++) setTimeout(()=>S.SFX.swing('light'),i*220); };
+burst2.onclick=()=>{ S.resume(); const k=['light','thrust','heavy'];
+  for(let i=0;i<20;i++) setTimeout(()=>{ S.SFX.swing(k[i%3]);
+    if(Math.random()<.6) setTimeout(()=>Math.random()<.5?S.SFX.hit(Math.random()<.3):S.SFX.guard(),120); }, i*260); };
+</script>

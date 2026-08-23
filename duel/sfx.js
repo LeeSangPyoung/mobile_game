@@ -98,24 +98,38 @@ function tone(t0, { freq = 160, to = 60, peak = .5, attack = .004, decay = .22, 
 }
 
 // ── 실제로 쓰는 소리들 ───────────────────────────────────────────
-// 쇳소리 — 칼날이 우는 소리. 노이즈만 쓰면 '쉭/픽' 같은 바람소리로만 들린다.
-// 금속은 배음이 정수배가 아니라(비조화) 여러 부분음이 제각각 감쇠한다.
-// 그 비율을 흉내내야 '쇠'로 들린다.
-function metal(t0, { f = 1900, peak = .30, decay = .40, spread = 1, parts = [1, 1.52, 2.13, 2.87, 3.61] } = {}) {
-  parts.forEach((r, i) => {
-    const o = ctx.createOscillator();
-    o.type = 'sine';
-    const fr = f * (1 + (r - 1) * spread);
-    o.frequency.setValueAtTime(fr, t0);
-    o.frequency.exponentialRampToValueAtTime(Math.max(40, fr * 0.86), t0 + decay);
+
+// 살짝씩 어긋나게 — 같은 소리가 정확히 반복되면 무엇을 합성하든 '기계'로 들린다.
+// 결투 10초에 스윙이 40번 넘게 난다. 이 흔들림이 없으면 그것만으로 깡통이다.
+const jit = (v, amt = .07) => v * (1 + (Math.random() * 2 - 1) * amt);
+
+// 쇳소리 — 고Q 밴드패스를 통과한 **잡음**의 공진이다.
+//
+// 예전엔 사인파 다섯 개를 비조화 배음비로 쌓고 0.3~0.6초 울렸다. 그건
+// 쇠가 아니라 **깡통을 숟가락으로 친 소리**다 — 순음이 오래 남으면 귀는
+// 그걸 '통(筒)'으로 듣는다. 게다가 이게 스윙과 타격에도 얹혀 있어서,
+// 결투 내내 깡통 소리가 깔렸다.
+//
+// 진짜 칼 부딪는 소리에는 지속되는 음정이 없다. 넓은 잡음이 몇 개의
+// 공진점에서 순간적으로 도드라졌다가 100ms 안에 사라진다. 그래서 잡음을
+// 좁은 필터에 통과시킨다 — 금속의 '밝음'만 남고 '통'은 남지 않는다.
+// 그리고 이 소리는 이제 **쇠끼리 부딪을 때(가드·합)만** 쓴다.
+function clang(t0, { peak = .40, decay = .10, q = 18,
+                     freqs = [2600, 4100, 6300, 9200] } = {}) {
+  freqs.forEach((f, i) => {
+    const src = noise();
+    const flt = ctx.createBiquadFilter();
+    flt.type = 'bandpass';
+    flt.Q.value = q * (1 - i * .12);
+    flt.frequency.setValueAtTime(jit(f, .05), t0);
     const g = ctx.createGain();
-    const amp = peak / (i + 1.35);              // 높은 부분음일수록 작게
-    const d = decay * (1 - i * 0.14);           // 그리고 빨리 죽는다
+    const amp = peak / (i + 1.2);
+    const d = Math.max(.03, decay * (1 - i * .18));
     g.gain.setValueAtTime(0.0001, t0);
-    g.gain.exponentialRampToValueAtTime(Math.max(0.0002, amp), t0 + .004);
-    g.gain.exponentialRampToValueAtTime(0.0001, t0 + Math.max(.05, d));
-    o.connect(g); g.connect(master);
-    o.start(t0); o.stop(t0 + decay + .06);
+    g.gain.exponentialRampToValueAtTime(Math.max(.0002, amp), t0 + .0015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+    src.connect(flt); flt.connect(g); g.connect(master);
+    src.start(t0); src.stop(t0 + d + .04);
   });
 }
 
@@ -124,46 +138,52 @@ export const SFX = {
   swing(kind = 'light') {
     if (!ctx || muted) return;
     const t = now();
-    // 세 기술이 귀로 구분돼야 한다 — 무엇을 눌렀는지 화면을 안 봐도 알게.
+    // 휘두르는 건 **공기를 가르는 소리**다. 음정이 있으면 안 된다.
+    // 칼이 우는 소리(clang)는 뭔가에 부딪혔을 때만 난다 — 허공을 가를 땐
+    // 나지 않는다. 예전엔 스윙마다 쇳소리를 얹어서, 헛치든 맞든 늘
+    // '깡' 하고 울렸다.
     if (kind === 'thrust') {
-      // 찌르기: 짧고 높고 곧다. 칼끝이 공기를 가르며 '치잉' 하고 선다.
-      whoosh(t, { dur: .13, f0: 900, fPeak: 5200, f1: 1800, peak: .26, q: 9 });
-      metal(t + .01, { f: 3200, peak: .26, decay: .30, spread: .8 });
+      // 찌르기: 짧고 날카롭다. 칼끝이 한 점을 뚫고 지나간다.
+      whoosh(t, { dur: jit(.11), f0: 1100, fPeak: jit(4400), f1: 2100, peak: .30, q: 7 });
+      noiseHit(t + .02, { type: 'highpass', f0: 7000, f1: 3400, q: 1,
+                          peak: .13, attack: .002, decay: .045 });
     } else if (kind === 'heavy') {
-      // 강베기: 낮고 길다. 큰 날이 무겁게 돌며 '우웅' 하고 운다.
-      whoosh(t, { dur: .34, f0: 260, fPeak: 1300, f1: 220, peak: .50, q: 2 });
-      metal(t + .05, { f: 900, peak: .34, decay: .62, spread: 1.15 });
-      tone(t, { freq: 132, to: 42, peak: .24, attack: .02, decay: .34, type: 'triangle' });
+      // 강베기: 큰 날이 무겁게 돈다. 저역이 실려야 '무겁다'가 읽힌다.
+      whoosh(t, { dur: jit(.30), f0: 190, fPeak: jit(1150), f1: 170, peak: .52, q: 1.6 });
+      tone(t + .02, { freq: jit(74), to: 38, peak: .20, attack: .03, decay: .30, type: 'triangle' });
     } else {
-      // 베기: 그 사이. 가로로 훑고 지나가며 '쉬잉' 하고 남는다.
-      whoosh(t, { dur: .20, f0: 500, fPeak: 3000, f1: 420, peak: .36, q: 3.5 });
-      metal(t + .02, { f: 1900, peak: .28, decay: .40 });
+      // 베기: 가로로 훑고 지나간다.
+      whoosh(t, { dur: jit(.17), f0: 620, fPeak: jit(3100), f1: 480, peak: .38, q: 3.2 });
     }
   },
 
   hit(heavy = false) {
     if (!ctx || muted) return;
     const t = now();
-    // 세 겹으로 쌓는다 — 저역 충격(북) + 중역 몸통(살) + 고역 쇳소리(칼).
-    // 예전엔 톤 하나 + 노이즈 하나뿐이라 휘두르는 소리에 묻혔다.
-    tone(t, { freq: heavy ? 96 : 150, to: heavy ? 34 : 52,
-              peak: heavy ? 1.0 : .72, attack: .002, decay: heavy ? .40 : .24 });
-    noiseHit(t, { type: 'lowpass', f0: heavy ? 900 : 1200, f1: 160, q: .8,
-                  peak: heavy ? .60 : .38, decay: heavy ? .20 : .12 });
-    noiseHit(t + .006, { type: 'highpass', f0: 5200, f1: 1800, q: 1.2,
-                         peak: heavy ? .40 : .26, decay: heavy ? .16 : .10 });
-    // 맞는 순간에도 쇠가 운다 — 살만 때리는 둔탁한 소리로는 칼싸움이 안 된다
-    metal(t + .008, { f: heavy ? 1200 : 2200, peak: heavy ? .30 : .20,
-                      decay: heavy ? .55 : .30, spread: heavy ? 1.2 : .9 });
+    // 칼이 몸에 들어가는 소리다. 쇳소리를 얹으면 안 된다 — 살은 울지 않는다.
+    // 저역 충격(무게) + 베이는 잡음(살) + 아주 짧은 고역 어택(칼끝) 세 겹.
+    tone(t, { freq: heavy ? jit(78) : jit(118), to: heavy ? 30 : 46,
+              peak: heavy ? 1.0 : .70, attack: .002, decay: heavy ? .34 : .20 });
+    noiseHit(t + .004, { type: 'bandpass', f0: heavy ? 1400 : 1900, f1: 260, q: 1.1,
+                         peak: heavy ? .52 : .34, attack: .003,
+                         decay: heavy ? .17 : .085 });
+    noiseHit(t, { type: 'highpass', f0: 6200, f1: 2600, q: 1,
+                  peak: heavy ? .22 : .15, attack: .0015, decay: .04 });
+    // 강타에만 배 속을 치는 저역을 하나 더 — 이게 '크게 맞았다'를 만든다
+    if (heavy) tone(t + .01, { freq: 52, to: 26, peak: .55, attack: .01, decay: .48 });
   },
 
   // 가드 — 금속끼리 부딪히는 짧고 단단한 소리
   guard(crush = false) {
     if (!ctx || muted) return;
     const t = now();
-    noiseHit(t, { type: 'bandpass', f0: 3400, f1: 1600, q: 6,
-                  peak: crush ? .5 : .34, decay: crush ? .2 : .12 });
-    tone(t, { freq: crush ? 220 : 320, to: 120, peak: .22, decay: .1, type: 'square' });
+    // 여기가 쇳소리가 나야 할 자리다 — 칼이 칼(또는 방패)에 막힌 순간.
+    // 짧게 끊는다. 길게 울리면 그 순간 깡통으로 돌아간다.
+    clang(t, { peak: crush ? .58 : .42, decay: crush ? .13 : .085,
+               q: crush ? 14 : 20 });
+    tone(t, { freq: crush ? jit(190) : jit(300), to: 110,
+              peak: crush ? .30 : .18, attack: .002, decay: .07, type: 'triangle' });
+    if (crush) tone(t + .008, { freq: 64, to: 30, peak: .42, attack: .006, decay: .30 });
   },
 
   // 저스트가드 — 맑고 높게. 성공했다는 신호는 확실히 달라야 한다.
@@ -183,8 +203,11 @@ export const SFX = {
   clash() {
     if (!ctx || muted) return;
     const t = now();
-    noiseHit(t, { type: 'bandpass', f0: 5200, f1: 2200, q: 9, peak: .5, decay: .3 });
-    noiseHit(t + .02, { type: 'bandpass', f0: 3800, f1: 1500, q: 7, peak: .3, decay: .22 });
+    // 合 — 한 판에 몇 번 안 나는 소리다. 여기서만 좀 길게 울려도 된다.
+    // 두 번 겹쳐 친다: 날이 맞부딪는 순간 + 되튕기며 우는 여운.
+    clang(t, { peak: .62, decay: .17, q: 16, freqs: [2900, 4600, 7000, 10500] });
+    clang(t + .035, { peak: .30, decay: .26, q: 24, freqs: [3400, 5300, 8100] });
+    tone(t, { freq: 240, to: 96, peak: .26, attack: .002, decay: .09, type: 'triangle' });
   },
 
   // 경직 — 아래로 미끄러지는 톤. '무너졌다'가 귀로 읽힌다.
