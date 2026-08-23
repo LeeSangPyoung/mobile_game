@@ -1389,6 +1389,13 @@ function clash() {
 }
 
 function applyHit(att, def) {
+  // 무적 프레임 검사가 맨 앞이어야 한다.
+  // 예전엔 hitDone 을 먼저 세우고 그 다음에 inv 를 봤다. 그러면 상대 무적이
+  // 1프레임 남았을 때 그 공격이 **통째로 소모돼** 남은 판정 프레임에서도
+  // 영영 안 맞는다. 연격이 49명 중 16명에게서 안 닿던 원인이 이것이었다 —
+  // 공속이 빠른 장수(단병기 0.88)일수록 판정이 한 프레임 일찍 와서 정확히
+  // 무적 마지막 프레임에 걸렸다. 여포(1.12)는 늦게 와서 멀쩡했다.
+  if (def.inv > 0) return;
   att.hitDone = true;
   const m = att.move;
   // 이펙트는 '판정 거리의 78%' 가 아니라 **실제 그려진 창끝**에 붙인다.
@@ -1396,8 +1403,6 @@ function applyHit(att, def) {
   const tp = tipOf(att);
   const hx = tp ? tp[0] : att.x + att.dir * (reachOf(att, att.moveKey) * 0.78);
   const hy = footY(def) - 165;
-
-  if (def.inv > 0) return;
 
   // 저스트가드 — 가드를 '눌러둔' 게 아니라 '맞춰 넣은' 경우
   if (def.guardHeld && def.guardT <= GUARD_JUST && !helpless(def)) {
