@@ -7,9 +7,9 @@
   "size": 1.06,
   "side": true,
   "war": 99,
-  "hp": 138,
+  "hp": 143,
   "spd": 1.0,
-  "stam": 100
+  "stam": 110
  },
  {
   "id": "lu_bu",
@@ -19,9 +19,9 @@
   "size": 1.1,
   "side": true,
   "war": 100,
-  "hp": 149,
+  "hp": 147,
   "spd": 1.12,
-  "stam": 92
+  "stam": 101
  },
  {
   "id": "zhang_fei",
@@ -30,10 +30,10 @@
   "full": true,
   "size": 1.08,
   "side": true,
-  "war": 99,
-  "hp": 143,
+  "war": 98,
+  "hp": 144,
   "spd": 1.12,
-  "stam": 92
+  "stam": 101
  },
  {
   "id": "cao_cao",
@@ -42,10 +42,10 @@
   "full": true,
   "size": 1.02,
   "side": true,
-  "war": 79,
-  "hp": 116,
+  "war": 73,
+  "hp": 110,
   "spd": 0.88,
-  "stam": 110
+  "stam": 106
  },
  {
   "id": "zhao_yun",
@@ -54,10 +54,10 @@
   "full": true,
   "size": 1.0,
   "side": true,
-  "war": 98,
-  "hp": 120,
+  "war": 97,
+  "hp": 136,
   "spd": 1.12,
-  "stam": 92
+  "stam": 100
  },
  {
   "id": "hua_xiong",
@@ -66,10 +66,10 @@
   "full": true,
   "size": 1.14,
   "side": true,
-  "war": 90,
-  "hp": 155,
+  "war": 87,
+  "hp": 138,
   "spd": 1.12,
-  "stam": 92
+  "stam": 96
  },
  {
   "id": "gan_ning",
@@ -78,10 +78,10 @@
   "full": true,
   "size": 1.0,
   "side": true,
-  "war": 93,
-  "hp": 118,
+  "war": 91,
+  "hp": 130,
   "spd": 1.0,
-  "stam": 100
+  "stam": 106
  },
  {
   "id": "ma_chao",
@@ -91,9 +91,9 @@
   "size": 1.0,
   "side": true,
   "war": 97,
-  "hp": 120,
+  "hp": 136,
   "spd": 0.88,
-  "stam": 110
+  "stam": 120
  },
  {
   "id": "liu_bei",
@@ -102,10 +102,10 @@
   "full": true,
   "size": 1.0,
   "side": true,
-  "war": 79,
-  "hp": 111,
+  "war": 74,
+  "hp": 108,
   "spd": 0.88,
-  "stam": 110
+  "stam": 107
  },
  {
   "id": "zhang_liao",
@@ -114,10 +114,10 @@
   "full": true,
   "size": 1.0,
   "side": true,
-  "war": 94,
-  "hp": 118,
+  "war": 93,
+  "hp": 132,
   "spd": 1.12,
-  "stam": 92
+  "stam": 99
  },
  {
   "id": "dian_wei",
@@ -126,10 +126,10 @@
   "full": true,
   "size": 1.1,
   "side": true,
-  "war": 97,
-  "hp": 148,
+  "war": 96,
+  "hp": 144,
   "spd": 1.12,
-  "stam": 92
+  "stam": 100
  },
  {
   "id": "taishi_ci",
@@ -138,10 +138,10 @@
   "full": true,
   "size": 1.0,
   "side": true,
-  "war": 95,
-  "hp": 119,
+  "war": 93,
+  "hp": 132,
   "spd": 0.88,
-  "stam": 110
+  "stam": 118
  },
  {
   "id": "xu_chu",
@@ -150,10 +150,10 @@
   "full": true,
   "size": 1.12,
   "side": true,
-  "war": 96,
-  "hp": 153,
+  "war": 95,
+  "hp": 145,
   "spd": 1.0,
-  "stam": 100
+  "stam": 108
  },
  {
   "id": "huang_zhong",
@@ -162,10 +162,10 @@
   "full": true,
   "size": 0.98,
   "side": true,
-  "war": 96,
-  "hp": 114,
+  "war": 95,
+  "hp": 132,
   "spd": 0.88,
-  "stam": 110
+  "stam": 119
  },
  {
   "id": "yan_liang",
@@ -174,10 +174,10 @@
   "full": true,
   "size": 1.05,
   "side": true,
-  "war": 94,
-  "hp": 132,
+  "war": 92,
+  "hp": 136,
   "spd": 1.0,
-  "stam": 100
+  "stam": 107
  },
  {
   "id": "sima_yi",
@@ -186,10 +186,10 @@
   "full": true,
   "size": 0.96,
   "side": true,
-  "war": 70,
-  "hp": 95,
+  "war": 62,
+  "hp": 89,
   "spd": 0.88,
-  "stam": 110
+  "stam": 99
  },
  {
   "id": "sun_ce",
@@ -198,10 +198,10 @@
   "full": true,
   "size": 1.0,
   "side": true,
-  "war": 95,
-  "hp": 119,
+  "war": 94,
+  "hp": 133,
   "spd": 0.88,
-  "stam": 110
+  "stam": 118
  },
  {
   "id": "xu_huang",
@@ -210,10 +210,10 @@
   "full": true,
   "size": 1.04,
   "side": true,
-  "war": 91,
-  "hp": 128,
+  "war": 89,
+  "hp": 131,
   "spd": 1.12,
-  "stam": 92
+  "stam": 97
  },
  {
   "id": "wen_chou",
@@ -222,10 +222,10 @@
   "full": true,
   "size": 1.06,
   "side": true,
-  "war": 93,
-  "hp": 135,
+  "war": 91,
+  "hp": 136,
   "spd": 1.0,
-  "stam": 100
+  "stam": 107
  },
  {
   "id": "zhou_tai",
@@ -234,10 +234,10 @@
   "full": true,
   "size": 1.02,
   "side": true,
-  "war": 90,
-  "hp": 122,
+  "war": 88,
+  "hp": 128,
   "spd": 1.0,
-  "stam": 100
+  "stam": 105
  },
  {
   "id": "cao_zhen",
@@ -246,10 +246,10 @@
   "full": true,
   "size": 1.0,
   "side": true,
-  "war": 86,
-  "hp": 114,
+  "war": 82,
+  "hp": 120,
   "spd": 0.88,
-  "stam": 110
+  "stam": 112
  },
  {
   "id": "cao_zhang",
@@ -258,10 +258,10 @@
   "full": true,
   "size": 1.08,
   "side": true,
-  "war": 90,
-  "hp": 139,
+  "war": 87,
+  "hp": 133,
   "spd": 1.12,
-  "stam": 92
+  "stam": 96
  },
  {
   "id": "wei_yan",
@@ -270,10 +270,10 @@
   "full": true,
   "size": 1.03,
   "side": true,
-  "war": 91,
-  "hp": 125,
+  "war": 88,
+  "hp": 130,
   "spd": 1.12,
-  "stam": 92
+  "stam": 97
  },
  {
   "id": "zhang_he",
@@ -282,10 +282,10 @@
   "full": true,
   "size": 1.0,
   "side": true,
-  "war": 92,
-  "hp": 117,
+  "war": 90,
+  "hp": 128,
   "spd": 0.88,
-  "stam": 110
+  "stam": 116
  },
  {
   "id": "xiahou_dun",
@@ -294,10 +294,10 @@
   "full": true,
   "size": 1.05,
   "side": true,
-  "war": 92,
-  "hp": 131,
+  "war": 90,
+  "hp": 134,
   "spd": 1.12,
-  "stam": 92
+  "stam": 97
  },
  {
   "id": "jiang_wei",
@@ -306,10 +306,10 @@
   "full": true,
   "size": 1.05,
   "side": true,
-  "war": 88,
-  "hp": 129,
+  "war": 85,
+  "hp": 127,
   "spd": 1.0,
-  "stam": 100
+  "stam": 103
  },
  {
   "id": "xiahou_yuan",
@@ -318,10 +318,10 @@
   "full": true,
   "size": 1.05,
   "side": true,
-  "war": 87,
-  "hp": 129,
+  "war": 84,
+  "hp": 126,
   "spd": 1.0,
-  "stam": 100
+  "stam": 103
  },
  {
   "id": "lu_xun",
@@ -330,10 +330,10 @@
   "full": true,
   "size": 1.05,
   "side": true,
-  "war": 86,
-  "hp": 128,
+  "war": 83,
+  "hp": 125,
   "spd": 1.0,
-  "stam": 100
+  "stam": 102
  },
  {
   "id": "cao_ren",
@@ -342,10 +342,10 @@
   "full": true,
   "size": 1.05,
   "side": true,
-  "war": 89,
-  "hp": 130,
+  "war": 86,
+  "hp": 129,
   "spd": 0.88,
-  "stam": 110
+  "stam": 114
  },
  {
   "id": "deng_ai",
@@ -354,10 +354,10 @@
   "full": true,
   "size": 1.05,
   "side": true,
-  "war": 86,
-  "hp": 128,
+  "war": 82,
+  "hp": 124,
   "spd": 1.0,
-  "stam": 100
+  "stam": 102
  },
  {
   "id": "sun_jian",
@@ -366,10 +366,10 @@
   "full": true,
   "size": 1.05,
   "side": true,
-  "war": 85,
-  "hp": 128,
+  "war": 81,
+  "hp": 123,
   "spd": 1.12,
-  "stam": 92
+  "stam": 93
  },
  {
   "id": "yue_jin",
@@ -378,10 +378,10 @@
   "full": true,
   "size": 1.05,
   "side": true,
-  "war": 85,
-  "hp": 128,
+  "war": 81,
+  "hp": 122,
   "spd": 0.88,
-  "stam": 110
+  "stam": 111
  },
  {
   "id": "xiahou_ba",
@@ -390,10 +390,10 @@
   "full": true,
   "size": 1.05,
   "side": true,
-  "war": 84,
-  "hp": 127,
+  "war": 80,
+  "hp": 122,
   "spd": 1.0,
-  "stam": 100
+  "stam": 101
  },
  {
   "id": "ling_tong",
@@ -402,10 +402,10 @@
   "full": true,
   "size": 1.02,
   "side": true,
-  "war": 88,
-  "hp": 121,
+  "war": 85,
+  "hp": 125,
   "spd": 0.88,
-  "stam": 110
+  "stam": 114
  },
  {
   "id": "dong_zhuo",
@@ -414,10 +414,10 @@
   "full": true,
   "size": 1.08,
   "side": true,
-  "war": 87,
-  "hp": 137,
+  "war": 83,
+  "hp": 128,
   "spd": 1.0,
-  "stam": 100
+  "stam": 102
  },
  {
   "id": "zhou_yu",
@@ -426,8 +426,8 @@
   "full": true,
   "size": 1.02,
   "side": true,
-  "war": 84,
-  "hp": 119,
+  "war": 80,
+  "hp": 118,
   "spd": 0.88,
   "stam": 110
  },
@@ -438,8 +438,8 @@
   "full": true,
   "size": 1.08,
   "side": true,
-  "war": 84,
-  "hp": 136,
+  "war": 79,
+  "hp": 123,
   "spd": 1.12,
   "stam": 92
  },
@@ -450,8 +450,8 @@
   "full": true,
   "size": 1.03,
   "side": true,
-  "war": 83,
-  "hp": 121,
+  "war": 79,
+  "hp": 118,
   "spd": 1.0,
   "stam": 100
  },
@@ -462,8 +462,8 @@
   "full": true,
   "size": 1.04,
   "side": true,
-  "war": 83,
-  "hp": 124,
+  "war": 78,
+  "hp": 118,
   "spd": 1.12,
   "stam": 92
  },
@@ -474,10 +474,10 @@
   "full": true,
   "size": 1.05,
   "side": true,
-  "war": 82,
-  "hp": 126,
+  "war": 78,
+  "hp": 118,
   "spd": 1.0,
-  "stam": 100
+  "stam": 99
  },
  {
   "id": "li_jue",
@@ -486,10 +486,10 @@
   "full": true,
   "size": 1.06,
   "side": true,
-  "war": 82,
-  "hp": 129,
+  "war": 77,
+  "hp": 118,
   "spd": 1.0,
-  "stam": 100
+  "stam": 99
  },
  {
   "id": "zhang_xiu",
@@ -498,10 +498,10 @@
   "full": true,
   "size": 1.04,
   "side": true,
-  "war": 82,
-  "hp": 123,
+  "war": 77,
+  "hp": 116,
   "spd": 0.88,
-  "stam": 110
+  "stam": 109
  },
  {
   "id": "gongsun_zan",
@@ -510,10 +510,10 @@
   "full": true,
   "size": 1.03,
   "side": true,
-  "war": 81,
-  "hp": 120,
+  "war": 76,
+  "hp": 114,
   "spd": 1.12,
-  "stam": 92
+  "stam": 91
  },
  {
   "id": "ma_dai",
@@ -522,10 +522,10 @@
   "full": true,
   "size": 1.03,
   "side": true,
-  "war": 81,
-  "hp": 120,
+  "war": 76,
+  "hp": 114,
   "spd": 1.12,
-  "stam": 92
+  "stam": 90
  },
  {
   "id": "pan_zhang",
@@ -534,10 +534,10 @@
   "full": true,
   "size": 1.05,
   "side": true,
-  "war": 80,
-  "hp": 125,
+  "war": 75,
+  "hp": 114,
   "spd": 1.0,
-  "stam": 100
+  "stam": 98
  },
  {
   "id": "zhang_ren",
@@ -546,10 +546,10 @@
   "full": true,
   "size": 1.03,
   "side": true,
-  "war": 80,
-  "hp": 120,
+  "war": 74,
+  "hp": 112,
   "spd": 1.0,
-  "stam": 100
+  "stam": 97
  },
  {
   "id": "huang_gai",
@@ -558,10 +558,10 @@
   "full": true,
   "size": 1.05,
   "side": true,
-  "war": 78,
-  "hp": 124,
+  "war": 73,
+  "hp": 112,
   "spd": 1.12,
-  "stam": 92
+  "stam": 89
  },
  {
   "id": "sun_quan",
@@ -570,10 +570,10 @@
   "full": true,
   "size": 1.03,
   "side": true,
-  "war": 78,
-  "hp": 119,
+  "war": 72,
+  "hp": 109,
   "spd": 0.88,
-  "stam": 110
+  "stam": 106
  },
  {
   "id": "yu_jin",
@@ -582,9 +582,9 @@
   "full": true,
   "size": 1.03,
   "side": true,
-  "war": 78,
-  "hp": 119,
+  "war": 72,
+  "hp": 108,
   "spd": 0.88,
-  "stam": 110
+  "stam": 105
  }
 ]

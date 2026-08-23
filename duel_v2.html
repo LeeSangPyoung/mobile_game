@@ -183,7 +183,10 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 #stickRing{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:62%;height:62%;border-radius:50%;
   border:1px solid rgba(190,220,255,.13);pointer-events:none}
-#stickKnob{position:absolute;left:50%;top:50%;
+/* 중심 정렬 transform 은 여기에 있어야 한다. setKnob() 안에만 두면
+   그건 손을 댔을 때만 적용돼서, 시작하자마자는 노브가 제 크기의 절반만큼
+   오른쪽 아래로 밀린 채로 서 있는다 — 실제로 그렇게 보였다. */
+#stickKnob{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:max(54px,calc(76*var(--u)));height:max(54px,calc(76*var(--u)));
   margin:0;border-radius:50%;
   background:
@@ -357,15 +360,18 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
   padding:max(14px,3vh) 0 max(30px,5vh);gap:1vh}
 
 #intro .ibubbles{position:relative;min-height:0}
-#intro .iline{position:absolute;max-width:63%;padding:10px 14px;border-radius:13px;
-  font-size:clamp(13px,3.8vw,18px);line-height:1.42;font-weight:600;
-  background:linear-gradient(180deg,rgba(28,20,12,.95),rgba(12,8,5,.95));
-  color:#f8eeda;border:1px solid rgba(255,205,120,.38);
-  box-shadow:0 8px 24px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,220,160,.12);
+/* 말구름은 흰 바탕에 검은 글씨. 어두운 배경 위에서 대사가 가장 먼저
+   읽혀야 하는데, 검은 구름은 배경에 묻혀 '창'이 아니라 '얼룩'으로 보였다. */
+#intro .iline{position:absolute;max-width:63%;padding:11px 15px;border-radius:14px;
+  font-size:clamp(13px,3.8vw,18px);line-height:1.42;font-weight:700;
+  background:linear-gradient(180deg,#ffffff,#eee7dc);
+  color:#17110a;border:1px solid rgba(120,86,40,.35);
+  box-shadow:0 10px 26px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.9);
   opacity:0;transform:translateY(10px);
   transition:opacity .22s ease,transform .3s cubic-bezier(.2,.9,.3,1)}
-#intro .iline::after{content:'';position:absolute;bottom:-7px;width:0;height:0;
-  border:7px solid transparent;border-top-color:rgba(12,8,5,.95)}
+#intro .iline::after{content:'';position:absolute;bottom:-8px;width:0;height:0;
+  border:8px solid transparent;border-top-color:#eee7dc;
+  filter:drop-shadow(0 2px 1px rgba(0,0,0,.35))}
 #intro .iline.l{left:4%;top:0;border-bottom-left-radius:4px}
 #intro .iline.l::after{left:20px}
 #intro .iline.r{right:4%;bottom:0;text-align:right;border-bottom-right-radius:4px}
@@ -1007,8 +1013,10 @@ function resetMatch() {
   syncHud(true);
 }
 
-// 무력차는 데미지에 '은근히' 반영 — 조작으로 뒤집을 수 있는 폭으로만.
-const warMul = (a, d) => Math.pow(a.war / d.war, 0.55);
+// 무력차는 데미지에 반영하되, 조작으로 뒤집을 수 있는 폭까지만.
+// 지수가 0.55 일 땐 무력 100 대 78 이 데미지 10 대 8 로 눌려서 순위가
+// 체감되지 않았다. 0.70 으로 세우고 무력 폭 자체도 넓혔다(fit_stats.py).
+const warMul = (a, d) => Math.pow(a.war / d.war, 0.70);
 
 const busy = f => f.state === 'windup' || f.state === 'active' || f.state === 'recover';
 const helpless = f => f.state === 'hurt' || f.state === 'stunned' || f.state === 'ko';
