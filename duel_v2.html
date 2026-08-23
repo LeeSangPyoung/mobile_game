@@ -677,8 +677,12 @@ const ready = img => !!(img && img.complete && img.naturalWidth);
 const MOVES = {
   light:  { startup: 8,  active: 4, recovery: 13, dmg: 9,  reach: 223, push: 5,  stam: 8,
             label: '베기',   guardChip: 1.5, stunAdd: 6,  sheet: 'light',  arc: 'wide'  },
-  thrust: { startup: 13, active: 5, recovery: 22, dmg: 14, reach: 238, push: 9,  stam: 14,
-            label: '찌르기', guardChip: 3,   stunAdd: 10, sheet: 'thrust', arc: 'line'  },
+  // 찌르기는 '거리를 사는' 기술이지 '죽이는' 기술이 아니다.
+  // 예전엔 셋의 지속 딜이 0.219/0.204/0.231 로 거의 같았다 — 시간당 데미지가
+  // 같으면 가장 안전한 걸 고르는 게 당연하고, 가장 안전한 건 가장 긴 찌르기다.
+  // 사거리 15px 을 공짜로 얻는 구조였다. 딜 14→10 으로 그 값을 치르게 한다.
+  thrust: { startup: 13, active: 5, recovery: 22, dmg: 10, reach: 238, push: 9,  stam: 14,
+            label: '찌르기', guardChip: 2,   stunAdd: 7,  sheet: 'thrust', arc: 'line'  },
   heavy:  { startup: 21, active: 6, recovery: 26, dmg: 24, reach: 194, push: 22, stam: 24,
             label: '강베기', guardChip: 9,   stunAdd: 22, sheet: 'heavy',  arc: 'heavy',
             crush: true },   // 가드해도 기력을 크게 깎는다 — 계속 막기만 하면 무너진다
@@ -722,7 +726,7 @@ function makeFighter(kind, opts) {
     inv: 0, hitFlash: 0,
     walkClock: 0,
     lean: 0,
-    ai: { t: 0, plan: 'wait', react: 0 },
+    ai: { t: 0, plan: 'wait', react: 0, pocket: 'thrust', pocketUntil: 0 },
   };
 }
 
@@ -853,8 +857,13 @@ function spendFail(f) {
   puff(f.x, footY(f) - 40, 4, '#ff7a4a');
 }
 function startDash(f, dir) {
-  snd('dash');
+  // 가드는 발을 묶는 자세다. 걷기는 updatePlayer 에서 이미 막혀 있었는데
+  // 대시만 여기로 새고 있었다 — 조이스틱을 끝까지 밀면(92%) 이 함수를 바로
+  // 부르기 때문에, 폰에서는 가드를 누른 채 스틱을 밀면 막으면서 미끄러졌다.
+  if (f.guardHeld) return;
   if (!canAct(f) || f.stam < 12) return;
+  // 소리는 판정을 통과한 뒤에 낸다. 앞에 있으면 못 나간 대시도 소리가 났다.
+  snd('dash');
   f.stam -= 12;
   const back = dir !== f.dir;
   f.state = back ? 'backstep' : 'dash'; f.st = 0;
@@ -1206,25 +1215,39 @@ function updateAI() {
   // 여유(margin)를 두는 이유: 판정은 active 프레임에 나는데 그 사이 상대가 움직인다.
   const MARGIN = 24;
   const canReach = k => dist <= reachOf(B, k) - MARGIN;
-  const inPocket = dist <= reachOf(B, 'thrust') - MARGIN;   // 가장 긴 기술이 닿는 범위
 
-  if (!inPocket) {
-    // 아직 못 닿는다 → 붙는다. 멀면 대시로 거리를 지운다
+  // 어느 간격에서 싸울지를 주기적으로 다시 고른다.
+  // 예전엔 '가장 긴 기술이 닿으면 멈춘다'였다. 그래서 AI 는 항상 찌르기
+  // 사거리 바깥선에 붙박이게 됐고 — 실측 376회 중 베기 0 · 강베기 0 —
+  // 사람도 따라서 찌르기만 누르는 게 최선이 됐다. 간격을 골라야 기술이 섞인다.
+  if (ai.t >= ai.pocketUntil) {
+    const r = Math.random();
+    ai.pocket = r < .30 ? 'heavy' : r < .62 ? 'light' : 'thrust';
+    ai.pocketUntil = ai.t + 70 + (Math.random() * 90 | 0);
+  }
+  const want = reachOf(B, ai.pocket) - MARGIN - 10;
+  const TOO_CLOSE = 150;                  // 몸이 겹치기 직전(bodyR 합 148)
+
+  if (dist > want + 14) {
+    // 고른 간격보다 멀다 → 붙는다. 많이 멀면 대시로 거리를 지운다
     if (dist > RT + 90 && B.stam > 22 && Math.random() < diff.aggro * .35) startDash(B, B.dir);
     else { B.vx = B.dir * 3.1; B.state = 'walk'; B.walkClock++; }
     return;
   }
-  if (dist < 218) {                       // 너무 붙었다 → 도끼를 휘두를 공간을 만든다
+  if (dist < Math.max(TOO_CLOSE, want - 34)) {   // 너무 붙었다 → 공간을 만든다
     B.vx = -B.dir * (WALK_B * 0.92); B.state = 'walk'; B.walkClock++;
     return;
   }
-  // 닿는 거리 — 무엇으로 칠지는 거리가 정한다
+  // 닿는 거리 — 골라둔 간격의 기술을 먼저 쓴다
   if (ai.t % 9 === 0 && Math.random() < diff.aggro) {
-    const roll = Math.random();
-    if (canReach('light') && roll < .42) startMove(B, 'light');
-    else if (canReach('heavy') && roll < .74 && B.stam > MOVES.heavy.stam + 10) startMove(B, 'heavy');
-    else if (canReach('thrust')) startMove(B, 'thrust');
-    else if (canReach('light')) startMove(B, 'light');
+    const order = ai.pocket === 'heavy' ? ['heavy', 'light', 'thrust']
+                : ai.pocket === 'light' ? ['light', 'thrust', 'heavy']
+                :                         ['thrust', 'light', 'heavy'];
+    for (const k of order) {
+      if (!canReach(k)) continue;
+      if (k === 'heavy' && B.stam <= MOVES.heavy.stam + 10) continue;
+      if (startMove(B, k)) return;
+    }
   } else if (B.state === 'walk') { B.state = 'idle'; }
 }
 
