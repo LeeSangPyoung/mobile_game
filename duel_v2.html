@@ -156,20 +156,26 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 .cluster.moves::before{border-radius:50%;inset:calc(-11*var(--u))}
 
 /* ── 액션 버튼 ──────────────────────────────────────────── */
-.cluster.acts{width:calc(203*var(--u));height:calc(195*var(--u));
-  min-width:203px;min-height:195px}
+/* 컨테이너는 px 하한(min-width)을 쓰는데 버튼 위치는 --u 단위였다. --u 가
+   1보다 작은 화면(폭이 좁은 폰)에서는 컨테이너만 203px 로 벌어지고 버튼은
+   그보다 좁게 배치돼 **셋이 왼쪽으로 쏠렸다**.
+   삼각형 좌표를 전부 컨테이너 대비 % 로 바꾼다 — 컨테이너가 어떤 크기가
+   되든 삼각형 모양이 그대로 유지된다. */
+.cluster.acts{width:max(203px,calc(203*var(--u)));
+  height:max(195px,calc(195*var(--u)))}
 .cluster.acts .ps{position:absolute}
 /* 정삼각형(꼭짓점 위). 중심 (98,43) (36,152) (160,152) — 세 변 125px.
      ○ 찌르기
    □ 가드   ✕ 베기
    베기가 오른쪽 아래인 이유: 엄지가 오른쪽 아래에서 올라오니 제일 가깝고,
    연격 때문에 가장 많이 두드린다. 그래서 크기도 한 단계 크다. */
-.cluster.acts [data-act="thrust"]{left:calc(61*var(--u)); top:calc(6*var(--u))}
-.cluster.acts [data-act="guard"] {left:0;                 top:calc(115*var(--u))}
-.cluster.acts [data-act="light"] {left:calc(117*var(--u));top:calc(109*var(--u))}
+/* 203x195 기준 좌표를 % 로 환산한 값이다 */
+.cluster.acts [data-act="thrust"]{left:30.05%; top:3.08%}
+.cluster.acts [data-act="guard"] {left:0;      top:58.97%}
+.cluster.acts [data-act="light"] {left:57.64%; top:55.90%}
 
 .ps{display:grid;place-items:center;border-radius:50%;padding:0;border:0;
-  width:max(56px,calc(74*var(--u)));height:max(56px,calc(74*var(--u)));
+  width:36.45%;aspect-ratio:1;height:auto;
   background:
     radial-gradient(88% 80% at 50% 116%,color-mix(in srgb,var(--c) 30%,transparent),rgba(0,0,0,0) 70%),
     linear-gradient(178deg,#39414f 0%,#1b2029 42%,#0a0d13 100%);
@@ -190,7 +196,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
   fill:none;stroke:currentColor;stroke-width:3.6;stroke-linecap:round;
   filter:drop-shadow(0 0 calc(6*var(--u)) color-mix(in srgb,var(--c) 70%,transparent))}
 .ps [data-act] .sym{}
-.ps.big{width:max(66px,calc(86*var(--u)));height:max(66px,calc(86*var(--u)))}
+.ps.big{width:42.36%;aspect-ratio:1;height:auto}
 .ps:active,.ps.on{transform:translateY(calc(2*var(--u))) scale(.965);
   background:
     radial-gradient(80% 80% at 50% 50%,color-mix(in srgb,var(--c) 48%,transparent),rgba(0,0,0,0) 76%),
@@ -1493,8 +1499,15 @@ function applyHit(att, def) {
   const m = att.move;
   // 이펙트는 '판정 거리의 78%' 가 아니라 **실제 그려진 창끝**에 붙인다.
   // 고정 거리로 잡으면 무기가 짧은 장수는 허공에서 불꽃이 튄다.
+  // 무기가 짧게 그려진 장수(태사자 87px · 마초 찌르기 51px 등 6명)는 창끝이
+  // 상대 몸에 못 미친다. 그 자리에 불꽃을 붙이면 **적에게서 한참 떨어진
+  // 허공에서 터져** '안 닿았는데 맞았다' 로 보인다.
+  // 창끝이 상대 몸 앞까지 못 오면 상대 몸 가장자리로 당긴다 —
+  // 길게 뻗은 장수는 그대로 창끝에 붙는다(뒤로 밀지 않는다).
   const tp = tipOf(att);
-  const hx = tp ? tp[0] : att.x + att.dir * (reachOf(att, att.moveKey) * 0.78);
+  let hx = tp ? tp[0] : att.x + att.dir * (reachOf(att, att.moveKey) * 0.78);
+  const edge = def.x - att.dir * bodyR(def);
+  hx = att.dir > 0 ? Math.max(hx, edge) : Math.min(hx, edge);
   const hy = footY(def) - 165;
 
   // 저스트가드 — 가드를 '눌러둔' 게 아니라 '맞춰 넣은' 경우
