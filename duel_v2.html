@@ -375,13 +375,17 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 /* 격자 — 말상자 / 초상 / 제목이 각자 자기 행을 갖는다.
    예전엔 셋 다 절대 위치라 화면이 길어지면 말상자가 얼굴을 덮었다. */
 #intro .iwrap{position:absolute;inset:0;display:grid;
-  grid-template-rows:minmax(0,1.05fr) minmax(0,2fr) auto;
-  padding:max(14px,3vh) 0 max(30px,5vh);gap:1vh}
+  grid-template-rows:auto minmax(0,1fr) auto auto auto;
+  padding:max(12px,2.4vh) 0 max(28px,4.4vh);gap:.8vh}
 
-#intro .ibubbles{position:relative;min-height:0}
+/* 말상자를 절대 위치로 두면 행 높이가 줄어들 때 아래 행(초상)으로 넘친다 —
+   실제로 430x932 에서 오른쪽 말상자가 장비 얼굴을 덮었다.
+   흐름 배치로 바꾸면 행이 내용만큼만 차지해서 구조적으로 못 겹친다. */
+#intro .ibubbles{display:flex;flex-direction:column;gap:calc(7*var(--u));
+  padding:0 4%;justify-content:flex-start;min-height:0}
 /* 말구름은 흰 바탕에 검은 글씨. 어두운 배경 위에서 대사가 가장 먼저
    읽혀야 하는데, 검은 구름은 배경에 묻혀 '창'이 아니라 '얼룩'으로 보였다. */
-#intro .iline{position:absolute;max-width:63%;padding:11px 15px;border-radius:14px;
+#intro .iline{position:relative;max-width:74%;padding:11px 15px;border-radius:14px;
   font-size:clamp(13px,3.8vw,18px);line-height:1.42;font-weight:700;
   background:linear-gradient(180deg,#ffffff,#eee7dc);
   color:#17110a;border:1px solid rgba(120,86,40,.35);
@@ -398,9 +402,9 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
   border:1px solid rgba(120,86,40,.35);
   border-top:0;border-left:0;
   transform:rotate(45deg);border-radius:0 0 4px 0}
-#intro .iline.l{left:4%;top:0;border-bottom-left-radius:4px}
+#intro .iline.l{align-self:flex-start;border-bottom-left-radius:4px}
 #intro .iline.l::after{left:22px}
-#intro .iline.r{right:4%;bottom:0;text-align:right;border-bottom-right-radius:4px}
+#intro .iline.r{align-self:flex-end;text-align:right;border-bottom-right-radius:4px}
 #intro .iline.r::after{right:22px}
 #intro .iline.in{opacity:1;transform:translateY(0)}
 
@@ -450,6 +454,27 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
   36%{transform:scale(1) rotate(0)}
   76%{opacity:1;transform:scale(1)}
   100%{opacity:0;transform:scale(1.18) translateY(calc(-14*var(--u)))}}
+
+/* 기초 가이드 — 버튼 모양과 색을 조작 패드와 똑같이 맞춘다.
+   설명만 글로 적으면 실제 화면에서 어느 버튼인지 다시 찾아야 한다. */
+#intro .iguide{display:grid;grid-template-columns:repeat(3,1fr);
+  gap:calc(6*var(--u));padding:calc(9*var(--u)) calc(10*var(--u));margin:0 3%;
+  background:linear-gradient(180deg,rgba(16,11,6,.82),rgba(8,5,3,.88));
+  border:1px solid rgba(255,205,120,.20);border-radius:12px}
+#intro .iguide .g{display:flex;flex-direction:column;align-items:center;
+  text-align:center;gap:calc(2*var(--u));min-width:0}
+#intro .iguide i{display:grid;place-items:center;font-style:normal;
+  width:calc(30*var(--u));height:calc(30*var(--u));border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--c) 55%,transparent);color:var(--c);
+  background:linear-gradient(180deg,rgba(34,40,52,.85),rgba(10,13,20,.9));
+  font-size:calc(14*var(--u));font-weight:700}
+#intro .iguide b{font-size:clamp(11px,3vw,14px);color:#ffe6a8;letter-spacing:.03em}
+#intro .iguide span{font-size:clamp(9.5px,2.5vw,12px);line-height:1.35;
+  color:#c9b492;word-break:keep-all}
+#intro .iguide em{font-style:normal;color:#ffd45c;font-weight:800}
+#intro .itip{margin-top:calc(5*var(--u));text-align:center;
+  font-size:clamp(10px,2.6vw,12.5px);color:#a8916f}
+#intro .itip b{color:#ffd45c}
 /* 개막 동안엔 HUD 와 조작 패드를 감춘다. 반투명 막 아래로 비치면
    '연출'이 아니라 '화면이 어두워진 게임'으로 보인다. */
 body.introing #hud,
@@ -525,6 +550,17 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
         <div class="ifig r"><img id="iImgR" alt=""><div class="iname" id="iNameR"></div></div>
       </div>
       <div class="ititle" id="iTitle">일 기 토</div>
+      <!-- 기초 가이드. 개막이 손을 기다리는 동안 읽으라고 아래에 둔다 —
+           결투가 시작된 뒤에 띄우면 읽을 틈이 없다. -->
+      <div class="iguide">
+        <div class="g"><i style="--c:#7cbcff">&#10005;</i><b>베기</b>
+          <span>맞히고 한 번 더 누르면 <em>연격</em></span></div>
+        <div class="g"><i style="--c:#ff7280">&#9675;</i><b>찌르기</b>
+          <span>멀리 닿지만 이어지지 않는다</span></div>
+        <div class="g"><i style="--c:#ff92d4">&#9633;</i><b>가드</b>
+          <span>맞는 순간 누르면 <em>저스트가드</em></span></div>
+      </div>
+      <div class="itip">스틱을 <b>위·아래</b>로 밀어 비켜서면 찌르기가 헛나간다</div>
     </div>
     <div class="iskip" id="iSkip">화면을 누르면 건너뜁니다</div>
   </div>
