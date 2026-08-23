@@ -26,7 +26,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATES = os.path.join(ROOT, 'assets', 'arcade_duel')
 CX, TARGET_H = 640, 200
 BASE = {'slash': 223, 'thrust': 238, 'heavy': 194}   # duel_v2.html 의 MOVES.reach
-LO, HI, FLOOR = 0.65, 1.40, 160   # 하한은 몸통 반지름 합(148)보다 조금 위
+LO, HI = 0.65, 1.40
+# 하한은 '두 몸이 겹치기 직전 간격 + 쓸 수 있는 여유' 여야 한다.
+# 예전 값 160 은 몸통 반지름 합을 148(체격 1.0 기준)로 보고 12px 만 얹은
+# 것이었는데, 체격 배율을 안 곱했다. 실제로는 큰 장수끼리 붙으면 최소
+# 간격이 74*1.14*2 = 169px 이라, 사거리 160 인 9명은 강베기가 **영영
+# 안 닿았다**. duel_v2.html 의 bodyR = 74 * size 와 같은 식으로 잰다.
+BODY_R = 74
+WINDOW = 22          # 약 6프레임 접근 거리 — 이보다 좁으면 운으로만 맞는다
 
 
 def main():
@@ -45,12 +52,15 @@ def main():
         weap[g['id']] = {mv: (p[f'{mv}_impact']['tipX'] - CX) * s
                          for mv in BASE if f'{mv}_impact' in p}
 
+    max_size = max(g.get('size', 1) for g in roster)
     med = {mv: statistics.median(v[mv] for v in weap.values() if mv in v) for mv in BASE}
     print('실측 무기 리치 중앙값: ' + ' · '.join(f'{k} {v:.0f}px' for k, v in med.items()))
     print(f"\n{'장수':<7}{'베기':>6}{'찌르기':>7}{'강타':>6}")
     for g in roster:
         w = weap[g['id']]
-        reach = {mv: max(FLOOR, round(BASE[mv] * min(HI, max(LO, w[mv] / med[mv]))))
+        # 자기 몸 + 가장 큰 상대의 몸을 기준으로 하한을 잡는다
+        floor = round(BODY_R * (g.get('size', 1) + max_size) + WINDOW)
+        reach = {mv: max(floor, round(BASE[mv] * min(HI, max(LO, w[mv] / med[mv]))))
                  for mv in w}
         pj, m = metas[g['id']]
         m['reach'] = reach

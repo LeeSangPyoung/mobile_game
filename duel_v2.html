@@ -752,6 +752,10 @@ function resetMatch() {
   cam = { x: STAGE_W / 2, zoom: 1, shakeX: 0, shakeY: 0, punch: 0 };
   frame = 0; hitStop = 0; slowmo = 0; hap = 0; clockFrames = 60 * FPS;
   fx = []; dust = [];
+  // 입력 버퍼를 안 비우면 죽는 순간 누른 공격이 다음 판 시작과 함께 나간다.
+  // tapped 도 비워야 지난 판의 탭이 새 판 첫 입력과 묶여 대시로 오인되지 않는다.
+  bufAttack = null; bufFrames = 0;
+  tapped.left = tapped.right = 0;
   stats = { hits: 0, guards: 0, justs: 0, clashes: 0, taken: 0 };
   document.getElementById('nameL').textContent = P.name;
   document.getElementById('warL').textContent = '무력 ' + P.war;
@@ -845,9 +849,11 @@ const held = act => {
 // ═══════════════════════════════════════════════════════════════════
 function startMove(f, key) {
   const m = MOVES[key];
-  snd('swing', key);
   if (!m || !canAct(f)) return false;
   if (f.stam < m.stam) { spendFail(f); return false; }
+  // 소리는 판정을 통과한 뒤에 낸다. 앞에 있으면 못 나간 공격도 소리가 났고,
+  // AI 가 기술을 순서대로 시도하면서 한 번에 세 번까지 울렸다.
+  snd('swing', key);
   f.stam -= m.stam;
   f.state = 'windup'; f.st = 0; f.move = m; f.moveKey = key; f.hitDone = false;
   return true;
@@ -1220,8 +1226,13 @@ function updateAI() {
 
   // 거리 관리 — '닿는 거리'가 기준이다.
   // 여유(margin)를 두는 이유: 판정은 active 프레임에 나는데 그 사이 상대가 움직인다.
+  // 기준은 '두 몸이 겹치기 직전 간격'이다. 상수로 박으면 체격이 다른 장수에서
+  // 곧바로 어긋난다 — 예전 218 이 그래서 베기를 영영 막고 있었다.
+  const SEP = bodyR(P) + bodyR(B);
   const MARGIN = 24;
-  const canReach = k => dist <= reachOf(B, k) - MARGIN;
+  // 짧은 기술은 reach-24 가 SEP 보다 안쪽이라 영영 성립하지 않는다.
+  // 그런 기술은 '몸이 닿을 만큼 붙었으면' 친다.
+  const canReach = k => dist <= Math.max(reachOf(B, k) - MARGIN, SEP + 6);
 
   // 어느 간격에서 싸울지를 주기적으로 다시 고른다.
   // 예전엔 '가장 긴 기술이 닿으면 멈춘다'였다. 그래서 AI 는 항상 찌르기
@@ -1232,8 +1243,9 @@ function updateAI() {
     ai.pocket = r < .30 ? 'heavy' : r < .62 ? 'light' : 'thrust';
     ai.pocketUntil = ai.t + 70 + (Math.random() * 90 | 0);
   }
-  const want = reachOf(B, ai.pocket) - MARGIN - 10;
-  const TOO_CLOSE = 150;                  // 몸이 겹치기 직전(bodyR 합 148)
+  // 고른 간격이 SEP 안쪽이면 영영 도달할 수 없어 접근·후퇴를 무한 반복한다
+  const want = clamp(reachOf(B, ai.pocket) - MARGIN - 10, SEP + 10, reachOf(B, 'thrust'));
+  const TOO_CLOSE = SEP + 2;
 
   if (dist > want + 14) {
     // 고른 간격보다 멀다 → 붙는다. 많이 멀면 대시로 거리를 지운다
