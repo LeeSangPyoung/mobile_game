@@ -253,6 +253,22 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 /* 세로 전용: 결투 영역 오른쪽 위. 하단 중앙은 조작 버튼이 쓴다. */
 #util{right:calc(10*var(--u));top:calc(74*var(--u))}
 
+
+/* 가로 화면 안내 —
+   레이아웃 수식상 화면이 짧으면 조작부가 사라진다. 캔버스 논리 높이가
+   최소 900 으로 잠겨 있어서(clamp), 비율이 1.667 아래로 내려가면
+   패드 높이가 '화면높이 - 화면폭' 이 되고 1 에 가까워질수록 0 이 된다.
+   실제로 가로(932x430)에서 패드가 29px 이었고 버튼이 화면 밖으로 나갔다.
+   세로 폰(비율 1.7 이상)은 영향이 없다. 그러니 가로일 때만 막는다. */
+#rotate{position:absolute;inset:0;z-index:40;display:none;
+  flex-direction:column;align-items:center;justify-content:center;gap:calc(10*var(--u));
+  background:#0b0704;color:#f4e7d2;text-align:center;padding:20px}
+#rotate:not([hidden]){display:flex}
+#rotate .ric{font-size:min(19vw,74px);line-height:1;
+  animation:rot 2.1s ease-in-out infinite}
+@keyframes rot{0%,44%{transform:rotate(-90deg)}62%,100%{transform:rotate(0)}}
+#rotate b{font-size:clamp(17px,4.6vw,23px);color:#ffd45c;letter-spacing:.04em}
+#rotate span{font-size:clamp(12px,3.4vw,15px);opacity:.62}
 /* ── 개막 연출 ─────────────────────────────────────────────
    3-2-1 카운트다운을 넣지 않은 이유: 플레이어가 아무것도 안 하고 기다리는
    시간이고, 세 판만 해도 머릿속에서 지워진다. 같은 2초를 대사에 쓰면
@@ -397,6 +413,13 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
   </div>
 
   <!-- 개막 — 두 장수가 한 마디씩 주고받는다. 아무 데나 누르면 건너뛴다. -->
+  <!-- 가로로 돌리면 조작부가 사라진다. 세로 전용 화면이니 돌려 달라고 말한다. -->
+  <div id="rotate" hidden>
+    <div class="ric">📱</div>
+    <b>세로로 돌려 주세요</b>
+    <span>일기토는 세로 화면 전용입니다</span>
+  </div>
+
   <div id="intro" hidden>
     <div class="ibg"></div>
     <div class="ivs"></div>
@@ -998,13 +1021,22 @@ function onPress(act) {
 // 모바일 패드
 // 조작부는 화면을 가리는 존재라 평소엔 물러나 있어야 한다(조사한 가이드의 공통).
 // 손을 대면 살아나고, 3초 안 만지면 다시 흐려진다.
+// 손을 대고 있는 동안에는 절대 물러나면 안 된다. 누르고 있는 손가락을
+// 세어 두고, 하나라도 남아 있으면 흐려지는 타이머를 걸지 않는다.
+// (스틱을 쥔 채 3초가 지나면 조작 중인데도 55% 로 내려갔다.)
 let padLiveT = 0;
-function padLive() {
+const padTouches = new Set();
+function padLive(hold) {
   const el = $('pad');
   if (!el) return;
   el.classList.add('live');
   clearTimeout(padLiveT);
+  if (padTouches.size) return;                 // 아직 잡고 있다 — 그대로 둔다
   padLiveT = setTimeout(() => el.classList.remove('live'), 3000);
+}
+function padHold(pid, down) {
+  if (down) padTouches.add(pid); else padTouches.delete(pid);
+  padLive();
 }
 // 촉각 — 폰에는 버튼의 '딸깍'이 없다. 짧은 진동이 그 자리를 메운다.
 // iOS 사파리는 무시하지만 해가 없다.
@@ -1014,7 +1046,8 @@ document.querySelectorAll('#pad .btn, #pad .ps').forEach(btn => {
   const act = btn.dataset.act;
   const down = e => {
     e.preventDefault(); btn.classList.add('on');
-    padLive(); buzz(act === 'heavy' ? 16 : act === 'guard' ? 8 : 11);
+    padHold(e.pointerId, true);
+    buzz(act === 'heavy' ? 16 : act === 'guard' ? 8 : 11);
     if (act === 'left' || act === 'right') { pad[act] = true; onPress(act); }
     else if (act === 'up' || act === 'down') pad[act] = true;
     else if (act === 'guard') pad.guard = true;
@@ -1022,6 +1055,7 @@ document.querySelectorAll('#pad .btn, #pad .ps').forEach(btn => {
   };
   const up = e => {
     e.preventDefault(); btn.classList.remove('on');
+    padHold(e.pointerId, false);
     if (act === 'left' || act === 'right' || act === 'up' || act === 'down') pad[act] = false;
     else if (act === 'guard') pad.guard = false;
   };
@@ -2267,8 +2301,22 @@ function syncUnit() {
   document.documentElement.style.setProperty('--u', u.toFixed(4) + 'px');
   document.documentElement.style.setProperty('--playh', (H * PLAY_RATIO).toFixed(1));
 }
-new ResizeObserver(syncUnit).observe(wrapEl);
+// 조작부가 설 자리가 남는가. 남지 않으면 세로로 돌려 달라고 하고 결투를 세운다.
+// 임계값 1.45 는 수식에서 나온다 — 비율 1.667 아래에서 패드 높이는
+// (화면높이 - 화면폭) 이고, 그게 화면 높이의 28% 는 돼야 버튼이 들어간다.
+let rotPaused = false;
+function checkOrientation() {
+  const el = $('rotate');
+  if (!el) return;
+  const tooShort = wrapEl.clientHeight / Math.max(1, wrapEl.clientWidth) < 1.45;
+  el.hidden = !tooShort;
+  if (tooShort && phase === 'fight') { phase = 'paused'; rotPaused = true; }
+  else if (!tooShort && rotPaused && phase === 'paused') { phase = 'fight'; rotPaused = false; }
+}
+new ResizeObserver(() => { syncUnit(); checkOrientation(); }).observe(wrapEl);
+addEventListener('orientationchange', () => setTimeout(checkOrientation, 120));
 syncUnit();
+checkOrientation();
 
 // 조작계 감지는 '실제로 무엇을 썼는가'로 — 로드 시점의 미디어쿼리만 믿으면
 // 태블릿·에뮬레이터·터치 가능한 노트북에서 틀린 UI가 뜬다.
@@ -2349,7 +2397,7 @@ function useKeys() { touchMode = false; keysEl.style.display = ''; }
     unit = r.width / 112;            // CSS 에서 112*var(--u) 로 잡아 둔 지름
     cx = r.left + r.width / 2; cy = r.top + r.height / 2;
     el.classList.add('on');
-    padLive();
+    padHold(pid, true);
     move(e);
   };
   // 스틱 자신뿐 아니라 '왼쪽 구역' 전체가 받는다
@@ -2359,6 +2407,7 @@ function useKeys() { touchMode = false; keysEl.style.display = ''; }
   for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) {
     const up = e => {
       if (pid === null || e.pointerId !== pid) return;
+      padHold(pid, false);
       pid = null; dashArm = 0; clear(); gohome();
     };
     el.addEventListener(ev, up);
