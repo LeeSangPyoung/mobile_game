@@ -98,23 +98,49 @@ function tone(t0, { freq = 160, to = 60, peak = .5, attack = .004, decay = .22, 
 }
 
 // ── 실제로 쓰는 소리들 ───────────────────────────────────────────
+// 쇳소리 — 칼날이 우는 소리. 노이즈만 쓰면 '쉭/픽' 같은 바람소리로만 들린다.
+// 금속은 배음이 정수배가 아니라(비조화) 여러 부분음이 제각각 감쇠한다.
+// 그 비율을 흉내내야 '쇠'로 들린다.
+function metal(t0, { f = 1900, peak = .30, decay = .40, spread = 1, parts = [1, 1.52, 2.13, 2.87, 3.61] } = {}) {
+  parts.forEach((r, i) => {
+    const o = ctx.createOscillator();
+    o.type = 'sine';
+    const fr = f * (1 + (r - 1) * spread);
+    o.frequency.setValueAtTime(fr, t0);
+    o.frequency.exponentialRampToValueAtTime(Math.max(40, fr * 0.86), t0 + decay);
+    const g = ctx.createGain();
+    const amp = peak / (i + 1.35);              // 높은 부분음일수록 작게
+    const d = decay * (1 - i * 0.14);           // 그리고 빨리 죽는다
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002, amp), t0 + .004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + Math.max(.05, d));
+    o.connect(g); g.connect(master);
+    o.start(t0); o.stop(t0 + decay + .06);
+  });
+}
+
 export const SFX = {
   // 칼을 휘두르는 바람소리. 기술이 무거울수록 낮고 길다.
   swing(kind = 'light') {
     if (!ctx || muted) return;
     const t = now();
-    // 기술마다 '무게'가 다르다 — 가벼움은 높고 빠르게, 강타는 낮고 길게.
-    const p = { light:  { dur: .20, fPeak: 3000, peak: .38, q: 3.5 },
-                thrust: { dur: .16, fPeak: 4200, peak: .34, q: 7   },  // 찌르기는 날카롭게
-                heavy:  { dur: .34, fPeak: 1500, peak: .55, q: 2.2 } }[kind] || {};
-    whoosh(t, p);
-    // 몸통 — 이게 있어야 '틱'이 아니라 '휙'으로 들린다
-    tone(t + .02, { freq: kind === 'heavy' ? 150 : 260, to: kind === 'heavy' ? 44 : 90,
-                    peak: kind === 'heavy' ? .22 : .12,
-                    attack: .02, decay: kind === 'heavy' ? .30 : .16, type: 'triangle' });
+    // 세 기술이 귀로 구분돼야 한다 — 무엇을 눌렀는지 화면을 안 봐도 알게.
+    if (kind === 'thrust') {
+      // 찌르기: 짧고 높고 곧다. 칼끝이 공기를 가르며 '치잉' 하고 선다.
+      whoosh(t, { dur: .13, f0: 900, fPeak: 5200, f1: 1800, peak: .26, q: 9 });
+      metal(t + .01, { f: 3200, peak: .26, decay: .30, spread: .8 });
+    } else if (kind === 'heavy') {
+      // 강베기: 낮고 길다. 큰 날이 무겁게 돌며 '우웅' 하고 운다.
+      whoosh(t, { dur: .34, f0: 260, fPeak: 1300, f1: 220, peak: .50, q: 2 });
+      metal(t + .05, { f: 900, peak: .34, decay: .62, spread: 1.15 });
+      tone(t, { freq: 132, to: 42, peak: .24, attack: .02, decay: .34, type: 'triangle' });
+    } else {
+      // 베기: 그 사이. 가로로 훑고 지나가며 '쉬잉' 하고 남는다.
+      whoosh(t, { dur: .20, f0: 500, fPeak: 3000, f1: 420, peak: .36, q: 3.5 });
+      metal(t + .02, { f: 1900, peak: .28, decay: .40 });
+    }
   },
 
-  // 유효타 — 둔탁한 충격 + 살을 가르는 쇳소리
   hit(heavy = false) {
     if (!ctx || muted) return;
     const t = now();
@@ -126,8 +152,9 @@ export const SFX = {
                   peak: heavy ? .60 : .38, decay: heavy ? .20 : .12 });
     noiseHit(t + .006, { type: 'highpass', f0: 5200, f1: 1800, q: 1.2,
                          peak: heavy ? .40 : .26, decay: heavy ? .16 : .10 });
-    if (heavy) tone(t + .03, { freq: 2100, to: 900, peak: .14, attack: .003,
-                               decay: .5, type: 'sine' });   // 여운
+    // 맞는 순간에도 쇠가 운다 — 살만 때리는 둔탁한 소리로는 칼싸움이 안 된다
+    metal(t + .008, { f: heavy ? 1200 : 2200, peak: heavy ? .30 : .20,
+                      decay: heavy ? .55 : .30, spread: heavy ? 1.2 : .9 });
   },
 
   // 가드 — 금속끼리 부딪히는 짧고 단단한 소리

@@ -103,17 +103,36 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 #pad.hide{display:none}
 .cluster{display:flex;gap:calc(12*var(--u));align-items:center;pointer-events:auto}
 /* 공격군은 2×2. 세로 화면 폭(360px)에 버튼 6개를 한 줄로 놓으면 화면 밖으로 나간다. */
-.cluster.acts{display:grid;grid-template-columns:repeat(2,auto);gap:calc(10*var(--u));
-  justify-items:center;align-items:center}
+.cluster.acts{display:grid;grid-template-columns:repeat(3,auto);grid-template-rows:repeat(3,auto);
+  gap:calc(4*var(--u));justify-items:center;align-items:center}
+/* 플레이스테이션 페이스 버튼 배치(마름모). 2x2 격자는 어느 것이 무엇인지
+   손끝으로 구분이 안 됐다 — 마름모는 위/아래/좌/우가 몸에 익는다. */
+.cluster.acts [data-act="heavy"]{grid-column:2;grid-row:1}
+.cluster.acts [data-act="guard"]{grid-column:1;grid-row:2}
+.cluster.acts [data-act="thrust"]{grid-column:3;grid-row:2}
+.cluster.acts [data-act="light"]{grid-column:2;grid-row:3}
+.ps{position:relative;display:grid;place-items:center;border-radius:50%;
+  width:max(62px,calc(86*var(--u)));height:max(62px,calc(86*var(--u)));
+  background:radial-gradient(circle at 38% 30%,#3a4453,#141a24 70%,#080b11);
+  border:calc(2.5*var(--u)) solid var(--c);
+  box-shadow:0 calc(4*var(--u)) 0 #0009, inset 0 calc(2*var(--u)) calc(8*var(--u)) #ffffff1a;
+  color:var(--c);font-weight:900;text-shadow:0 1px 2px #000;line-height:1;
+  touch-action:none;-webkit-tap-highlight-color:transparent}
+.ps .sym{font-size:max(20px,calc(28*var(--u)));display:block}
+.ps .lb{font-size:max(9px,calc(11*var(--u)));color:#e8eef7;opacity:.92;
+  margin-top:calc(2*var(--u));letter-spacing:-.5px;white-space:nowrap}
+.ps:active,.ps.on{transform:translateY(calc(3*var(--u)));
+  box-shadow:0 calc(1*var(--u)) 0 #0009, inset 0 calc(2*var(--u)) calc(8*var(--u)) #ffffff33;
+  background:radial-gradient(circle at 38% 30%,#5d6b80,#222c3a 70%,#111722)}
 /* 이동은 십자. 앞뒤(◀▶)에 깊이(▲▼)가 더해져 축이 둘이 된다. */
 .cluster.moves{display:flex;align-items:center;justify-content:center}
-#stick{position:relative;width:calc(112*var(--u));height:calc(112*var(--u));border-radius:50%;
+#stick{position:relative;width:max(120px,calc(168*var(--u)));height:max(120px,calc(168*var(--u)));border-radius:50%;
   background:radial-gradient(circle at 50% 42%,rgba(80,130,190,.30),rgba(18,32,52,.55));
   border:calc(2*var(--u)) solid rgba(157,226,255,.55);
   box-shadow:0 calc(3*var(--u)) calc(10*var(--u)) rgba(0,0,0,.45) inset;
   touch-action:none}
-#stickKnob{position:absolute;left:50%;top:50%;width:calc(50*var(--u));height:calc(50*var(--u));
-  margin:calc(-25*var(--u)) 0 0 calc(-25*var(--u));border-radius:50%;
+#stickKnob{position:absolute;left:50%;top:50%;width:max(56px,calc(78*var(--u)));height:max(56px,calc(78*var(--u)));
+  margin:max(-28px,calc(-39*var(--u))) 0 0 max(-28px,calc(-39*var(--u)));border-radius:50%;
   background:radial-gradient(circle at 42% 36%,#dff1ff,#6ba4d6 62%,#2d5c8c);
   border:calc(2*var(--u)) solid rgba(255,255,255,.65);
   box-shadow:0 calc(2*var(--u)) calc(6*var(--u)) rgba(0,0,0,.5);
@@ -209,10 +228,10 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
       <div id="stick" aria-label="이동"><div id="stickKnob"></div></div>
     </div>
     <div class="cluster acts">
-      <button class="btn gd" data-act="guard" aria-label="가드">가드</button>
-      <button class="btn" data-act="thrust" aria-label="찌르기">찌르기</button>
-      <button class="btn big" data-act="light" aria-label="베기">베기</button>
-      <button class="btn big hv" data-act="heavy" aria-label="강베기">강베기</button>
+      <button class="ps" data-act="heavy"  style="--c:#3fd08a" aria-label="강베기"><span class="sym">&#9651;</span><span class="lb">강베기</span></button>
+      <button class="ps" data-act="guard"  style="--c:#ff7ecb" aria-label="가드"><span class="sym">&#9633;</span><span class="lb">가드</span></button>
+      <button class="ps" data-act="thrust" style="--c:#ff6070" aria-label="찌르기"><span class="sym">&#9675;</span><span class="lb">찌르기</span></button>
+      <button class="ps" data-act="light"  style="--c:#63aaff" aria-label="베기"><span class="sym">&#10005;</span><span class="lb">베기</span></button>
     </div>
   </div>
 
@@ -780,7 +799,7 @@ function onPress(act) {
 }
 
 // 모바일 패드
-document.querySelectorAll('#pad .btn').forEach(btn => {
+document.querySelectorAll('#pad .btn, #pad .ps').forEach(btn => {
   const act = btn.dataset.act;
   const down = e => {
     e.preventDefault(); btn.classList.add('on');
