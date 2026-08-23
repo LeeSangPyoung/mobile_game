@@ -108,18 +108,24 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 #pad.hide{display:none}
 .cluster{display:flex;gap:calc(12*var(--u));align-items:center;pointer-events:auto}
 /* 공격군은 2×2. 세로 화면 폭(360px)에 버튼 6개를 한 줄로 놓으면 화면 밖으로 나간다. */
-.cluster.acts{display:grid;grid-template-columns:repeat(3,auto);grid-template-rows:repeat(2,auto);
-  gap:calc(6*var(--u)) calc(4*var(--u));justify-items:center;align-items:center}
-/* 버튼이 셋이라 마름모가 아니라 삼각형이다.
+/* 세 버튼을 격자에 얹으니 가로 간격(182px)에 비해 세로 낙차(86px)가 절반뿐
+   이라 삼각형이 납작하게 찌그러져 보였다. 정삼각형이면 한 변이 148px 일 때
+   높이가 128px 이어야 한다. 격자로는 이 비율을 못 맞춰서 좌표로 놓는다. */
+.cluster.acts{position:relative;
+  width:calc(230*var(--u));height:calc(214*var(--u));
+  min-width:230px;min-height:214px}
+.cluster.acts .ps{position:absolute}
+/* 정삼각형 — 중심 간 거리가 세 변 모두 148px 이다.
      □ 가드        ○ 찌르기
             ✕ 베기
    베기가 아래 가운데인 이유: 엄지가 오른쪽 아래에서 올라오니 제일 가깝고,
    연격 때문에 가장 많이 두드리는 버튼이라 크기도 한 단계 키웠다. */
-.cluster.acts [data-act="guard"]{grid-column:1;grid-row:1}
-.cluster.acts [data-act="thrust"]{grid-column:3;grid-row:1}
-.cluster.acts [data-act="light"]{grid-column:2;grid-row:2;margin-top:calc(-6*var(--u))}
-.ps.big{width:max(70px,calc(100*var(--u)));height:max(70px,calc(100*var(--u)))}
-.ps.big .sym{font-size:max(25px,calc(36*var(--u)))}
+.cluster.acts [data-act="guard"] {left:0;                top:0}
+.cluster.acts [data-act="thrust"]{left:calc(148*var(--u));top:0}
+.cluster.acts [data-act="light"] {left:calc(67*var(--u)); top:calc(118*var(--u))}
+.ps{width:max(58px,calc(82*var(--u)));height:max(58px,calc(82*var(--u)))}
+.ps.big{width:max(68px,calc(96*var(--u)));height:max(68px,calc(96*var(--u)))}
+.ps.big .sym{font-size:max(24px,calc(34*var(--u)))}
 /* 조작 패드 — '유리 아래 금속'.
    예전 것이 싸구려로 보인 이유는 셋이었다.
      · box-shadow 0 4px 0 로 만든 딱딱한 가짜 입체 → 스티커처럼 보인다
@@ -340,9 +346,11 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
     radial-gradient(115% 78% at 50% 42%,rgba(0,0,0,0) 30%,rgba(6,4,2,.82) 100%)}
 
 /* 큰 글자를 배경에 아주 옅게 — 화면 중앙의 빈 곳을 채운다 */
+/* 배경 글자. 한자를 쓰면 중국 게임처럼 보인다 — 한글로 간다.
+   한글은 글자당 폭이 넓어 같은 크기로 두면 화면을 넘친다. 작게 잡는다. */
 #intro .iglyph{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
-  font-size:min(74vw,52vh);font-weight:900;line-height:1;color:rgba(255,196,110,.055);
-  letter-spacing:0;pointer-events:none;user-select:none}
+  font-size:min(30vw,20vh);font-weight:900;line-height:1;color:rgba(255,196,110,.06);
+  letter-spacing:.06em;white-space:nowrap;pointer-events:none;user-select:none}
 
 /* 불티 — 전장의 공기. 여덟 개면 충분하고, 더 넣으면 폰에서 무겁다 */
 #intro .iembers{position:absolute;inset:0;pointer-events:none}
@@ -413,7 +421,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 #intro .ititle{text-align:center;padding:8px 0;
   background:linear-gradient(90deg,transparent,rgba(8,5,3,.92) 10%,
              rgba(8,5,3,.92) 90%,transparent);
-  font-size:clamp(30px,11vw,60px);font-weight:900;letter-spacing:.2em;color:#ffd45c;
+  font-size:clamp(28px,10vw,54px);font-weight:900;letter-spacing:.16em;color:#ffd45c;
   text-shadow:0 4px 0 #6b3a08,0 0 34px rgba(255,180,60,.6);
   opacity:0;transform:scale(1.5);
   transition:opacity .16s ease,transform .3s cubic-bezier(.15,1.3,.4,1)}
@@ -502,7 +510,7 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
   <div id="intro" hidden>
     <div class="ibg"></div>
     <div class="ivs"></div>
-    <div class="iglyph">鬪</div>
+    <div class="iglyph">일기토</div>
     <div class="iembers"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <!-- 격자로 짠다. 절대 위치로 잡으면 화면 비율이 바뀌는 순간 말상자가
          얼굴을 덮는다 — 실제로 그렇게 됐다. 행을 나누면 구조적으로 안 겹친다. -->
@@ -515,7 +523,7 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
         <div class="ifig l"><img id="iImgL" alt=""><div class="iname" id="iNameL"></div></div>
         <div class="ifig r"><img id="iImgR" alt=""><div class="iname" id="iNameR"></div></div>
       </div>
-      <div class="ititle" id="iTitle">一 騎 討</div>
+      <div class="ititle" id="iTitle">일 기 토</div>
     </div>
     <div class="iskip" id="iSkip">화면을 누르면 건너뜁니다</div>
   </div>
