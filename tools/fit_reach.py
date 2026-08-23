@@ -25,7 +25,7 @@ import statistics
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATES = os.path.join(ROOT, 'assets', 'arcade_duel')
 CX, TARGET_H = 640, 200
-BASE = {'slash': 223, 'thrust': 238, 'heavy': 194}   # duel_v2.html 의 MOVES.reach
+BASE = {'slash': 223, 'thrust': 278, 'heavy': 194}   # duel_v2.html 의 MOVES.reach
 LO, HI = 0.65, 1.40
 # 하한은 '두 몸이 겹치기 직전 간격 + 쓸 수 있는 여유' 여야 한다.
 # 예전 값 160 은 몸통 반지름 합을 148(체격 1.0 기준)로 보고 12px 만 얹은

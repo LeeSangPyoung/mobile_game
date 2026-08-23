@@ -210,6 +210,17 @@ export const SFX = {
     tone(t, { freq: 240, to: 96, peak: .26, attack: .002, decay: .09, type: 'triangle' });
   },
 
+  // 연속타 — 이어질수록 음이 올라간다. 2연타와 5연타가 같은 소리면
+  // '콤보가 쌓인다'가 귀로 안 읽힌다. 반음씩 올린다(2^(n/12)).
+  combo(n = 2) {
+    if (!ctx || muted) return;
+    const t = now();
+    const f = 660 * Math.pow(2, Math.min(10, n - 2) / 12);
+    tone(t, { freq: f, to: f * 1.5, peak: .26, attack: .004, decay: .13, type: 'triangle' });
+    tone(t + .05, { freq: f * 1.5, to: f * 2, peak: .18, attack: .004, decay: .16, type: 'triangle' });
+    clang(t, { peak: .26, decay: .07, q: 22, freqs: [3200, 5200, 7600] });
+  },
+
   // 카운트다운 — 3·2·1 은 낮고 짧은 나무 타격음, FIGHT 는 위로 뻗는 신호.
   // 숫자가 같은 소리면 셋이 그냥 반복으로 들린다. 음을 조금씩 올려
   // '다가온다'를 만든다(392 → 440 → 494Hz).

@@ -112,7 +112,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
   gap:calc(4*var(--u));justify-items:center;align-items:center}
 /* 플레이스테이션 페이스 버튼 배치(마름모). 2x2 격자는 어느 것이 무엇인지
    손끝으로 구분이 안 됐다 — 마름모는 위/아래/좌/우가 몸에 익는다. */
-.cluster.acts [data-act="heavy"]{grid-column:2;grid-row:1}
+.cluster.acts [data-act="dodge"]{grid-column:2;grid-row:1}
 .cluster.acts [data-act="guard"]{grid-column:1;grid-row:2}
 .cluster.acts [data-act="thrust"]{grid-column:3;grid-row:2}
 .cluster.acts [data-act="light"]{grid-column:2;grid-row:3}
@@ -408,6 +408,28 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
   transition:opacity .16s ease,transform .3s cubic-bezier(.15,1.3,.4,1)}
 #intro .ititle.in{opacity:1;transform:scale(1)}
 
+
+/* 연속타 표시 — 콤보가 붙는 순간이 이 게임에서 제일 기분 좋은 지점이다.
+   숫자가 크게 튀어 들어와 살짝 흔들리며 앉는다. HUD 아래·무대 위쪽에 둬서
+   싸우는 두 사람을 안 가린다. */
+#combo{position:absolute;left:0;right:0;top:14%;z-index:8;text-align:center;
+  pointer-events:none;font-style:italic;line-height:1;
+  display:flex;align-items:baseline;justify-content:center;gap:calc(6*var(--u))}
+#combo[hidden]{display:none}
+#combo b{font-size:calc(72*var(--u));font-weight:900;color:#fff2b0;
+  text-shadow:0 calc(4*var(--u)) 0 #7a2c06,0 0 calc(26*var(--u)) rgba(255,170,60,.85);
+  -webkit-text-stroke:calc(2*var(--u)) #7a2c06;paint-order:stroke fill}
+#combo span{font-size:calc(26*var(--u));font-weight:900;letter-spacing:calc(2*var(--u));
+  color:#ffd45c;text-shadow:0 calc(3*var(--u)) 0 #5a2205,0 0 calc(18*var(--u)) rgba(255,150,40,.7)}
+#combo span i{font-style:italic;color:#ff8a3c}
+#combo.pop{animation:comboPop .70s cubic-bezier(.18,1.5,.4,1) both}
+@keyframes comboPop{
+  0%{opacity:0;transform:scale(2.1) rotate(-7deg)}
+  18%{opacity:1;transform:scale(1) rotate(0)}
+  26%{transform:scale(1.12) rotate(2deg)}
+  36%{transform:scale(1) rotate(0)}
+  76%{opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(1.18) translateY(calc(-14*var(--u)))}}
 /* 개막 동안엔 HUD 와 조작 패드를 감춘다. 반투명 막 아래로 비치면
    '연출'이 아니라 '화면이 어두워진 게임'으로 보인다. */
 body.introing #hud,
@@ -441,6 +463,7 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
   </div>
 
   <div id="banner" aria-live="polite"></div>
+  <div id="combo" hidden><b id="comboN">2</b><span>COMBO<i>!!</i></span></div>
   <div id="tip"></div>
 
   <div id="pad">
@@ -451,7 +474,7 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
       <div id="stick" aria-label="이동"><div id="stickRing"></div><div id="stickKnob"></div></div>
     </div>
     <div class="cluster acts">
-      <button class="ps" data-act="heavy"  style="--c:#4ee39c" aria-label="강베기"><span class="sym">&#9651;</span></button>
+      <button class="ps" data-act="dodge"  style="--c:#4ee39c" aria-label="회피"><span class="sym">&#8645;</span></button>
       <button class="ps" data-act="guard"  style="--c:#ff92d4" aria-label="가드"><span class="sym">&#9633;</span></button>
       <button class="ps" data-act="thrust" style="--c:#ff7280" aria-label="찌르기"><span class="sym">&#9675;</span></button>
       <button class="ps" data-act="light"  style="--c:#7cbcff" aria-label="베기"><span class="sym">&#10005;</span></button>
@@ -515,7 +538,7 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
       <button class="go" id="ovGo">결 투</button>
       <div class="keys">
         <b>← →</b> 걸음 · <b>← ←</b> 백스텝 · <b>Shift</b> 대시 · <b>↑ ↓</b> 비켜서기<br>
-        <b>J</b> 베기 · <b>K</b> 강베기 · <b>L</b> 찌르기 · <b>S</b> 가드 · <b>Esc</b> 일시정지
+        <b>J</b> 베기(맞으면 연타로 연격) · <b>K</b> 회피 · <b>L</b> 찌르기 · <b>S</b> 가드 · <b>Esc</b> 일시정지
       </div>
     </div>
   </div>
@@ -768,7 +791,8 @@ const POSE_BODY_H = { player: 620, boss: 620 };
 const CHAR_REACH = { player: null, boss: null };
 const reachOf = (f, key) => {
   const r = CHAR_REACH[f.kind];
-  const k = key === 'light' ? 'slash' : key;
+  // 연격(combo)은 그림만 강베기이고 사거리는 베기를 따른다 — chainOf 가 그 뜻이다
+  const k = key === 'light' ? 'slash' : (MOVES[key] && MOVES[key].chainOf) || key;
   return (r && r[k]) || MOVES[key].reach;
 };
 for (const [who, kind, dir] of [['s', 'player', 'zhao_yun_states'], ['h', 'boss', 'hua_xiong_states']]) {
@@ -940,12 +964,33 @@ const MOVES = {
   // 예전엔 셋의 지속 딜이 0.219/0.204/0.231 로 거의 같았다 — 시간당 데미지가
   // 같으면 가장 안전한 걸 고르는 게 당연하고, 가장 안전한 건 가장 긴 찌르기다.
   // 사거리 15px 을 공짜로 얻는 구조였다. 딜 14→10 으로 그 값을 치르게 한다.
-  thrust: { startup: 13, active: 5, recovery: 22, dmg: 10, reach: 238, push: 9,  stam: 14,
-            label: '찌르기', guardChip: 2,   stunAdd: 7,  sheet: 'thrust', arc: 'line'  },
+  // 찌르기는 콤보가 없다. 그 대신 '거리를 지배한다'가 확실한 값이어야 한다.
+  //   · 사거리를 238 → 278 로. 베기 대비 +6.7% 는 눈에 안 보였다(+25%)
+  //   · 맞으면 크게 밀어내 간격을 되돌린다(9 → 18)
+  //   · stagger 26 — 맞은 쪽이 더 오래 굳는다. 이게 없으면 **맞추고도 9프레임
+  //     손해**였다(실측). 때린 사람이 벌을 받는 구조였다.
+  //   후딜 22 는 그대로 둔다 — 헛치면 여전히 크게 위험해야 남용이 안 된다.
+  thrust: { startup: 13, active: 5, recovery: 22, dmg: 10, reach: 278, push: 18, stam: 14,
+            label: '찌르기', guardChip: 2,   stunAdd: 7,  sheet: 'thrust', arc: 'line',
+            stagger: 26 },
+  // 강베기는 이제 **버튼이 아니다**. 베기가 막혔을 때만 이어서 나간다.
+  // 느리고(21f) 막히면 크게 불리하지만 가드를 부순다 — 거는 쪽이 도박을 한다.
   heavy:  { startup: 21, active: 6, recovery: 26, dmg: 24, reach: 194, push: 22, stam: 24,
             label: '강베기', guardChip: 9,   stunAdd: 22, sheet: 'heavy',  arc: 'heavy',
             crush: true },   // 가드해도 기력을 크게 깎는다 — 계속 막기만 하면 무너진다
+  // 콤보 마무리 — 베기가 **맞았을 때만** 후딜을 취소하고 이어진다.
+  // 그림은 강베기 것을 쓰되 발동이 훨씬 빠르다(21 → 10). 취소로 들어가므로
+  // 상대 경직(18f) 안에 확정으로 꽂힌다. 사거리는 베기와 같게 잡는다 —
+  // 강베기 사거리(194)로 두면 1타에 밀려난 상대에게 안 닿는다.
+  //   lunge — 1타의 밀어내기(push 5)로 상대가 20px 쯤 물러난다. 그대로 두면
+  //   같은 사거리인 2타가 그 20px 때문에 헛돈다(실측: 콤보가 한 번도 안 닿았다).
+  //   따라붙으며 베는 그림이기도 하니 앞으로 나가는 게 맞다.
+  combo:  { startup: 10, active: 5, recovery: 20, dmg: 19, reach: 223, push: 16, stam: 16,
+            label: '연격',   guardChip: 4,   stunAdd: 18, sheet: 'heavy',  arc: 'heavy',
+            chainOf: 'slash', lunge: 7 },
 };
+// 연격이 이어지는 시간. 1타가 닿고 이 안에 다시 누르면 콤보가 성립한다.
+const CHAIN_HIT = 20, CHAIN_GUARD = 16;
 const GUARD_JUST = 6;        // 가드 입력 후 이 프레임 안에 맞으면 저스트가드
 const STUN_MAX = 100;        // 경직 게이지. 꽉 차면 무방비 — 확정타 기회
 
@@ -986,6 +1031,8 @@ function makeFighter(kind, opts) {
     walkClock: 0,
     lean: 0,
     ai: { t: 0, plan: 'wait', react: 0, pocket: 'thrust', pocketUntil: 0 },
+    chain: null, chainT: 0,          // 이어치기 창 — 'hit' 이면 연격, 'guard' 면 강베기
+    comboN: 0, comboLast: -99,       // 연속으로 꽂은 횟수와 마지막 타격 프레임
   };
 }
 
@@ -1063,7 +1110,7 @@ const warMul = (a, d) => Math.pow(a.war / d.war, 0.70);
 
 const busy = f => f.state === 'windup' || f.state === 'active' || f.state === 'recover';
 const helpless = f => f.state === 'hurt' || f.state === 'stunned' || f.state === 'ko';
-const canAct = f => !busy(f) && !helpless(f) && f.state !== 'dash' && f.state !== 'backstep';
+const canAct = f => !busy(f) && !helpless(f) && f.state !== 'dash' && f.state !== 'backstep' && f.state !== 'dodge';
 
 // ═══════════════════════════════════════════════════════════════════
 //  4. 입력
@@ -1077,7 +1124,7 @@ const KEYMAP = {
   ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right',
   ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyX: 'down',
   KeyS: 'guard',
-  KeyJ: 'light', KeyK: 'heavy', KeyL: 'thrust',
+  KeyJ: 'light', KeyK: 'dodge', KeyL: 'thrust',
   Space: 'light', ShiftLeft: 'dash', ShiftRight: 'dash',
 };
 
@@ -1101,6 +1148,8 @@ function onPress(act) {
     else tapped[act] = now;
   } else if (act === 'dash') {
     startDash(P, P.dir);
+  } else if (act === 'dodge') {
+    startDodge(P);
   } else if (MOVES[act]) {
     bufAttack = act; bufFrames = 8;
   }
@@ -1167,15 +1216,54 @@ const held = act => {
 // ═══════════════════════════════════════════════════════════════════
 //  5. 행동
 // ═══════════════════════════════════════════════════════════════════
-function startMove(f, key) {
+// cancel=true 면 후딜 중에도 끊고 들어간다. 연격이 성립하려면 이게 필요하다 —
+// 베기를 맞혀도 유불리가 +1프레임뿐인데 가장 빠른 기술 발동이 8프레임이라,
+// 취소가 없으면 2타가 상대 회복 뒤에 나가서 오히려 반격을 맞는다(실측).
+function startMove(f, key, cancel = false) {
   const m = MOVES[key];
-  if (!m || !canAct(f)) return false;
+  if (!m) return false;
+  if (cancel) { if (f.state !== 'active' && f.state !== 'recover') return false; }
+  else if (!canAct(f)) return false;
   if (f.stam < m.stam) { spendFail(f); return false; }
   // 소리는 판정을 통과한 뒤에 낸다. 앞에 있으면 못 나간 공격도 소리가 났고,
   // AI 가 기술을 순서대로 시도하면서 한 번에 세 번까지 울렸다.
-  snd('swing', key);
+  snd('swing', key === 'combo' ? 'heavy' : key);
   f.stam -= m.stam;
   f.state = 'windup'; f.st = 0; f.move = m; f.moveKey = key; f.hitDone = false;
+  if (m.lunge) f.vx = f.dir * m.lunge;  // 따라붙으며 벤다
+  f.chain = null;                       // 새 기술이 나갔으니 이어치기 창은 닫는다
+  return true;
+}
+
+// 베기를 누를 때 무엇이 나갈지 정한다 — 1타의 결과가 정한다.
+//   맞았다 → 후딜을 끊고 연격(빠름·확정)
+//   막혔다 → 끊지 못하고 강베기(느림·가드 부숨·막히면 크게 불리)
+//   헛쳤다 → 그냥 베기 한 번 더. 마구 눌러도 느린 기술이 허공에 안 나간다.
+function attackWith(f, key) {
+  if (key === 'light' && f.chainT > 0) {
+    if (f.chain === 'hit') return startMove(f, 'combo', true);
+    // 막혔을 때도 후딜은 끊어 준다. 안 끊으면 후딜(13f)에 막혀 입력이 통째로
+    // 사라져서 '눌렀는데 아무것도 안 나왔다'가 된다. 발동 21프레임은 그대로라
+    // 상대가 보고 반응할 시간이 있고, 막히면 크게 불리한 것도 그대로다.
+    if (f.chain === 'guard') return startMove(f, 'heavy', true);
+  }
+  return startMove(f, key);
+}
+
+// 회피 — 깊이로 빠르게 비켜선다. 찌르기가 닿는 폭(Z_ARC.line=20)보다 멀리
+// 가야 회피가 된다. 예전엔 스틱을 92% 까지 튕겨야 나오는 대시뿐이라
+// 의도치 않게 나가거나 필요할 때 안 나왔다.
+function startDodge(f) {
+  if (f.guardHeld || !canAct(f) || f.stam < 14) return false;
+  f.stam -= 14;
+  const up = f === P && held('up'), dn = f === P && held('down');
+  const dir = up ? 1 : dn ? -1 : (f.z > Z_MAX / 2 ? -1 : 1);
+  f.vz = dir * 7.5;
+  f.state = 'dodge'; f.st = 0;
+  f.inv = 12;                            // 짧은 무적 — 비켜서는 값이 있어야 한다
+  f.chain = null;
+  snd('dash');
+  for (let i = 0; i < 5; i++) dust.push({ x: f.x, y: footY(f), vx: (Math.random() - .5) * 3, vy: -Math.random() * 1.4, life: 20, r: 3 + Math.random() * 4 });
   return true;
 }
 function spendFail(f) {
@@ -1271,6 +1359,8 @@ function applyHit(att, def) {
     def.hp -= chip;
     def.stam -= m.crush ? 34 : 12;
     def.vx = att.dir * m.push * 0.55;
+    // 막혔다 → 후딜은 못 끊지만, 이어서 누르면 강베기가 나간다(가드 부수기 도박)
+    if (att.moveKey === 'light') { att.chain = 'guard'; att.chainT = CHAIN_GUARD; }
     hitStop = m.crush ? 12 : 7; shake(m.crush ? 8 : 4);
     snd('guard', !!m.crush);
     sparkBurst(hx, hy, 12, '#cfe6ff', 5);
@@ -1295,6 +1385,13 @@ function applyHit(att, def) {
   def.state = 'hurt'; def.st = 0; def.inv = 10; def.hitFlash = 14;
   // 강타(가드크러시 기술)나 최대체력 12% 이상이면 크게 젖혀지는 피격 포즈
   def.hurtHeavy = !!m.crush || dmg >= def.maxHp * 0.12;
+  def.hurtT = m.stagger || 0;          // 기술이 정한 경직 시간(0 이면 기본값)
+  // 맞았다 → 후딜을 끊고 연격으로 이어갈 수 있다
+  if (att.moveKey === 'light') { att.chain = 'hit'; att.chainT = CHAIN_HIT; }
+  // 연속으로 꽂았는가. 48프레임 안에 다시 꽂으면 이어진 것으로 센다.
+  att.comboN = (frame - att.comboLast <= 48) ? att.comboN + 1 : 1;
+  att.comboLast = frame;
+  if (att.comboN >= 2) showCombo(att);
   def.stun = Math.min(STUN_MAX, def.stun + m.stunAdd);
   def.guardHeld = false;
 
@@ -1339,6 +1436,9 @@ function stepFighter(f) {
   if (f.inv > 0) f.inv--;
   if (f.hitFlash > 0) f.hitFlash--;
   if (f.guardHeld) f.guardT++; else f.guardT = 0;
+  if (f.chainT > 0 && --f.chainT === 0) f.chain = null;
+  // 연속타 계수는 잠깐 손을 놓으면 끊긴다
+  if (f.comboN && frame - f.comboLast > 48) { f.comboN = 0; }
 
   // 기력 회복 — 공격/가드 중엔 거의 안 찬다
   const regen = busy(f) ? 0.05 : f.guardHeld ? 0.12 : helpless(f) ? 0.25 : 0.42;
@@ -1363,10 +1463,16 @@ function stepFighter(f) {
     case 'backstep':
       if (f.st >= 13) { f.state = 'idle'; f.st = 0; }
       break;
+    case 'dodge':
+      if (f.st >= 14) { f.state = 'idle'; f.st = 0; }
+      break;
     case 'hurt':
       // 20프레임(0.33초)은 피격 자세가 눈에 들어오기도 전에 끝난다.
       // 강타는 더 오래 젖혀져 있어야 '크게 맞았다'가 읽힌다.
-      if (f.st >= (f.hurtHeavy ? 27 : 18)) { f.state = 'idle'; f.st = 0; }
+      // 기술이 stagger 를 지정하면 그만큼 굳는다. 찌르기가 '맞추고도 손해'
+      // 였던 것을 여기서 바로잡는다 — 사거리가 긴 대신 콤보가 없으니
+      // 최소한 맞힌 쪽이 손해는 안 봐야 한다.
+      if (f.st >= (f.hurtT || (f.hurtHeavy ? 27 : 18))) { f.state = 'idle'; f.st = 0; }
       break;
     case 'stunned':
       if (f.st >= f.stunTimer) { f.state = 'idle'; f.st = 0; }
@@ -1379,7 +1485,8 @@ function stepFighter(f) {
   // 움직이다 가드를 누르면 속도가 그대로 남아 방향키를 떼도 무대 끝까지
   // 미끄러졌다(120프레임에 118px, vz 가 2.4 로 고정). 빙판이었다.
   // 가드는 발을 묶는 자세다. 앞뒤(vx)도 같이 죽인다.
-  if (busy(f) || helpless(f) || f.guardHeld) f.vz *= 0.5;
+  if (f.state === 'dodge') f.vz *= 0.86;          // 회피는 멀리 미끄러져야 값이 있다
+  else if (busy(f) || helpless(f) || f.guardHeld) f.vz *= 0.5;
   if (f.guardHeld) f.vx *= 0.5;
   if (Math.abs(f.vz) < 0.05) f.vz = 0;
   f.z = clamp(f.z + f.vz, 0, Z_MAX);
@@ -1458,7 +1565,8 @@ function updatePlayer() {
 
   if (bufFrames > 0) {
     bufFrames--;
-    if (canAct(P) && startMove(P, bufAttack)) { bufAttack = null; bufFrames = 0; }
+    // 연격은 후딜 중에도 끊고 들어가므로 canAct 를 조건으로 걸면 안 된다
+    if (attackWith(P, bufAttack)) { bufAttack = null; bufFrames = 0; }
   }
 
   if (canAct(P) && !P.guardHeld) {
@@ -1488,7 +1596,12 @@ function updateAI() {
   const dist = Math.abs(P.x - B.x);
   B.guardHeld = false;
 
-  if (helpless(B) || busy(B) || B.state === 'dash' || B.state === 'backstep') { ai.t++; return; }
+  // 이어치기 창이 열려 있으면 후딜 중이라도 이어친다 — 사람과 같은 수단이다
+  if (B.chainT > 0 && (B.state === 'active' || B.state === 'recover')) {
+    if (B.chain === 'hit' && Math.random() < diff.aggro) { attackWith(B, 'light'); ai.t++; return; }
+    if (B.chain === 'guard' && Math.random() < diff.aggro * .35) { attackWith(B, 'light'); ai.t++; return; }
+  }
+  if (helpless(B) || busy(B) || B.state === 'dash' || B.state === 'backstep' || B.state === 'dodge') { ai.t++; return; }
   ai.t++;
 
   // 디버그: 상대를 가만히 세워둔다. 내 동작만 천천히 보고 싶을 때.
@@ -1506,11 +1619,13 @@ function updateAI() {
   // 자기 리치를 기준으로 잡으면 창을 쓰는 장수는 더 멀리서 반응한다.
   const RT = reachOf(B, 'thrust');
   if (P.state === 'recover' && dist < RT && ai.react-- <= 0) {
-    if (dist < reachOf(B, 'heavy') && B.stam > MOVES.heavy.stam && Math.random() < .55) { startMove(B, 'heavy'); return; }
-    if (dist < reachOf(B, 'thrust')) { startMove(B, 'thrust'); return; }
+    // 강베기는 사람과 마찬가지로 직접 못 고른다 — 베기가 막혔을 때만 나간다.
+    // AI 만 마음대로 쓰면 규칙이 둘이 되어 '왜 저건 되지?' 가 된다.
+    if (dist < reachOf(B, 'light')) { attackWith(B, 'light'); return; }
+    if (dist < reachOf(B, 'thrust')) { attackWith(B, 'thrust'); return; }
   }
   // 플레이어가 무방비 → 강베기
-  if (helpless(P) && dist < reachOf(B, 'heavy') + 30 && B.stam > MOVES.heavy.stam) { startMove(B, 'heavy'); return; }
+  if (helpless(P) && dist < reachOf(B, 'light')) { attackWith(B, 'light'); return; }
 
   // 플레이어가 칼을 뽑았다 → 막거나 뺀다
   if (P.state === 'windup' && dist < RT + 30) {
@@ -1560,7 +1675,8 @@ function updateAI() {
   // 사람도 따라서 찌르기만 누르는 게 최선이 됐다. 간격을 골라야 기술이 섞인다.
   if (ai.t >= ai.pocketUntil) {
     const r = Math.random();
-    ai.pocket = r < .30 ? 'heavy' : r < .62 ? 'light' : 'thrust';
+    // 강베기는 이제 직접 고르는 기술이 아니므로 간격 후보에서 뺀다
+    ai.pocket = r < .55 ? 'light' : 'thrust';
     ai.pocketUntil = ai.t + 70 + (Math.random() * 90 | 0);
   }
   // 고른 간격이 SEP 안쪽이면 영영 도달할 수 없어 접근·후퇴를 무한 반복한다
@@ -1579,13 +1695,10 @@ function updateAI() {
   }
   // 닿는 거리 — 골라둔 간격의 기술을 먼저 쓴다
   if (ai.t % 9 === 0 && Math.random() < diff.aggro) {
-    const order = ai.pocket === 'heavy' ? ['heavy', 'light', 'thrust']
-                : ai.pocket === 'light' ? ['light', 'thrust', 'heavy']
-                :                         ['thrust', 'light', 'heavy'];
+    const order = ai.pocket === 'light' ? ['light', 'thrust'] : ['thrust', 'light'];
     for (const k of order) {
       if (!canReach(k)) continue;
-      if (k === 'heavy' && B.stam <= MOVES.heavy.stam + 10) continue;
-      if (startMove(B, k)) return;
+      if (attackWith(B, k)) return;
     }
   } else if (B.state === 'walk') { B.state = 'idle'; }
 }
@@ -1764,7 +1877,7 @@ function statePose(f) {
       if (f.guardHeld && !busy(f) && !helpless(f))
         return pick(f.guardT <= GUARD_JUST ? (set.guardJust || set.guard) : set.guard);
       if (f.state === 'idle') return pick(set.idle);
-      if (f.state === 'walk' || f.state === 'dash' || f.state === 'backstep') {
+      if (f.state === 'walk' || f.state === 'dash' || f.state === 'backstep' || f.state === 'dodge') {
         // 걷기 컷이 있으면 보폭에 맞춰 넘긴다 — 리그가 필요 없어지는 지점.
         // 발이 미끄러지지 않도록 이동 거리(gait)로 프레임을 고른다.
         // 한 주기(WALK_CYCLE_DIST)를 컷 수로 나눈다 — 3컷이든 4비트든 보폭은 같다.
@@ -1772,7 +1885,7 @@ function statePose(f) {
         // 속도가 걷기의 2.5~3배라 같은 규칙으로 넘기면 초당 25~42회가 되어 깜빡인다.
         // 게다가 뒤로 가는데 앞으로 걷는 그림이 돌아간다. 한 자세로 미끄러지는 게 맞다 —
         // 기울기(lean)와 흙먼지가 이미 속도감을 만든다.
-        if (Array.isArray(set.walk) && f.state !== 'dash' && f.state !== 'backstep') {
+        if (Array.isArray(set.walk) && f.state !== 'dash' && f.state !== 'backstep' && f.state !== 'dodge') {
           const step = walkCycleDist(f) / set.walk.length;
           return pick(set.walk[Math.floor((f.gait || 0) / step) % set.walk.length]);
         }
@@ -2209,6 +2322,19 @@ function bumpHap() {
   el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
 }
 let bannerT = 0;
+// 연속타 표시. 콤보가 늘어날수록 소리도 높아진다.
+let comboTimer = 0;
+function showCombo(att) {
+  const el = $('combo');
+  if (!el) return;
+  $('comboN').textContent = att.comboN;
+  el.hidden = false;
+  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+  clearTimeout(comboTimer);
+  comboTimer = setTimeout(() => { el.hidden = true; }, 720);
+  snd('combo', att.comboN);
+}
+
 function banner(text, color, weight) {
   if (weight < bannerT) return;
   bannerT = weight;
