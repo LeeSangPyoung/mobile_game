@@ -50,6 +50,33 @@ body{margin:0;background:#0a0705;color:#f2e4cf;overflow:hidden;
 #warLog div{opacity:.55}
 #warLog div:last-child{opacity:1;color:#ffe6b0;font-weight:700}
 
+
+/* ── 적군 사기 붕괴 표시 ────────────────────────────────────
+   보상은 눈에 보여야 보상이다. 붉은 띠로 화면 위쪽을 가로질러 놓고,
+   게이지가 줄어드는 걸 계속 보여 준다 — "지금 밀어붙여라" 가 읽히게. */
+#morale{position:absolute;right:12px;top:78px;z-index:3;width:min(196px,54vw);
+  padding:8px 11px 9px;border-radius:12px;text-align:left;
+  background:linear-gradient(180deg,rgba(120,18,12,.94),rgba(60,8,6,.96));
+  border:1px solid #ff6a4a;
+  box-shadow:0 8px 24px rgba(0,0,0,.6),0 0 26px rgba(255,70,40,.35),
+             inset 0 1px 0 rgba(255,255,255,.16);
+  animation:mIn .3s cubic-bezier(.15,1.3,.4,1) both, mPulse 1s ease-in-out infinite}
+#morale[hidden]{display:none}
+@keyframes mIn{from{opacity:0;transform:translateY(-10px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes mPulse{0%,100%{box-shadow:0 8px 24px rgba(0,0,0,.6),0 0 22px rgba(255,70,40,.28),inset 0 1px 0 rgba(255,255,255,.16)}
+  50%{box-shadow:0 8px 24px rgba(0,0,0,.6),0 0 40px rgba(255,90,50,.6),inset 0 1px 0 rgba(255,255,255,.16)}}
+#morale .mtop{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+#morale .mtop b{font-size:13.5px;font-weight:900;color:#ffd9cd;letter-spacing:.06em;
+  text-shadow:0 2px 0 #3a0703}
+#morale .mtop span{font-size:20px;font-weight:900;color:#fff;line-height:1;
+  text-shadow:0 2px 0 #3a0703,0 0 14px rgba(255,120,80,.8)}
+#morale .mbar{height:9px;margin:6px 0 5px;border-radius:5px;overflow:hidden;
+  background:rgba(0,0,0,.55);box-shadow:inset 0 2px 5px rgba(0,0,0,.7)}
+#morale .mbar i{display:block;height:100%;width:100%;
+  background:linear-gradient(90deg,#ff3a20,#ff9a5c);
+  box-shadow:0 0 12px rgba(255,90,40,.9);transition:width .1s linear}
+#morale .msub{font-size:11px;color:#ffb9a4;font-weight:700}
+#morale .msub b{color:#fff2c0}
 /* ── 공통 시트 ──────────────────────────────────────────── */
 .sheet{position:absolute;inset:0;z-index:5;display:none;
   background:rgba(6,4,3,.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
@@ -132,6 +159,13 @@ iframe#duel.on{display:block}
     <div class="troop" style="text-align:right"><b>적군</b><small id="foeCastle">호뢰관</small>
       <div class="tbar foe"><i id="foeBar" style="width:100%"></i></div></div>
   </div>
+  <!-- 일기토 승리 보상 — 적군 전체 사기 붕괴. 눈에 안 보이면 보상이 아니다. -->
+  <div id="morale" hidden>
+    <div class="mtop"><b>적군 사기 붕괴</b><span id="mSec">10</span></div>
+    <div class="mbar"><i id="mFill"></i></div>
+    <div class="msub">적 공격력 · 방어력 <b>30%</b> 감소</div>
+  </div>
+
   <div id="warLog"></div>
 
   <div class="sheet" id="chal">
@@ -141,7 +175,7 @@ iframe#duel.on{display:block}
       <div class="nm" id="chalName">—</div>
       <div class="grade" id="chalGrade">—</div>
       <div class="say" id="chalSay">—</div>
-      <div class="warn" id="chalWarn">거부하면 아군의 사기가 꺾인다 — 병력 <b>10%</b> 손실</div>
+      <div class="warn" id="chalWarn">이기면 <b>적군 전체의 사기가 무너진다</b><br>지면 그 장수는 이번 전투에서 빠진다</div>
       <div class="btns">
         <button class="btn no" id="btnNo">거 부</button>
         <button class="btn ok" id="btnYes">수 락</button>
@@ -189,6 +223,7 @@ const power = (g,st,lv) => Math.round((g.war||80) * STAR_MULT[st] * ENHANCE_MULT
 let ROSTER = [];      // 일기토 그림이 있는 장수(현재 49명)
 let MINE = [];        // 내가 가진 장수 중 일기토 가능한 것
 let foe = null, mine = null, myTroops = 100, foeTroops = 100;
+let foeAtk = 1;      // 적군 전투력 배수 — 사기가 무너지면 0.7 이 된다
 
 const log = t => {
   const el = $('warLog');
@@ -239,11 +274,12 @@ function offerDuel() {
   show('chal', true);
 }
 
+// 거부에는 대가가 없다. 대가는 '수락해서 이겼을 때만 얻는 것' 쪽에 둔다 —
+// 지는 쪽을 벌하면 약한 장수뿐인 사람은 아예 안 하게 되고, 그러면
+// 일기토를 만든 목적(수집·강화 동기)과 정반대가 된다.
 $('btnNo').onclick = () => {
   show('chal', false);
-  myTroops = Math.max(5, Math.round(myTroops * 0.9));
-  bars();
-  log('일기토를 거부했다 — 아군의 사기가 꺾인다 (병력 −10%)');
+  log('일기토를 거부했다 — 적장이 코웃음을 치며 물러선다');
   setTimeout(offerDuel, 6000);   // 적은 다시 청할 수 있다
 };
 
@@ -300,23 +336,52 @@ addEventListener('message', e => {
   }
 });
 
+// ── 일기토 결과를 전장에 반영한다 ──────────────────────────
+// 규칙은 두 줄뿐이다. 계산할 게 없어야 플레이어가 납득한다.
+//   이기면 → 적군 **전체**의 사기가 무너진다(공격력·방어력 30% 감소, 10초)
+//   지면   → 내 장수가 이번 전투에서 빠진다
+// 병력 수는 어느 쪽도 건드리지 않는다. 성마다 병력이 10~40명으로 제각각이라
+// 인원이나 비율로 주면 '누구는 더 받았다'가 생긴다. 배수는 어디서나 같다.
+const MORALE_CUT = 0.30, MORALE_SEC = 10;
+let moraleT = 0;
+
+function startMoraleBreak() {
+  const el = $('morale'), fill = $('mFill'), sec = $('mSec');
+  el.hidden = false;
+  const t0 = performance.now();
+  clearInterval(moraleT);
+  moraleT = setInterval(() => {
+    const left = MORALE_SEC - (performance.now() - t0) / 1000;
+    if (left <= 0) {
+      clearInterval(moraleT); el.hidden = true;
+      foeAtk = 1; log('적군이 전열을 되찾았다');
+      return;
+    }
+    fill.style.width = (left / MORALE_SEC * 100) + '%';
+    sec.textContent = Math.ceil(left);
+  }, 100);
+  foeAtk = 1 - MORALE_CUT;
+}
+
 function applyResult(r) {
   const kind = r ? r.kind : 'draw';
   const t = $('resTitle'), eff = $('resEff');
   if (kind === 'win') {
-    foeTroops = Math.max(5, Math.round(foeTroops * 0.6));
     t.textContent = '승 리'; t.style.color = '#ffd45c';
-    $('resLine').textContent = r.hap + '합 만에 ' + foe.g.name + '을(를) 베었다.';
-    eff.innerHTML = '적군의 사기가 무너진다 — 적 병력 <b>−40%</b><br>'
-                  + '성벽이 흔들린다 — 다음 공격에 <b>+20%</b>';
-    log('일기토 승리 — ' + foe.g.name + '을(를) 베었다 (적 병력 −40%)');
+    $('resLine').textContent = r.hap + '합 만에 ' + foe.g.name + '을(를) 사로잡았다.';
+    eff.innerHTML = '적군 전체의 사기가 무너진다<br>'
+      + '<b>10초간</b> 적 공격력 · 방어력 <b>30%</b> 감소<br>'
+      + '<span style="color:#9fe8ff">' + foe.g.name + '을(를) 사로잡았다 — 전투 후 등용 확률이 크게 오른다</span>';
+    log('일기토 승리 — ' + foe.g.name + '을(를) 사로잡았다');
+    startMoraleBreak();
   } else if (kind === 'lose') {
-    myTroops = Math.max(5, Math.round(myTroops * 0.75));
     t.textContent = '패 배'; t.style.color = '#ff8a5c';
-    $('resLine').textContent = r.hap + '합을 겨루었으나 당했다.';
-    eff.innerHTML = '아군이 술렁인다 — 아군 병력 <b>−25%</b><br>'
-                  + '그 장수는 이번 전투에서 <b>물러난다</b>';
-    log('일기토 패배 — 아군 병력 −25%');
+    $('resLine').textContent = r.hap + '합을 겨루었으나 사로잡혔다.';
+    eff.innerHTML = '<b>' + mine.g.name + '</b>이(가) 이번 전투에서 빠진다<br>'
+      + '<span style="color:#c2a97f">병력 손실은 없다</span>';
+    // 진 장수는 이번 전투 동안 못 쓴다 — 목록에서 뺀다
+    MINE = MINE.filter(o => o !== mine);
+    log('일기토 패배 — ' + mine.g.name + '이(가) 사로잡혔다 (이번 전투 이탈)');
   } else {
     t.textContent = '무 승 부'; t.style.color = '#d8c39c';
     $('resLine').textContent = '승부가 나지 않았다.';
