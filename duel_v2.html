@@ -193,6 +193,53 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
   border:2px solid #9de2ff;background:#0a1a2ecc;color:#dff1ff}
 /* 세로 전용: 결투 영역 오른쪽 위. 하단 중앙은 조작 버튼이 쓴다. */
 #util{right:calc(10*var(--u));top:calc(74*var(--u))}
+
+/* ── 개막 연출 ─────────────────────────────────────────────
+   3-2-1 카운트다운을 넣지 않은 이유: 플레이어가 아무것도 안 하고 기다리는
+   시간이고, 세 판만 해도 머릿속에서 지워진다. 같은 2초를 대사에 쓰면
+   장수마다 다른 것이 남는다 — 21컷씩 그려 넣은 로스터가 처음으로
+   '다른 인물들'이 되는 자리다. */
+#intro{position:absolute;inset:0;z-index:13;overflow:hidden;
+  background:radial-gradient(120% 80% at 50% 40%,rgba(20,12,6,.30),rgba(8,5,3,.86));
+  font-family:inherit;-webkit-tap-highlight-color:transparent}
+/* 조이스틱·버튼이 화면 아래 35% 를 쓴다. 초상이 거기까지 내려오면
+   이름이 스틱 위에 겹친다 — 그래서 바닥을 38% 로 올리고 폭도 줄였다. */
+#intro .ifig{position:absolute;bottom:27%;width:45%;opacity:0;
+  transition:opacity .34s ease,transform .44s cubic-bezier(.2,.9,.3,1)}
+#intro .ifig.l{left:1%;transform:translateX(-24%)}
+#intro .ifig.r{right:1%;transform:translateX(24%)}
+#intro .ifig.in{opacity:1;transform:translateX(0)}
+#intro .ifig img{width:100%;display:block;filter:drop-shadow(0 8px 22px rgba(0,0,0,.75))}
+#intro .ifig.r img{transform:scaleX(-1)}
+#intro .iname{text-align:center;margin-top:-4px;font-size:clamp(15px,4.6vw,22px);
+  font-weight:800;color:#ffe6a8;letter-spacing:.16em;
+  text-shadow:0 2px 0 #2a1a08,0 0 16px rgba(255,190,90,.45)}
+#intro .iline{position:absolute;max-width:60%;padding:11px 15px;border-radius:12px;
+  font-size:clamp(13px,3.9vw,18px);line-height:1.45;font-weight:600;
+  background:rgba(14,10,6,.90);color:#f6ead4;border:1px solid rgba(255,208,120,.34);
+  box-shadow:0 6px 20px rgba(0,0,0,.6);opacity:0;transform:translateY(8px);
+  transition:opacity .22s ease,transform .28s cubic-bezier(.2,.9,.3,1)}
+#intro .iline.in{opacity:1;transform:translateY(0)}
+#intro .iline.l{left:4%;top:10%;border-bottom-left-radius:3px}
+#intro .iline.r{right:4%;top:26%;text-align:right;border-bottom-right-radius:3px}
+/* 초상 위에 얹으면 금색 갑옷 위 금색 글자라 안 읽히고 얼굴을 가린다.
+   이름 아래 빈 공간에 띠로 깐다 — 얼굴을 안 건드리는 유일한 자리다. */
+#intro .ititle{position:absolute;left:0;right:0;top:79%;text-align:center;z-index:2;
+  padding:10px 0;
+  background:linear-gradient(90deg,transparent,rgba(8,5,3,.90) 10%,
+             rgba(8,5,3,.90) 90%,transparent);
+  font-size:clamp(34px,12vw,66px);font-weight:900;letter-spacing:.2em;color:#ffd45c;
+  text-shadow:0 4px 0 #6b3a08,0 0 34px rgba(255,180,60,.6);
+  opacity:0;transform:translateY(-50%) scale(1.5);
+  transition:opacity .16s ease,transform .3s cubic-bezier(.15,1.3,.4,1)}
+#intro .ititle.in{opacity:1;transform:translateY(-50%) scale(1)}
+/* 개막 동안엔 HUD 와 조작 패드를 감춘다. 반투명 막 아래로 비치면
+   '연출'이 아니라 '화면이 어두워진 게임'으로 보인다. */
+body.introing #hud,
+body.introing #pad,
+body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
+#intro .iskip{position:absolute;left:0;right:0;bottom:14px;text-align:center;
+  font-size:12px;color:rgba(255,235,200,.42);letter-spacing:.05em}
 </style>
 </head>
 <body>
@@ -233,6 +280,16 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
       <button class="ps" data-act="thrust" style="--c:#ff6070" aria-label="찌르기"><span class="sym">&#9675;</span><span class="lb">찌르기</span></button>
       <button class="ps" data-act="light"  style="--c:#63aaff" aria-label="베기"><span class="sym">&#10005;</span><span class="lb">베기</span></button>
     </div>
+  </div>
+
+  <!-- 개막 — 두 장수가 한 마디씩 주고받는다. 아무 데나 누르면 건너뛴다. -->
+  <div id="intro" hidden>
+    <div class="ifig l"><img id="iImgL" alt=""><div class="iname" id="iNameL"></div></div>
+    <div class="ifig r"><img id="iImgR" alt=""><div class="iname" id="iNameR"></div></div>
+    <div class="iline l" id="iLineL"></div>
+    <div class="iline r" id="iLineR"></div>
+    <div class="ititle" id="iTitle">一 騎 討</div>
+    <div class="iskip">화면을 누르면 건너뜁니다</div>
   </div>
 
   <div id="overlay">
@@ -741,8 +798,8 @@ let stats = { hits: 0, guards: 0, justs: 0, clashes: 0, taken: 0 };
 
 // 선택한 장수 — 시작 화면에서 고른 값. 없으면 기본(조운·화웅).
 const SIDE_INFO = {
-  player: { name: '조운', war: 96, hp: 120, spd: 1, stam: 100 },
-  boss:   { name: '화웅', war: 88, hp: 150, spd: 1, stam: 100 },
+  player: { id: 'zhao_yun', name: '조운', war: 96, hp: 120, spd: 1, stam: 100 },
+  boss:   { id: 'hua_xiong', name: '화웅', war: 88, hp: 150, spd: 1, stam: 100 },
 };
 
 function resetMatch() {
@@ -1897,13 +1954,68 @@ function showTip(html, ms = 4200) {
   tipTimer = setTimeout(() => el.classList.remove('show'), ms);
 }
 
-function startFight() {
+// ── 개막 — 두 장수가 한 마디씩 주고받고 시작한다 ────────────────
+// 화면 아무 데나 누르면 즉시 건너뛴다. 두 번째 판부터는 이게 더 중요하다.
+let introToken = 0;
+function runIntro() {
+  const my = ++introToken;
+  const el = $('intro');
+  const info = [SIDE_INFO.player, SIDE_INFO.boss];
+  const pick = (side, i) => {
+    const l = (LINES.lines || {})[info[side].id] || LINES._default
+              || ['이름을 말해라.', '칼로 하자.'];
+    return l[i] || l[0];
+  };
+  $('iImgL').src = `./assets/generals/halfbody_v6/${info[0].id}.webp`;
+  $('iImgR').src = `./assets/generals/halfbody_v6/${info[1].id}.webp`;
+  $('iNameL').textContent = info[0].name;
+  $('iNameR').textContent = info[1].name;
+  $('iLineL').textContent = pick(0, 0);   // 먼저 거는 말
+  $('iLineR').textContent = pick(1, 1);   // 받아치는 말
+  for (const id of ['iLineL', 'iLineR', 'iTitle']) $(id).classList.remove('in');
+  document.querySelectorAll('#intro .ifig').forEach(f => f.classList.remove('in'));
+  el.hidden = false;
+  document.body.classList.add('introing');
+
+  return new Promise(resolve => {
+    const timers = [];
+    const at = (ms, fn) => timers.push(setTimeout(() => { if (my === introToken) fn(); }, ms));
+    const done = () => {
+      if (my !== introToken) return;
+      introToken++;                       // 남은 타이머 무력화
+      timers.forEach(clearTimeout);
+      el.hidden = true;
+      document.body.classList.remove('introing');
+      el.removeEventListener('pointerdown', done);
+      removeEventListener('keydown', done);
+      resolve();
+    };
+    el.addEventListener('pointerdown', done);
+    addEventListener('keydown', done);
+    at(30,   () => document.querySelectorAll('#intro .ifig').forEach(f => f.classList.add('in')));
+    at(360,  () => { $('iLineL').classList.add('in'); snd('scrape'); });
+    at(1180, () => { $('iLineR').classList.add('in'); snd('scrape'); });
+    at(2020, () => { $('iTitle').classList.add('in'); snd('clash'); });
+    at(2620, done);
+  });
+}
+
+async function startFight() {
   if (!assetsReady) return;          // 로딩 중엔 시작 금지
   window.__sfx?.resume();            // 사용자 조작 시점에만 오디오가 열린다
     window.__sfx?.bgmStart();          // 배경음 — 같은 조작에 묶어야 모바일에서 오디오가 열린다
   $('overlay').hidden = true;
   $('ovVs').style.display = '';
   resetMatch();
+  // 개막 동안에도 무대는 그려진다(phase 가 fight 가 아니라 update 만 멈춘다).
+  // 검은 화면에 대사만 띄우면 '로딩 중'으로 보인다.
+  phase = 'intro';
+  applyPickMeta();                   // 이름·초상은 즉시 — 그림을 기다릴 이유가 없다
+  resetMatch();
+  const loading = applyPicks();      // 21컷 로딩은 개막 뒤에서 나란히 돈다
+  await runIntro();
+  await loading;                     // 건너뛰었으면 여기서 잠깐 기다린다
+  resetMatch();                      // 개막 중 남은 입력·타이머를 지우고 새로 선다
   phase = 'fight';
   banner('일 기 토', '#ffd45c', 1);
   showTip(touchMode
@@ -1923,6 +2035,12 @@ document.querySelectorAll('#ovDiff .pick').forEach(b => {
 // 20컷 완본은 폴더만 있으면 뜬다. 목록은 generals.json 이 알려준다.
 let ROSTER = [];
 const DEFAULT_SIDE = { player: 'zhao_yun', boss: 'hua_xiong' };
+// 개막 대사 — 없으면 기본 문장으로 넘어간다(결투가 막히면 안 된다)
+let LINES = { _default: ['이름을 말해라. 기억해 두겠다.', '말이 많구나. 칼로 하자.'], lines: {} };
+fetch(bust('./assets/arcade_duel/lines.json'))
+  .then(r => r.json()).then(d => { LINES = d; })
+  .catch(() => {});
+
 fetch(bust('./assets/arcade_duel/generals.json')).then(r => r.json()).then(list => {
   ROSTER = list;
   for (const [sel, side] of [['pickP', 'player'], ['pickB', 'boss']]) {
@@ -1934,14 +2052,15 @@ fetch(bust('./assets/arcade_duel/generals.json')).then(r => r.json()).then(list 
 }).catch(() => { $('pickWrap').style.display = 'none'; });
 
 // 고른 장수를 실제로 불러온다. 완본이 아니면 원래 등록(조운·화웅)을 그대로 쓴다.
-async function applyPicks() {
+// 고른 장수의 '숫자'만 먼저 반영한다 — 그림을 기다리지 않는다.
+// 개막 연출은 이 정보(이름·초상 id)만 있으면 바로 시작할 수 있다.
+function applyPickMeta() {
   if (!ROSTER.length) return;
   for (const [sel, side] of [['pickP', 'player'], ['pickB', 'boss']]) {
-    const gid = $(sel).value;
-    const g = ROSTER.find(x => x.id === gid);
+    const g = ROSTER.find(x => x.id === $(sel).value);
     if (!g) continue;
-    await loadGeneral(gid, side, { size: g.size });   // 17컷 장수도 폴더에서 읽는다
     // resetMatch() 가 기본값으로 되돌리므로 여기 저장해 둔다
+    SIDE_INFO[side].id = g.id;
     SIDE_INFO[side].name = g.name;
     if (g.war) SIDE_INFO[side].war = g.war;
     if (g.hp) SIDE_INFO[side].hp = g.hp;
@@ -1950,12 +2069,21 @@ async function applyPicks() {
   }
 }
 
+// 21컷을 실제로 받아온다. 1.5초쯤 걸린다 — 개막 연출이 그 시간을 덮는다.
+async function applyPicks() {
+  if (!ROSTER.length) return;
+  applyPickMeta();
+  for (const [sel, side] of [['pickP', 'player'], ['pickB', 'boss']]) {
+    const g = ROSTER.find(x => x.id === $(sel).value);
+    if (g) await loadGeneral(g.id, side, { size: g.size });   // 17컷 장수도 폴더에서 읽는다
+  }
+}
+
 // 오버레이 버튼은 하나 — 문맥(시작/재개/재시작)에 따라 갈린다
-$('ovGo').addEventListener('click', async () => {
+$('ovGo').addEventListener('click', () => {
   if (phase === 'paused') { $('overlay').hidden = true; phase = 'fight'; return; }
-  const btn = $('ovGo'), label = btn.textContent;
-  btn.disabled = true; btn.textContent = '준비 중';
-  try { await applyPicks(); } finally { btn.disabled = false; btn.textContent = label; }
+  // 예전엔 여기서 21컷을 다 받을 때까지 '준비 중' 만 떠 있었다(1.5초).
+  // 이제 개막 연출과 로딩을 나란히 돌린다 — 대사를 읽는 사이에 그림이 온다.
   startFight();
 });
 
