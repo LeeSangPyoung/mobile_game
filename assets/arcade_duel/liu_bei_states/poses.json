@@ -109,8 +109,8 @@
  "walkStep": 87,
  "bodyH": 620,
  "reach": {
-  "slash": 203,
-  "thrust": 237,
-  "heavy": 195
+  "slash": 200,
+  "thrust": 236,
+  "heavy": 194
  }
 }

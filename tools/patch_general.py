@@ -87,7 +87,8 @@ def main():
                        # 걷기가 없는 시트(공격·반응)는 보정이 필요하다 — 안량 공격 9컷은
                        # 컷 간 크기 편차가 27% 였고 보정을 켜니 5% 가 됐다.
                        + (['--no-fit-body'] if any(n.startswith('walk') for n in names) else []),
-                       capture_output=True, text=True, cwd=ROOT)
+                       capture_output=True, text=True, cwd=ROOT,
+                       encoding='utf-8', errors='replace')
     for line in (r.stdout + r.stderr).splitlines():
         if any(k in line for k in ('컷', '보정', '!', '배율')):
             print('   ' + line.strip())
