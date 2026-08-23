@@ -141,7 +141,7 @@
  },
  "reach": {
   "slash": 180,
-  "thrust": 181,
+  "thrust": 200,
   "heavy": 180
  }
 }

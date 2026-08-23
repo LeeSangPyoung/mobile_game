@@ -62,6 +62,12 @@ def main():
         floor = round(BODY_R * (g.get('size', 1) + max_size) + WINDOW)
         reach = {mv: max(floor, round(BASE[mv] * min(HI, max(LO, w[mv] / med[mv]))))
                  for mv in w}
+        # 규칙: 찌르기가 가장 멀리 닿는다. 실측만 따르면 이게 뒤집히는 장수가
+        # 나온다 — 마초·마등·관우는 찌르기 타격 컷의 창끝이 베기보다 가까워서
+        # 찌르기가 14~25px 짧게 나왔다. 그러면 그 셋에게 찌르기는 '더 짧고
+        # 콤보도 없는' 죽은 기술이 된다. 개성은 폭으로 살리되 순서는 지킨다.
+        if 'thrust' in reach and 'slash' in reach:
+            reach['thrust'] = max(reach['thrust'], reach['slash'] + 20)
         pj, m = metas[g['id']]
         m['reach'] = reach
         if not args.dry_run:
