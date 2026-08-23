@@ -489,33 +489,60 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
   background:linear-gradient(180deg,rgba(16,11,6,.84),rgba(8,5,3,.90));
   border:1px solid rgba(255,205,120,.20);border-radius:12px}
 
-#intro .gpad{position:relative;display:flex;align-items:center;gap:calc(8*var(--u))}
-#intro .gstick{display:flex;flex-direction:column;align-items:center;gap:calc(3*var(--u))}
-#intro .gstick i{width:calc(44*var(--u));height:calc(44*var(--u));border-radius:50%;
-  border:1px solid rgba(160,205,245,.30);
-  background:radial-gradient(closest-side,rgba(24,38,58,.6),rgba(10,16,26,.7));
-  position:relative;display:block}
-#intro .gstick i::after{content:'';position:absolute;left:50%;top:50%;
-  width:calc(20*var(--u));height:calc(20*var(--u));transform:translate(-50%,-50%);
-  border-radius:50%;background:radial-gradient(70% 60% at 38% 30%,#e9f4ff,#4a76a8)}
-#intro .gstick em,#intro .gb em{font-style:normal}
-#intro .gstick em{font-size:calc(11*var(--u));color:#a8c4dd;letter-spacing:.02em}
+/* 축소판도 실제 패드와 **같은 방식**으로 그린다 — 하우징 · 검은 홈 · 색 림 ·
+   위쪽 광택. 동그라미만 찍어 두면 '이게 뭔지 모르겠다' 가 된다.
+   왼쪽 우물(스틱)과 오른쪽 면판(버튼 셋)이 실제 화면과 같은 좌우 배치다. */
+#intro .gpad{position:relative;display:flex;align-items:center;
+  gap:calc(9*var(--u));padding:calc(9*var(--u)) calc(11*var(--u)) calc(17*var(--u));
+  border-radius:calc(16*var(--u));
+  background:
+    radial-gradient(120% 90% at 50% -10%,rgba(255,255,255,.06),rgba(255,255,255,0) 60%),
+    linear-gradient(170deg,rgba(30,34,44,.62),rgba(8,10,15,.74));
+  border:1px solid rgba(190,205,230,.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),
+             inset 0 calc(-6*var(--u)) calc(12*var(--u)) rgba(0,0,0,.4)}
 
-/* 실제 패드와 같은 정삼각형(꼭짓점 위) */
-#intro .gtri{position:relative;width:calc(106*var(--u));height:calc(92*var(--u))}
-#intro .gb{position:absolute;display:grid;place-items:center;
-  width:calc(33*var(--u));height:calc(33*var(--u));border-radius:50%;
-  border:1px solid color-mix(in srgb,var(--c) 55%,transparent);color:var(--c);
-  background:linear-gradient(180deg,rgba(34,40,52,.9),rgba(10,13,20,.94));
-  font-size:calc(15*var(--u));font-weight:700}
-#intro .gb.tp{left:calc(36*var(--u));top:0}
-#intro .gb.lf{left:0;                top:calc(59*var(--u))}
-#intro .gb.rt{left:calc(73*var(--u));top:calc(59*var(--u))}
-#intro .gb em{position:absolute;font-size:calc(11*var(--u));font-weight:800;
-  color:#ffe0a4;white-space:nowrap;text-shadow:0 1px 2px #000}
-#intro .gb.tp em{left:calc(38*var(--u));top:50%;transform:translateY(-50%)}
-#intro .gb.lf em{left:50%;bottom:calc(-14*var(--u));transform:translateX(-50%)}
-#intro .gb.rt em{left:50%;bottom:calc(-14*var(--u));transform:translateX(-50%)}
+/* 스틱 우물 */
+#intro .gwell{display:flex;flex-direction:column;align-items:center;gap:calc(3*var(--u));
+  margin-bottom:calc(8*var(--u))}
+#intro .gwell i{position:relative;display:block;border-radius:50%;
+  width:calc(40*var(--u));height:calc(40*var(--u));
+  background:radial-gradient(closest-side,rgba(16,26,40,.85),rgba(6,10,17,.92));
+  box-shadow:0 0 0 calc(1.5*var(--u)) rgba(4,6,10,.9),
+             0 0 0 calc(2.5*var(--u)) rgba(150,190,235,.18),
+             inset 0 calc(3*var(--u)) calc(8*var(--u)) rgba(0,0,0,.6)}
+#intro .gwell i b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:52%;height:52%;border-radius:50%;
+  background:linear-gradient(176deg,#8fb6dc,#4d739c 46%,#243b58);
+  box-shadow:inset 0 calc(1.5*var(--u)) 0 rgba(255,255,255,.4),
+             0 calc(2*var(--u)) calc(4*var(--u)) rgba(0,0,0,.5)}
+#intro .gwell i b::after{content:'';position:absolute;left:18%;top:10%;width:54%;height:38%;
+  border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,0))}
+
+/* 버튼 면판 — 실제와 같은 정삼각형(꼭짓점 위) */
+#intro .gface{position:relative;width:calc(80*var(--u));height:calc(70*var(--u));
+  border-radius:calc(13*var(--u));
+  background:linear-gradient(170deg,rgba(26,30,39,.55),rgba(6,8,13,.6));
+  border:1px solid rgba(190,205,230,.09)}
+#intro .gb{position:absolute;display:grid;place-items:center;border-radius:50%;
+  width:calc(26*var(--u));height:calc(26*var(--u));color:var(--c);
+  background:linear-gradient(178deg,#39414f,#1b2029 44%,#0a0d13);
+  box-shadow:0 0 0 calc(1.4*var(--u)) rgba(4,6,10,.9),
+             0 0 0 calc(2.3*var(--u)) color-mix(in srgb,var(--c) 45%,rgba(255,255,255,.06)),
+             inset 0 calc(1.4*var(--u)) 0 rgba(255,255,255,.16)}
+#intro .gb svg{width:66%;height:66%;fill:none;stroke:currentColor;stroke-width:4.2;
+  stroke-linecap:round;
+  filter:drop-shadow(0 0 calc(4*var(--u)) color-mix(in srgb,var(--c) 70%,transparent))}
+#intro .gb.tp{left:calc(27*var(--u));top:calc(3*var(--u))}
+#intro .gb.lf{left:calc(6*var(--u)); top:calc(38*var(--u))}
+#intro .gb.rt{left:calc(48*var(--u));top:calc(38*var(--u))}
+#intro .gb em,#intro .gwell em{font-style:normal;font-weight:800;white-space:nowrap;
+  color:#ffe0a4;text-shadow:0 1px 2px #000}
+#intro .gwell em{font-size:calc(10*var(--u));color:#a8c4dd}
+#intro .gb em{position:absolute;font-size:calc(9.5*var(--u))}
+#intro .gb.tp em{left:calc(31*var(--u));top:50%;transform:translateY(-50%)}
+#intro .gb.lf em{left:50%;bottom:calc(-12*var(--u));transform:translateX(-50%)}
+#intro .gb.rt em{left:50%;bottom:calc(-12*var(--u));transform:translateX(-50%)}
 
 #intro .gnote{margin:0;padding:0 0 0 calc(12*var(--u));list-style:none;min-width:0}
 #intro .gnote li{position:relative;font-size:clamp(10.5px,2.85vw,13.5px);line-height:1.6;
@@ -610,11 +637,14 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
         <!-- 실제 조작 패드와 **같은 배치**로 그린다. 글로만 적으면 화면에서
              어느 버튼인지 다시 찾아야 한다 — 안내는 손이 갈 자리를 알려줘야 한다. -->
         <div class="gpad">
-          <div class="gstick"><i></i><em>이동</em></div>
-          <div class="gtri">
-            <span class="gb tp" style="--c:#ff7280">&#9675;<em>찌르기</em></span>
-            <span class="gb lf" style="--c:#ff92d4">&#9633;<em>가드</em></span>
-            <span class="gb rt" style="--c:#7cbcff">&#10005;<em>베기</em></span>
+          <div class="gwell"><i><b></b></i><em>이동</em></div>
+          <div class="gface">
+            <span class="gb tp" style="--c:#ff6b78">
+              <svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="8.5"/></svg><em>찌르기</em></span>
+            <span class="gb lf" style="--c:#ff8ad0">
+              <svg viewBox="0 0 44 44"><rect x="14" y="14" width="16" height="16" rx="3"/></svg><em>가드</em></span>
+            <span class="gb rt" style="--c:#6fb4ff">
+              <svg viewBox="0 0 44 44"><path d="M14 14 L30 30 M30 14 L14 30"/></svg><em>베기</em></span>
           </div>
         </div>
         <ul class="gnote">
@@ -2680,10 +2710,15 @@ fetch(bust('./assets/arcade_duel/lines.json'))
 
 fetch(bust('./assets/arcade_duel/generals.json')).then(r => r.json()).then(list => {
   ROSTER = list;
+  // 본편에서 들어올 땐 주소가 장수를 정한다(?p=lu_bu&b=hua_xiong).
+  // 없으면 기본값(조운·화웅)으로 둔다.
+  const q = new URLSearchParams(location.search);
+  const want = { player: q.get('p'), boss: q.get('b') };
   for (const [sel, side] of [['pickP', 'player'], ['pickB', 'boss']]) {
     const el = $(sel);
+    const pickId = list.some(g => g.id === want[side]) ? want[side] : DEFAULT_SIDE[side];
     el.innerHTML = list.map(g =>
-      `<option value="${g.id}"${g.id === DEFAULT_SIDE[side] ? ' selected' : ''}>` +
+      `<option value="${g.id}"${g.id === pickId ? ' selected' : ''}>` +
       `${g.name}${g.side ? '' : ' · 정면'}${g.full ? '' : ' · 부분'}</option>`).join('');
   }
 }).catch(() => { $('pickWrap').style.display = 'none'; });
