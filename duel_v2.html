@@ -108,14 +108,18 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 #pad.hide{display:none}
 .cluster{display:flex;gap:calc(12*var(--u));align-items:center;pointer-events:auto}
 /* 공격군은 2×2. 세로 화면 폭(360px)에 버튼 6개를 한 줄로 놓으면 화면 밖으로 나간다. */
-.cluster.acts{display:grid;grid-template-columns:repeat(3,auto);grid-template-rows:repeat(3,auto);
-  gap:calc(4*var(--u));justify-items:center;align-items:center}
-/* 플레이스테이션 페이스 버튼 배치(마름모). 2x2 격자는 어느 것이 무엇인지
-   손끝으로 구분이 안 됐다 — 마름모는 위/아래/좌/우가 몸에 익는다. */
-.cluster.acts [data-act="dodge"]{grid-column:2;grid-row:1}
-.cluster.acts [data-act="guard"]{grid-column:1;grid-row:2}
-.cluster.acts [data-act="thrust"]{grid-column:3;grid-row:2}
-.cluster.acts [data-act="light"]{grid-column:2;grid-row:3}
+.cluster.acts{display:grid;grid-template-columns:repeat(3,auto);grid-template-rows:repeat(2,auto);
+  gap:calc(6*var(--u)) calc(4*var(--u));justify-items:center;align-items:center}
+/* 버튼이 셋이라 마름모가 아니라 삼각형이다.
+     □ 가드        ○ 찌르기
+            ✕ 베기
+   베기가 아래 가운데인 이유: 엄지가 오른쪽 아래에서 올라오니 제일 가깝고,
+   연격 때문에 가장 많이 두드리는 버튼이라 크기도 한 단계 키웠다. */
+.cluster.acts [data-act="guard"]{grid-column:1;grid-row:1}
+.cluster.acts [data-act="thrust"]{grid-column:3;grid-row:1}
+.cluster.acts [data-act="light"]{grid-column:2;grid-row:2;margin-top:calc(-6*var(--u))}
+.ps.big{width:max(70px,calc(100*var(--u)));height:max(70px,calc(100*var(--u)))}
+.ps.big .sym{font-size:max(25px,calc(36*var(--u)))}
 /* 조작 패드 — '유리 아래 금속'.
    예전 것이 싸구려로 보인 이유는 셋이었다.
      · box-shadow 0 4px 0 로 만든 딱딱한 가짜 입체 → 스티커처럼 보인다
@@ -375,13 +379,20 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
   box-shadow:0 10px 26px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.9);
   opacity:0;transform:translateY(10px);
   transition:opacity .22s ease,transform .3s cubic-bezier(.2,.9,.3,1)}
-#intro .iline::after{content:'';position:absolute;bottom:-8px;width:0;height:0;
-  border:8px solid transparent;border-top-color:#eee7dc;
-  filter:drop-shadow(0 2px 1px rgba(0,0,0,.35))}
+/* 꼬리는 '테두리 삼각형'이 아니라 **45도로 돌린 정사각형**으로 만든다.
+   테두리 삼각형은 구름의 1px 테두리와 이어지지 않아서, 흰 구름 아래에
+   회색 조각이 따로 붙은 것처럼 보였다(실제로 그렇게 나왔다).
+   돌린 사각형은 구름과 같은 배경·같은 테두리를 그대로 쓰므로 한 몸이 된다.
+   구름 쪽 두 변은 테두리를 지워야 경계선이 안 비친다. */
+#intro .iline::after{content:'';position:absolute;bottom:-8px;
+  width:16px;height:16px;background:#eee7dc;
+  border:1px solid rgba(120,86,40,.35);
+  border-top:0;border-left:0;
+  transform:rotate(45deg);border-radius:0 0 4px 0}
 #intro .iline.l{left:4%;top:0;border-bottom-left-radius:4px}
-#intro .iline.l::after{left:20px}
+#intro .iline.l::after{left:22px}
 #intro .iline.r{right:4%;bottom:0;text-align:right;border-bottom-right-radius:4px}
-#intro .iline.r::after{right:20px}
+#intro .iline.r::after{right:22px}
 #intro .iline.in{opacity:1;transform:translateY(0)}
 
 #intro .ifigs{display:grid;grid-template-columns:1fr 1fr;align-items:end;min-height:0}
@@ -474,10 +485,9 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
       <div id="stick" aria-label="이동"><div id="stickRing"></div><div id="stickKnob"></div></div>
     </div>
     <div class="cluster acts">
-      <button class="ps" data-act="dodge"  style="--c:#4ee39c" aria-label="회피"><span class="sym">&#8645;</span></button>
       <button class="ps" data-act="guard"  style="--c:#ff92d4" aria-label="가드"><span class="sym">&#9633;</span></button>
       <button class="ps" data-act="thrust" style="--c:#ff7280" aria-label="찌르기"><span class="sym">&#9675;</span></button>
-      <button class="ps" data-act="light"  style="--c:#7cbcff" aria-label="베기"><span class="sym">&#10005;</span></button>
+      <button class="ps big" data-act="light" style="--c:#7cbcff" aria-label="베기"><span class="sym">&#10005;</span></button>
     </div>
   </div>
 
@@ -538,7 +548,7 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
       <button class="go" id="ovGo">결 투</button>
       <div class="keys">
         <b>← →</b> 걸음 · <b>← ←</b> 백스텝 · <b>Shift</b> 대시 · <b>↑ ↓</b> 비켜서기<br>
-        <b>J</b> 베기(맞으면 연타로 연격) · <b>K</b> 회피 · <b>L</b> 찌르기 · <b>S</b> 가드 · <b>Esc</b> 일시정지
+        <b>J</b> 베기(맞으면 연타로 연격) · <b>L</b> 찌르기 · <b>S</b> 가드 · <b>K</b> 회피 · <b>Esc</b> 일시정지
       </div>
     </div>
   </div>
@@ -1124,7 +1134,7 @@ const KEYMAP = {
   ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right',
   ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyX: 'down',
   KeyS: 'guard',
-  KeyJ: 'light', KeyK: 'dodge', KeyL: 'thrust',
+  KeyJ: 'light', KeyK: 'dodge', KeyL: 'thrust',   // 회피는 버튼에서 뺐고 키보드에만 남았다
   Space: 'light', ShiftLeft: 'dash', ShiftRight: 'dash',
 };
 
