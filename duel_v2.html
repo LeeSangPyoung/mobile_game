@@ -2467,9 +2467,47 @@ function showResult(kind) {
   $('ovText').innerHTML = `${line}<br><br>
     유효타 <b>${stats.hits}</b> · 가드 <b>${stats.guards}</b> · 저스트가드 <b>${stats.justs}</b> · 격돌 <b>${stats.clashes}</b><br>
     받은 피해 <b>${stats.taken}</b> · 남은 체력 <b>${Math.max(0, Math.round(P.hp))}</b>`;
-  $('ovGo').textContent = '다 시';
+  $('ovGo').textContent = EMBED ? '돌 아 가 기' : '다 시';
   ov.hidden = false;
   phase = 'result';
+  reportResult(kind);
+}
+
+// ── 본편에 끼워 넣었을 때(iframe) ──────────────────────────────────
+// 본편은 45,000줄짜리 한 파일이다. 거기에 결투를 통째로 옮기면 이름 충돌
+// 위험이 크고, 결투만 따로 띄워 보는 지금의 개발 방식도 못 쓴다.
+// iframe 으로 얹고 결과만 postMessage 로 돌려준다.
+const EMBED = new URLSearchParams(location.search).get('embed') === '1';
+function post(type, data) {
+  if (!EMBED) return;
+  try { parent.postMessage(Object.assign({ src: 'duel', type }, data), '*'); } catch {}
+}
+function reportResult(kind) {
+  post('result', {
+    kind,                                   // 'win' | 'lose' | 'draw'
+    hap,                                    // 몇 합을 겨루었나
+    myHp: Math.max(0, P.hp / P.maxHp),      // 남은 체력 비율
+    foeHp: Math.max(0, B.hp / B.maxHp),
+    stats: { hits: stats.hits, guards: stats.guards, justs: stats.justs,
+             clashes: stats.clashes, taken: stats.taken },
+  });
+}
+// 결과 화면에서 '돌아가기' 를 누르면 본편으로 나간다
+if (EMBED) {
+  // 캡처 단계에서 먼저 받아 원래 핸들러(재시작)를 막는다 —
+  // 본편에서 들어온 결투는 '다시'가 아니라 '돌아가기'가 맞다.
+  $('ovGo').addEventListener('click', e => {
+    if (phase !== 'result') return;
+    e.stopImmediatePropagation(); e.preventDefault();
+    post('close', {});
+  }, true);
+  // 장수 선택 줄을 숨긴다 — 누구와 누가 싸울지는 본편이 정한다
+  const _pw = $('pickWrap'); if (_pw) _pw.style.display = 'none';
+  addEventListener('message', e => {
+    // 본편이 밖에서 닫을 수도 있다(뒤로가기 등)
+    if (e.data && e.data.src === 'host' && e.data.type === 'abort') post('close', { aborted: true });
+  });
+  post('ready', {});
 }
 
 let touchMode = false;
@@ -2867,6 +2905,9 @@ loadAssets(CORE_ASSETS, p => { goBtn.textContent = '불러오는 중 ' + Math.ro
     goBtn.disabled = false;
     goBtn.textContent = '결 투';
     loadAssets(restAssets);          // 나머지는 뒤에서 계속 받는다
+    // 본편에서 들어왔으면 시작 화면을 거치지 않는다 — 이미 '일기토를 걸겠다'를
+    // 고르고 들어온 참이라 한 번 더 누르게 하면 흐름이 끊긴다.
+    if (EMBED) startFight();
   });
 </script>
 </body>

@@ -1,0 +1,21 @@
+<meta charset="utf-8"><title>일기토 연결 시험</title>
+<style>
+ body{margin:0;background:#120c07;color:#eee;font:14px/1.6 system-ui}
+ #log{padding:12px;white-space:pre-wrap;font-family:ui-monospace,monospace;font-size:12px}
+ iframe{position:fixed;inset:0;width:100%;height:100%;border:0;display:none;z-index:9;background:#000}
+ iframe.on{display:block}
+</style>
+<div id="log">대기…</div>
+<iframe id="duel"></iframe>
+<script>
+const log = m => document.getElementById('log').textContent += '\n' + m;
+const fr = document.getElementById('duel');
+window.__events = [];
+addEventListener('message', e => {
+  if (!e.data || e.data.src !== 'duel') return;
+  window.__events.push(e.data);
+  log('받음: ' + JSON.stringify(e.data));
+  if (e.data.type === 'close') fr.classList.remove('on');
+});
+window.openDuel = q => { fr.src = './duel_v2.html?embed=1&' + q; fr.classList.add('on'); };
+</script>
