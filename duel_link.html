@@ -175,7 +175,7 @@ iframe#duel.on{display:block}
       <div class="nm" id="chalName">—</div>
       <div class="grade" id="chalGrade">—</div>
       <div class="say" id="chalSay">—</div>
-      <div class="warn" id="chalWarn">이기면 <b>적군 전체의 사기가 무너진다</b><br>지면 그 장수는 이번 전투에서 빠진다</div>
+      <div class="warn" id="chalWarn">베어 넘기면 <b>적군의 사기가 무너진다</b><br>패하면 사로잡혀 이번 전투에는 나서지 못한다</div>
       <div class="btns">
         <button class="btn no" id="btnNo">거 부</button>
         <button class="btn ok" id="btnYes">수 락</button>
@@ -217,6 +217,17 @@ const STAR_META = [null,
   { label:'전설', color:'#ffd36a' }, { label:'다이아몬드', color:'#9fe8ff' }];
 const STAR_MULT    = [1,1,1.2,1.4,1.7,2.0,2.5];
 const ENHANCE_MULT = [1,1,1.2,1.4,1.6,1.8,2.0];
+// 받침이 있으면 '이/을/은', 없으면 '가/를/는'. 한글 코드에서 종성을 직접 본다.
+// '유비이(가)' 같은 표기는 어색하다 — 이름은 데이터로 정해져 있으니 골라 쓸 수 있다.
+function josa(word, pair) {
+  const c = String(word || '').charCodeAt((word || '').length - 1);
+  const has = c >= 0xac00 && c <= 0xd7a3 ? (c - 0xac00) % 28 !== 0 : true;
+  const [withF, noF] = pair;           // ['이','가'] / ['을','를'] / ['은','는']
+  return has ? withF : noF;
+}
+const 이가 = w => w + josa(w, ['이', '가']);
+const 을를 = w => w + josa(w, ['을', '를']);
+
 const gradeText = (st,lv) => (st===6?'◆ 다이아몬드':'★'.repeat(st)) + (lv>1?' +'+(lv-1):'');
 const power = (g,st,lv) => Math.round((g.war||80) * STAR_MULT[st] * ENHANCE_MULT[lv]);
 
@@ -239,6 +250,9 @@ const face = id => './assets/generals/halfbody_v6/' + id + '.webp';
 //   ?delay=5  몇 초 뒤에 신청이 오는가 (기본 2.5)
 //   ?own=8    내가 가진 장수 수 (기본 10)
 const Q = new URLSearchParams(location.search);
+
+let LINES = { lines: {}, _default: ['이름을 말해라. 기억해 두겠다.','말이 많구나. 칼로 하자.'] };
+fetch('./assets/arcade_duel/lines.json').then(r=>r.json()).then(d=>{LINES=d;}).catch(()=>{});
 
 fetch('./assets/arcade_duel/generals.json').then(r=>r.json()).then(list => {
   ROSTER = list;
@@ -270,7 +284,9 @@ function offerDuel() {
   $('chalName').textContent = g.name;
   $('chalGrade').textContent = gradeText(foe.stars, foe.lv) + ' · ' + m.label;
   $('chalGrade').style.color = m.color;
-  $('chalSay').textContent = '「' + (g.name) + '이(가) 일기토를 청한다!」';
+  // 그 장수가 실제로 하는 말을 쓴다 — 49명분을 이미 써 뒀다.
+  const line = (LINES.lines || {})[g.id] || LINES._default || [];
+  $('chalSay').textContent = '「' + (line[0] || (이가(g.name) + ' 앞을 막아선다.')) + '」';
   show('chal', true);
 }
 
@@ -368,20 +384,20 @@ function applyResult(r) {
   const t = $('resTitle'), eff = $('resEff');
   if (kind === 'win') {
     t.textContent = '승 리'; t.style.color = '#ffd45c';
-    $('resLine').textContent = r.hap + '합 만에 ' + foe.g.name + '을(를) 사로잡았다.';
+    $('resLine').textContent = r.hap + '합 만에 ' + 을를(foe.g.name) + ' 사로잡았다.';
     eff.innerHTML = '적군 전체의 사기가 무너진다<br>'
       + '<b>10초간</b> 적 공격력 · 방어력 <b>30%</b> 감소<br>'
-      + '<span style="color:#9fe8ff">' + foe.g.name + '을(를) 사로잡았다 — 전투 후 등용 확률이 크게 오른다</span>';
-    log('일기토 승리 — ' + foe.g.name + '을(를) 사로잡았다');
+      + '<span style="color:#9fe8ff">사로잡은 ' + foe.g.name + ', 전투가 끝나면 휘하로 들일 수 있다</span>';
+    log('일기토 승리 — ' + 을를(foe.g.name) + ' 사로잡았다');
     startMoraleBreak();
   } else if (kind === 'lose') {
     t.textContent = '패 배'; t.style.color = '#ff8a5c';
     $('resLine').textContent = r.hap + '합을 겨루었으나 사로잡혔다.';
-    eff.innerHTML = '<b>' + mine.g.name + '</b>이(가) 이번 전투에서 빠진다<br>'
-      + '<span style="color:#c2a97f">병력 손실은 없다</span>';
+    eff.innerHTML = '<b>' + mine.g.name + '</b>, 사로잡혀 이번 전투에는 나서지 못한다<br>'
+      + '<span style="color:#c2a97f">병력은 그대로다</span>';
     // 진 장수는 이번 전투 동안 못 쓴다 — 목록에서 뺀다
     MINE = MINE.filter(o => o !== mine);
-    log('일기토 패배 — ' + mine.g.name + '이(가) 사로잡혔다 (이번 전투 이탈)');
+    log('일기토 패배 — ' + 이가(mine.g.name) + ' 사로잡혔다');
   } else {
     t.textContent = '무 승 부'; t.style.color = '#d8c39c';
     $('resLine').textContent = '승부가 나지 않았다.';
