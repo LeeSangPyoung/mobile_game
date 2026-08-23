@@ -210,6 +210,36 @@ export const SFX = {
     tone(t, { freq: 240, to: 96, peak: .26, attack: .002, decay: .09, type: 'triangle' });
   },
 
+  // 카운트다운 — 3·2·1 은 낮고 짧은 나무 타격음, FIGHT 는 위로 뻗는 신호.
+  // 숫자가 같은 소리면 셋이 그냥 반복으로 들린다. 음을 조금씩 올려
+  // '다가온다'를 만든다(392 → 440 → 494Hz).
+  count(step = 0) {          // 0,1,2 = 3,2,1
+    if (!ctx || muted) return;
+    const t = now();
+    const f = [392, 440, 494][step] || 392;
+    tone(t, { freq: f, to: f * .5, peak: .34, attack: .003, decay: .16, type: 'triangle' });
+    noiseHit(t, { type: 'bandpass', f0: 2400, f1: 900, q: 4, peak: .16, decay: .05 });
+  },
+  // 시작 — 낮은 데서 위로 뻗고 쇳소리가 한 번 갈린다
+  go() {
+    if (!ctx || muted) return;
+    const t = now();
+    const o = ctx.createOscillator();
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(180, t);
+    o.frequency.exponentialRampToValueAtTime(720, t + .18);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(.30, t + .02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + .34);
+    const flt = ctx.createBiquadFilter();
+    flt.type = 'lowpass'; flt.frequency.setValueAtTime(2600, t);
+    o.connect(flt); flt.connect(g); g.connect(master);
+    o.start(t); o.stop(t + .40);
+    clang(t + .02, { peak: .50, decay: .16, q: 15, freqs: [2800, 4400, 6800] });
+    tone(t, { freq: 92, to: 40, peak: .52, attack: .004, decay: .34 });
+  },
+
   // 경직 — 아래로 미끄러지는 톤. '무너졌다'가 귀로 읽힌다.
   stun() {
     if (!ctx || muted) return;

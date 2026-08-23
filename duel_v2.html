@@ -269,6 +269,40 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 @keyframes rot{0%,44%{transform:rotate(-90deg)}62%,100%{transform:rotate(0)}}
 #rotate b{font-size:clamp(17px,4.6vw,23px);color:#ffd45c;letter-spacing:.04em}
 #rotate span{font-size:clamp(12px,3.4vw,15px);opacity:.62}
+
+/* 대기 문구 — 개막이 끝나면 여기서 손을 기다린다 */
+#intro .iskip.wait{color:#ffd45c;font-weight:700;font-size:clamp(13px,3.6vw,16px);
+  animation:iPulse 1.25s ease-in-out infinite}
+@keyframes iPulse{0%,100%{opacity:.45}50%{opacity:1}}
+
+/* 카운트다운 — 숫자는 크게 들어와 빠르게 앉고, FIGHT 는 옆으로 벌어진다 */
+#count{position:absolute;inset:0;z-index:14;display:grid;place-items:center;
+  pointer-events:none}
+#count[hidden]{display:none}
+#count span{font-weight:900;line-height:1;color:#ffd45c;
+  text-shadow:0 calc(5*var(--u)) 0 #6b3a08,0 0 calc(40*var(--u)) rgba(255,170,50,.75);
+  font-size:min(38vw,26vh);letter-spacing:0}
+/* FIGHT 은 글자가 가로로 길다. 숫자와 같은 세기로 번지게 하면 글자 사이가
+   메워져 금색 덩어리로 보인다 — 번짐을 절반 이하로 줄이고 테두리로 세운다. */
+/* 클래스 이름은 .go 를 쓰면 안 된다 — 오버레이 버튼(#ovGo)이 이미 .go 를
+   쓰고 있어서 금색 버튼 배경과 padding 이 통째로 딸려온다. 실제로 FIGHT
+   글자가 금색 막대 안에 갇혀 나왔다. */
+#count span.fight{font-size:min(22vw,14vh);letter-spacing:.10em;color:#fff3c8;
+  -webkit-text-stroke:calc(2*var(--u)) #7d2408;paint-order:stroke fill;
+  text-shadow:0 calc(4*var(--u)) 0 #8a2a10,0 0 calc(18*var(--u)) rgba(255,140,50,.55)}
+#count span.pop{animation:cPop .62s cubic-bezier(.15,1.5,.4,1) both}
+#count span.fight.pop{animation:cGo .72s cubic-bezier(.15,1.4,.35,1) both}
+@keyframes cPop{
+  0%{opacity:0;transform:scale(2.6)}
+  26%{opacity:1;transform:scale(1)}
+  74%{opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(.86)}}
+@keyframes cGo{
+  0%{opacity:0;transform:scale(.5) skewX(-14deg)}
+  18%{opacity:1;transform:scale(1.14) skewX(-14deg)}
+  32%{transform:scale(1) skewX(-14deg)}
+  72%{opacity:1;transform:scale(1) skewX(-14deg)}
+  100%{opacity:0;transform:scale(1.3) skewX(-14deg)}}
 /* ── 개막 연출 ─────────────────────────────────────────────
    3-2-1 카운트다운을 넣지 않은 이유: 플레이어가 아무것도 안 하고 기다리는
    시간이고, 세 판만 해도 머릿속에서 지워진다. 같은 2초를 대사에 쓰면
@@ -438,8 +472,11 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
       </div>
       <div class="ititle" id="iTitle">一 騎 討</div>
     </div>
-    <div class="iskip">화면을 누르면 건너뜁니다</div>
+    <div class="iskip" id="iSkip">화면을 누르면 건너뜁니다</div>
   </div>
+
+  <!-- 3 · 2 · 1 · FIGHT -->
+  <div id="count" hidden><span id="countTxt"></span></div>
 
   <div id="overlay">
     <div class="card">
@@ -2187,27 +2224,67 @@ function runIntro() {
   el.hidden = false;
   document.body.classList.add('introing');
 
+  const skip = $('iSkip');
+  skip.textContent = '화면을 누르면 건너뜁니다';
+  skip.classList.remove('wait');
+
   return new Promise(resolve => {
     const timers = [];
+    let played = false;                   // 대사·제목이 다 나왔는가
     const at = (ms, fn) => timers.push(setTimeout(() => { if (my === introToken) fn(); }, ms));
+    // 끝까지 한 번에 보여 준다 — 다 나오기 전에 눌렀을 때
+    const fastForward = () => {
+      timers.forEach(clearTimeout);
+      document.querySelectorAll('#intro .ifig').forEach(f => f.classList.add('in'));
+      for (const id of ['iLineL', 'iLineR', 'iTitle']) $(id).classList.add('in');
+      ready();
+    };
+    const ready = () => {
+      played = true;
+      skip.textContent = '화면을 눌러 시작';
+      skip.classList.add('wait');
+    };
     const done = () => {
       if (my !== introToken) return;
       introToken++;                       // 남은 타이머 무력화
       timers.forEach(clearTimeout);
       el.hidden = true;
       document.body.classList.remove('introing');
-      el.removeEventListener('pointerdown', done);
-      removeEventListener('keydown', done);
+      el.removeEventListener('pointerdown', tap);
+      removeEventListener('keydown', tap);
       resolve();
     };
-    el.addEventListener('pointerdown', done);
-    addEventListener('keydown', done);
+    // 저절로 넘어가지 않는다 — 손을 기다린다.
+    // 다 나오기 전에 누르면 끝까지 보여 주고, 그 뒤에 누르면 시작한다.
+    const tap = () => { if (my !== introToken) return; played ? done() : fastForward(); };
+    el.addEventListener('pointerdown', tap);
+    addEventListener('keydown', tap);
     at(30,   () => document.querySelectorAll('#intro .ifig').forEach(f => f.classList.add('in')));
     at(360,  () => { $('iLineL').classList.add('in'); snd('scrape'); });
     at(1180, () => { $('iLineR').classList.add('in'); snd('scrape'); });
     at(2020, () => { $('iTitle').classList.add('in'); snd('clash'); });
-    at(2620, done);
+    at(2600, ready);
   });
+}
+
+// 3 · 2 · 1 · FIGHT — 무대는 이미 보이고 두 장수가 마주 선 채로 센다.
+// phase 를 'ready' 로 두면 update 가 안 돌아 시계도 안 가고 입력도 안 먹는다.
+function runCountdown() {
+  const el = $('count'), tx = $('countTxt');
+  el.hidden = false;
+  const step = (text, go) => new Promise(res => {
+    tx.textContent = text;
+    tx.className = go ? 'fight' : '';
+    void tx.offsetWidth;                  // 애니메이션 재시작
+    tx.classList.add('pop');
+    snd(go ? 'go' : 'count', go ? undefined : (3 - +text));
+    setTimeout(res, go ? 700 : 620);
+  });
+  return (async () => {
+    for (const n of ['3', '2', '1']) await step(n, false);
+    await step('FIGHT', true);
+    el.hidden = true;
+  })();
 }
 
 async function startFight() {
@@ -2223,11 +2300,13 @@ async function startFight() {
   applyPickMeta();                   // 이름·초상은 즉시 — 그림을 기다릴 이유가 없다
   resetMatch();
   const loading = applyPicks();      // 21컷 로딩은 개막 뒤에서 나란히 돈다
-  await runIntro();
-  await loading;                     // 건너뛰었으면 여기서 잠깐 기다린다
+  await runIntro();                  // 손으로 눌러야 넘어간다
+  await loading;                     // 빨리 눌렀으면 여기서 잠깐 기다린다
   resetMatch();                      // 개막 중 남은 입력·타이머를 지우고 새로 선다
+  phase = 'ready';                   // 세는 동안 시계도 입력도 멈춘다
+  await runCountdown();
+  resetMatch();                      // 세는 동안 눌린 것이 있으면 지운다
   phase = 'fight';
-  banner('일 기 토', '#ffd45c', 1);
   // 조작 안내는 띄우지 않는다. 개막에서 이름과 대사를 보여 준 직후에
   // 'J 베기 · K 강베기' 같은 설명이 뜨면 연출이 통째로 깨진다.
   padLive();
