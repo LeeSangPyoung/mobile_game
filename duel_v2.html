@@ -54,6 +54,11 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 .nameRow b{font-size:calc(19*var(--u));letter-spacing:calc(1*var(--u));color:#fff3c4;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nameRow i{font-style:normal;font-size:calc(12*var(--u));color:#f0c05a}
+/* 등급·강화 뱃지 — 본편의 별/다이아 등급과 강화 레벨을 그대로 보여 준다.
+   이 둘이 데미지·체력에 곱해지므로 화면에 안 보이면 왜 졌는지 알 수 없다. */
+.nameRow em.tier{font-style:normal;font-size:calc(11*var(--u));font-weight:900;
+  letter-spacing:calc(.5*var(--u));white-space:nowrap;
+  text-shadow:calc(1*var(--u)) calc(1*var(--u)) 0 #000}
 .hpTrack{position:relative;height:calc(18*var(--u));padding:calc(2*var(--u));background:#0a0503;
   border:calc(2*var(--u)) solid #c9a86a;box-shadow:inset 0 2px 6px #000,0 2px 0 #000}
 .hpLoss{position:absolute;inset:calc(2*var(--u));background:#e8563a;transition:width .45s ease .12s;width:100%}
@@ -244,7 +249,8 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 #pickWrap{display:grid;gap:8px;margin:14px 0 4px}
 .pickRow{display:flex;align-items:center;gap:10px;justify-content:center}
 .pickRow span{width:56px;text-align:right;color:#c9a86a;font-size:13px;font-weight:800}
-.pickRow select{flex:0 1 180px;font:inherit;font-weight:700;padding:7px 10px;border-radius:6px;
+.pickRow select.sm{flex:0 0 auto;min-width:0;padding:7px 6px;font-size:12px}
+.pickRow select{flex:0 1 150px;font:inherit;font-weight:700;padding:7px 10px;border-radius:6px;
   border:2px solid #6b4f26;background:#241809;color:#f0dcb4}
 .keys{margin-top:14px;font-size:clamp(10px,1.5vw,12px);color:#b79a6d;line-height:1.9}
 .keys b{color:#ffd45c}
@@ -417,13 +423,13 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
 
   <div id="hud">
     <div class="side l" id="sideL">
-      <div class="nameRow"><b id="nameL">조운</b><i id="warL">무력 96</i></div>
+      <div class="nameRow"><b id="nameL">조운</b><i id="warL">무력 96</i><em id="tierL" class="tier"></em></div>
       <div class="hpTrack"><div class="hpLoss" id="hpLossL"></div><div class="hpFill" id="hpL"></div></div>
       <div class="spTrack"><div class="spFill" id="spL"></div></div>
     </div>
     <div id="center"><div id="clock">60</div><div id="hapCount">0 합</div></div>
     <div class="side r" id="sideR">
-      <div class="nameRow"><b id="nameR">화웅</b><i id="warR">무력 88</i></div>
+      <div class="nameRow"><b id="nameR">화웅</b><i id="warR">무력 88</i><em id="tierR" class="tier"></em></div>
       <div class="hpTrack"><div class="hpLoss" id="hpLossR"></div><div class="hpFill" id="hpR"></div></div>
       <div class="spTrack"><div class="spFill" id="spR"></div></div>
     </div>
@@ -499,8 +505,12 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
         <button class="pick" data-diff="hard">어려움</button>
       </div>
       <div id="pickWrap">
-        <div class="pickRow"><span>내 장수</span><select id="pickP"></select></div>
-        <div class="pickRow"><span>상 대</span><select id="pickB"></select></div>
+        <div class="pickRow"><span>내 장수</span><select id="pickP"></select>
+          <select id="starP" class="sm" aria-label="내 장수 등급"></select>
+          <select id="lvP" class="sm" aria-label="내 장수 강화"></select></div>
+        <div class="pickRow"><span>상 대</span><select id="pickB"></select>
+          <select id="starB" class="sm" aria-label="상대 등급"></select>
+          <select id="lvB" class="sm" aria-label="상대 강화"></select></div>
       </div>
       <button class="go" id="ovGo">결 투</button>
       <div class="keys">
@@ -983,23 +993,48 @@ let P, B;                     // player / boss
 let cam = { x: STAGE_W / 2, zoom: 1, shakeX: 0, shakeY: 0, punch: 0 };
 let frame = 0, hitStop = 0, slowmo = 0;
 let hap = 0;                  // 합(合) — 칼이 실제로 맞부딪히거나 유효타가 난 횟수
+let MATCH_SEC = 60;              // 등급·강화에 따라 resetMatch 에서 다시 잡는다
 let clockFrames = 60 * FPS;
 let phase = 'title';          // title | fight | paused | over
 let fx = [], dust = [];
 let stats = { hits: 0, guards: 0, justs: 0, clashes: 0, taken: 0 };
 
 // 선택한 장수 — 시작 화면에서 고른 값. 없으면 기본(조운·화웅).
+// ── 등급(별·다이아)과 강화 ────────────────────────────────────────
+// 본편(app/.../public/index.html)의 STAR_MULT / ENHANCE_MULT 를 그대로 가져온다.
+// 값이 갈리면 "본편에서 키운 만큼 일기토에서도 세다"가 깨지므로 여기서
+// 임의로 조정하지 않는다. 본편이 바뀌면 이 두 줄도 같이 바꾼다.
+const STAR_MULT    = [1.0, 1.0, 1.2, 1.4, 1.7, 2.0, 2.5];   // 1~5성, 6=다이아
+const ENHANCE_MULT = [1.0, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0];   // +0 ~ +5
+const STAR_META = [null,
+  { label: '일반',       color: '#f4f7fb' }, { label: '고급',   color: '#57f287' },
+  { label: '희귀',       color: '#4db5ff' }, { label: '영웅',   color: '#c77dff' },
+  { label: '전설',       color: '#ffd36a' }, { label: '다이아몬드', color: '#9fe8ff' }];
+const growMul = (stars, lv) =>
+  (STAR_MULT[clamp(stars | 0, 1, 6)] || 1) * (ENHANCE_MULT[clamp(lv | 0, 1, 6)] || 1);
+
 const SIDE_INFO = {
-  player: { id: 'zhao_yun', name: '조운', war: 96, hp: 120, spd: 1, stam: 100 },
-  boss:   { id: 'hua_xiong', name: '화웅', war: 88, hp: 150, spd: 1, stam: 100 },
+  player: { id: 'zhao_yun', name: '조운', war: 96, hp: 120, spd: 1, stam: 100, stars: 1, lv: 1 },
+  boss:   { id: 'hua_xiong', name: '화웅', war: 88, hp: 150, spd: 1, stam: 100, stars: 1, lv: 1 },
 };
 
 function resetMatch() {
   const pi = SIDE_INFO.player, bi = SIDE_INFO.boss;
-  P = makeFighter('player', { name: pi.name, war: pi.war, x: STAGE_W / 2 - 190, dir: 1, hp: pi.hp, spd: pi.spd, stam: pi.stam });
-  B = makeFighter('boss',   { name: bi.name, war: bi.war, x: STAGE_W / 2 + 190, dir: -1, hp: bi.hp, spd: bi.spd, stam: bi.stam });
+  // 성장 배수는 공격과 체력에 반반으로 — 둘 다 그대로 곱한다.
+  // 무력에 곱하면 warMul 이 비율만 보므로 '상대적으로' 얼마나 센가가 되고,
+  // 체력에 곱하면 '얼마나 버티는가'가 된다. 두 축이 다 움직여야 성장이
+  // 한쪽으로 치우치지 않는다.
+  const pm = growMul(pi.stars, pi.lv), bm = growMul(bi.stars, bi.lv);
+  // 성장 배수는 체력에도 곱해지므로 결판까지 걸리는 시간도 같이 늘어난다.
+  // 60초 고정으로 두면 다이아+5 끼리는 시간 초과로 끝난다(실측: 60초 시점에
+  // 상대 체력 73/560 남음). 배수를 건드리지 않고 시계만 늘려 결판이 나게 한다.
+  // 제곱근인 이유: 체력은 배수만큼 늘지만 데미지도 같이 늘어서, 실제로
+  // 길어지는 건 배수 전체가 아니라 그 뿌리 정도다.
+  MATCH_SEC = Math.round(60 * clamp(Math.sqrt((pm + bm) / 2), 1, 2.4));
+  P = makeFighter('player', { name: pi.name, war: pi.war * pm, x: STAGE_W / 2 - 190, dir: 1, hp: Math.round(pi.hp * pm), spd: pi.spd, stam: pi.stam });
+  B = makeFighter('boss',   { name: bi.name, war: bi.war * bm, x: STAGE_W / 2 + 190, dir: -1, hp: Math.round(bi.hp * bm), spd: bi.spd, stam: bi.stam });
   cam = { x: STAGE_W / 2, zoom: 1, shakeX: 0, shakeY: 0, punch: 0 };
-  frame = 0; hitStop = 0; slowmo = 0; hap = 0; clockFrames = 60 * FPS;
+  frame = 0; hitStop = 0; slowmo = 0; hap = 0; clockFrames = MATCH_SEC * FPS;
   fx = []; dust = [];
   // 입력 버퍼를 안 비우면 죽는 순간 누른 공격이 다음 판 시작과 함께 나간다.
   // tapped 도 비워야 지난 판의 탭이 새 판 첫 입력과 묶여 대시로 오인되지 않는다.
@@ -1007,9 +1042,17 @@ function resetMatch() {
   tapped.left = tapped.right = 0;
   stats = { hits: 0, guards: 0, justs: 0, clashes: 0, taken: 0 };
   document.getElementById('nameL').textContent = P.name;
-  document.getElementById('warL').textContent = '무력 ' + P.war;
+  // 무력은 성장 배수가 곱해진 실제 값이라 소수가 나온다 — 표시는 정수로
+  document.getElementById('warL').textContent = '무력 ' + Math.round(P.war);
   document.getElementById('nameR').textContent = B.name;
-  document.getElementById('warR').textContent = '무력 ' + B.war;
+  document.getElementById('warR').textContent = '무력 ' + Math.round(B.war);
+  for (const [el, info] of [['tierL', SIDE_INFO.player], ['tierR', SIDE_INFO.boss]]) {
+    const st = clamp(info.stars | 0, 1, 6), lv = clamp(info.lv | 0, 1, 6);
+    const m = STAR_META[st];
+    const badge = st === 6 ? '◆' : '★'.repeat(st);      // 다이아는 ◆ 하나
+    document.getElementById(el).textContent = badge + (lv > 1 ? ' +' + (lv - 1) : '');
+    document.getElementById(el).style.color = m.color;
+  }
   syncHud(true);
 }
 
@@ -2347,6 +2390,27 @@ fetch(bust('./assets/arcade_duel/generals.json')).then(r => r.json()).then(list 
       `${g.name}${g.side ? '' : ' · 정면'}${g.full ? '' : ' · 부분'}</option>`).join('');
   }
 }).catch(() => { $('pickWrap').style.display = 'none'; });
+
+// 등급·강화 선택. 본편에서 넘어올 땐 주소로 받고(?pStar=5&pLv=4), 이 화면만
+// 따로 열었을 땐 여기서 고른다 — 키운 장수가 얼마나 다른지 바로 볼 수 있어야 한다.
+const Q = new URLSearchParams(location.search);
+for (const [sel, side, qs, ql] of [['starP', 'player', 'pStar', 'pLv'],
+                                   ['starB', 'boss',   'bStar', 'bLv']]) {
+  const st = $(sel), lvEl = $(sel.replace('star', 'lv'));
+  st.innerHTML = [1, 2, 3, 4, 5, 6].map(n =>
+    `<option value="${n}">${n === 6 ? '◆ 다이아' : '★'.repeat(n)}</option>`).join('');
+  lvEl.innerHTML = [1, 2, 3, 4, 5, 6].map(n =>
+    `<option value="${n}">${n === 1 ? '강화 없음' : '+' + (n - 1)}</option>`).join('');
+  st.value = String(clamp(+Q.get(qs) || 1, 1, 6));
+  lvEl.value = String(clamp(+Q.get(ql) || 1, 1, 6));
+  const apply = () => {
+    SIDE_INFO[side].stars = +st.value;
+    SIDE_INFO[side].lv = +lvEl.value;
+  };
+  st.addEventListener('change', apply);
+  lvEl.addEventListener('change', apply);
+  apply();
+}
 
 // 고른 장수를 실제로 불러온다. 완본이 아니면 원래 등록(조운·화웅)을 그대로 쓴다.
 // 고른 장수의 '숫자'만 먼저 반영한다 — 그림을 기다리지 않는다.
