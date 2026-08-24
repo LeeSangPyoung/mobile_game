@@ -88,6 +88,10 @@
   "thrust_windup": {
    "tipX": 418,
    "tipY": 878
+  },
+  "slash_swing": {
+   "tipX": 1038,
+   "tipY": 305
   }
  },
  "walkAlign": {
@@ -112,5 +116,6 @@
   "slash": 227,
   "thrust": 263,
   "heavy": 193
- }
+ },
+ "swing": true
 }
