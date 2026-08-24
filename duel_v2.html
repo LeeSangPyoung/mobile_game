@@ -804,7 +804,7 @@ const LOCAL_DEV = ['localhost', '127.0.0.1', ''].includes(location.hostname);
 // 외부 접속에서 쓰는 에셋 버전. **파일을 갈아 끼우면 이 숫자를 올려야 한다** —
 // 안 올리면 폰이 옛 그림을 계속 쓴다(배경 v2 를 넣었을 때 실제로 겪었다).
 // 태사자 9컷 · 마초 3컷 교체 → 8. 여포·태사자 '가속' 컷 3장씩 추가 → 9.
-const AV = LOCAL_DEV ? Date.now() : 35;
+const AV = LOCAL_DEV ? Date.now() : 36;
 const bust = u => u.replace(/\?v=[^&]*/, '') + '?v=' + AV;
 
 const ASSET_SRC = {
