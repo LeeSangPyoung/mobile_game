@@ -2665,8 +2665,11 @@ function runIntro() {
       if (my !== introToken) return;
       introToken++;                       // 남은 타이머 무력화
       timers.forEach(clearTimeout);
-      el.hidden = true;
-      document.body.classList.remove('introing');
+      // 여기서 화면을 내리지 않는다. 21컷이 아직 오는 중일 수 있고, 그러면
+      // 그 사이 무대에 그림자만(또는 엉뚱한 장수가) 서 있게 된다.
+      // startFight 가 로딩까지 끝난 뒤에 내린다.
+      skip.textContent = '들어가는 중…';
+      skip.classList.remove('wait');
       el.removeEventListener('pointerdown', tap);
       removeEventListener('keydown', tap);
       resolve();
@@ -2717,8 +2720,10 @@ async function startFight() {
   applyPickMeta();                   // 이름·초상은 즉시 — 그림을 기다릴 이유가 없다
   resetMatch();
   const loading = applyPicks();      // 21컷 로딩은 개막 뒤에서 나란히 돈다
-  await runIntro();                  // 손으로 눌러야 넘어간다
-  await loading;                     // 빨리 눌렀으면 여기서 잠깐 기다린다
+  await runIntro();                  // 손으로 눌러야 넘어간다(화면은 아직 안 내린다)
+  await loading;                     // 빨리 눌렀으면 그림이 올 때까지 개막을 유지
+  $('intro').hidden = true;          // 이제야 무대를 보여 준다
+  document.body.classList.remove('introing');
   resetMatch();                      // 개막 중 남은 입력·타이머를 지우고 새로 선다
   phase = 'ready';                   // 세는 동안 시계도 입력도 멈춘다
   await runCountdown();
@@ -2792,6 +2797,12 @@ function applyPickMeta() {
     const g = ROSTER.find(x => x.id === $(sel).value);
     if (!g) continue;
     // resetMatch() 가 기본값으로 되돌리므로 여기 저장해 둔다
+    // 고른 장수가 지금 올라와 있는 장수와 다르면 **옛 포즈를 즉시 버린다**.
+    // POSE_SET 은 조운/화웅 스프라이트 키로 초기화돼 있어서, 그냥 두면 새 그림이
+    // 도착할 때까지 엉뚱한 두 사람이 무대에 서 있는다 —
+    // "다른 장수를 골랐는데 조운·화웅이 잠깐 나왔다 사라진다" 는 게 이것이다.
+    // 비워 두면 그 동안은 그림자만 그린다(drawFighter 의 마지막 갈래).
+    if (SIDE_GID[side] !== g.id) POSE_SET[side] = {};
     SIDE_INFO[side].id = g.id;
     SIDE_INFO[side].name = g.name;
     if (g.war) SIDE_INFO[side].war = g.war;
