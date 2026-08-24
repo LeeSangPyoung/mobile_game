@@ -92,6 +92,10 @@
   "heavy_swing": {
    "tipX": 473,
    "tipY": 167
+  },
+  "slash_swing": {
+   "tipX": 1067,
+   "tipY": 208
   }
  },
  "walkAlign": {
