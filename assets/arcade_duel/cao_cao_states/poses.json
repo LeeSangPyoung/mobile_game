@@ -6,8 +6,8 @@
  "bodyH": 635,
  "poses": {
   "idle": {
-   "tipX": 1052,
-   "tipY": 504
+   "tipX": 1051,
+   "tipY": 485
   },
   "slash_impact": {
    "tipX": 1040,
@@ -46,16 +46,16 @@
    "footR": 907
   },
   "walk1": {
-   "tipX": 715,
-   "tipY": 321
+   "tipX": 1022,
+   "tipY": 500
   },
   "walk2": {
-   "tipX": 612,
-   "tipY": 289
+   "tipX": 993,
+   "tipY": 436
   },
   "walk3": {
-   "tipX": 706,
-   "tipY": 311
+   "tipX": 1024,
+   "tipY": 469
   },
   "guard_just": {
    "tipX": 1007,
@@ -118,8 +118,8 @@
    "footR": 530
   },
   "walk4": {
-   "tipX": 614,
-   "tipY": 288
+   "tipX": 1025,
+   "tipY": 475
   }
  },
  "walkCycle": [
