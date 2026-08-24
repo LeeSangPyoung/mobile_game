@@ -2,6 +2,10 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<!-- HTML 은 캐시하지 않는다. 폰이 옛 화면을 붙들고 있어 "고쳤는데 그대로다"
+     가 반복됐다 — 스틱이 예전처럼 따라 움직인다는 제보가 그 예다. -->
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>일기토 — 결투</title>
 <!--
@@ -776,7 +780,10 @@ const A = {};
 // 주소 뒤 ?v= 가 고정이라 파일이 바뀌어도 URL 이 같았고, 브라우저가 캐시를 그대로 썼다.
 // 로컬에서 볼 땐 매번 새로 받는다 — 발주 결과를 확인하는 게 이 화면의 용도다.
 const LOCAL_DEV = ['localhost', '127.0.0.1', ''].includes(location.hostname);
-const AV = LOCAL_DEV ? Date.now() : 7;
+// 외부 접속에서 쓰는 에셋 버전. **파일을 갈아 끼우면 이 숫자를 올려야 한다** —
+// 안 올리면 폰이 옛 그림을 계속 쓴다(배경 v2 를 넣었을 때 실제로 겪었다).
+// 태사자 9컷 · 마초 3컷 교체(2026-08-24)에 맞춰 8 로 올린다.
+const AV = LOCAL_DEV ? Date.now() : 8;
 const bust = u => u.replace(/\?v=[^&]*/, '') + '?v=' + AV;
 
 const ASSET_SRC = {
@@ -1098,6 +1105,15 @@ function loadAssets(keys, onProgress) {
   });
 }
 const ready = img => !!(img && img.complete && img.naturalWidth);
+
+// 캔버스 filter 지원 여부 — 구형 사파리는 없다. 피격 번쩍임에 쓴다.
+const CAN_FILTER = (() => {
+  try {
+    const c = document.createElement('canvas').getContext('2d');
+    c.filter = 'blur(1px)';
+    return c.filter === 'blur(1px)';
+  } catch { return false; }
+})();
 
 // ═══════════════════════════════════════════════════════════════════
 //  2. 기술표 — 프레임 단위(60fps). 여기 숫자가 곧 손맛이다.
@@ -2151,7 +2167,17 @@ function drawStatePose(f, img) {
   // 걷기 컷의 좌우 어긋남 보정 — 반전 뒤에 적용해야 방향이 맞는다
   const al = (WALK_ALIGN[f.kind] || {})[POSE_KEY[f.poseKey]];
   if (al) ctx.translate(al * s, 0);
-  if (f.hitFlash > 0 && f.hitFlash % 4 > 1 && f.state !== 'ko') ctx.globalAlpha = .55;
+  // 피격 깜빡임은 **번쩍이는** 것이지 흐려지는 게 아니다.
+  // 알파를 0.55 로 낮추면 어두운 장수는 깜빡여 보이지만, 밝은 장수는 배경에
+  // 그대로 묻힌다 — 은백색 갑옷인 마초는 "공격받을 때 잠시 사라진다" 는
+  // 제보가 들어왔고, 렌더해 보니 정말 유령처럼 비쳤다.
+  // 밝기를 올리고 붉게 물들인다. 어두우면 밝아지고 밝으면 붉어지니
+  // 어떤 색의 장수든 눈에 띈다. 그리고 절대 사라지지 않는다.
+  const flash = f.hitFlash > 0 && f.hitFlash % 4 > 1 && f.state !== 'ko';
+  if (flash) {
+    if (CAN_FILTER) ctx.filter = 'brightness(1.9) saturate(1.6) sepia(.45) hue-rotate(-25deg)';
+    else ctx.globalAlpha = .85;          // 필터를 못 쓰는 브라우저 — 살짝만 흐리게
+  }
   ctx.drawImage(img, -STATE_CX * s, -STATE_GROUND * s, STATE_CW * s, STATE_CH * s);
   ctx.restore();
 }
