@@ -88,6 +88,10 @@
   "stunned": {
    "tipX": 955,
    "tipY": 880
+  },
+  "heavy_swing": {
+   "tipX": 1074,
+   "tipY": 874
   }
  },
  "walkAlign": {
@@ -112,5 +116,6 @@
   "slash": 234,
   "thrust": 291,
   "heavy": 206
- }
+ },
+ "swing": true
 }
