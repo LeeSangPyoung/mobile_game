@@ -1360,6 +1360,10 @@ document.querySelectorAll('#pad .btn, #pad .ps').forEach(btn => {
   const act = btn.dataset.act;
   const down = e => {
     e.preventDefault(); btn.classList.add('on');
+    // 손가락을 눌러 둔 동안은 이 버튼이 계속 이벤트를 받는다.
+    // 캡처를 안 걸면 손가락이 몇 px 만 흔들려도 pointerleave 가 터져서
+    // **가드가 누른 순간에만 먹혔다** — 눌러 두고 있는데 풀리는 게 그것이다.
+    try { btn.setPointerCapture(e.pointerId); } catch {}
     padHold(e.pointerId, true);
     buzz(act === 'heavy' ? 16 : act === 'guard' ? 8 : 11);
     if (act === 'left' || act === 'right') { pad[act] = true; onPress(act); }
@@ -1376,7 +1380,9 @@ document.querySelectorAll('#pad .btn, #pad .ps').forEach(btn => {
   btn.addEventListener('pointerdown', down);
   btn.addEventListener('pointerup', up);
   btn.addEventListener('pointercancel', up);
-  btn.addEventListener('pointerleave', up);
+  // pointerleave 는 걸지 않는다 — 캡처를 걸었으니 손가락이 버튼 밖으로 나가도
+  // 뗄 때까지 유지된다. 캡처가 풀리는 경우만 따로 받는다.
+  btn.addEventListener('lostpointercapture', up);
   btn.addEventListener('contextmenu', e => e.preventDefault());
 });
 
