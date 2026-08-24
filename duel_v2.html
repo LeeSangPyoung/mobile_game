@@ -804,7 +804,7 @@ const LOCAL_DEV = ['localhost', '127.0.0.1', ''].includes(location.hostname);
 // 외부 접속에서 쓰는 에셋 버전. **파일을 갈아 끼우면 이 숫자를 올려야 한다** —
 // 안 올리면 폰이 옛 그림을 계속 쓴다(배경 v2 를 넣었을 때 실제로 겪었다).
 // 태사자 9컷 · 마초 3컷 교체 → 8. 여포·태사자 '가속' 컷 3장씩 추가 → 9.
-const AV = LOCAL_DEV ? Date.now() : 12;
+const AV = LOCAL_DEV ? Date.now() : 13;
 const bust = u => u.replace(/\?v=[^&]*/, '') + '?v=' + AV;
 
 const ASSET_SRC = {
@@ -2217,12 +2217,19 @@ function drawShadow(f) {
 }
 
 // 지금 그려진 포즈의 창끝을 무대 좌표로 — 발광·궤적이 붙는 지점.
+// 그림 자체도 공격 중 회전·전진시키므로, 이 좌표에도 **같은 변환**을 적용해야
+// 한다. 그렇지 않으면 창은 앞으로 나갔는데 오라·불꽃만 예전 자리에 남는다.
 function tipOf(f) {
   const t = POSE_TIP[(TIP_NS[f.kind] || 's') + ':' + POSE_KEY[f.poseKey]];
   if (!t) return null;
-  const s = 1;
-  const zs = spriteScale(f) * zScale(f);
-  return [f.x + f.dir * (t.tipX - STATE_CX) * zs, footY(f) + (t.tipY - STATE_GROUND) * zs];
+  const m = poseMotion(f);
+  const s = spriteScale(f);
+  const x = (t.tipX - STATE_CX) * s + m.dx * s;
+  const y = (t.tipY - STATE_GROUND) * s;
+  const r = m.rot * Math.PI / 180;
+  const c = Math.cos(r), sn = Math.sin(r), zs = zScale(f);
+  return [f.x + f.dir * (c * x - sn * y) * zs,
+          footY(f) + m.dy + (sn * x + c * y) * zs];
 }
 
 // 상태 포즈는 규격이 통일돼 있어서 컷 좌표 없이 한 줄로 그린다.
@@ -2266,18 +2273,26 @@ function attackMotion(f) {
   return null;
 }
 
-function drawStatePose(f, img) {
-  const s = spriteScale(f);
+// drawStatePose 와 tipOf 가 공유하는 변환값. 한쪽만 바꾸면 무기 그림과
+// 타격 이펙트가 갈라지므로, 포즈 안의 부가 움직임은 반드시 여기서 계산한다.
+function poseMotion(f) {
   const mo = attackMotion(f);
-  // 리그 경로에만 있던 반응을 그림 경로에도 준다. 예전엔 drawRigPose 에서만
-  // 기울기·깊이 반응을 줬는데, 그림이 있는 49명은 전부 이 함수를 타므로
-  // **아무 반응이 없었다** — "위아래로 비켜갈 때 평면 위를 미끄러진다" 가 그것이다.
   const vz = f.vz || 0;
   const canLean = !helpless(f) && f.state !== 'ko';
   const leanX = canLean ? clamp((f.lean || 0) * 0.9, -7, 7) : 0;
   const zTilt = canLean ? clamp(-vz * 1.8, -5, 5) : 0;
-  const zBob  = canLean && Math.abs(vz) > 0.3 ? Math.sin((f.gait || 0) * 0.12) * 2.2 : 0;
+  const zBob = canLean && Math.abs(vz) > 0.3 ? Math.sin((f.gait || 0) * 0.12) * 2.2 : 0;
+  return { rot: (mo ? mo.rot : 0) + leanX + zTilt,
+           dx: mo ? mo.dx : 0, dy: zBob, mo };
+}
 
+function drawStatePose(f, img) {
+  const s = spriteScale(f);
+  const motion = poseMotion(f);
+  const mo = motion.mo;
+  // 리그 경로에만 있던 반응을 그림 경로에도 준다. 예전엔 drawRigPose 에서만
+  // 기울기·깊이 반응을 줬는데, 그림이 있는 49명은 전부 이 함수를 타므로
+  // **아무 반응이 없었다** — "위아래로 비켜갈 때 평면 위를 미끄러진다" 가 그것이다.
   const paint = (rot, dx, dy, alpha) => {
     ctx.save();
     ctx.translate(f.x, footY(f) + dy);
@@ -2309,9 +2324,7 @@ function drawStatePose(f, img) {
     ctx.restore();
   };
 
-  const rot = (mo ? mo.rot : 0) + leanX + zTilt;
-  const dx  = mo ? mo.dx : 0;
-  const dy  = zBob;
+  const { rot, dx, dy } = motion;
 
   // 잔상 — 판정 프레임에 지나온 자리를 겹쳐 그린다. 옛날 오락실 게임이
   // 적은 매수로 속도를 만들던 방법이다. 새 그림 없이 '휘둘렀다' 가 읽힌다.
