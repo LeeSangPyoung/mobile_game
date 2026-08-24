@@ -8,12 +8,13 @@
  * Usage:
  *   node tools/measure_swing_runtime.mjs lu_bu
  *   node tools/measure_swing_runtime.mjs --all --json > swing-runtime.json
+ *   node tools/measure_swing_runtime.mjs --capture taishi_ci:slash
  *
  * A local server for the project must be available at 127.0.0.1:5173.
  */
 
 import { spawn } from 'node:child_process';
-import { mkdtemp, readFile, readdir } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -26,6 +27,8 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 const args = process.argv.slice(2);
 const json = args.includes('--json');
 const all = args.includes('--all');
+const captureAt = args.indexOf('--capture');
+const capture = captureAt >= 0 ? args[captureAt + 1] : null;
 const requested = args.filter(arg => !arg.startsWith('--'));
 
 async function swingGenerals() {
@@ -77,7 +80,44 @@ async function connect() {
   // queuing another one. Measurements drive update/render explicitly.
   await evaluate('window.__swingAuditStop=true; window.requestAnimationFrame=()=>0; true');
   await wait(120);
-  return { child, socket, evaluate };
+  return { child, socket, send, evaluate };
+}
+
+async function captureReview(browser, spec) {
+  const [gid, attack] = spec.split(':');
+  const moveKey = attack === 'slash' ? 'light' : attack;
+  if (!gid || !['slash', 'thrust', 'heavy'].includes(attack))
+    throw new Error('Use --capture general:slash|thrust|heavy');
+  const output = await mkdtemp(join(tmpdir(), 'duel-swing-captures-'));
+  const labels = ['pre', 'middle', 'impact'];
+  const files = [];
+  for (const enabled of [true, false]) {
+    for (const label of labels) {
+      await browser.evaluate(`(async () => {
+        await loadGeneral(${JSON.stringify(gid)}, 'player');
+        $('intro').hidden = true; $('overlay').hidden = true;
+        document.body.classList.remove('introing');
+        resetMatch(); phase = 'fight'; DUMMY = 1;
+        P.x = STAGE_W / 2 - 190; B.x = STAGE_W / 2 + 190; P.z = B.z = Z_MAX / 2;
+        P.dir = 1; B.dir = -1;
+        for (let i = 0; i < 35; i++) { updateCamera(); render(); }
+        const move = MOVES[${JSON.stringify(moveKey)}];
+        const set = POSE_SET.player[move.sheet];
+        const original = set[3]; set[3] = ${enabled} ? original : null;
+        P.move = move; P.moveKey = ${JSON.stringify(moveKey)};
+        const split = Math.ceil(move.startup * 0.55);
+        if (${JSON.stringify(label)} === 'impact') { P.state = 'active'; P.st = 0; }
+        else { P.state = 'windup'; P.st = ${JSON.stringify(label)} === 'pre' ? split - 1 : split; }
+        render(); set[3] = original;
+      })()`);
+      const shot = await browser.send('Page.captureScreenshot', { format: 'png' });
+      const filename = `${gid}_${attack}_${enabled ? 'on' : 'off'}_${label}.png`;
+      const path = join(output, filename);
+      await writeFile(path, Buffer.from(shot.result.data, 'base64'));
+      files.push(path);
+    }
+  }
+  return files;
 }
 
 function browserProbe(gid) {
@@ -135,21 +175,25 @@ function browserProbe(gid) {
   `;
 }
 
-const gids = all ? await swingGenerals() : requested;
-if (!gids.length) throw new Error('Pass a general id, or use --all.');
 const browser = await connect();
-const results = [];
 try {
-  for (const gid of gids) results.push(await browser.evaluate(browserProbe(gid)));
+  if (capture) {
+    const files = await captureReview(browser, capture);
+    console.log(files.join('\n'));
+  } else {
+    const gids = all ? await swingGenerals() : requested;
+    if (!gids.length) throw new Error('Pass a general id, or use --all.');
+    const results = [];
+    for (const gid of gids) results.push(await browser.evaluate(browserProbe(gid)));
+    if (json) console.log(JSON.stringify(results, null, 2));
+    else for (const result of results) {
+      console.log(result.general);
+      for (const row of result.rows) {
+        console.log(`  ${row.attack.padEnd(6)} max ${row.withSwing.max.toFixed(1)} -> ${row.withoutSwing.max.toFixed(1)}  Δ ${row.maxDelta.toFixed(1)} | mean Δ ${row.meanDelta.toFixed(1)}`);
+      }
+    }
+  }
 } finally {
   browser.socket.close();
   browser.child.kill();
-}
-
-if (json) console.log(JSON.stringify(results, null, 2));
-else for (const result of results) {
-  console.log(result.general);
-  for (const row of result.rows) {
-    console.log(`  ${row.attack.padEnd(6)} max ${row.withSwing.max.toFixed(1)} -> ${row.withoutSwing.max.toFixed(1)}  Δ ${row.maxDelta.toFixed(1)} | mean Δ ${row.meanDelta.toFixed(1)}`);
-  }
 }
