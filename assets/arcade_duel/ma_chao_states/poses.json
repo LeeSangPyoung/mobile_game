@@ -28,22 +28,16 @@
    "footR": 548
   },
   "thrust_impact": {
-   "tipX": 802,
-   "tipY": 373,
-   "footL": 767,
-   "footR": 871
+   "tipX": 1187,
+   "tipY": 571
   },
   "thrust_recovery": {
-   "tipX": 978,
-   "tipY": 557,
-   "footL": 729,
-   "footR": 841
+   "tipX": 1046,
+   "tipY": 666
   },
   "thrust_windup": {
-   "tipX": 240,
-   "tipY": 532,
-   "footL": 718,
-   "footR": 831
+   "tipX": 1046,
+   "tipY": 757
   },
   "walk1": {
    "tipX": 973,
@@ -141,7 +135,7 @@
  },
  "reach": {
   "slash": 203,
-  "thrust": 223,
+  "thrust": 344,
   "heavy": 181
  }
 }
