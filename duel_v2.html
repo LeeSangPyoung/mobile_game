@@ -866,10 +866,12 @@ const ASSET_SRC = {
 // 20컷 완본을 갖춘 장수를 폴더 하나로 불러온다.
 // 조운·화웅은 예전 방식(에셋 키를 코드에 나열)으로 남아 있지만,
 // 앞으로 추가되는 장수는 이 경로만 쓴다 — 코드 편집 0줄.
+// *_swing 은 예비와 타격 **사이**에 끼는 '가속' 컷이다. 없으면 없는 대로
+// 돌아간다(예전 9컷 장수도 그대로 동작) — 있는 장수만 한 장 더 거친다.
 const FULL_POSES = ['idle', 'walk1', 'walk2', 'walk3', 'walk4',
-  'slash_windup', 'slash_impact', 'slash_recovery',
-  'thrust_windup', 'thrust_impact', 'thrust_recovery',
-  'heavy_windup', 'heavy_impact', 'heavy_recovery',
+  'slash_windup', 'slash_swing', 'slash_impact', 'slash_recovery',
+  'thrust_windup', 'thrust_swing', 'thrust_impact', 'thrust_recovery',
+  'heavy_windup', 'heavy_swing', 'heavy_impact', 'heavy_recovery',
   'guard_ready', 'guard_just', 'hurt_light', 'hurt_heavy',
   'stunned', 'ko_fall', 'ko_down'];
 
@@ -904,7 +906,12 @@ async function loadGeneral(gid, side, opts = {}) {
   const pre = 'g' + gid.replace(/[^a-z]/g, '') + '_';
   // decode() 까지 기다린다. onload 만 보고 그리면 크롬이 디코딩 전 프레임을 그냥 건너뛴다 —
   // 각 컷을 처음 쓰는 순간 한 번씩 캐릭터가 사라져 보이던 원인이다(걷기 시작할 때 특히).
-  await Promise.all(FULL_POSES.map(n => new Promise(res => {
+  // 좌표부터 읽는다. 어떤 컷이 있는지(가속 컷을 갈아 끼웠는지)를 알아야
+  // 없는 파일을 요청하지 않는다 — 없는 걸 부르면 404 가 캐릭터마다 3개씩 뜬다.
+  let meta = {};
+  try { meta = await (await fetch(bust(`${dir}/poses.json`))).json(); } catch {}
+  const poses = FULL_POSES.filter(n => !n.endsWith('_swing') || meta.swing);
+  await Promise.all(poses.map(n => new Promise(res => {
     const img = new Image();
     const done = () => { A[pre + n] = img; res(); };
     img.onload = () => { (img.decode ? img.decode() : Promise.resolve()).then(done, done); };
@@ -913,9 +920,7 @@ async function loadGeneral(gid, side, opts = {}) {
     POSE_KEY[pre + n] = n;
   })));
   // 창끝 좌표·실측 몸높이·걷기 순서. 빼먹으면 아우라가 허공에서 나고 덩치가 어긋난다.
-  let meta = {};
   try {
-    meta = await (await fetch(bust(`${dir}/poses.json`))).json();
     for (const k in (meta.poses || {})) POSE_TIP[pre.charAt(0) + gid + ':' + k] = meta.poses[k];
     if (meta.bodyH) POSE_BODY_H[side] = meta.bodyH;
     CHAR_REACH[side] = meta.reach || null;
@@ -932,9 +937,13 @@ async function loadGeneral(gid, side, opts = {}) {
     guard: pre + 'guard_ready', guardJust: pre + 'guard_just',
     hurtL: pre + 'hurt_light', hurtH: pre + 'hurt_heavy', stunned: pre + 'stunned',
     koFall: pre + 'ko_fall', koDown: pre + 'ko_down',
-    light: [pre + 'slash_windup', pre + 'slash_impact', pre + 'slash_recovery'],
-    thrust: [pre + 'thrust_windup', pre + 'thrust_impact', pre + 'thrust_recovery'],
-    heavy: [pre + 'heavy_windup', pre + 'heavy_impact', pre + 'heavy_recovery'],
+    // 4번째 자리가 '가속' 컷이다. 파일이 없으면 null 이고 statePose 가 건너뛴다.
+    light: [pre + 'slash_windup', pre + 'slash_impact', pre + 'slash_recovery',
+            ready(A[pre + 'slash_swing']) ? pre + 'slash_swing' : null],
+    thrust: [pre + 'thrust_windup', pre + 'thrust_impact', pre + 'thrust_recovery',
+             ready(A[pre + 'thrust_swing']) ? pre + 'thrust_swing' : null],
+    heavy: [pre + 'heavy_windup', pre + 'heavy_impact', pre + 'heavy_recovery',
+            ready(A[pre + 'heavy_swing']) ? pre + 'heavy_swing' : null],
   };
   CHAR_SIZE[side] = opts.size || 1.0;
   // 접지 그림자 위치. 기본값(중심 640·폭 320)은 어느 장수와도 안 맞는다 —
@@ -2108,7 +2117,15 @@ function statePose(f) {
   const PHASE = { windup: 0, active: 1, recover: 2 };
   const atk = f.move && set[f.move.sheet];
   switch (f.state) {
-    case 'windup':
+    case 'windup': {
+      if (!atk) return null;
+      // 예비동작 후반은 '가속' 컷으로 넘긴다 — 감는 자세에서 곧장 타격으로
+      // 튀면 그 사이가 통째로 비어 카드가 넘어가는 것처럼 보인다.
+      // 강베기는 예비가 21프레임이라 특히 길다.
+      const dur = Math.max(1, f.move.startup * (f.spd || 1));
+      if (atk[3] && f.st >= dur * 0.55) return pick(atk[3]);
+      return pick(atk[0]);
+    }
     case 'active':
     case 'recover': return atk ? pick(atk[PHASE[f.state]]) : null;
     case 'hurt':    return pick(f.hurtHeavy ? set.hurtH : set.hurtL);

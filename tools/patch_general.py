@@ -122,6 +122,10 @@ def main():
                 'tipX': round(CX + (t['tipX'] - CX) * k),
                 'tipY': round(BASELINE + (t['tipY'] - BASELINE) * k)}
         print(f'   ○ {n} 교체')
+    # '가속' 컷(*_swing)을 넣었으면 표시해 둔다 — 게임이 이 표시를 보고
+    # 그 파일들을 요청한다. 없으면 아예 안 부르므로 404 가 안 뜬다.
+    if any(n.endswith('_swing') for n in names):
+        cur['swing'] = True
     json.dump(cur, open(tgt, 'w'), ensure_ascii=False, indent=1)
 
     # 4) 검증
