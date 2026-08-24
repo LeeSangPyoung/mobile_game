@@ -120,10 +120,6 @@
   "walk4": {
    "tipX": 575,
    "tipY": 278
-  },
-  "slash_swing": {
-   "tipX": 1045,
-   "tipY": 387
   }
  },
  "walkCycle": [
@@ -147,6 +143,5 @@
   "slash": 190,
   "thrust": 265,
   "heavy": 180
- },
- "swing": true
+ }
 }
