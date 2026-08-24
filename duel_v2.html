@@ -1817,13 +1817,19 @@ function updatePlayer() {
     if (movingX) {
       const dir = l ? -1 : 1;
       const forward = dir === P.dir;
-      P.vx = dir * (forward ? WALK_F : WALK_B);   // 뒷걸음은 조금 느리다
+      // 즉시 최고 속도로 꽂으면 '발을 디디며 속도를 얻는' 게 아니라
+      // 좌표가 순간이동하는 것처럼 보인다. 3프레임에 걸쳐 올린다.
+      P.vx = lerp(P.vx, dir * (forward ? WALK_F : WALK_B), 0.34);
     }
     // 걷는 상태는 **두 축을 합쳐서** 판정한다. 앞뒤만 보면 위아래로만 움직일 때
     // 상태가 idle 로 되돌아가 다리가 멈춘 채 몸만 미끄러진다.
-    if (movingX || movingZ) { P.state = 'walk'; P.walkClock++; }
+    // 손을 뗀 순간 idle 로 튀면 '한 발에 딱 멈추는' 사람이 아니라 그림이
+    // 갈리는 것으로 보인다. 아직 미끄러지는 동안은 걷기를 유지한다 —
+    // gait 가 계속 쌓이니 다리도 같이 돈다.
+    const gliding = Math.abs(P.vx) > 0.9 || Math.abs(P.vz) > 0.9;
+    if (movingX || movingZ || gliding) { P.state = 'walk'; P.walkClock++; }
     else if (P.state === 'walk') { P.state = 'idle'; P.st = 0; }
-  } else if (P.state === 'walk') P.state = 'idle';
+  } else if (P.state === 'walk' && Math.abs(P.vx) < 0.9) P.state = 'idle';
 }
 
 // ── AI: 거리 관리 → 견제 → 후딜 처벌 ───────────────────────────────
@@ -2125,7 +2131,14 @@ function statePose(f) {
           const step = walkCycleDist(f) / set.walk.length;
           return pick(set.walk[Math.floor((f.gait || 0) / step) % set.walk.length]);
         }
-        if (Array.isArray(set.walk)) return pick(set.walk[0]);   // 대시·백스텝 — 접지 자세 고정
+        // 대시·백스텝은 한 장 고정이었다 — 가장 빠른 동작이 가장 안 움직이니
+        // 제일 미끄러져 보였다. 걷기 컷을 이동 거리에 맞춰 돌린다.
+        // (속도가 걷기의 2.5배라 자연히 빨리 넘어간다. 기울기와 잔상이
+        //  같이 붙으므로 '두 장면이 번갈아' 처럼 보이진 않는다.)
+        if (Array.isArray(set.walk)) {
+          const st2 = walkCycleDist(f) / set.walk.length;
+          return pick(set.walk[Math.floor((f.gait || 0) / st2) % set.walk.length]);
+        }
         return pick(set.walk || set.idle);
       }
       return null;
@@ -2196,40 +2209,104 @@ function tipOf(f) {
 }
 
 // 상태 포즈는 규격이 통일돼 있어서 컷 좌표 없이 한 줄로 그린다.
+// ── 포즈 안에서 몸이 움직이게 한다 ───────────────────────────────
+// 공격은 예비·타격·회수 세 장뿐이고, 한 장이 그대로 멈춰 있는 시간이 길다.
+// 강베기 예비동작은 21프레임(0.35초) 동안 픽셀 하나 안 움직였다 — 그게
+// "카드가 넘겨지는 느낌" 의 정체다.
+//
+// 그림을 더 그리지 않고, **같은 그림에 움직임을 태운다**. 발을 축으로
+// 몸을 감았다 튀어나가고 되돌아온다. 회전축이 발이라 창끝은 몸보다 훨씬
+// 크게 움직인다 — 장병기일수록 효과가 크다.
+//
+//   예비   뒤로 감긴다 (점점 빠르게)
+//   타격   튀어나가며 살짝 넘어간다 (오버슛)
+//   회수   탄성으로 제자리
+const SWING = {           // 기술마다 감는 폭이 다르다
+  light:  { rot: 10, dx: 22 },
+  thrust: { rot:  4, dx: 34 },   // 찌르기는 돌리지 않고 곧게 뻗는다
+  heavy:  { rot: 14, dx: 26 },
+  combo:  { rot: 12, dx: 26 },
+};
+function attackMotion(f) {
+  if (!f.move || !f.moveKey) return null;
+  const a = SWING[f.moveKey] || SWING.light;
+  const spd = f.spd || 1;
+  if (f.state === 'windup') {
+    const t = clamp(f.st / Math.max(1, f.move.startup * spd), 0, 1);
+    const e = t * t;                                  // 점점 빠르게 감는다
+    return { rot: -a.rot * e, dx: -a.dx * 0.42 * e };
+  }
+  if (f.state === 'active') {
+    const t = clamp(f.st / Math.max(1, f.move.active), 0, 1);
+    const e = 1 - Math.pow(1 - t, 3);                 // 튀어나간다
+    return { rot: -a.rot + a.rot * 1.62 * e, dx: -a.dx * 0.42 + a.dx * 1.42 * e, smear: 1 - t };
+  }
+  if (f.state === 'recover') {
+    const t = clamp(f.st / Math.max(1, f.move.recovery * spd), 0, 1);
+    const e = 1 - Math.pow(1 - t, 2);                 // 탄성으로 되돌아온다
+    return { rot: a.rot * 0.62 * (1 - e), dx: a.dx * (1 - e) };
+  }
+  return null;
+}
+
 function drawStatePose(f, img) {
   const s = spriteScale(f);
-  ctx.save();
-  ctx.translate(f.x, footY(f));
-  ctx.scale(zScale(f), zScale(f));
-  // 대기는 그림 한 장이라 가만 두면 마네킹이다 — 숨을 쉬게 한다.
-  // 위아래로 띄우지 않고 '눌렀다 폈다' 한다. 발이 지면에서 떨어지면 안 된다.
-  if (f.state === 'idle' && !f.guardHeld) {
-    const b = Math.sin(frame * 0.042 + (f === B ? 1.7 : 0));
-    ctx.scale(1 - b * 0.006, 1 + b * 0.012);
-  } else if (f.guardHeld) {
-    const b = Math.sin(frame * 0.075);       // 가드 중엔 더 얕고 빠르게
-    ctx.scale(1, 1 + b * 0.006);
+  const mo = attackMotion(f);
+  // 리그 경로에만 있던 반응을 그림 경로에도 준다. 예전엔 drawRigPose 에서만
+  // 기울기·깊이 반응을 줬는데, 그림이 있는 49명은 전부 이 함수를 타므로
+  // **아무 반응이 없었다** — "위아래로 비켜갈 때 평면 위를 미끄러진다" 가 그것이다.
+  const vz = f.vz || 0;
+  const canLean = !helpless(f) && f.state !== 'ko';
+  const leanX = canLean ? clamp((f.lean || 0) * 0.9, -7, 7) : 0;
+  const zTilt = canLean ? clamp(-vz * 1.8, -5, 5) : 0;
+  const zBob  = canLean && Math.abs(vz) > 0.3 ? Math.sin((f.gait || 0) * 0.12) * 2.2 : 0;
+
+  const paint = (rot, dx, dy, alpha) => {
+    ctx.save();
+    ctx.translate(f.x, footY(f) + dy);
+    ctx.scale(zScale(f), zScale(f));
+    if (f.state === 'idle' && !f.guardHeld) {
+      const b = Math.sin(frame * 0.042 + (f === B ? 1.7 : 0));
+      ctx.scale(1 - b * 0.006, 1 + b * 0.012);
+    } else if (f.guardHeld) {
+      const b = Math.sin(frame * 0.075);       // 가드 중엔 더 얕고 빠르게
+      ctx.scale(1, 1 + b * 0.006);
+    }
+    ctx.scale(f.dir, 1);                       // 원본은 오른쪽을 본다
+    if (rot) ctx.rotate(rot * Math.PI / 180);  // 축은 발 — 창끝이 크게 움직인다
+    if (dx) ctx.translate(dx * s, 0);
+    const al = (WALK_ALIGN[f.kind] || {})[POSE_KEY[f.poseKey]];
+    if (al) ctx.translate(al * s, 0);
+    // 피격 깜빡임은 **번쩍이는** 것이지 흐려지는 게 아니다.
+    // 알파를 0.55 로 낮추면 어두운 장수는 깜빡여 보이지만, 밝은 장수는 배경에
+    // 그대로 묻힌다 — 은백색 갑옷인 마초가 "공격받을 때 사라진다" 던 이유다.
+    const flash = f.hitFlash > 0 && f.hitFlash % 4 > 1 && f.state !== 'ko';
+    if (alpha < 1) ctx.globalAlpha = alpha;
+    else if (flash) {
+      if (CAN_FILTER) ctx.filter = 'brightness(1.9) saturate(1.6) sepia(.45) hue-rotate(-25deg)';
+      else ctx.globalAlpha = .85;
+    } else if (f.guardFlash > 0 && CAN_FILTER) {
+      ctx.filter = 'brightness(1.5) saturate(.55) hue-rotate(175deg)';
+    }
+    ctx.drawImage(img, -STATE_CX * s, -STATE_GROUND * s, STATE_CW * s, STATE_CH * s);
+    ctx.restore();
+  };
+
+  const rot = (mo ? mo.rot : 0) + leanX + zTilt;
+  const dx  = mo ? mo.dx : 0;
+  const dy  = zBob;
+
+  // 잔상 — 판정 프레임에 지나온 자리를 겹쳐 그린다. 옛날 오락실 게임이
+  // 적은 매수로 속도를 만들던 방법이다. 새 그림 없이 '휘둘렀다' 가 읽힌다.
+  if (mo && mo.smear > 0.05) {
+    const back = SWING[f.moveKey] || SWING.light;
+    for (let k = 2; k >= 1; k--) {
+      const w = k / 3;
+      paint(rot - back.rot * 0.5 * w * mo.smear,
+            dx - back.dx * 0.45 * w * mo.smear, dy, 0.30 * mo.smear * (1 - w * 0.4));
+    }
   }
-  ctx.scale(f.dir, 1);                       // 원본은 오른쪽을 본다
-  // 걷기 컷의 좌우 어긋남 보정 — 반전 뒤에 적용해야 방향이 맞는다
-  const al = (WALK_ALIGN[f.kind] || {})[POSE_KEY[f.poseKey]];
-  if (al) ctx.translate(al * s, 0);
-  // 피격 깜빡임은 **번쩍이는** 것이지 흐려지는 게 아니다.
-  // 알파를 0.55 로 낮추면 어두운 장수는 깜빡여 보이지만, 밝은 장수는 배경에
-  // 그대로 묻힌다 — 은백색 갑옷인 마초는 "공격받을 때 잠시 사라진다" 는
-  // 제보가 들어왔고, 렌더해 보니 정말 유령처럼 비쳤다.
-  // 밝기를 올리고 붉게 물들인다. 어두우면 밝아지고 밝으면 붉어지니
-  // 어떤 색의 장수든 눈에 띈다. 그리고 절대 사라지지 않는다.
-  const flash = f.hitFlash > 0 && f.hitFlash % 4 > 1 && f.state !== 'ko';
-  if (flash) {
-    if (CAN_FILTER) ctx.filter = 'brightness(1.9) saturate(1.6) sepia(.45) hue-rotate(-25deg)';
-    else ctx.globalAlpha = .85;          // 필터를 못 쓰는 브라우저 — 살짝만 흐리게
-  } else if (f.guardFlash > 0 && CAN_FILTER) {
-    // 막았을 때는 푸르게 — 맞은 것(붉음)과 한눈에 갈린다
-    ctx.filter = 'brightness(1.5) saturate(.55) hue-rotate(175deg)';
-  }
-  ctx.drawImage(img, -STATE_CX * s, -STATE_GROUND * s, STATE_CW * s, STATE_CH * s);
-  ctx.restore();
+  paint(rot, dx, dy, 1);
 }
 
 // 리그로 그릴 수 있는 상태인가 — 대기와 이동만. 공격은 그린 포즈가 훨씬 낫다.
