@@ -21,6 +21,12 @@ import sys
 
 import numpy as np
 from PIL import Image
+
+# Do not let a non-UTF-8 Windows console abort an otherwise valid asset patch.
+try:
+    sys.stdout.reconfigure(errors='replace')
+except (AttributeError, OSError):
+    pass
 from scipy import ndimage
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -91,7 +97,11 @@ def main():
                        encoding='utf-8', errors='replace')
     for line in (r.stdout + r.stderr).splitlines():
         if any(k in line for k in ('컷', '보정', '!', '배율')):
-            print('   ' + line.strip())
+            # Diagnostic output may contain characters absent from the active Windows
+            # console code page. It must not abort the asset replacement itself.
+            safe = ('   ' + line.strip()).encode(sys.stdout.encoding or 'utf-8', 'replace') \
+                                               .decode(sys.stdout.encoding or 'utf-8')
+            print(safe)
 
     made = sorted(glob.glob(os.path.join(cut, '*.png')))
     if len(made) != len(names):

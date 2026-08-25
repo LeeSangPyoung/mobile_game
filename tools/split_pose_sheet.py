@@ -16,10 +16,18 @@
 import argparse
 import json
 import os
+import sys
 
 import numpy as np
 from PIL import Image
 from scipy import ndimage
+
+# Windows consoles configured for cp949 cannot render some diagnostic symbols.
+# Preserve the image-processing run and replace only unsupported console glyphs.
+try:
+    sys.stdout.reconfigure(errors='replace')
+except (AttributeError, OSError):
+    pass
 
 # 출력 규격 — 게임 코드(duel_v2.html 의 STATE_* 상수)와 반드시 일치해야 한다.
 # 캔버스가 왜 이렇게 넓은가: 찌르기·강베기는 창이 몸 중심에서 570px 넘게 뻗는다.
