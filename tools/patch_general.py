@@ -114,8 +114,15 @@ def main():
     ref = statistics.median([c for c in (core_size(Image.open(f).convert('RGBA'))
                                          for f in keep) if c])
     new = statistics.median([c for c in (core_size(Image.open(f)) for f in made) if c])
-    k = ref / new
-    print(f'[크기 맞춤] 기존 {ref:.0f} / 새 컷 {new:.0f} → 배율 {k:.3f}')
+    # A grounded KO is intentionally horizontal.  Its height is not comparable
+    # to a standing pose, so re-scaling it by the roster's vertical body metric
+    # would enlarge it again and crop the head or weapon.
+    keep_fitted_ko = any(n == 'ko_down' for n in names)
+    k = 1.0 if keep_fitted_ko else ref / new
+    if keep_fitted_ko:
+        print('[크기 맞춤] ko_down: 캔버스에 맞춘 가로 KO 크기 유지')
+    else:
+        print(f'[크기 맞춤] 기존 {ref:.0f} / 새 컷 {new:.0f} → 배율 {k:.3f}')
 
     # 3) 교체 + 창끝 좌표 갱신
     pj = os.path.join(cut, 'poses.json')

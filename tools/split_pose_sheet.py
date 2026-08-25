@@ -376,7 +376,9 @@ def normalize_set(pieces, names, out_dir, ref=0, lift=None, fit_body=True):
         dy = round(BASELINE - m[0]) - lift.get(name, 0)
         # 캔버스를 벗어나면 **딱 들어갈 만큼만** 줄인다.
         # 어림잡아 줄이면 그 컷만 작아져서(관우 guard_just 가 -13%) 크기가 튄다.
-        for t in [1 - i * 0.015 for i in range(15)]:
+        # Horizontal KO poses can be much wider than standing poses.  Keep
+        # reducing until the complete silhouette fits rather than clipping it.
+        for t in [1 - i * 0.015 for i in range(50)]:
             if t < 1:
                 w2, h2 = max(1, round(w * t)), max(1, round(h * t))
                 rr = r.resize((w2, h2), Image.LANCZOS)
