@@ -29,6 +29,13 @@ import numpy as np
 from PIL import Image
 from scipy import ndimage
 
+# Diagnostic prose contains punctuation unavailable in some Windows cp949
+# consoles.  Reporting must not interrupt the metadata update.
+try:
+    sys.stdout.reconfigure(errors='replace')
+except (AttributeError, OSError):
+    pass
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATES = os.path.join(ROOT, 'assets', 'arcade_duel')
 WALKS3 = ['walk1', 'walk2', 'walk3']

@@ -34,16 +34,16 @@
    "tipY": 753
   },
   "walk1": {
-   "tipX": 360,
-   "tipY": 874
+   "tipX": 1027,
+   "tipY": 503
   },
   "walk2": {
-   "tipX": 645,
-   "tipY": 254
+   "tipX": 1013,
+   "tipY": 476
   },
   "walk3": {
-   "tipX": 393,
-   "tipY": 870
+   "tipX": 1014,
+   "tipY": 484
   },
   "guard_just": {
    "tipX": 1103,
@@ -100,8 +100,8 @@
    "footR": 582
   },
   "walk4": {
-   "tipX": 899,
-   "tipY": 487
+   "tipX": 1015,
+   "tipY": 481
   },
   "heavy_swing": {
    "tipX": 994,
@@ -117,17 +117,17 @@
   }
  },
  "walkCycle": [
-  "walk3",
-  "walk2",
   "walk1",
+  "walk2",
+  "walk3",
   "walk4"
  ],
- "walkStep": 97,
+ "walkStep": 34,
  "walkAlign": {
-  "walk1": -32,
-  "walk2": -11,
-  "walk3": -16,
-  "walk4": 59
+  "walk1": -18,
+  "walk2": 13,
+  "walk3": -21,
+  "walk4": 26
  },
  "feet": {
   "cx": 614,
