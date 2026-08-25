@@ -88,10 +88,8 @@
    "footR": 1106
   },
   "ko_fall": {
-   "tipX": 701,
-   "tipY": 94,
-   "footL": 509,
-   "footR": 656
+   "tipX": 871,
+   "tipY": 237
   },
   "stunned": {
    "tipX": 978,
