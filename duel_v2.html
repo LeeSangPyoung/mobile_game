@@ -916,7 +916,10 @@ async function loadGeneral(gid, side, opts = {}) {
     const img = new Image();
     const done = () => { A[pre + n] = img; res(); };
     img.onload = () => { (img.decode ? img.decode() : Promise.resolve()).then(done, done); };
-    img.onerror = () => { failedPoses.push(n); done(); };
+    // 중간 가속 컷은 기술 하나에만 있을 수 있다. (예: slash_swing만 존재)
+    // 따라서 없는 *_swing은 정상적인 선택 사항으로 취급하고, 기본 20컷의
+    // 누락만 세트 교체 실패로 처리한다.
+    img.onerror = () => { if (!n.endsWith('_swing')) failedPoses.push(n); done(); };
     img.src = bust(`${dir}/${n}.webp`);
     POSE_KEY[pre + n] = n;
   })));

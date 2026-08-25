@@ -50,6 +50,10 @@ def grade(v, best, worst, higher=True):
     return max(0.0, 60 + (v - worst) / (best - worst) * 40)
 
 roster = json.load(open('assets/arcade_duel/generals.json', encoding='utf-8'))
+# 특정 장수만 빠르게 재감사할 수 있게 한다. 인자 없이 실행하면 전체 명단을 검사한다.
+wanted = set(sys.argv[1:])
+if wanted:
+    roster = [g for g in roster if g['id'] in wanted]
 rows = []
 for g in roster:
     d = f"assets/arcade_duel/{g['id']}_states"
