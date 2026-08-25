@@ -804,7 +804,7 @@ const LOCAL_DEV = ['localhost', '127.0.0.1', ''].includes(location.hostname);
 // 외부 접속에서 쓰는 에셋 버전. **파일을 갈아 끼우면 이 숫자를 올려야 한다** —
 // 안 올리면 폰이 옛 그림을 계속 쓴다(배경 v2 를 넣었을 때 실제로 겪었다).
 // 태사자 9컷 · 마초 3컷 교체 → 8. 여포·태사자 '가속' 컷 3장씩 추가 → 9.
-const AV = LOCAL_DEV ? Date.now() : 37;
+const AV = LOCAL_DEV ? Date.now() : 38;
 const bust = u => u.replace(/\?v=[^&]*/, '') + '?v=' + AV;
 
 const ASSET_SRC = {
@@ -911,14 +911,22 @@ async function loadGeneral(gid, side, opts = {}) {
   let meta = {};
   try { meta = await (await fetch(bust(`${dir}/poses.json`))).json(); } catch {}
   const poses = FULL_POSES.filter(n => !n.endsWith('_swing') || meta.swing);
+  const failedPoses = [];
   await Promise.all(poses.map(n => new Promise(res => {
     const img = new Image();
     const done = () => { A[pre + n] = img; res(); };
     img.onload = () => { (img.decode ? img.decode() : Promise.resolve()).then(done, done); };
-    img.onerror = done;
+    img.onerror = () => { failedPoses.push(n); done(); };
     img.src = bust(`${dir}/${n}.webp`);
     POSE_KEY[pre + n] = n;
   })));
+  // 일부 포즈만 실패한 상태로 세트를 교체하면 해당 상태에서 리그/그림자로
+  // 튀며 장수가 사라지거나 외형이 바뀐 것처럼 보인다. 기존 세트를 유지하고
+  // 정확한 장수·포즈를 콘솔에 남겨 원인을 드러낸다.
+  if (failedPoses.length) {
+    console.error(`[duel assets] ${gid} load failed: ${failedPoses.join(', ')}`);
+    return false;
+  }
   // 창끝 좌표·실측 몸높이·걷기 순서. 빼먹으면 아우라가 허공에서 나고 덩치가 어긋난다.
   try {
     for (const k in (meta.poses || {})) POSE_TIP[pre.charAt(0) + gid + ':' + k] = meta.poses[k];
@@ -950,7 +958,7 @@ async function loadGeneral(gid, side, opts = {}) {
   // 실측하면 중심이 최대 52px 어긋나고 폭도 110~200px 더 넓다.
   // tools/walk_cycle.py 가 대기 자세에서 재어 poses.json 에 적어 둔다.
   CHAR_FEET[side] = meta.feet || opts.feet || { cx: STATE_CX, w: 320 };
-  return true;
+  return ready(A[pre + 'idle']);
 }
 
 // 캐릭터별 상태 → 에셋 키. 없는 항목은 null 이고, 그 상태는 기존 시트가 맡는다.
@@ -3010,13 +3018,9 @@ function applyPickMeta() {
   for (const [sel, side] of [['pickP', 'player'], ['pickB', 'boss']]) {
     const g = ROSTER.find(x => x.id === $(sel).value);
     if (!g) continue;
-    // resetMatch() 가 기본값으로 되돌리므로 여기 저장해 둔다
-    // 고른 장수가 지금 올라와 있는 장수와 다르면 **옛 포즈를 즉시 버린다**.
-    // POSE_SET 은 조운/화웅 스프라이트 키로 초기화돼 있어서, 그냥 두면 새 그림이
-    // 도착할 때까지 엉뚱한 두 사람이 무대에 서 있는다 —
-    // "다른 장수를 골랐는데 조운·화웅이 잠깐 나왔다 사라진다" 는 게 이것이다.
-    // 비워 두면 그 동안은 그림자만 그린다(drawFighter 의 마지막 갈래).
-    if (SIDE_GID[side] !== g.id) POSE_SET[side] = {};
+    // 새 포즈 세트가 전부 디코드될 때까지는 현재 장수를 유지한다.
+    // 여기서 POSE_SET 을 비우면 로딩 중 그림자만 남아 "사라졌다가 나온다"로 보인다.
+    // loadGeneral() 이 성공한 순간에만 세트를 원자적으로 교체한다.
     SIDE_INFO[side].id = g.id;
     SIDE_INFO[side].name = g.name;
     if (g.war) SIDE_INFO[side].war = g.war;

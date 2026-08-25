@@ -116,8 +116,6 @@ for g in roster:
     rows.append(dict(name=g['name'], gid=g['id'], sc=sc, A=A, B=B, C=C, D=D, E=E, F=F, G=Gbad,
                      H=H, dup=dup, frag=frag, I=I, total=total))
 
-import pickle
-pickle.dump(rows, open(r"C:/Users/leesp/AppData/Local/Temp/claude/d--workspace-game2/ed7ea418-867a-4fbd-9513-bc7953cccb92/scratchpad/rows.pkl",'wb'))
 rows.sort(key=lambda r: -r['total'])
 print(f"{'장수':<7}{'총점':>6} │{'접지':>6}{'통과':>6}{'키차':>6}{'발폭':>6}{'대기':>7}{'몸통':>6}{'피격':>6} │ 결함")
 for r in rows:
