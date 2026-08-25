@@ -132,7 +132,9 @@ def main():
     cores = [c for c in (core_size(Image.open(f).convert('RGBA'))
                          for f in glob.glob(os.path.join(out_dir, '*.webp'))) if c]
     spread = (max(cores) - min(cores)) / statistics.mean(cores) * 100
-    print(f'[검증] 몸통 편차 {spread:.0f}%  ' + ('○' if spread <= 14 else '✗ 14% 초과'))
+    # Windows cp949 콘솔에서는 ○/✗를 출력하지 못해, 파일 교체 뒤 검증 단계에서
+    # 도구가 예외로 끝날 수 있다. ASCII 상태 표시는 어느 콘솔에서나 안전하다.
+    print(f'[검증] 몸통 편차 {spread:.0f}%  ' + ('OK' if spread <= 14 else 'FAIL: 14% 초과'))
     print(f'\n→ duel_v2.html 에서 {args.gid} 확인')
 
 
