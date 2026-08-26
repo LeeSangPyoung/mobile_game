@@ -441,6 +441,15 @@ def main():
     # 이름 개수를 아는 경우, 그 수가 나올 때까지 침식을 조금씩 키운다.
     want = len([n for n in (args.names or '').split(',') if n.strip()])
     blobs = split_components(fg)
+    # A one-pose repair can legitimately contain a fallen body and a separately
+    # dropped, but complete, weapon.  They are one animation cell, not two
+    # sprite cells, so keep their shared silhouette together before matching
+    # the requested name.
+    if want == 1 and len(blobs) > 1:
+        ys, xs = np.nonzero(fg)
+        if len(xs):
+            blobs = [(xs.min(), ys.min(), xs.max() + 1, ys.max() + 1, fg)]
+            print('  one-pose sheet: merged detached weapon into its KO cell')
     if want and len(blobs) != want:
         for e in (13, 17, 21, 25):
             trial = split_components(fg, erode=e)

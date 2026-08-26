@@ -118,7 +118,10 @@ def main():
     # to a standing pose, so re-scaling it by the roster's vertical body metric
     # would enlarge it again and crop the head or weapon.
     keep_fitted_ko = any(n == 'ko_down' for n in names)
-    k = 1.0 if keep_fitted_ko else ref / new
+    # A grounded KO must never be enlarged from a standing-pose metric, but an
+    # oversized generated replacement still has to be reduced to avoid a
+    # visible size jump when the character hits the ground.
+    k = min(1.0, ref / new) if keep_fitted_ko else ref / new
     if keep_fitted_ko:
         print('[크기 맞춤] ko_down: 캔버스에 맞춘 가로 KO 크기 유지')
     else:
