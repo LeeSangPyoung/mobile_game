@@ -14,16 +14,16 @@
    "tipY": 574
   },
   "walk2": {
-   "tipX": 542,
-   "tipY": 871
+   "tipX": 1158,
+   "tipY": 645
   },
   "walk3": {
    "tipX": 1227,
    "tipY": 765
   },
   "walk4": {
-   "tipX": 527,
-   "tipY": 871
+   "tipX": 1164,
+   "tipY": 575
   },
   "heavy_impact": {
    "tipX": 925,
@@ -95,10 +95,10 @@
   }
  },
  "walkAlign": {
-  "walk1": 109,
-  "walk2": -32,
-  "walk3": -62,
-  "walk4": -15
+  "walk1": 29,
+  "walk2": 57,
+  "walk3": -142,
+  "walk4": 56
  },
  "feet": {
   "cx": 586,
