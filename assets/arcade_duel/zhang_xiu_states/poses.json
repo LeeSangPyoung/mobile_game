@@ -38,12 +38,12 @@
    "tipY": 880
   },
   "heavy_recovery": {
-   "tipX": 996,
-   "tipY": 809
+   "tipX": 1243,
+   "tipY": 888
   },
   "heavy_windup": {
-   "tipX": 945,
-   "tipY": 871
+   "tipX": 1056,
+   "tipY": 509
   },
   "hurt_heavy": {
    "tipX": 1011,
@@ -62,32 +62,32 @@
    "tipY": 755
   },
   "slash_impact": {
-   "tipX": 969,
-   "tipY": 873
+   "tipX": 1128,
+   "tipY": 461
   },
   "slash_recovery": {
-   "tipX": 915,
-   "tipY": 865
+   "tipX": 1015,
+   "tipY": 472
   },
   "slash_windup": {
-   "tipX": 943,
-   "tipY": 873
+   "tipX": 332,
+   "tipY": 261
   },
   "stunned": {
    "tipX": 962,
    "tipY": 865
   },
   "thrust_impact": {
-   "tipX": 1000,
-   "tipY": 511
+   "tipX": 1163,
+   "tipY": 517
   },
   "thrust_recovery": {
-   "tipX": 935,
-   "tipY": 873
+   "tipX": 1118,
+   "tipY": 631
   },
   "thrust_windup": {
-   "tipX": 384,
-   "tipY": 872
+   "tipX": 1025,
+   "tipY": 611
   },
   "slash_swing": {
    "tipX": 1071,
@@ -98,8 +98,8 @@
    "tipY": 586
   },
   "heavy_swing": {
-   "tipX": 1044,
-   "tipY": 876
+   "tipX": 1080,
+   "tipY": 856
   }
  },
  "walkAlign": {
