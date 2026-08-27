@@ -991,20 +991,13 @@ const POSE_BODY_H = { player: 620, boss: 620 };
 // 맞는' 상태였다(마초 찌르기는 175px 모자랐다). tools/fit_reach.py 가
 // 타격 컷의 창끝을 재서 poses.json 에 적어 둔다.
 const CHAR_REACH = { player: null, boss: null };
-// Weapon art can vary by general, but collision distance must remain fair.
-// Pose tips still drive the visual trail; only hit range is bounded per move.
-const REACH_BAND = {
-  slash:  [210, 240],
-  thrust: [265, 305],
-  heavy:  [185, 215],
-};
+// Weapon art can vary by general, but hit distance may not: combat is fair
+// only when the same move always reaches the same distance. Pose tips still
+// drive the visual trail; this is collision and AI spacing only.
 const reachOf = (f, key) => {
-  const r = CHAR_REACH[f.kind];
   // 연격(combo)은 그림만 강베기이고 사거리는 베기를 따른다 — chainOf 가 그 뜻이다
-  const k = key === 'light' ? 'slash' : (MOVES[key] && MOVES[key].chainOf) || key;
-  const raw = (r && r[k]) || MOVES[key].reach;
-  const band = REACH_BAND[k];
-  return band ? clamp(raw, band[0], band[1]) : raw;
+  const k = (MOVES[key] && MOVES[key].chainOf) || key;
+  return MOVES[k].reach;
 };
 for (const [who, kind, dir] of [['s', 'player', 'zhao_yun_states'], ['h', 'boss', 'hua_xiong_states']]) {
   fetch(bust(`./assets/arcade_duel/${dir}/poses.json`)).then(r => r.json())
