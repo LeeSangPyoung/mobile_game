@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 from scipy import ndimage
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -80,9 +80,33 @@ def audit(gid):
     return missing, blank, scale_spread, foot_spread, sorted(set(fragments))
 
 
+def contact_sheet(ids, out_path):
+    """Render comparable idle/walk frames for the human final pass."""
+    states = ('idle', 'walk1', 'walk2', 'walk3', 'walk4')
+    tile_w, tile_h, label_h = 180, 170, 22
+    sheet = Image.new('RGBA', (tile_w * len(states), (tile_h + label_h) * len(ids)),
+                      (12, 15, 21, 255))
+    draw = ImageDraw.Draw(sheet)
+    for row, gid in enumerate(ids):
+        folder = ASSETS / f'{gid}_states'
+        for col, state in enumerate(states):
+            path = folder / f'{state}.webp'
+            if not path.exists():
+                continue
+            im = Image.open(path).convert('RGBA')
+            im.thumbnail((tile_w - 10, tile_h - 8), Image.Resampling.LANCZOS)
+            x = col * tile_w + (tile_w - im.width) // 2
+            y = row * (tile_h + label_h) + (tile_h - im.height)
+            sheet.alpha_composite(im, (x, y))
+            draw.text((col * tile_w + 5, row * (tile_h + label_h) + tile_h + 3),
+                      f'{gid} {state}', fill=(230, 236, 245, 255))
+    sheet.save(out_path)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('ids', nargs='*')
+    parser.add_argument('--contact', type=Path, help='write an idle/walk comparison sheet')
     args = parser.parse_args()
     roster = json.loads((ASSETS / 'generals.json').read_text(encoding='utf-8'))
     ids = args.ids or [g['id'] for g in roster]
@@ -94,6 +118,9 @@ def main():
             print(f'{gid} {scale:.1f}% {foot:.0f}px '
                   f'{",".join(fragments) or "-"} '
                   f'{",".join(missing + blank) or "-"}')
+    if args.contact:
+        contact_sheet(ids, args.contact)
+        print(f'contact {args.contact}')
 
 
 if __name__ == '__main__':
