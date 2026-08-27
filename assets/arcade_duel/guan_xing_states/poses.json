@@ -34,16 +34,16 @@
    "tipY": 74
   },
   "heavy_impact": {
-   "tipX": 1272,
-   "tipY": 871
+   "tipX": 1068,
+   "tipY": 832
   },
   "heavy_recovery": {
-   "tipX": 1125,
-   "tipY": 809
+   "tipX": 1095,
+   "tipY": 819
   },
   "heavy_windup": {
-   "tipX": 1038,
-   "tipY": 404
+   "tipX": 329,
+   "tipY": 72
   },
   "hurt_heavy": {
    "tipX": 955,
