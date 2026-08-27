@@ -1,11 +1,7 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<!-- HTML 은 캐시하지 않는다. 폰이 옛 화면을 붙들고 있어 "고쳤는데 그대로다"
-     가 반복됐다 — 스틱이 예전처럼 따라 움직인다는 제보가 그 예다. -->
-<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>일기토 — 결투</title>
 <!--
@@ -58,11 +54,6 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 .nameRow b{font-size:calc(19*var(--u));letter-spacing:calc(1*var(--u));color:#fff3c4;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nameRow i{font-style:normal;font-size:calc(12*var(--u));color:#f0c05a}
-/* 등급·강화 뱃지 — 본편의 별/다이아 등급과 강화 레벨을 그대로 보여 준다.
-   이 둘이 데미지·체력에 곱해지므로 화면에 안 보이면 왜 졌는지 알 수 없다. */
-.nameRow em.tier{font-style:normal;font-size:calc(11*var(--u));font-weight:900;
-  letter-spacing:calc(.5*var(--u));white-space:nowrap;
-  text-shadow:calc(1*var(--u)) calc(1*var(--u)) 0 #000}
 .hpTrack{position:relative;height:calc(18*var(--u));padding:calc(2*var(--u));background:#0a0503;
   border:calc(2*var(--u)) solid #c9a86a;box-shadow:inset 0 2px 6px #000,0 2px 0 #000}
 .hpLoss{position:absolute;inset:calc(2*var(--u));background:#e8563a;transition:width .45s ease .12s;width:100%}
@@ -112,151 +103,100 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 #pad.hide{display:none}
 .cluster{display:flex;gap:calc(12*var(--u));align-items:center;pointer-events:auto}
 /* 공격군은 2×2. 세로 화면 폭(360px)에 버튼 6개를 한 줄로 놓으면 화면 밖으로 나간다. */
-/* 세 버튼을 격자에 얹으니 가로 간격(182px)에 비해 세로 낙차(86px)가 절반뿐
-   이라 삼각형이 납작하게 찌그러져 보였다. 정삼각형이면 한 변이 148px 일 때
-   높이가 128px 이어야 한다. 격자로는 이 비율을 못 맞춰서 좌표로 놓는다. */
-.cluster.acts{position:relative;
-  width:calc(237*var(--u));height:calc(217*var(--u));
-  min-width:237px;min-height:217px}
-.cluster.acts .ps{position:absolute}
-/* 정삼각형(꼭짓점이 위) — 중심 간 거리가 세 변 모두 148px 이다.
-          ○ 찌르기
-     □ 가드     ✕ 베기
-   베기가 오른쪽 아래인 이유: 엄지가 오른쪽 아래에서 올라오니 제일 가깝고,
-   연격 때문에 가장 많이 두드리는 버튼이라 크기도 한 단계 키웠다.
-   중심 좌표는 (115,41) (41,169) (189,169) — 세 변이 147.8 / 148 / 147.8 이다. */
-.cluster.acts [data-act="thrust"]{left:calc(74*var(--u));  top:0}
-.cluster.acts [data-act="guard"] {left:0;                  top:calc(128*var(--u))}
-.cluster.acts [data-act="light"] {left:calc(141*var(--u)); top:calc(121*var(--u))}
-.ps{width:max(58px,calc(82*var(--u)));height:max(58px,calc(82*var(--u)))}
-.ps.big{width:max(68px,calc(96*var(--u)));height:max(68px,calc(96*var(--u)))}
-.ps.big .sym{font-size:max(24px,calc(34*var(--u)))}
-/* ═══ 조작 패드 ═══════════════════════════════════════════════
-   버튼 세 개를 허공에 띄워 놓으면 '불규칙한 동그라미'로 보인다. 실제 패드는
-   버튼이 **하우징 안에 박혀** 있고, 그 하우징이 손이 갈 자리를 알려 준다.
-   그래서 좌우에 판을 하나씩 깔고 그 안에 앉힌다.
-
-   깊이는 네 겹으로 만든다 — 밖으로 번지는 그림자(떠 있음) / 테두리 두 줄
-   (금속 림) / 위쪽 하이라이트(유리) / 안쪽 아래 그림자(오목함).
-   한 겹만 쓰면 스티커가 되고, 네 겹이면 물건이 된다.
-
-   그리고 조작부는 화면을 가리는 존재라 평소엔 물러나 있어야 한다
-   (Apple HIG · 모바일 컨트롤 가이드 공통). 쉴 때 55%, 손을 대면 100%. */
+.cluster.acts{display:grid;grid-template-columns:repeat(3,auto);grid-template-rows:repeat(3,auto);
+  gap:calc(4*var(--u));justify-items:center;align-items:center}
+/* 플레이스테이션 페이스 버튼 배치(마름모). 2x2 격자는 어느 것이 무엇인지
+   손끝으로 구분이 안 됐다 — 마름모는 위/아래/좌/우가 몸에 익는다. */
+.cluster.acts [data-act="heavy"]{grid-column:2;grid-row:1}
+.cluster.acts [data-act="guard"]{grid-column:1;grid-row:2}
+.cluster.acts [data-act="thrust"]{grid-column:3;grid-row:2}
+.cluster.acts [data-act="light"]{grid-column:2;grid-row:3}
+/* 조작 패드 — '유리 아래 금속'.
+   예전 것이 싸구려로 보인 이유는 셋이었다.
+     · box-shadow 0 4px 0 로 만든 딱딱한 가짜 입체 → 스티커처럼 보인다
+     · 형광색 테두리를 100% 로 두른 것 → 장난감
+     · 버튼 밑의 글자 라벨('강베기','가드') → 실제 패드는 기호만 쓴다
+   그리고 조사해 보니(Apple HIG · 모바일 컨트롤 가이드) 공통으로 말하는 게
+   있었다: 조작부는 화면을 가리는 존재라 **평소엔 물러나 있어야 한다**.
+   그래서 쉴 때 55%, 손을 대면 100% 로 살아난다. */
 #pad{transition:opacity .22s ease}
 #pad:not(.live){opacity:.55}
 
-/* ── 하우징 ─────────────────────────────────────────────── */
-.cluster{position:relative;pointer-events:auto}
-.cluster::before{content:'';position:absolute;inset:calc(-13*var(--u));
-  border-radius:calc(34*var(--u));z-index:-1;
+.ps{position:relative;display:grid;place-items:center;border-radius:50%;
+  /* Apple HIG 최소 탭 영역 44pt — 그 아래로는 절대 안 내려가게 max() 로 잠근다 */
+  width:max(58px,calc(84*var(--u)));height:max(58px,calc(84*var(--u)));
   background:
-    radial-gradient(120% 90% at 50% -10%,rgba(255,255,255,.055),rgba(255,255,255,0) 60%),
-    linear-gradient(170deg,rgba(30,34,44,.50),rgba(8,10,15,.62));
-  border:1px solid rgba(190,205,230,.10);
-  box-shadow:0 calc(10*var(--u)) calc(26*var(--u)) rgba(0,0,0,.45),
-             inset 0 1px 0 rgba(255,255,255,.10),
-             inset 0 calc(-10*var(--u)) calc(18*var(--u)) rgba(0,0,0,.35);
-  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
-.cluster.moves::before{border-radius:50%;inset:calc(-11*var(--u))}
-
-/* ── 액션 버튼 ──────────────────────────────────────────── */
-/* 컨테이너는 px 하한(min-width)을 쓰는데 버튼 위치는 --u 단위였다. --u 가
-   1보다 작은 화면(폭이 좁은 폰)에서는 컨테이너만 203px 로 벌어지고 버튼은
-   그보다 좁게 배치돼 **셋이 왼쪽으로 쏠렸다**.
-   삼각형 좌표를 전부 컨테이너 대비 % 로 바꾼다 — 컨테이너가 어떤 크기가
-   되든 삼각형 모양이 그대로 유지된다. */
-.cluster.acts{width:max(203px,calc(203*var(--u)));
-  height:max(195px,calc(195*var(--u)))}
-.cluster.acts .ps{position:absolute}
-/* 정삼각형(꼭짓점 위). 중심 (98,43) (36,152) (160,152) — 세 변 125px.
-     ○ 찌르기
-   □ 가드   ✕ 베기
-   베기가 오른쪽 아래인 이유: 엄지가 오른쪽 아래에서 올라오니 제일 가깝고,
-   연격 때문에 가장 많이 두드린다. 그래서 크기도 한 단계 크다. */
-/* 203x195 기준 좌표를 % 로 환산한 값이다 */
-.cluster.acts [data-act="thrust"]{left:30.05%; top:3.08%}
-.cluster.acts [data-act="guard"] {left:0;      top:58.97%}
-.cluster.acts [data-act="light"] {left:57.64%; top:55.90%}
-
-.ps{display:grid;place-items:center;border-radius:50%;padding:0;border:0;
-  width:36.45%;aspect-ratio:1;height:auto;
-  background:
-    radial-gradient(88% 80% at 50% 116%,color-mix(in srgb,var(--c) 30%,transparent),rgba(0,0,0,0) 70%),
-    linear-gradient(178deg,#39414f 0%,#1b2029 42%,#0a0d13 100%);
+    radial-gradient(120% 96% at 50% -14%,rgba(255,255,255,.16),rgba(255,255,255,0) 52%),
+    radial-gradient(96% 96% at 50% 116%,color-mix(in srgb,var(--c) 26%,transparent),rgba(0,0,0,0) 68%),
+    linear-gradient(180deg,rgba(30,36,46,.80),rgba(9,12,18,.86));
+  border:1px solid color-mix(in srgb,var(--c) 46%,rgba(255,255,255,.10));
   box-shadow:
-    0 0 0 calc(2*var(--u)) rgba(4,6,10,.9),                    /* 어두운 홈 */
-    0 0 0 calc(3*var(--u)) color-mix(in srgb,var(--c) 30%,rgba(255,255,255,.06)),
-    0 calc(7*var(--u)) calc(14*var(--u)) rgba(0,0,0,.55),      /* 떠 있는 그림자 */
-    inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.16),          /* 위쪽 림 */
-    inset 0 calc(-7*var(--u)) calc(12*var(--u)) rgba(0,0,0,.55);
-  color:var(--c);position:relative;overflow:hidden;
-  transition:transform .08s cubic-bezier(.3,.8,.4,1),box-shadow .12s ease;
-  touch-action:none;-webkit-tap-highlight-color:transparent}
-/* 위쪽에 걸린 빛 — 이 한 겹이 '금속판'과 '유리'를 가른다 */
-.ps .face{position:absolute;left:8%;right:8%;top:5%;height:46%;border-radius:50%;
-  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0));
-  pointer-events:none}
-.ps .sym{width:66%;height:66%;display:block;position:relative;z-index:1;
-  fill:none;stroke:currentColor;stroke-width:3.6;stroke-linecap:round;
-  filter:drop-shadow(0 0 calc(6*var(--u)) color-mix(in srgb,var(--c) 70%,transparent))}
-.ps [data-act] .sym{}
-.ps.big{width:42.36%;aspect-ratio:1;height:auto}
-.ps:active,.ps.on{transform:translateY(calc(2*var(--u))) scale(.965);
-  background:
-    radial-gradient(80% 80% at 50% 50%,color-mix(in srgb,var(--c) 48%,transparent),rgba(0,0,0,0) 76%),
-    linear-gradient(178deg,#2a3140 0%,#12161d 45%,#06080c 100%);
-  box-shadow:
-    0 0 0 calc(2*var(--u)) rgba(4,6,10,.9),
-    0 0 0 calc(3*var(--u)) color-mix(in srgb,var(--c) 85%,white),
-    0 calc(2*var(--u)) calc(6*var(--u)) rgba(0,0,0,.6),
-    0 0 calc(22*var(--u)) color-mix(in srgb,var(--c) 60%,transparent),
-    inset 0 calc(4*var(--u)) calc(10*var(--u)) rgba(0,0,0,.6)}
-.ps:active .face,.ps.on .face{opacity:.35}
-
-/* ── 아날로그 스틱 ──────────────────────────────────────── */
-.cluster.moves{display:flex;align-items:center;justify-content:center}
-#stick{position:relative;border-radius:50%;
-  width:max(112px,calc(150*var(--u)));height:max(112px,calc(150*var(--u)));
-  background:
-    radial-gradient(100% 100% at 50% 0%,rgba(255,255,255,.10),rgba(255,255,255,0) 44%),
-    radial-gradient(closest-side,rgba(16,26,40,.72),rgba(6,10,17,.80));
-  box-shadow:
-    0 0 0 calc(2*var(--u)) rgba(4,6,10,.9),
-    0 0 0 calc(3*var(--u)) rgba(150,190,235,.16),
-    0 calc(8*var(--u)) calc(18*var(--u)) rgba(0,0,0,.5),
-    inset 0 calc(6*var(--u)) calc(18*var(--u)) rgba(0,0,0,.62),   /* 우묵함 */
-    inset 0 1px 0 rgba(255,255,255,.12);
+    0 calc(6*var(--u)) calc(16*var(--u)) rgba(0,0,0,.50),
+    0 0 0 1px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.20),
+    inset 0 calc(-6*var(--u)) calc(12*var(--u)) rgba(0,0,0,.40);
+  color:var(--c);font-weight:700;line-height:1;
   backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
-  transition:box-shadow .14s ease;touch-action:none}
-/* 상하좌우 눈금 — 어느 축으로 미는지 눈에 보인다 */
-#stickGate{position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  transition:transform .09s cubic-bezier(.3,.8,.4,1),box-shadow .12s ease,filter .12s ease;
+  touch-action:none;-webkit-tap-highlight-color:transparent}
+/* 위쪽 하이라이트 — 유리에 빛이 걸린 선. 이 한 줄이 '금속판'과 '유리'를 가른다 */
+.ps::before{content:'';position:absolute;inset:2px;border-radius:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 42%);
+  pointer-events:none}
+.ps .sym{font-size:max(21px,calc(30*var(--u)));display:block;
+  filter:drop-shadow(0 0 calc(7*var(--u)) color-mix(in srgb,var(--c) 60%,transparent))}
+.ps:active,.ps.on{transform:scale(.93);
   background:
-    linear-gradient(rgba(170,205,240,.16),rgba(170,205,240,.16)) center/1px 14% no-repeat,
-    linear-gradient(rgba(170,205,240,.16),rgba(170,205,240,.16)) center/14% 1px no-repeat}
-#stickRing{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:64%;height:64%;border-radius:50%;pointer-events:none;
-  border:1px solid rgba(170,205,240,.13)}
-#stickKnob{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:max(52px,calc(70*var(--u)));height:max(52px,calc(70*var(--u)));
-  border-radius:50%;pointer-events:none;
-  background:linear-gradient(176deg,#8fb6dc 0%,#4d739c 46%,#243b58 100%);
+    radial-gradient(120% 96% at 50% -14%,rgba(255,255,255,.10),rgba(255,255,255,0) 52%),
+    radial-gradient(88% 88% at 50% 50%,color-mix(in srgb,var(--c) 42%,transparent),rgba(0,0,0,0) 74%),
+    linear-gradient(180deg,rgba(22,28,38,.88),rgba(6,9,14,.92));
+  border-color:color-mix(in srgb,var(--c) 88%,white);
   box-shadow:
-    0 0 0 calc(2*var(--u)) rgba(6,10,16,.85),
-    0 calc(5*var(--u)) calc(12*var(--u)) rgba(0,0,0,.6),
-    inset 0 calc(-6*var(--u)) calc(10*var(--u)) rgba(0,0,0,.42),
-    inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.35);
-  transition:transform .05s linear}
-/* 돔에 맺힌 빛 */
-#stickKnob span{position:absolute;left:16%;top:9%;width:56%;height:40%;
-  border-radius:50%;pointer-events:none;
-  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,0))}
-#stick.on{box-shadow:
-    0 0 0 calc(2*var(--u)) rgba(4,6,10,.9),
-    0 0 0 calc(3*var(--u)) rgba(255,205,110,.55),
-    0 calc(8*var(--u)) calc(18*var(--u)) rgba(0,0,0,.5),
-    0 0 calc(24*var(--u)) rgba(255,180,70,.22),
-    inset 0 calc(6*var(--u)) calc(18*var(--u)) rgba(0,0,0,.62)}
+    0 calc(2*var(--u)) calc(7*var(--u)) rgba(0,0,0,.55),
+    0 0 calc(20*var(--u)) color-mix(in srgb,var(--c) 55%,transparent),
+    inset 0 calc(3*var(--u)) calc(10*var(--u)) rgba(0,0,0,.55)}
 
+/* 이동 — 아날로그. 조사한 바로는 액션 게임엔 '고정형'이 권장되지만
+   (손가락이 자리를 찾아 헤매지 않으니까), 고정형은 정확히 그 자리를
+   눌러야 한다는 게 문제였다. 둘을 섞는다: 집 자리는 늘 흐리게 보여 주되
+   왼쪽 영역 아무 데나 짚으면 거기가 중심이 된다. */
+.cluster.moves{position:relative;display:flex;align-items:center;justify-content:center}
+/* 중심 정렬은 음수 마진이 아니라 translate 로 한다.
+   크기가 max(120px, 168u) 인데 마진을 max(-60px, -84u) 로 쓰면 두 max 가
+   서로 다른 쪽을 고르는 구간이 생긴다 — 실제로 28px 어긋나 있었다. */
+#stickHome{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:max(120px,calc(168*var(--u)));height:max(120px,calc(168*var(--u)));
+  border-radius:50%;border:1px dashed rgba(190,220,255,.16);pointer-events:none}
+#stick{position:relative;
+  width:max(120px,calc(168*var(--u)));height:max(120px,calc(168*var(--u)));border-radius:50%;
+  background:
+    radial-gradient(100% 100% at 50% 0%,rgba(255,255,255,.10),rgba(255,255,255,0) 46%),
+    radial-gradient(closest-side,rgba(24,38,58,.50),rgba(10,16,26,.66));
+  border:1px solid rgba(160,205,245,.26);
+  box-shadow:0 calc(6*var(--u)) calc(18*var(--u)) rgba(0,0,0,.45),
+             inset 0 calc(3*var(--u)) calc(14*var(--u)) rgba(0,0,0,.50),
+             inset 0 1px 0 rgba(255,255,255,.14);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  transition:border-color .14s ease,box-shadow .14s ease;
+  touch-action:none}
+/* 안쪽 눈금 링 — 어디까지 밀면 최대인지 눈으로 보인다 */
+#stickRing{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:62%;height:62%;border-radius:50%;
+  border:1px solid rgba(190,220,255,.13);pointer-events:none}
+#stickKnob{position:absolute;left:50%;top:50%;
+  width:max(54px,calc(76*var(--u)));height:max(54px,calc(76*var(--u)));
+  margin:0;border-radius:50%;
+  background:
+    radial-gradient(90% 78% at 38% 26%,rgba(255,255,255,.92),rgba(255,255,255,.10) 46%,rgba(255,255,255,0) 62%),
+    radial-gradient(closest-side,rgba(150,196,240,.62),rgba(40,70,110,.72));
+  border:1px solid rgba(226,242,255,.42);
+  box-shadow:0 calc(3*var(--u)) calc(10*var(--u)) rgba(0,0,0,.55),
+             inset 0 calc(-3*var(--u)) calc(8*var(--u)) rgba(0,0,0,.35);
+  transition:transform .05s linear;pointer-events:none}
+#stick.on{border-color:rgba(255,212,92,.62);
+  box-shadow:0 calc(6*var(--u)) calc(18*var(--u)) rgba(0,0,0,.45),
+             0 0 calc(22*var(--u)) rgba(255,190,80,.22),
+             inset 0 calc(3*var(--u)) calc(14*var(--u)) rgba(0,0,0,.50)}
 .cluster.moves .up{grid-column:2;grid-row:1}
 .cluster.moves .dn{grid-column:2;grid-row:3}
 .cluster.moves [data-act="left"]{grid-column:1;grid-row:2}
@@ -301,8 +241,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 #pickWrap{display:grid;gap:8px;margin:14px 0 4px}
 .pickRow{display:flex;align-items:center;gap:10px;justify-content:center}
 .pickRow span{width:56px;text-align:right;color:#c9a86a;font-size:13px;font-weight:800}
-.pickRow select.sm{flex:0 0 auto;min-width:0;padding:7px 6px;font-size:12px}
-.pickRow select{flex:0 1 150px;font:inherit;font-weight:700;padding:7px 10px;border-radius:6px;
+.pickRow select{flex:0 1 180px;font:inherit;font-weight:700;padding:7px 10px;border-radius:6px;
   border:2px solid #6b4f26;background:#241809;color:#f0dcb4}
 .keys{margin-top:14px;font-size:clamp(10px,1.5vw,12px);color:#b79a6d;line-height:1.9}
 .keys b{color:#ffd45c}
@@ -314,77 +253,6 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 /* 세로 전용: 결투 영역 오른쪽 위. 하단 중앙은 조작 버튼이 쓴다. */
 #util{right:calc(10*var(--u));top:calc(74*var(--u))}
 
-
-/* 가로 화면 안내 —
-   레이아웃 수식상 화면이 짧으면 조작부가 사라진다. 캔버스 논리 높이가
-   최소 900 으로 잠겨 있어서(clamp), 비율이 1.667 아래로 내려가면
-   패드 높이가 '화면높이 - 화면폭' 이 되고 1 에 가까워질수록 0 이 된다.
-   실제로 가로(932x430)에서 패드가 29px 이었고 버튼이 화면 밖으로 나갔다.
-   세로 폰(비율 1.7 이상)은 영향이 없다. 그러니 가로일 때만 막는다. */
-#rotate{position:absolute;inset:0;z-index:40;display:none;
-  flex-direction:column;align-items:center;justify-content:center;gap:calc(10*var(--u));
-  background:#0b0704;color:#f4e7d2;text-align:center;padding:20px}
-#rotate:not([hidden]){display:flex}
-#rotate .ric{font-size:min(19vw,74px);line-height:1;
-  animation:rot 2.1s ease-in-out infinite}
-@keyframes rot{0%,44%{transform:rotate(-90deg)}62%,100%{transform:rotate(0)}}
-#rotate b{font-size:clamp(17px,4.6vw,23px);color:#ffd45c;letter-spacing:.04em}
-#rotate span{font-size:clamp(12px,3.4vw,15px);opacity:.62}
-
-/* 대기 문구 — 개막이 끝나면 여기서 손을 기다린다 */
-#intro .iskip.wait{color:#ffd45c;font-weight:700;font-size:clamp(13px,3.6vw,16px);
-  animation:iPulse 1.25s ease-in-out infinite}
-@keyframes iPulse{0%,100%{opacity:.45}50%{opacity:1}}
-
-/* 카운트다운 — 숫자는 크게 들어와 빠르게 앉고, FIGHT 는 옆으로 벌어진다 */
-#count{position:absolute;inset:0;z-index:14;display:grid;place-items:center;
-  pointer-events:none}
-#count[hidden]{display:none}
-#count span{font-weight:900;line-height:1;color:#ffd45c;
-  text-shadow:0 calc(5*var(--u)) 0 #6b3a08,0 0 calc(40*var(--u)) rgba(255,170,50,.75);
-  font-size:min(38vw,26vh);letter-spacing:0}
-/* FIGHT 은 글자가 가로로 길다. 숫자와 같은 세기로 번지게 하면 글자 사이가
-   메워져 금색 덩어리로 보인다 — 번짐을 절반 이하로 줄이고 테두리로 세운다. */
-/* 클래스 이름은 .go 를 쓰면 안 된다 — 오버레이 버튼(#ovGo)이 이미 .go 를
-   쓰고 있어서 금색 버튼 배경과 padding 이 통째로 딸려온다. 실제로 FIGHT
-   글자가 금색 막대 안에 갇혀 나왔다. */
-#count span.fight{font-size:min(22vw,14vh);letter-spacing:.10em;color:#fff3c8;
-  -webkit-text-stroke:calc(2*var(--u)) #7d2408;paint-order:stroke fill;
-  text-shadow:0 calc(4*var(--u)) 0 #8a2a10,0 0 calc(18*var(--u)) rgba(255,140,50,.55)}
-#count span.pop{animation:cPop .62s cubic-bezier(.15,1.5,.4,1) both}
-#count span.fight.pop{animation:cGo .72s cubic-bezier(.15,1.4,.35,1) both}
-@keyframes cPop{
-  0%{opacity:0;transform:scale(2.6)}
-  26%{opacity:1;transform:scale(1)}
-  74%{opacity:1;transform:scale(1)}
-  100%{opacity:0;transform:scale(.86)}}
-@keyframes cGo{
-  0%{opacity:0;transform:scale(.5) skewX(-14deg)}
-  18%{opacity:1;transform:scale(1.14) skewX(-14deg)}
-  32%{transform:scale(1) skewX(-14deg)}
-  72%{opacity:1;transform:scale(1) skewX(-14deg)}
-  100%{opacity:0;transform:scale(1.3) skewX(-14deg)}}
-
-/* ── 결과 정산 ─────────────────────────────────────────────
-   이겼다는 걸 알려 주는 것만으로는 부족하다. 무엇을 잘해서 무엇을 받았는지
-   한 줄씩 세어 보여 줘야 다음에도 노린다 — 오락실 격투 게임이 늘 하는 것. */
-#tally{margin:calc(6*var(--u)) 0 0;text-align:left;
-  font-size:clamp(13px,3.4vw,16px);line-height:1.9}
-#tally .r{display:flex;justify-content:space-between;align-items:baseline;
-  gap:10px;opacity:0;transform:translateY(6px);
-  transition:opacity .18s ease,transform .22s cubic-bezier(.2,.9,.3,1)}
-#tally .r.in{opacity:1;transform:none}
-#tally .r span{color:#c2a97f}
-#tally .r b{color:#ffe6a8;font-variant-numeric:tabular-nums;font-weight:900}
-#tally .r.bonus span{color:#ffd45c;font-weight:800}
-#tally .r.bonus b{color:#9fe8ff}
-#tally .sep{height:1px;margin:calc(6*var(--u)) 0;
-  background:linear-gradient(90deg,transparent,rgba(255,205,120,.35),transparent)}
-#tally .r.total{font-size:clamp(16px,4.4vw,20px)}
-#tally .r.total span{color:#ffd45c;font-weight:900;letter-spacing:.06em}
-#tally .r.total b{color:#ffd45c;text-shadow:0 0 calc(16*var(--u)) rgba(255,190,80,.8)}
-#tally .r.total.pop b{animation:tPop .5s cubic-bezier(.15,1.5,.4,1) both}
-@keyframes tPop{0%{transform:scale(2.2);opacity:0}40%{transform:scale(1);opacity:1}100%{transform:scale(1)}}
 /* ── 개막 연출 ─────────────────────────────────────────────
    3-2-1 카운트다운을 넣지 않은 이유: 플레이어가 아무것도 안 하고 기다리는
    시간이고, 세 판만 해도 머릿속에서 지워진다. 같은 2초를 대사에 쓰면
@@ -409,6 +277,10 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
     radial-gradient(115% 78% at 50% 42%,rgba(0,0,0,0) 30%,rgba(6,4,2,.82) 100%)}
 
 /* 큰 글자를 배경에 아주 옅게 — 화면 중앙의 빈 곳을 채운다 */
+#intro .iglyph{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
+  font-size:min(74vw,52vh);font-weight:900;line-height:1;color:rgba(255,196,110,.055);
+  letter-spacing:0;pointer-events:none;user-select:none}
+
 /* 불티 — 전장의 공기. 여덟 개면 충분하고, 더 넣으면 폰에서 무겁다 */
 #intro .iembers{position:absolute;inset:0;pointer-events:none}
 #intro .iembers i{position:absolute;bottom:-6%;width:3px;height:3px;border-radius:50%;
@@ -431,37 +303,23 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 /* 격자 — 말상자 / 초상 / 제목이 각자 자기 행을 갖는다.
    예전엔 셋 다 절대 위치라 화면이 길어지면 말상자가 얼굴을 덮었다. */
 #intro .iwrap{position:absolute;inset:0;display:grid;
-  grid-template-rows:auto minmax(0,1fr) auto auto;
-  padding:max(12px,2.4vh) 0 max(28px,4.4vh);gap:.8vh}
+  grid-template-rows:minmax(0,1.05fr) minmax(0,2fr) auto;
+  padding:max(14px,3vh) 0 max(30px,5vh);gap:1vh}
 
-/* 말상자를 절대 위치로 두면 행 높이가 줄어들 때 아래 행(초상)으로 넘친다 —
-   실제로 430x932 에서 오른쪽 말상자가 장비 얼굴을 덮었다.
-   흐름 배치로 바꾸면 행이 내용만큼만 차지해서 구조적으로 못 겹친다. */
-#intro .ibubbles{display:flex;flex-direction:column;gap:calc(7*var(--u));
-  padding:0 4%;justify-content:flex-start;min-height:0}
-/* 말구름은 흰 바탕에 검은 글씨. 어두운 배경 위에서 대사가 가장 먼저
-   읽혀야 하는데, 검은 구름은 배경에 묻혀 '창'이 아니라 '얼룩'으로 보였다. */
-#intro .iline{position:relative;max-width:74%;padding:11px 15px;border-radius:14px;
-  font-size:clamp(13px,3.8vw,18px);line-height:1.42;font-weight:700;
-  background:linear-gradient(180deg,#ffffff,#eee7dc);
-  color:#17110a;border:1px solid rgba(120,86,40,.35);
-  box-shadow:0 10px 26px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.9);
+#intro .ibubbles{position:relative;min-height:0}
+#intro .iline{position:absolute;max-width:63%;padding:10px 14px;border-radius:13px;
+  font-size:clamp(13px,3.8vw,18px);line-height:1.42;font-weight:600;
+  background:linear-gradient(180deg,rgba(28,20,12,.95),rgba(12,8,5,.95));
+  color:#f8eeda;border:1px solid rgba(255,205,120,.38);
+  box-shadow:0 8px 24px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,220,160,.12);
   opacity:0;transform:translateY(10px);
   transition:opacity .22s ease,transform .3s cubic-bezier(.2,.9,.3,1)}
-/* 꼬리는 '테두리 삼각형'이 아니라 **45도로 돌린 정사각형**으로 만든다.
-   테두리 삼각형은 구름의 1px 테두리와 이어지지 않아서, 흰 구름 아래에
-   회색 조각이 따로 붙은 것처럼 보였다(실제로 그렇게 나왔다).
-   돌린 사각형은 구름과 같은 배경·같은 테두리를 그대로 쓰므로 한 몸이 된다.
-   구름 쪽 두 변은 테두리를 지워야 경계선이 안 비친다. */
-#intro .iline::after{content:'';position:absolute;bottom:-8px;
-  width:16px;height:16px;background:#eee7dc;
-  border:1px solid rgba(120,86,40,.35);
-  border-top:0;border-left:0;
-  transform:rotate(45deg);border-radius:0 0 4px 0}
-#intro .iline.l{align-self:flex-start;border-bottom-left-radius:4px}
-#intro .iline.l::after{left:22px}
-#intro .iline.r{align-self:flex-end;text-align:right;border-bottom-right-radius:4px}
-#intro .iline.r::after{right:22px}
+#intro .iline::after{content:'';position:absolute;bottom:-7px;width:0;height:0;
+  border:7px solid transparent;border-top-color:rgba(12,8,5,.95)}
+#intro .iline.l{left:4%;top:0;border-bottom-left-radius:4px}
+#intro .iline.l::after{left:20px}
+#intro .iline.r{right:4%;bottom:0;text-align:right;border-bottom-right-radius:4px}
+#intro .iline.r::after{right:20px}
 #intro .iline.in{opacity:1;transform:translateY(0)}
 
 #intro .ifigs{display:grid;grid-template-columns:1fr 1fr;align-items:end;min-height:0}
@@ -482,106 +340,11 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 #intro .ititle{text-align:center;padding:8px 0;
   background:linear-gradient(90deg,transparent,rgba(8,5,3,.92) 10%,
              rgba(8,5,3,.92) 90%,transparent);
-  font-size:clamp(28px,10vw,54px);font-weight:900;letter-spacing:.16em;color:#ffd45c;
+  font-size:clamp(30px,11vw,60px);font-weight:900;letter-spacing:.2em;color:#ffd45c;
   text-shadow:0 4px 0 #6b3a08,0 0 34px rgba(255,180,60,.6);
   opacity:0;transform:scale(1.5);
   transition:opacity .16s ease,transform .3s cubic-bezier(.15,1.3,.4,1)}
 #intro .ititle.in{opacity:1;transform:scale(1)}
-
-
-/* 연속타 표시 — 콤보가 붙는 순간이 이 게임에서 제일 기분 좋은 지점이다.
-   숫자가 크게 튀어 들어와 살짝 흔들리며 앉는다. HUD 아래·무대 위쪽에 둬서
-   싸우는 두 사람을 안 가린다. */
-#combo{position:absolute;left:0;right:0;top:14%;z-index:8;text-align:center;
-  pointer-events:none;font-style:italic;line-height:1;
-  display:flex;align-items:baseline;justify-content:center;gap:calc(6*var(--u))}
-#combo[hidden]{display:none}
-#combo b{font-size:calc(72*var(--u));font-weight:900;color:#fff2b0;
-  text-shadow:0 calc(4*var(--u)) 0 #7a2c06,0 0 calc(26*var(--u)) rgba(255,170,60,.85);
-  -webkit-text-stroke:calc(2*var(--u)) #7a2c06;paint-order:stroke fill}
-#combo span{font-size:calc(26*var(--u));font-weight:900;letter-spacing:calc(2*var(--u));
-  color:#ffd45c;text-shadow:0 calc(3*var(--u)) 0 #5a2205,0 0 calc(18*var(--u)) rgba(255,150,40,.7)}
-#combo span i{font-style:italic;color:#ff8a3c}
-#combo.pop{animation:comboPop .70s cubic-bezier(.18,1.5,.4,1) both}
-@keyframes comboPop{
-  0%{opacity:0;transform:scale(2.1) rotate(-7deg)}
-  18%{opacity:1;transform:scale(1) rotate(0)}
-  26%{transform:scale(1.12) rotate(2deg)}
-  36%{transform:scale(1) rotate(0)}
-  76%{opacity:1;transform:scale(1)}
-  100%{opacity:0;transform:scale(1.18) translateY(calc(-14*var(--u)))}}
-
-/* 기초 가이드 — 왼쪽에 조작 패드를 그대로 축소해 그리고, 오른쪽에 설명을 둔다.
-   조사한 가이드들이 공통으로 말하는 것: 화면의 안내는 실제 패드 배치와
-   같은 모양이어야 학습이 된다(Microsoft GDK · CoD Mobile · Game UI Database).
-   글자만 나열하면 '어느 버튼이지' 를 매번 다시 찾아야 한다. */
-#intro .iguide{display:grid;grid-template-columns:auto 1fr;align-items:center;
-  gap:calc(10*var(--u));padding:calc(10*var(--u)) calc(12*var(--u));margin:0 3%;
-  background:linear-gradient(180deg,rgba(16,11,6,.84),rgba(8,5,3,.90));
-  border:1px solid rgba(255,205,120,.20);border-radius:12px}
-
-/* 축소판도 실제 패드와 **같은 방식**으로 그린다 — 하우징 · 검은 홈 · 색 림 ·
-   위쪽 광택. 동그라미만 찍어 두면 '이게 뭔지 모르겠다' 가 된다.
-   왼쪽 우물(스틱)과 오른쪽 면판(버튼 셋)이 실제 화면과 같은 좌우 배치다. */
-#intro .gpad{position:relative;display:flex;align-items:center;
-  gap:calc(9*var(--u));padding:calc(9*var(--u)) calc(11*var(--u)) calc(17*var(--u));
-  border-radius:calc(16*var(--u));
-  background:
-    radial-gradient(120% 90% at 50% -10%,rgba(255,255,255,.06),rgba(255,255,255,0) 60%),
-    linear-gradient(170deg,rgba(30,34,44,.62),rgba(8,10,15,.74));
-  border:1px solid rgba(190,205,230,.12);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),
-             inset 0 calc(-6*var(--u)) calc(12*var(--u)) rgba(0,0,0,.4)}
-
-/* 스틱 우물 */
-#intro .gwell{display:flex;flex-direction:column;align-items:center;gap:calc(3*var(--u));
-  margin-bottom:calc(8*var(--u))}
-#intro .gwell i{position:relative;display:block;border-radius:50%;
-  width:calc(40*var(--u));height:calc(40*var(--u));
-  background:radial-gradient(closest-side,rgba(16,26,40,.85),rgba(6,10,17,.92));
-  box-shadow:0 0 0 calc(1.5*var(--u)) rgba(4,6,10,.9),
-             0 0 0 calc(2.5*var(--u)) rgba(150,190,235,.18),
-             inset 0 calc(3*var(--u)) calc(8*var(--u)) rgba(0,0,0,.6)}
-#intro .gwell i b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:52%;height:52%;border-radius:50%;
-  background:linear-gradient(176deg,#8fb6dc,#4d739c 46%,#243b58);
-  box-shadow:inset 0 calc(1.5*var(--u)) 0 rgba(255,255,255,.4),
-             0 calc(2*var(--u)) calc(4*var(--u)) rgba(0,0,0,.5)}
-#intro .gwell i b::after{content:'';position:absolute;left:18%;top:10%;width:54%;height:38%;
-  border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,0))}
-
-/* 버튼 면판 — 실제와 같은 정삼각형(꼭짓점 위) */
-#intro .gface{position:relative;width:calc(80*var(--u));height:calc(70*var(--u));
-  border-radius:calc(13*var(--u));
-  background:linear-gradient(170deg,rgba(26,30,39,.55),rgba(6,8,13,.6));
-  border:1px solid rgba(190,205,230,.09)}
-#intro .gb{position:absolute;display:grid;place-items:center;border-radius:50%;
-  width:calc(26*var(--u));height:calc(26*var(--u));color:var(--c);
-  background:linear-gradient(178deg,#39414f,#1b2029 44%,#0a0d13);
-  box-shadow:0 0 0 calc(1.4*var(--u)) rgba(4,6,10,.9),
-             0 0 0 calc(2.3*var(--u)) color-mix(in srgb,var(--c) 45%,rgba(255,255,255,.06)),
-             inset 0 calc(1.4*var(--u)) 0 rgba(255,255,255,.16)}
-#intro .gb svg{width:66%;height:66%;fill:none;stroke:currentColor;stroke-width:4.2;
-  stroke-linecap:round;
-  filter:drop-shadow(0 0 calc(4*var(--u)) color-mix(in srgb,var(--c) 70%,transparent))}
-#intro .gb.tp{left:calc(27*var(--u));top:calc(3*var(--u))}
-#intro .gb.lf{left:calc(6*var(--u)); top:calc(38*var(--u))}
-#intro .gb.rt{left:calc(48*var(--u));top:calc(38*var(--u))}
-#intro .gb em,#intro .gwell em{font-style:normal;font-weight:800;white-space:nowrap;
-  color:#ffe0a4;text-shadow:0 1px 2px #000}
-#intro .gwell em{font-size:calc(10*var(--u));color:#a8c4dd}
-#intro .gb em{position:absolute;font-size:calc(9.5*var(--u))}
-#intro .gb.tp em{left:calc(31*var(--u));top:50%;transform:translateY(-50%)}
-#intro .gb.lf em{left:50%;bottom:calc(-12*var(--u));transform:translateX(-50%)}
-#intro .gb.rt em{left:50%;bottom:calc(-12*var(--u));transform:translateX(-50%)}
-
-#intro .gnote{margin:0;padding:0 0 0 calc(12*var(--u));list-style:none;min-width:0}
-#intro .gnote li{position:relative;font-size:clamp(10.5px,2.85vw,13.5px);line-height:1.6;
-  color:#cbb695;word-break:keep-all}
-#intro .gnote li::before{content:'';position:absolute;left:calc(-10*var(--u));top:.62em;
-  width:calc(4*var(--u));height:calc(4*var(--u));border-radius:50%;background:#8a6d3a}
-#intro .gnote b{color:#ffe6a8;font-weight:800}
-#intro .gnote em{font-style:normal;color:#ffd45c;font-weight:800}
 
 /* 개막 동안엔 HUD 와 조작 패드를 감춘다. 반투명 막 아래로 비치면
    '연출'이 아니라 '화면이 어두워진 게임'으로 보인다. */
@@ -598,13 +361,13 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
 
   <div id="hud">
     <div class="side l" id="sideL">
-      <div class="nameRow"><b id="nameL">조운</b><i id="warL">무력 96</i><em id="tierL" class="tier"></em></div>
+      <div class="nameRow"><b id="nameL">조운</b><i id="warL">무력 96</i></div>
       <div class="hpTrack"><div class="hpLoss" id="hpLossL"></div><div class="hpFill" id="hpL"></div></div>
       <div class="spTrack"><div class="spFill" id="spL"></div></div>
     </div>
     <div id="center"><div id="clock">60</div><div id="hapCount">0 합</div></div>
     <div class="side r" id="sideR">
-      <div class="nameRow"><b id="nameR">화웅</b><i id="warR">무력 88</i><em id="tierR" class="tier"></em></div>
+      <div class="nameRow"><b id="nameR">화웅</b><i id="warR">무력 88</i></div>
       <div class="hpTrack"><div class="hpLoss" id="hpLossR"></div><div class="hpFill" id="hpR"></div></div>
       <div class="spTrack"><div class="spFill" id="spR"></div></div>
     </div>
@@ -616,39 +379,28 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
   </div>
 
   <div id="banner" aria-live="polite"></div>
-  <div id="combo" hidden><b id="comboN">2</b><span>COMBO<i>!!</i></span></div>
   <div id="tip"></div>
 
   <div id="pad">
-    <!-- 아날로그 스틱. 자리는 고정이다 — 짚을 때마다 스틱이 따라 움직이면
-         '내 손이 어디 있는지'를 매번 다시 확인해야 해서 오히려 헷갈린다. -->
+    <!-- 아날로그 스틱. 십자키 4버튼은 손가락을 정확히 얹어야 해서 폰에서
+         조작이 어려웠다 — 누른 자리가 곧 중심이 되고 끌면 그 방향으로 간다. -->
     <div class="cluster moves">
-      <div id="stick" aria-label="이동">
-        <div id="stickGate"></div><div id="stickRing"></div>
-        <div id="stickKnob"><span></span></div>
-      </div>
+      <div id="stickHome"></div>
+      <div id="stick" aria-label="이동"><div id="stickRing"></div><div id="stickKnob"></div></div>
     </div>
     <div class="cluster acts">
-      <button class="ps" data-act="guard"  style="--c:#ff8ad0" aria-label="가드"><span class="face"></span>
-        <svg class="sym" viewBox="0 0 44 44" aria-hidden="true"><rect x="14" y="14" width="16" height="16" rx="3"/></svg></button>
-      <button class="ps" data-act="thrust" style="--c:#ff6b78" aria-label="찌르기"><span class="face"></span>
-        <svg class="sym" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="8.5"/></svg></button>
-      <button class="ps big" data-act="light" style="--c:#6fb4ff" aria-label="베기"><span class="face"></span>
-        <svg class="sym" viewBox="0 0 44 44" aria-hidden="true"><path d="M14 14 L30 30 M30 14 L14 30"/></svg></button>
+      <button class="ps" data-act="heavy"  style="--c:#4ee39c" aria-label="강베기"><span class="sym">&#9651;</span></button>
+      <button class="ps" data-act="guard"  style="--c:#ff92d4" aria-label="가드"><span class="sym">&#9633;</span></button>
+      <button class="ps" data-act="thrust" style="--c:#ff7280" aria-label="찌르기"><span class="sym">&#9675;</span></button>
+      <button class="ps" data-act="light"  style="--c:#7cbcff" aria-label="베기"><span class="sym">&#10005;</span></button>
     </div>
   </div>
 
   <!-- 개막 — 두 장수가 한 마디씩 주고받는다. 아무 데나 누르면 건너뛴다. -->
-  <!-- 가로로 돌리면 조작부가 사라진다. 세로 전용 화면이니 돌려 달라고 말한다. -->
-  <div id="rotate" hidden>
-    <div class="ric">📱</div>
-    <b>세로로 돌려 주세요</b>
-    <span>일기토는 세로 화면 전용입니다</span>
-  </div>
-
   <div id="intro" hidden>
     <div class="ibg"></div>
     <div class="ivs"></div>
+    <div class="iglyph">鬪</div>
     <div class="iembers"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <!-- 격자로 짠다. 절대 위치로 잡으면 화면 비율이 바뀌는 순간 말상자가
          얼굴을 덮는다 — 실제로 그렇게 됐다. 행을 나누면 구조적으로 안 겹친다. -->
@@ -661,36 +413,10 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
         <div class="ifig l"><img id="iImgL" alt=""><div class="iname" id="iNameL"></div></div>
         <div class="ifig r"><img id="iImgR" alt=""><div class="iname" id="iNameR"></div></div>
       </div>
-      <div class="ititle" id="iTitle">일 기 토</div>
-      <!-- 기초 가이드. 개막이 손을 기다리는 동안 읽으라고 아래에 둔다 —
-           결투가 시작된 뒤에 띄우면 읽을 틈이 없다. -->
-      <div class="iguide">
-        <!-- 실제 조작 패드와 **같은 배치**로 그린다. 글로만 적으면 화면에서
-             어느 버튼인지 다시 찾아야 한다 — 안내는 손이 갈 자리를 알려줘야 한다. -->
-        <div class="gpad">
-          <div class="gwell"><i><b></b></i><em>이동</em></div>
-          <div class="gface">
-            <span class="gb tp" style="--c:#ff6b78">
-              <svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="8.5"/></svg><em>찌르기</em></span>
-            <span class="gb lf" style="--c:#ff8ad0">
-              <svg viewBox="0 0 44 44"><rect x="14" y="14" width="16" height="16" rx="3"/></svg><em>가드</em></span>
-            <span class="gb rt" style="--c:#6fb4ff">
-              <svg viewBox="0 0 44 44"><path d="M14 14 L30 30 M30 14 L14 30"/></svg><em>베기</em></span>
-          </div>
-        </div>
-        <ul class="gnote">
-          <li><b>베기</b>를 맞히고 한 번 더 누르면 <em>연격</em></li>
-          <li>맞는 순간 <b>가드</b>를 누르면 <em>저스트가드</em></li>
-          <li><b>찌르기</b>는 멀리 닿지만 이어지지 않는다</li>
-          <li>스틱 <b>위·아래</b>로 비켜서면 찌르기가 헛나간다</li>
-        </ul>
-      </div>
+      <div class="ititle" id="iTitle">一 騎 討</div>
     </div>
-    <div class="iskip" id="iSkip">화면을 누르면 건너뜁니다</div>
+    <div class="iskip">화면을 누르면 건너뜁니다</div>
   </div>
-
-  <!-- 3 · 2 · 1 · FIGHT -->
-  <div id="count" hidden><span id="countTxt"></span></div>
 
   <div id="overlay">
     <div class="card">
@@ -707,17 +433,13 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
         <button class="pick" data-diff="hard">어려움</button>
       </div>
       <div id="pickWrap">
-        <div class="pickRow"><span>내 장수</span><select id="pickP"></select>
-          <select id="starP" class="sm" aria-label="내 장수 등급"></select>
-          <select id="lvP" class="sm" aria-label="내 장수 강화"></select></div>
-        <div class="pickRow"><span>상 대</span><select id="pickB"></select>
-          <select id="starB" class="sm" aria-label="상대 등급"></select>
-          <select id="lvB" class="sm" aria-label="상대 강화"></select></div>
+        <div class="pickRow"><span>내 장수</span><select id="pickP"></select></div>
+        <div class="pickRow"><span>상 대</span><select id="pickB"></select></div>
       </div>
       <button class="go" id="ovGo">결 투</button>
       <div class="keys">
         <b>← →</b> 걸음 · <b>← ←</b> 백스텝 · <b>Shift</b> 대시 · <b>↑ ↓</b> 비켜서기<br>
-        <b>J</b> 베기(맞으면 연타로 연격) · <b>L</b> 찌르기 · <b>S</b> 가드 · <b>K</b> 회피 · <b>Esc</b> 일시정지
+        <b>J</b> 베기 · <b>K</b> 강베기 · <b>L</b> 찌르기 · <b>S</b> 가드 · <b>Esc</b> 일시정지
       </div>
     </div>
   </div>
@@ -800,24 +522,8 @@ const A = {};
 // 그림을 갈아 끼웠는데 게임엔 옛 그림이 계속 나오던 문제.
 // 주소 뒤 ?v= 가 고정이라 파일이 바뀌어도 URL 이 같았고, 브라우저가 캐시를 그대로 썼다.
 // 로컬에서 볼 땐 매번 새로 받는다 — 발주 결과를 확인하는 게 이 화면의 용도다.
-// 개발 중인가 — 여기가 참이면 매 로드마다 에셋을 새로 받는다.
-// 예전엔 localhost 세 개만 봤다. 그래서 폰으로 보는 경로(사내망 IP·임시터널)가
-// 전부 '배포'로 분류돼, 그림을 재발주해 덮어써도 폰엔 옛 그림이 계속 나왔다.
-// 아래 AV 를 38 번 손으로 올린 게 그 대가다. 폰으로 보는 주소를 전부 포함시킨다.
-//   · 사내망 IP(192.168 / 10 / 172.16~31) — 같은 와이파이의 폰
-//   · *.trycloudflare.com — 임시 터널
-//   · ?dev=1 — 그 밖의 어떤 주소에서든 강제로 새로 받는다(배포본 검수용)
-const LOCAL_DEV = (h => ['localhost', '127.0.0.1', '::1', ''].includes(h)
-  || /^192\.168\./.test(h) || /^10\./.test(h) || /^172\.(1[6-9]|2\d|3[01])\./.test(h)
-  || h.endsWith('.local') || h.endsWith('.trycloudflare.com')
-  || new URLSearchParams(location.search).get('dev') === '1'
-)(location.hostname);
-// 진짜 배포본(wooriban.org 등)에서만 쓰는 에셋 버전.
-// 여기선 일부러 고정한다 — 한 판에 3.8MB 를 받는데 매번 새로 받게 하면
-// 실제 플레이어가 그 값을 치른다. 그래서 **릴리스할 때만** 이 숫자를 올린다.
-// 재발주 검수는 이제 이 숫자와 무관하다(위 LOCAL_DEV 가 자동으로 새로 받는다).
-// 배포본을 그대로 확인하고 싶으면 주소에 ?dev=1 을 붙인다.
-const AV = LOCAL_DEV ? Date.now() : 38;
+const LOCAL_DEV = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+const AV = LOCAL_DEV ? Date.now() : 7;
 const bust = u => u.replace(/\?v=[^&]*/, '') + '?v=' + AV;
 
 const ASSET_SRC = {
@@ -879,12 +585,10 @@ const ASSET_SRC = {
 // 20컷 완본을 갖춘 장수를 폴더 하나로 불러온다.
 // 조운·화웅은 예전 방식(에셋 키를 코드에 나열)으로 남아 있지만,
 // 앞으로 추가되는 장수는 이 경로만 쓴다 — 코드 편집 0줄.
-// *_swing 은 예비와 타격 **사이**에 끼는 '가속' 컷이다. 없으면 없는 대로
-// 돌아간다(예전 9컷 장수도 그대로 동작) — 있는 장수만 한 장 더 거친다.
 const FULL_POSES = ['idle', 'walk1', 'walk2', 'walk3', 'walk4',
-  'slash_windup', 'slash_swing', 'slash_impact', 'slash_recovery',
-  'thrust_windup', 'thrust_swing', 'thrust_impact', 'thrust_recovery',
-  'heavy_windup', 'heavy_swing', 'heavy_impact', 'heavy_recovery',
+  'slash_windup', 'slash_impact', 'slash_recovery',
+  'thrust_windup', 'thrust_impact', 'thrust_recovery',
+  'heavy_windup', 'heavy_impact', 'heavy_recovery',
   'guard_ready', 'guard_just', 'hurt_light', 'hurt_heavy',
   'stunned', 'ko_fall', 'ko_down'];
 
@@ -919,32 +623,18 @@ async function loadGeneral(gid, side, opts = {}) {
   const pre = 'g' + gid.replace(/[^a-z]/g, '') + '_';
   // decode() 까지 기다린다. onload 만 보고 그리면 크롬이 디코딩 전 프레임을 그냥 건너뛴다 —
   // 각 컷을 처음 쓰는 순간 한 번씩 캐릭터가 사라져 보이던 원인이다(걷기 시작할 때 특히).
-  // 좌표부터 읽는다. 어떤 컷이 있는지(가속 컷을 갈아 끼웠는지)를 알아야
-  // 없는 파일을 요청하지 않는다 — 없는 걸 부르면 404 가 캐릭터마다 3개씩 뜬다.
-  let meta = {};
-  try { meta = await (await fetch(bust(`${dir}/poses.json`))).json(); } catch {}
-  const poses = FULL_POSES.filter(n => !n.endsWith('_swing') || meta.swing);
-  const failedPoses = [];
-  await Promise.all(poses.map(n => new Promise(res => {
+  await Promise.all(FULL_POSES.map(n => new Promise(res => {
     const img = new Image();
     const done = () => { A[pre + n] = img; res(); };
     img.onload = () => { (img.decode ? img.decode() : Promise.resolve()).then(done, done); };
-    // 중간 가속 컷은 기술 하나에만 있을 수 있다. (예: slash_swing만 존재)
-    // 따라서 없는 *_swing은 정상적인 선택 사항으로 취급하고, 기본 20컷의
-    // 누락만 세트 교체 실패로 처리한다.
-    img.onerror = () => { if (!n.endsWith('_swing')) failedPoses.push(n); done(); };
+    img.onerror = done;
     img.src = bust(`${dir}/${n}.webp`);
     POSE_KEY[pre + n] = n;
   })));
-  // 일부 포즈만 실패한 상태로 세트를 교체하면 해당 상태에서 리그/그림자로
-  // 튀며 장수가 사라지거나 외형이 바뀐 것처럼 보인다. 기존 세트를 유지하고
-  // 정확한 장수·포즈를 콘솔에 남겨 원인을 드러낸다.
-  if (failedPoses.length) {
-    console.error(`[duel assets] ${gid} load failed: ${failedPoses.join(', ')}`);
-    return false;
-  }
   // 창끝 좌표·실측 몸높이·걷기 순서. 빼먹으면 아우라가 허공에서 나고 덩치가 어긋난다.
+  let meta = {};
   try {
+    meta = await (await fetch(bust(`${dir}/poses.json`))).json();
     for (const k in (meta.poses || {})) POSE_TIP[pre.charAt(0) + gid + ':' + k] = meta.poses[k];
     if (meta.bodyH) POSE_BODY_H[side] = meta.bodyH;
     CHAR_REACH[side] = meta.reach || null;
@@ -961,20 +651,16 @@ async function loadGeneral(gid, side, opts = {}) {
     guard: pre + 'guard_ready', guardJust: pre + 'guard_just',
     hurtL: pre + 'hurt_light', hurtH: pre + 'hurt_heavy', stunned: pre + 'stunned',
     koFall: pre + 'ko_fall', koDown: pre + 'ko_down',
-    // 4번째 자리가 '가속' 컷이다. 파일이 없으면 null 이고 statePose 가 건너뛴다.
-    light: [pre + 'slash_windup', pre + 'slash_impact', pre + 'slash_recovery',
-            ready(A[pre + 'slash_swing']) ? pre + 'slash_swing' : null],
-    thrust: [pre + 'thrust_windup', pre + 'thrust_impact', pre + 'thrust_recovery',
-             ready(A[pre + 'thrust_swing']) ? pre + 'thrust_swing' : null],
-    heavy: [pre + 'heavy_windup', pre + 'heavy_impact', pre + 'heavy_recovery',
-            ready(A[pre + 'heavy_swing']) ? pre + 'heavy_swing' : null],
+    light: [pre + 'slash_windup', pre + 'slash_impact', pre + 'slash_recovery'],
+    thrust: [pre + 'thrust_windup', pre + 'thrust_impact', pre + 'thrust_recovery'],
+    heavy: [pre + 'heavy_windup', pre + 'heavy_impact', pre + 'heavy_recovery'],
   };
   CHAR_SIZE[side] = opts.size || 1.0;
   // 접지 그림자 위치. 기본값(중심 640·폭 320)은 어느 장수와도 안 맞는다 —
   // 실측하면 중심이 최대 52px 어긋나고 폭도 110~200px 더 넓다.
   // tools/walk_cycle.py 가 대기 자세에서 재어 poses.json 에 적어 둔다.
   CHAR_FEET[side] = meta.feet || opts.feet || { cx: STATE_CX, w: 320 };
-  return ready(A[pre + 'idle']);
+  return true;
 }
 
 // 캐릭터별 상태 → 에셋 키. 없는 항목은 null 이고, 그 상태는 기존 시트가 맡는다.
@@ -1004,13 +690,10 @@ const POSE_BODY_H = { player: 620, boss: 620 };
 // 맞는' 상태였다(마초 찌르기는 175px 모자랐다). tools/fit_reach.py 가
 // 타격 컷의 창끝을 재서 poses.json 에 적어 둔다.
 const CHAR_REACH = { player: null, boss: null };
-// Weapon art can vary by general, but hit distance may not: combat is fair
-// only when the same move always reaches the same distance. Pose tips still
-// drive the visual trail; this is collision and AI spacing only.
 const reachOf = (f, key) => {
-  // 연격(combo)은 그림만 강베기이고 사거리는 베기를 따른다 — chainOf 가 그 뜻이다
-  const k = (MOVES[key] && MOVES[key].chainOf) || key;
-  return MOVES[k].reach;
+  const r = CHAR_REACH[f.kind];
+  const k = key === 'light' ? 'slash' : key;
+  return (r && r[k]) || MOVES[key].reach;
 };
 for (const [who, kind, dir] of [['s', 'player', 'zhao_yun_states'], ['h', 'boss', 'hua_xiong_states']]) {
   fetch(bust(`./assets/arcade_duel/${dir}/poses.json`)).then(r => r.json())
@@ -1162,15 +845,6 @@ function loadAssets(keys, onProgress) {
 }
 const ready = img => !!(img && img.complete && img.naturalWidth);
 
-// 캔버스 filter 지원 여부 — 구형 사파리는 없다. 피격 번쩍임에 쓴다.
-const CAN_FILTER = (() => {
-  try {
-    const c = document.createElement('canvas').getContext('2d');
-    c.filter = 'blur(1px)';
-    return c.filter === 'blur(1px)';
-  } catch { return false; }
-})();
-
 // ═══════════════════════════════════════════════════════════════════
 //  2. 기술표 — 프레임 단위(60fps). 여기 숫자가 곧 손맛이다.
 //     startup: 칼이 나가기까지 / active: 판정 / recovery: 후딜
@@ -1185,38 +859,17 @@ const CAN_FILTER = (() => {
 // 아래는 그 실측값이다. 장수별 편차는 poses.json 의 reach 가 따로 준다.
 const MOVES = {
   light:  { startup: 8,  active: 4, recovery: 13, dmg: 9,  reach: 223, push: 5,  stam: 8,
-            label: '베기',   guardChip: 3,   stunAdd: 6,  sheet: 'light',  arc: 'wide'  },
+            label: '베기',   guardChip: 1.5, stunAdd: 6,  sheet: 'light',  arc: 'wide'  },
   // 찌르기는 '거리를 사는' 기술이지 '죽이는' 기술이 아니다.
   // 예전엔 셋의 지속 딜이 0.219/0.204/0.231 로 거의 같았다 — 시간당 데미지가
   // 같으면 가장 안전한 걸 고르는 게 당연하고, 가장 안전한 건 가장 긴 찌르기다.
   // 사거리 15px 을 공짜로 얻는 구조였다. 딜 14→10 으로 그 값을 치르게 한다.
-  // 찌르기는 콤보가 없다. 그 대신 '거리를 지배한다'가 확실한 값이어야 한다.
-  //   · 사거리를 238 → 278 로. 베기 대비 +6.7% 는 눈에 안 보였다(+25%)
-  //   · 맞으면 크게 밀어내 간격을 되돌린다(9 → 18)
-  //   · stagger 26 — 맞은 쪽이 더 오래 굳는다. 이게 없으면 **맞추고도 9프레임
-  //     손해**였다(실측). 때린 사람이 벌을 받는 구조였다.
-  //   후딜 22 는 그대로 둔다 — 헛치면 여전히 크게 위험해야 남용이 안 된다.
-  thrust: { startup: 13, active: 5, recovery: 22, dmg: 10, reach: 278, push: 18, stam: 14,
-            label: '찌르기', guardChip: 4,   stunAdd: 7,  sheet: 'thrust', arc: 'line',
-            stagger: 26 },
-  // 강베기는 이제 **버튼이 아니다**. 베기가 막혔을 때만 이어서 나간다.
-  // 느리고(21f) 막히면 크게 불리하지만 가드를 부순다 — 거는 쪽이 도박을 한다.
+  thrust: { startup: 13, active: 5, recovery: 22, dmg: 10, reach: 238, push: 9,  stam: 14,
+            label: '찌르기', guardChip: 2,   stunAdd: 7,  sheet: 'thrust', arc: 'line'  },
   heavy:  { startup: 21, active: 6, recovery: 26, dmg: 24, reach: 194, push: 22, stam: 24,
-            label: '강베기', guardChip: 14,  stunAdd: 22, sheet: 'heavy',  arc: 'heavy',
+            label: '강베기', guardChip: 9,   stunAdd: 22, sheet: 'heavy',  arc: 'heavy',
             crush: true },   // 가드해도 기력을 크게 깎는다 — 계속 막기만 하면 무너진다
-  // 콤보 마무리 — 베기가 **맞았을 때만** 후딜을 취소하고 이어진다.
-  // 그림은 강베기 것을 쓰되 발동이 훨씬 빠르다(21 → 10). 취소로 들어가므로
-  // 상대 경직(18f) 안에 확정으로 꽂힌다. 사거리는 베기와 같게 잡는다 —
-  // 강베기 사거리(194)로 두면 1타에 밀려난 상대에게 안 닿는다.
-  //   lunge — 1타의 밀어내기(push 5)로 상대가 20px 쯤 물러난다. 그대로 두면
-  //   같은 사거리인 2타가 그 20px 때문에 헛돈다(실측: 콤보가 한 번도 안 닿았다).
-  //   따라붙으며 베는 그림이기도 하니 앞으로 나가는 게 맞다.
-  combo:  { startup: 10, active: 5, recovery: 20, dmg: 19, reach: 223, push: 16, stam: 16,
-            label: '연격',   guardChip: 6,   stunAdd: 18, sheet: 'heavy',  arc: 'heavy',
-            chainOf: 'slash', lunge: 7 },
 };
-// 연격이 이어지는 시간. 1타가 닿고 이 안에 다시 누르면 콤보가 성립한다.
-const CHAIN_HIT = 20, CHAIN_GUARD = 16;
 const GUARD_JUST = 6;        // 가드 입력 후 이 프레임 안에 맞으면 저스트가드
 const STUN_MAX = 100;        // 경직 게이지. 꽉 차면 무방비 — 확정타 기회
 
@@ -1253,12 +906,10 @@ function makeFighter(kind, opts) {
     hitDone: false,
     guardHeld: false, guardT: 0,
     stun: 0, stunTimer: 0,
-    inv: 0, hitFlash: 0, guardFlash: 0,
+    inv: 0, hitFlash: 0,
     walkClock: 0,
     lean: 0,
     ai: { t: 0, plan: 'wait', react: 0, pocket: 'thrust', pocketUntil: 0 },
-    chain: null, chainT: 0,          // 이어치기 창 — 'hit' 이면 연격, 'guard' 면 강베기
-    comboN: 0, maxCombo: 0,          // 지금 이어가는 연타 · 이 판의 최다 연타
   };
 }
 
@@ -1266,55 +917,23 @@ let P, B;                     // player / boss
 let cam = { x: STAGE_W / 2, zoom: 1, shakeX: 0, shakeY: 0, punch: 0 };
 let frame = 0, hitStop = 0, slowmo = 0;
 let hap = 0;                  // 합(合) — 칼이 실제로 맞부딪히거나 유효타가 난 횟수
-let MATCH_SEC = 60;              // 등급·강화에 따라 resetMatch 에서 다시 잡는다
 let clockFrames = 60 * FPS;
 let phase = 'title';          // title | fight | paused | over
 let fx = [], dust = [];
 let stats = { hits: 0, guards: 0, justs: 0, clashes: 0, taken: 0 };
 
 // 선택한 장수 — 시작 화면에서 고른 값. 없으면 기본(조운·화웅).
-// ── 등급(별·다이아)과 강화 ────────────────────────────────────────
-// 본편(app/.../public/index.html)의 STAR_MULT / ENHANCE_MULT 를 그대로 가져온다.
-// 값이 갈리면 "본편에서 키운 만큼 일기토에서도 세다"가 깨지므로 여기서
-// 임의로 조정하지 않는다. 본편이 바뀌면 이 두 줄도 같이 바꾼다.
-const STAR_MULT    = [1.0, 1.0, 1.2, 1.4, 1.7, 2.0, 2.5];   // 1~5성, 6=다이아
-const ENHANCE_MULT = [1.0, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0];   // +0 ~ +5
-// 등급별 색과 아우라. 본편 STAR_META 의 color / auraMain / auraHot 을 그대로
-// 가져왔다 — 카드에서 보던 그 빛이 결투에서도 나야 "이게 내 5성 장수다"가 된다.
-const STAR_META = [null,
-  { label: '일반',       color: '#f4f7fb', main: 'rgba(222,232,245,0.24)', hot: 'rgba(255,255,255,0.62)' },
-  { label: '고급',       color: '#57f287', main: 'rgba(87,242,135,0.30)',  hot: 'rgba(176,255,210,0.70)' },
-  { label: '희귀',       color: '#4db5ff', main: 'rgba(77,181,255,0.34)',  hot: 'rgba(190,232,255,0.72)' },
-  { label: '영웅',       color: '#c77dff', main: 'rgba(199,125,255,0.36)', hot: 'rgba(239,205,255,0.76)' },
-  { label: '전설',       color: '#ffd36a', main: 'rgba(255,191,64,0.40)',  hot: 'rgba(255,246,180,0.86)' },
-  { label: '다이아몬드', color: '#9fe8ff', main: 'rgba(159,232,255,0.42)', hot: 'rgba(240,250,255,0.90)' }];
-// 등급이 오를수록 기운이 크게 인다. 화면에서 '센 장수'가 눈으로 읽혀야 한다.
-const STAR_POWER = [1, 0.80, 0.92, 1.06, 1.22, 1.42, 1.70];
-const growMul = (stars, lv) =>
-  (STAR_MULT[clamp(stars | 0, 1, 6)] || 1) * (ENHANCE_MULT[clamp(lv | 0, 1, 6)] || 1);
-
 const SIDE_INFO = {
-  player: { id: 'zhao_yun', name: '조운', war: 96, hp: 120, spd: 1, stam: 100, stars: 1, lv: 1 },
-  boss:   { id: 'hua_xiong', name: '화웅', war: 88, hp: 150, spd: 1, stam: 100, stars: 1, lv: 1 },
+  player: { id: 'zhao_yun', name: '조운', war: 96, hp: 120, spd: 1, stam: 100 },
+  boss:   { id: 'hua_xiong', name: '화웅', war: 88, hp: 150, spd: 1, stam: 100 },
 };
 
 function resetMatch() {
   const pi = SIDE_INFO.player, bi = SIDE_INFO.boss;
-  // 성장 배수는 공격과 체력에 반반으로 — 둘 다 그대로 곱한다.
-  // 무력에 곱하면 warMul 이 비율만 보므로 '상대적으로' 얼마나 센가가 되고,
-  // 체력에 곱하면 '얼마나 버티는가'가 된다. 두 축이 다 움직여야 성장이
-  // 한쪽으로 치우치지 않는다.
-  const pm = growMul(pi.stars, pi.lv), bm = growMul(bi.stars, bi.lv);
-  // 성장 배수는 체력에도 곱해지므로 결판까지 걸리는 시간도 같이 늘어난다.
-  // 60초 고정으로 두면 다이아+5 끼리는 시간 초과로 끝난다(실측: 60초 시점에
-  // 상대 체력 73/560 남음). 배수를 건드리지 않고 시계만 늘려 결판이 나게 한다.
-  // 제곱근인 이유: 체력은 배수만큼 늘지만 데미지도 같이 늘어서, 실제로
-  // 길어지는 건 배수 전체가 아니라 그 뿌리 정도다.
-  MATCH_SEC = Math.round(60 * clamp(Math.sqrt((pm + bm) / 2), 1, 2.4));
-  P = makeFighter('player', { name: pi.name, war: pi.war * pm, x: STAGE_W / 2 - 190, dir: 1, hp: Math.round(pi.hp * pm), spd: pi.spd, stam: pi.stam });
-  B = makeFighter('boss',   { name: bi.name, war: bi.war * bm, x: STAGE_W / 2 + 190, dir: -1, hp: Math.round(bi.hp * bm), spd: bi.spd, stam: bi.stam });
+  P = makeFighter('player', { name: pi.name, war: pi.war, x: STAGE_W / 2 - 190, dir: 1, hp: pi.hp, spd: pi.spd, stam: pi.stam });
+  B = makeFighter('boss',   { name: bi.name, war: bi.war, x: STAGE_W / 2 + 190, dir: -1, hp: bi.hp, spd: bi.spd, stam: bi.stam });
   cam = { x: STAGE_W / 2, zoom: 1, shakeX: 0, shakeY: 0, punch: 0 };
-  frame = 0; hitStop = 0; slowmo = 0; hap = 0; clockFrames = MATCH_SEC * FPS;
+  frame = 0; hitStop = 0; slowmo = 0; hap = 0; clockFrames = 60 * FPS;
   fx = []; dust = [];
   // 입력 버퍼를 안 비우면 죽는 순간 누른 공격이 다음 판 시작과 함께 나간다.
   // tapped 도 비워야 지난 판의 탭이 새 판 첫 입력과 묶여 대시로 오인되지 않는다.
@@ -1322,28 +941,18 @@ function resetMatch() {
   tapped.left = tapped.right = 0;
   stats = { hits: 0, guards: 0, justs: 0, clashes: 0, taken: 0 };
   document.getElementById('nameL').textContent = P.name;
-  // 무력은 성장 배수가 곱해진 실제 값이라 소수가 나온다 — 표시는 정수로
-  document.getElementById('warL').textContent = '무력 ' + Math.round(P.war);
+  document.getElementById('warL').textContent = '무력 ' + P.war;
   document.getElementById('nameR').textContent = B.name;
-  document.getElementById('warR').textContent = '무력 ' + Math.round(B.war);
-  for (const [el, info] of [['tierL', SIDE_INFO.player], ['tierR', SIDE_INFO.boss]]) {
-    const st = clamp(info.stars | 0, 1, 6), lv = clamp(info.lv | 0, 1, 6);
-    const m = STAR_META[st];
-    const badge = st === 6 ? '◆' : '★'.repeat(st);      // 다이아는 ◆ 하나
-    document.getElementById(el).textContent = badge + (lv > 1 ? ' +' + (lv - 1) : '');
-    document.getElementById(el).style.color = m.color;
-  }
+  document.getElementById('warR').textContent = '무력 ' + B.war;
   syncHud(true);
 }
 
-// 무력차는 데미지에 반영하되, 조작으로 뒤집을 수 있는 폭까지만.
-// 지수가 0.55 일 땐 무력 100 대 78 이 데미지 10 대 8 로 눌려서 순위가
-// 체감되지 않았다. 0.70 으로 세우고 무력 폭 자체도 넓혔다(fit_stats.py).
-const warMul = (a, d) => Math.pow(a.war / d.war, 0.70);
+// 무력차는 데미지에 '은근히' 반영 — 조작으로 뒤집을 수 있는 폭으로만.
+const warMul = (a, d) => Math.pow(a.war / d.war, 0.55);
 
 const busy = f => f.state === 'windup' || f.state === 'active' || f.state === 'recover';
 const helpless = f => f.state === 'hurt' || f.state === 'stunned' || f.state === 'ko';
-const canAct = f => !busy(f) && !helpless(f) && f.state !== 'dash' && f.state !== 'backstep' && f.state !== 'dodge';
+const canAct = f => !busy(f) && !helpless(f) && f.state !== 'dash' && f.state !== 'backstep';
 
 // ═══════════════════════════════════════════════════════════════════
 //  4. 입력
@@ -1357,7 +966,7 @@ const KEYMAP = {
   ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right',
   ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyX: 'down',
   KeyS: 'guard',
-  KeyJ: 'light', KeyK: 'dodge', KeyL: 'thrust',   // 회피는 버튼에서 뺐고 키보드에만 남았다
+  KeyJ: 'light', KeyK: 'heavy', KeyL: 'thrust',
   Space: 'light', ShiftLeft: 'dash', ShiftRight: 'dash',
 };
 
@@ -1381,8 +990,6 @@ function onPress(act) {
     else tapped[act] = now;
   } else if (act === 'dash') {
     startDash(P, P.dir);
-  } else if (act === 'dodge') {
-    startDodge(P);
   } else if (MOVES[act]) {
     bufAttack = act; bufFrames = 8;
   }
@@ -1391,22 +998,13 @@ function onPress(act) {
 // 모바일 패드
 // 조작부는 화면을 가리는 존재라 평소엔 물러나 있어야 한다(조사한 가이드의 공통).
 // 손을 대면 살아나고, 3초 안 만지면 다시 흐려진다.
-// 손을 대고 있는 동안에는 절대 물러나면 안 된다. 누르고 있는 손가락을
-// 세어 두고, 하나라도 남아 있으면 흐려지는 타이머를 걸지 않는다.
-// (스틱을 쥔 채 3초가 지나면 조작 중인데도 55% 로 내려갔다.)
 let padLiveT = 0;
-const padTouches = new Set();
-function padLive(hold) {
+function padLive() {
   const el = $('pad');
   if (!el) return;
   el.classList.add('live');
   clearTimeout(padLiveT);
-  if (padTouches.size) return;                 // 아직 잡고 있다 — 그대로 둔다
   padLiveT = setTimeout(() => el.classList.remove('live'), 3000);
-}
-function padHold(pid, down) {
-  if (down) padTouches.add(pid); else padTouches.delete(pid);
-  padLive();
 }
 // 촉각 — 폰에는 버튼의 '딸깍'이 없다. 짧은 진동이 그 자리를 메운다.
 // iOS 사파리는 무시하지만 해가 없다.
@@ -1416,12 +1014,7 @@ document.querySelectorAll('#pad .btn, #pad .ps').forEach(btn => {
   const act = btn.dataset.act;
   const down = e => {
     e.preventDefault(); btn.classList.add('on');
-    // 손가락을 눌러 둔 동안은 이 버튼이 계속 이벤트를 받는다.
-    // 캡처를 안 걸면 손가락이 몇 px 만 흔들려도 pointerleave 가 터져서
-    // **가드가 누른 순간에만 먹혔다** — 눌러 두고 있는데 풀리는 게 그것이다.
-    try { btn.setPointerCapture(e.pointerId); } catch {}
-    padHold(e.pointerId, true);
-    buzz(act === 'heavy' ? 16 : act === 'guard' ? 8 : 11);
+    padLive(); buzz(act === 'heavy' ? 16 : act === 'guard' ? 8 : 11);
     if (act === 'left' || act === 'right') { pad[act] = true; onPress(act); }
     else if (act === 'up' || act === 'down') pad[act] = true;
     else if (act === 'guard') pad.guard = true;
@@ -1429,16 +1022,13 @@ document.querySelectorAll('#pad .btn, #pad .ps').forEach(btn => {
   };
   const up = e => {
     e.preventDefault(); btn.classList.remove('on');
-    padHold(e.pointerId, false);
     if (act === 'left' || act === 'right' || act === 'up' || act === 'down') pad[act] = false;
     else if (act === 'guard') pad.guard = false;
   };
   btn.addEventListener('pointerdown', down);
   btn.addEventListener('pointerup', up);
   btn.addEventListener('pointercancel', up);
-  // pointerleave 는 걸지 않는다 — 캡처를 걸었으니 손가락이 버튼 밖으로 나가도
-  // 뗄 때까지 유지된다. 캡처가 풀리는 경우만 따로 받는다.
-  btn.addEventListener('lostpointercapture', up);
+  btn.addEventListener('pointerleave', up);
   btn.addEventListener('contextmenu', e => e.preventDefault());
 });
 
@@ -1455,54 +1045,15 @@ const held = act => {
 // ═══════════════════════════════════════════════════════════════════
 //  5. 행동
 // ═══════════════════════════════════════════════════════════════════
-// cancel=true 면 후딜 중에도 끊고 들어간다. 연격이 성립하려면 이게 필요하다 —
-// 베기를 맞혀도 유불리가 +1프레임뿐인데 가장 빠른 기술 발동이 8프레임이라,
-// 취소가 없으면 2타가 상대 회복 뒤에 나가서 오히려 반격을 맞는다(실측).
-function startMove(f, key, cancel = false) {
+function startMove(f, key) {
   const m = MOVES[key];
-  if (!m) return false;
-  if (cancel) { if (f.state !== 'active' && f.state !== 'recover') return false; }
-  else if (!canAct(f)) return false;
+  if (!m || !canAct(f)) return false;
   if (f.stam < m.stam) { spendFail(f); return false; }
   // 소리는 판정을 통과한 뒤에 낸다. 앞에 있으면 못 나간 공격도 소리가 났고,
   // AI 가 기술을 순서대로 시도하면서 한 번에 세 번까지 울렸다.
-  snd('swing', key === 'combo' ? 'heavy' : key);
+  snd('swing', key);
   f.stam -= m.stam;
   f.state = 'windup'; f.st = 0; f.move = m; f.moveKey = key; f.hitDone = false;
-  if (m.lunge) f.vx = f.dir * m.lunge;  // 따라붙으며 벤다
-  f.chain = null;                       // 새 기술이 나갔으니 이어치기 창은 닫는다
-  return true;
-}
-
-// 베기를 누를 때 무엇이 나갈지 정한다 — 1타의 결과가 정한다.
-//   맞았다 → 후딜을 끊고 연격(빠름·확정)
-//   막혔다 → 끊지 못하고 강베기(느림·가드 부숨·막히면 크게 불리)
-//   헛쳤다 → 그냥 베기 한 번 더. 마구 눌러도 느린 기술이 허공에 안 나간다.
-function attackWith(f, key) {
-  if (key === 'light' && f.chainT > 0) {
-    if (f.chain === 'hit') return startMove(f, 'combo', true);
-    // 막혔을 때도 후딜은 끊어 준다. 안 끊으면 후딜(13f)에 막혀 입력이 통째로
-    // 사라져서 '눌렀는데 아무것도 안 나왔다'가 된다. 발동 21프레임은 그대로라
-    // 상대가 보고 반응할 시간이 있고, 막히면 크게 불리한 것도 그대로다.
-    if (f.chain === 'guard') return startMove(f, 'heavy', true);
-  }
-  return startMove(f, key);
-}
-
-// 회피 — 깊이로 빠르게 비켜선다. 찌르기가 닿는 폭(Z_ARC.line=20)보다 멀리
-// 가야 회피가 된다. 예전엔 스틱을 92% 까지 튕겨야 나오는 대시뿐이라
-// 의도치 않게 나가거나 필요할 때 안 나왔다.
-function startDodge(f) {
-  if (f.guardHeld || !canAct(f) || f.stam < 14) return false;
-  f.stam -= 14;
-  const up = f === P && held('up'), dn = f === P && held('down');
-  const dir = up ? 1 : dn ? -1 : (f.z > Z_MAX / 2 ? -1 : 1);
-  f.vz = dir * 7.5;
-  f.state = 'dodge'; f.st = 0;
-  f.inv = 12;                            // 짧은 무적 — 비켜서는 값이 있어야 한다
-  f.chain = null;
-  snd('dash');
-  for (let i = 0; i < 5; i++) dust.push({ x: f.x, y: footY(f), vx: (Math.random() - .5) * 3, vy: -Math.random() * 1.4, life: 20, r: 3 + Math.random() * 4 });
   return true;
 }
 function spendFail(f) {
@@ -1566,36 +1117,15 @@ function clash() {
 }
 
 function applyHit(att, def) {
-  // 무적 프레임 검사가 맨 앞이어야 한다.
-  // 예전엔 hitDone 을 먼저 세우고 그 다음에 inv 를 봤다. 그러면 상대 무적이
-  // 1프레임 남았을 때 그 공격이 **통째로 소모돼** 남은 판정 프레임에서도
-  // 영영 안 맞는다. 연격이 49명 중 16명에게서 안 닿던 원인이 이것이었다 —
-  // 공속이 빠른 장수(단병기 0.88)일수록 판정이 한 프레임 일찍 와서 정확히
-  // 무적 마지막 프레임에 걸렸다. 여포(1.12)는 늦게 와서 멀쩡했다.
-  if (def.inv > 0) return;
   att.hitDone = true;
   const m = att.move;
   // 이펙트는 '판정 거리의 78%' 가 아니라 **실제 그려진 창끝**에 붙인다.
   // 고정 거리로 잡으면 무기가 짧은 장수는 허공에서 불꽃이 튄다.
-  // 무기가 짧게 그려진 장수(태사자 87px · 마초 찌르기 51px 등 6명)는 창끝이
-  // 상대 몸에 못 미친다. 그 자리에 불꽃을 붙이면 **적에게서 한참 떨어진
-  // 허공에서 터져** '안 닿았는데 맞았다' 로 보인다.
-  // 창끝이 상대 몸 앞까지 못 오면 상대 몸 가장자리로 당긴다 —
-  // 길게 뻗은 장수는 그대로 창끝에 붙는다(뒤로 밀지 않는다).
   const tp = tipOf(att);
-  let hx = tp ? tp[0] : att.x + att.dir * (reachOf(att, att.moveKey) * 0.78);
-  const edge = def.x - att.dir * bodyR(def);
-  hx = att.dir > 0 ? Math.max(hx, edge) : Math.min(hx, edge);
+  const hx = tp ? tp[0] : att.x + att.dir * (reachOf(att, att.moveKey) * 0.78);
   const hy = footY(def) - 165;
-  // Equal move ranges may extend beyond a short weapon's painted tip.  Do not
-  // let the contact burst appear as a detached hit: bridge only that missing
-  // segment with a quick, thin weapon-energy streak.  Long weapons keep their
-  // real tip untouched, so this never hides a spear or draws over its shaft.
-  if (tp && (hx - tp[0]) * att.dir > 18) {
-    const aura = auraOf(att) || { color: '#ffe6b0', core: '#fff8df' };
-    fx.push({ t: 'reach', x0: tp[0], y0: tp[1], x1: hx, y1: hy,
-              life: 8, max: 8, color: aura.color, core: aura.core });
-  }
+
+  if (def.inv > 0) return;
 
   // 저스트가드 — 가드를 '눌러둔' 게 아니라 '맞춰 넣은' 경우
   if (def.guardHeld && def.guardT <= GUARD_JUST && !helpless(def)) {
@@ -1617,34 +1147,19 @@ function applyHit(att, def) {
     stats.guards += def === P ? 1 : 0;
     const chip = m.guardChip * (def === P ? diff.dmgIn : diff.dmgOut) * 0.6;
     def.hp -= chip;
-    // 가드는 기력을 **쓰지 않고 오히려 채운다**.
-    //
-    // 예전엔 막을 때마다 12(강베기 34)씩 조용히 깎이다 0 이 되면 무너져
-    // 기절했다. 45초 중 8~10초를 기절해 있었고, 플레이어에게는 "가드를
-    // 누르고 있는데 그냥 얻어맞는다" 로 보였다. 눈에 안 보이는 자원이
-    // 갑자기 바닥나는 벌은 납득이 안 된다.
-    //
-    // 기력은 **공격에만 쓰는 자원**으로 정리한다. 잘 막으면 반격할 힘이
-    // 붙는다 — 자연 회복보다 훨씬 빠르게 한 번에 채운다.
-    def.stam = Math.min(def.maxStam, def.stam + (m.crush ? 12 : 8));
-    // 막아도 칩 데미지를 받는다 — 체력이 닳았으니 맞은 것과 같이 친다.
-    // 콤보는 '한 대도 손해 보지 않고 이어간 연타' 가 된다.
-    // 다만 **저스트가드는 콤보를 지킨다** — 칩도 없고 상대를 경직시키는
-    // 완전한 성공이라, 여기까지 끊으면 잘 막을 이유가 없어진다.
-    def.comboN = 0;
+    def.stam -= m.crush ? 34 : 12;
     def.vx = att.dir * m.push * 0.55;
-    // 막혔다 → 후딜은 못 끊지만, 이어서 누르면 강베기가 나간다(가드 부수기 도박)
-    if (att.moveKey === 'light') { att.chain = 'guard'; att.chainT = CHAIN_GUARD; }
-    // 일반 가드가 너무 조용했다. 저스트가드는 '창~~' 하고 막히는 게 느껴지는데
-    // 눌러 두고 막으면 "아무 액션이 없다" 는 제보 — 불꽃 12개에 흔들림 4 뿐이라
-    // 저스트가드(22개+링+배너)와 차이가 너무 컸다.
-    hitStop = m.crush ? 14 : 9; shake(m.crush ? 10 : 6);
+    hitStop = m.crush ? 12 : 7; shake(m.crush ? 8 : 4);
     snd('guard', !!m.crush);
-    sparkBurst(hx, hy, m.crush ? 26 : 18, '#cfe6ff', m.crush ? 8 : 6);
-    ring(hx, hy, m.crush ? 150 : 104, '#bcd8ff');
-    def.guardFlash = 10;                    // 막은 쪽이 푸르게 번쩍인다
-    if (m.crush) { cam.punch = .7; banner('막았다!', '#bcd8ff', .6); }
-    if (def.hp <= 0) knockOut(def);         // 막기만 해도 칩으로 쓰러질 수 있다
+    sparkBurst(hx, hy, 12, '#cfe6ff', 5);
+    if (def.stam <= 0) {                    // 가드 붕괴
+      def.stam = 0;
+      def.state = 'stunned'; def.st = 0; def.stunTimer = 48;
+      def.guardHeld = false;
+      snd('stun');
+      banner('가드 붕괴!', '#ff9a3c', 1);
+      shake(13); cam.punch = .8;
+    }
     hap++; bumpHap();
     return;
   }
@@ -1658,18 +1173,6 @@ function applyHit(att, def) {
   def.state = 'hurt'; def.st = 0; def.inv = 10; def.hitFlash = 14;
   // 강타(가드크러시 기술)나 최대체력 12% 이상이면 크게 젖혀지는 피격 포즈
   def.hurtHeavy = !!m.crush || dmg >= def.maxHp * 0.12;
-  def.hurtT = m.stagger || 0;          // 기술이 정한 경직 시간(0 이면 기본값)
-  // 맞았다 → 후딜을 끊고 연격으로 이어갈 수 있다
-  if (att.moveKey === 'light') { att.chain = 'hit'; att.chainT = CHAIN_HIT; }
-  // 연속으로 꽂았는가. 48프레임 안에 다시 꽂으면 이어진 것으로 센다.
-  // 콤보는 **맞기 전까지** 이어진다. 예전엔 48프레임 창을 뒀는데, 공격 한
-  // 주기가 41프레임이라 아슬아슬하게만 이어져 10 연타가 사실상 불가능했다.
-  // '때리는 실력'이 아니라 '안 맞는 실력'을 재는 쪽이 낫다 — 가드·회피·거리
-  // 관리가 전부 콤보로 이어진다.
-  att.comboN += 1;
-  if (att.comboN > att.maxCombo) att.maxCombo = att.comboN;
-  def.comboN = 0;                      // 맞은 쪽은 끊긴다
-  if (att.comboN >= 2) showCombo(att);
   def.stun = Math.min(STUN_MAX, def.stun + m.stunAdd);
   def.guardHeld = false;
 
@@ -1681,7 +1184,7 @@ function applyHit(att, def) {
   // 맞은 자리에서 빛이 터진다 — 히트스톱이 걸린 몇 프레임을 채워 준다
   fx.push({ t: 'burst', x: hx, y: hy, r: m.crush ? 150 : 96,
             life: m.crush ? 16 : 11, max: m.crush ? 16 : 11,
-            color: (auraOf(att) || { color: '#ffe6b0' }).color });
+            color: (auraOf(att) || AURA.light).color });
   fx.push({ t: 'shock', x: hx, y: hy, r: m.crush ? 190 : 120,
             life: m.crush ? 22 : 15, max: m.crush ? 22 : 15, dir: att.dir });
   slashArc(att.x + att.dir * 70, hy, att.dir, m.arc);   // 궤적은 '휘두른 사람' 기준
@@ -1713,15 +1216,10 @@ function stepFighter(f) {
   f.st++;
   if (f.inv > 0) f.inv--;
   if (f.hitFlash > 0) f.hitFlash--;
-  if (f.guardFlash > 0) f.guardFlash--;
   if (f.guardHeld) f.guardT++; else f.guardT = 0;
-  if (f.chainT > 0 && --f.chainT === 0) f.chain = null;
-  // 연속타 계수는 잠깐 손을 놓으면 끊긴다
 
   // 기력 회복 — 공격/가드 중엔 거의 안 찬다
-  // 자연 회복은 낮춘다 — 가만있어도 금방 차면 기력이 제약이 안 된다.
-  // 대신 가드가 성공할 때마다 한 번에 8(강베기 12)씩 채워 준다.
-  const regen = busy(f) ? 0.05 : f.guardHeld ? 0.18 : helpless(f) ? 0.22 : 0.28;
+  const regen = busy(f) ? 0.05 : f.guardHeld ? 0.12 : helpless(f) ? 0.25 : 0.42;
   f.stam = clamp(f.stam + regen, 0, f.maxStam);
   f.stun = Math.max(0, f.stun - 0.14);
 
@@ -1743,16 +1241,10 @@ function stepFighter(f) {
     case 'backstep':
       if (f.st >= 13) { f.state = 'idle'; f.st = 0; }
       break;
-    case 'dodge':
-      if (f.st >= 14) { f.state = 'idle'; f.st = 0; }
-      break;
     case 'hurt':
       // 20프레임(0.33초)은 피격 자세가 눈에 들어오기도 전에 끝난다.
       // 강타는 더 오래 젖혀져 있어야 '크게 맞았다'가 읽힌다.
-      // 기술이 stagger 를 지정하면 그만큼 굳는다. 찌르기가 '맞추고도 손해'
-      // 였던 것을 여기서 바로잡는다 — 사거리가 긴 대신 콤보가 없으니
-      // 최소한 맞힌 쪽이 손해는 안 봐야 한다.
-      if (f.st >= (f.hurtT || (f.hurtHeavy ? 27 : 18))) { f.state = 'idle'; f.st = 0; }
+      if (f.st >= (f.hurtHeavy ? 27 : 18)) { f.state = 'idle'; f.st = 0; }
       break;
     case 'stunned':
       if (f.st >= f.stunTimer) { f.state = 'idle'; f.st = 0; }
@@ -1765,8 +1257,7 @@ function stepFighter(f) {
   // 움직이다 가드를 누르면 속도가 그대로 남아 방향키를 떼도 무대 끝까지
   // 미끄러졌다(120프레임에 118px, vz 가 2.4 로 고정). 빙판이었다.
   // 가드는 발을 묶는 자세다. 앞뒤(vx)도 같이 죽인다.
-  if (f.state === 'dodge') f.vz *= 0.86;          // 회피는 멀리 미끄러져야 값이 있다
-  else if (busy(f) || helpless(f) || f.guardHeld) f.vz *= 0.5;
+  if (busy(f) || helpless(f) || f.guardHeld) f.vz *= 0.5;
   if (f.guardHeld) f.vx *= 0.5;
   if (Math.abs(f.vz) < 0.05) f.vz = 0;
   f.z = clamp(f.z + f.vz, 0, Z_MAX);
@@ -1845,8 +1336,7 @@ function updatePlayer() {
 
   if (bufFrames > 0) {
     bufFrames--;
-    // 연격은 후딜 중에도 끊고 들어가므로 canAct 를 조건으로 걸면 안 된다
-    if (attackWith(P, bufAttack)) { bufAttack = null; bufFrames = 0; }
+    if (canAct(P) && startMove(P, bufAttack)) { bufAttack = null; bufFrames = 0; }
   }
 
   if (canAct(P) && !P.guardHeld) {
@@ -1861,19 +1351,13 @@ function updatePlayer() {
     if (movingX) {
       const dir = l ? -1 : 1;
       const forward = dir === P.dir;
-      // 즉시 최고 속도로 꽂으면 '발을 디디며 속도를 얻는' 게 아니라
-      // 좌표가 순간이동하는 것처럼 보인다. 3프레임에 걸쳐 올린다.
-      P.vx = lerp(P.vx, dir * (forward ? WALK_F : WALK_B), 0.34);
+      P.vx = dir * (forward ? WALK_F : WALK_B);   // 뒷걸음은 조금 느리다
     }
     // 걷는 상태는 **두 축을 합쳐서** 판정한다. 앞뒤만 보면 위아래로만 움직일 때
     // 상태가 idle 로 되돌아가 다리가 멈춘 채 몸만 미끄러진다.
-    // 손을 뗀 순간 idle 로 튀면 '한 발에 딱 멈추는' 사람이 아니라 그림이
-    // 갈리는 것으로 보인다. 아직 미끄러지는 동안은 걷기를 유지한다 —
-    // gait 가 계속 쌓이니 다리도 같이 돈다.
-    const gliding = Math.abs(P.vx) > 0.9 || Math.abs(P.vz) > 0.9;
-    if (movingX || movingZ || gliding) { P.state = 'walk'; P.walkClock++; }
+    if (movingX || movingZ) { P.state = 'walk'; P.walkClock++; }
     else if (P.state === 'walk') { P.state = 'idle'; P.st = 0; }
-  } else if (P.state === 'walk' && Math.abs(P.vx) < 0.9) P.state = 'idle';
+  } else if (P.state === 'walk') P.state = 'idle';
 }
 
 // ── AI: 거리 관리 → 견제 → 후딜 처벌 ───────────────────────────────
@@ -1882,12 +1366,7 @@ function updateAI() {
   const dist = Math.abs(P.x - B.x);
   B.guardHeld = false;
 
-  // 이어치기 창이 열려 있으면 후딜 중이라도 이어친다 — 사람과 같은 수단이다
-  if (B.chainT > 0 && (B.state === 'active' || B.state === 'recover')) {
-    if (B.chain === 'hit' && Math.random() < diff.aggro) { attackWith(B, 'light'); ai.t++; return; }
-    if (B.chain === 'guard' && Math.random() < diff.aggro * .35) { attackWith(B, 'light'); ai.t++; return; }
-  }
-  if (helpless(B) || busy(B) || B.state === 'dash' || B.state === 'backstep' || B.state === 'dodge') { ai.t++; return; }
+  if (helpless(B) || busy(B) || B.state === 'dash' || B.state === 'backstep') { ai.t++; return; }
   ai.t++;
 
   // 디버그: 상대를 가만히 세워둔다. 내 동작만 천천히 보고 싶을 때.
@@ -1905,13 +1384,11 @@ function updateAI() {
   // 자기 리치를 기준으로 잡으면 창을 쓰는 장수는 더 멀리서 반응한다.
   const RT = reachOf(B, 'thrust');
   if (P.state === 'recover' && dist < RT && ai.react-- <= 0) {
-    // 강베기는 사람과 마찬가지로 직접 못 고른다 — 베기가 막혔을 때만 나간다.
-    // AI 만 마음대로 쓰면 규칙이 둘이 되어 '왜 저건 되지?' 가 된다.
-    if (dist < reachOf(B, 'light')) { attackWith(B, 'light'); return; }
-    if (dist < reachOf(B, 'thrust')) { attackWith(B, 'thrust'); return; }
+    if (dist < reachOf(B, 'heavy') && B.stam > MOVES.heavy.stam && Math.random() < .55) { startMove(B, 'heavy'); return; }
+    if (dist < reachOf(B, 'thrust')) { startMove(B, 'thrust'); return; }
   }
   // 플레이어가 무방비 → 강베기
-  if (helpless(P) && dist < reachOf(B, 'light')) { attackWith(B, 'light'); return; }
+  if (helpless(P) && dist < reachOf(B, 'heavy') + 30 && B.stam > MOVES.heavy.stam) { startMove(B, 'heavy'); return; }
 
   // 플레이어가 칼을 뽑았다 → 막거나 뺀다
   if (P.state === 'windup' && dist < RT + 30) {
@@ -1961,8 +1438,7 @@ function updateAI() {
   // 사람도 따라서 찌르기만 누르는 게 최선이 됐다. 간격을 골라야 기술이 섞인다.
   if (ai.t >= ai.pocketUntil) {
     const r = Math.random();
-    // 강베기는 이제 직접 고르는 기술이 아니므로 간격 후보에서 뺀다
-    ai.pocket = r < .55 ? 'light' : 'thrust';
+    ai.pocket = r < .30 ? 'heavy' : r < .62 ? 'light' : 'thrust';
     ai.pocketUntil = ai.t + 70 + (Math.random() * 90 | 0);
   }
   // 고른 간격이 SEP 안쪽이면 영영 도달할 수 없어 접근·후퇴를 무한 반복한다
@@ -1981,10 +1457,13 @@ function updateAI() {
   }
   // 닿는 거리 — 골라둔 간격의 기술을 먼저 쓴다
   if (ai.t % 9 === 0 && Math.random() < diff.aggro) {
-    const order = ai.pocket === 'light' ? ['light', 'thrust'] : ['thrust', 'light'];
+    const order = ai.pocket === 'heavy' ? ['heavy', 'light', 'thrust']
+                : ai.pocket === 'light' ? ['light', 'thrust', 'heavy']
+                :                         ['thrust', 'light', 'heavy'];
     for (const k of order) {
       if (!canReach(k)) continue;
-      if (attackWith(B, k)) return;
+      if (k === 'heavy' && B.stam <= MOVES.heavy.stam + 10) continue;
+      if (startMove(B, k)) return;
     }
   } else if (B.state === 'walk') { B.state = 'idle'; }
 }
@@ -2152,15 +1631,7 @@ function statePose(f) {
   const PHASE = { windup: 0, active: 1, recover: 2 };
   const atk = f.move && set[f.move.sheet];
   switch (f.state) {
-    case 'windup': {
-      if (!atk) return null;
-      // 예비동작 후반은 '가속' 컷으로 넘긴다 — 감는 자세에서 곧장 타격으로
-      // 튀면 그 사이가 통째로 비어 카드가 넘어가는 것처럼 보인다.
-      // 강베기는 예비가 21프레임이라 특히 길다.
-      const dur = Math.max(1, f.move.startup * (f.spd || 1));
-      if (atk[3] && f.st >= dur * 0.55) return pick(atk[3]);
-      return pick(atk[0]);
-    }
+    case 'windup':
     case 'active':
     case 'recover': return atk ? pick(atk[PHASE[f.state]]) : null;
     case 'hurt':    return pick(f.hurtHeavy ? set.hurtH : set.hurtL);
@@ -2171,7 +1642,7 @@ function statePose(f) {
       if (f.guardHeld && !busy(f) && !helpless(f))
         return pick(f.guardT <= GUARD_JUST ? (set.guardJust || set.guard) : set.guard);
       if (f.state === 'idle') return pick(set.idle);
-      if (f.state === 'walk' || f.state === 'dash' || f.state === 'backstep' || f.state === 'dodge') {
+      if (f.state === 'walk' || f.state === 'dash' || f.state === 'backstep') {
         // 걷기 컷이 있으면 보폭에 맞춰 넘긴다 — 리그가 필요 없어지는 지점.
         // 발이 미끄러지지 않도록 이동 거리(gait)로 프레임을 고른다.
         // 한 주기(WALK_CYCLE_DIST)를 컷 수로 나눈다 — 3컷이든 4비트든 보폭은 같다.
@@ -2179,18 +1650,11 @@ function statePose(f) {
         // 속도가 걷기의 2.5~3배라 같은 규칙으로 넘기면 초당 25~42회가 되어 깜빡인다.
         // 게다가 뒤로 가는데 앞으로 걷는 그림이 돌아간다. 한 자세로 미끄러지는 게 맞다 —
         // 기울기(lean)와 흙먼지가 이미 속도감을 만든다.
-        if (Array.isArray(set.walk) && f.state !== 'dash' && f.state !== 'backstep' && f.state !== 'dodge') {
+        if (Array.isArray(set.walk) && f.state !== 'dash' && f.state !== 'backstep') {
           const step = walkCycleDist(f) / set.walk.length;
           return pick(set.walk[Math.floor((f.gait || 0) / step) % set.walk.length]);
         }
-        // 대시·백스텝은 한 장 고정이었다 — 가장 빠른 동작이 가장 안 움직이니
-        // 제일 미끄러져 보였다. 걷기 컷을 이동 거리에 맞춰 돌린다.
-        // (속도가 걷기의 2.5배라 자연히 빨리 넘어간다. 기울기와 잔상이
-        //  같이 붙으므로 '두 장면이 번갈아' 처럼 보이진 않는다.)
-        if (Array.isArray(set.walk)) {
-          const st2 = walkCycleDist(f) / set.walk.length;
-          return pick(set.walk[Math.floor((f.gait || 0) / st2) % set.walk.length]);
-        }
+        if (Array.isArray(set.walk)) return pick(set.walk[0]);   // 대시·백스텝 — 접지 자세 고정
         return pick(set.walk || set.idle);
       }
       return null;
@@ -2252,126 +1716,36 @@ function drawShadow(f) {
 }
 
 // 지금 그려진 포즈의 창끝을 무대 좌표로 — 발광·궤적이 붙는 지점.
-// 그림 자체도 공격 중 회전·전진시키므로, 이 좌표에도 **같은 변환**을 적용해야
-// 한다. 그렇지 않으면 창은 앞으로 나갔는데 오라·불꽃만 예전 자리에 남는다.
 function tipOf(f) {
   const t = POSE_TIP[(TIP_NS[f.kind] || 's') + ':' + POSE_KEY[f.poseKey]];
   if (!t) return null;
-  const m = poseMotion(f);
-  const s = spriteScale(f);
-  const x = (t.tipX - STATE_CX) * s + m.dx * s;
-  const y = (t.tipY - STATE_GROUND) * s;
-  const r = m.rot * Math.PI / 180;
-  const c = Math.cos(r), sn = Math.sin(r), zs = zScale(f);
-  return [f.x + f.dir * (c * x - sn * y) * zs,
-          footY(f) + m.dy + (sn * x + c * y) * zs];
+  const s = 1;
+  const zs = spriteScale(f) * zScale(f);
+  return [f.x + f.dir * (t.tipX - STATE_CX) * zs, footY(f) + (t.tipY - STATE_GROUND) * zs];
 }
 
 // 상태 포즈는 규격이 통일돼 있어서 컷 좌표 없이 한 줄로 그린다.
-// ── 포즈 안에서 몸이 움직이게 한다 ───────────────────────────────
-// 공격은 예비·타격·회수 세 장뿐이고, 한 장이 그대로 멈춰 있는 시간이 길다.
-// 강베기 예비동작은 21프레임(0.35초) 동안 픽셀 하나 안 움직였다 — 그게
-// "카드가 넘겨지는 느낌" 의 정체다.
-//
-// 그림을 더 그리지 않고, **같은 그림에 움직임을 태운다**. 발을 축으로
-// 몸을 감았다 튀어나가고 되돌아온다. 회전축이 발이라 창끝은 몸보다 훨씬
-// 크게 움직인다 — 장병기일수록 효과가 크다.
-//
-//   예비   뒤로 감긴다 (점점 빠르게)
-//   타격   튀어나가며 살짝 넘어간다 (오버슛)
-//   회수   탄성으로 제자리
-const SWING = {           // 기술마다 감는 폭이 다르다
-  light:  { rot: 10, dx: 22 },
-  thrust: { rot:  4, dx: 34 },   // 찌르기는 돌리지 않고 곧게 뻗는다
-  heavy:  { rot: 14, dx: 26 },
-  combo:  { rot: 12, dx: 26 },
-};
-function attackMotion(f) {
-  if (!f.move || !f.moveKey) return null;
-  const a = SWING[f.moveKey] || SWING.light;
-  const spd = f.spd || 1;
-  if (f.state === 'windup') {
-    const t = clamp(f.st / Math.max(1, f.move.startup * spd), 0, 1);
-    const e = t * t;                                  // 점점 빠르게 감는다
-    return { rot: -a.rot * e, dx: -a.dx * 0.42 * e };
-  }
-  if (f.state === 'active') {
-    const t = clamp(f.st / Math.max(1, f.move.active), 0, 1);
-    const e = 1 - Math.pow(1 - t, 3);                 // 튀어나간다
-    return { rot: -a.rot + a.rot * 1.62 * e, dx: -a.dx * 0.42 + a.dx * 1.42 * e, smear: 1 - t };
-  }
-  if (f.state === 'recover') {
-    const t = clamp(f.st / Math.max(1, f.move.recovery * spd), 0, 1);
-    const e = 1 - Math.pow(1 - t, 2);                 // 탄성으로 되돌아온다
-    return { rot: a.rot * 0.62 * (1 - e), dx: a.dx * (1 - e) };
-  }
-  return null;
-}
-
-// drawStatePose 와 tipOf 가 공유하는 변환값. 한쪽만 바꾸면 무기 그림과
-// 타격 이펙트가 갈라지므로, 포즈 안의 부가 움직임은 반드시 여기서 계산한다.
-function poseMotion(f) {
-  const mo = attackMotion(f);
-  const vz = f.vz || 0;
-  const canLean = !helpless(f) && f.state !== 'ko';
-  const leanX = canLean ? clamp((f.lean || 0) * 0.9, -7, 7) : 0;
-  const zTilt = canLean ? clamp(-vz * 1.8, -5, 5) : 0;
-  const zBob = canLean && Math.abs(vz) > 0.3 ? Math.sin((f.gait || 0) * 0.12) * 2.2 : 0;
-  return { rot: (mo ? mo.rot : 0) + leanX + zTilt,
-           dx: mo ? mo.dx : 0, dy: zBob, mo };
-}
-
 function drawStatePose(f, img) {
   const s = spriteScale(f);
-  const motion = poseMotion(f);
-  const mo = motion.mo;
-  // 리그 경로에만 있던 반응을 그림 경로에도 준다. 예전엔 drawRigPose 에서만
-  // 기울기·깊이 반응을 줬는데, 그림이 있는 49명은 전부 이 함수를 타므로
-  // **아무 반응이 없었다** — "위아래로 비켜갈 때 평면 위를 미끄러진다" 가 그것이다.
-  const paint = (rot, dx, dy, alpha) => {
-    ctx.save();
-    ctx.translate(f.x, footY(f) + dy);
-    ctx.scale(zScale(f), zScale(f));
-    if (f.state === 'idle' && !f.guardHeld) {
-      const b = Math.sin(frame * 0.042 + (f === B ? 1.7 : 0));
-      ctx.scale(1 - b * 0.006, 1 + b * 0.012);
-    } else if (f.guardHeld) {
-      const b = Math.sin(frame * 0.075);       // 가드 중엔 더 얕고 빠르게
-      ctx.scale(1, 1 + b * 0.006);
-    }
-    ctx.scale(f.dir, 1);                       // 원본은 오른쪽을 본다
-    if (rot) ctx.rotate(rot * Math.PI / 180);  // 축은 발 — 창끝이 크게 움직인다
-    if (dx) ctx.translate(dx * s, 0);
-    const al = (WALK_ALIGN[f.kind] || {})[POSE_KEY[f.poseKey]];
-    if (al) ctx.translate(al * s, 0);
-    // 피격 깜빡임은 **번쩍이는** 것이지 흐려지는 게 아니다.
-    // 알파를 0.55 로 낮추면 어두운 장수는 깜빡여 보이지만, 밝은 장수는 배경에
-    // 그대로 묻힌다 — 은백색 갑옷인 마초가 "공격받을 때 사라진다" 던 이유다.
-    const flash = f.hitFlash > 0 && f.hitFlash % 4 > 1 && f.state !== 'ko';
-    if (alpha < 1) ctx.globalAlpha = alpha;
-    else if (flash) {
-      if (CAN_FILTER) ctx.filter = 'brightness(1.9) saturate(1.6) sepia(.45) hue-rotate(-25deg)';
-      else ctx.globalAlpha = .85;
-    } else if (f.guardFlash > 0 && CAN_FILTER) {
-      ctx.filter = 'brightness(1.5) saturate(.55) hue-rotate(175deg)';
-    }
-    ctx.drawImage(img, -STATE_CX * s, -STATE_GROUND * s, STATE_CW * s, STATE_CH * s);
-    ctx.restore();
-  };
-
-  const { rot, dx, dy } = motion;
-
-  // 잔상 — 판정 프레임에 지나온 자리를 겹쳐 그린다. 옛날 오락실 게임이
-  // 적은 매수로 속도를 만들던 방법이다. 새 그림 없이 '휘둘렀다' 가 읽힌다.
-  if (mo && mo.smear > 0.05) {
-    const back = SWING[f.moveKey] || SWING.light;
-    for (let k = 2; k >= 1; k--) {
-      const w = k / 3;
-      paint(rot - back.rot * 0.5 * w * mo.smear,
-            dx - back.dx * 0.45 * w * mo.smear, dy, 0.30 * mo.smear * (1 - w * 0.4));
-    }
+  ctx.save();
+  ctx.translate(f.x, footY(f));
+  ctx.scale(zScale(f), zScale(f));
+  // 대기는 그림 한 장이라 가만 두면 마네킹이다 — 숨을 쉬게 한다.
+  // 위아래로 띄우지 않고 '눌렀다 폈다' 한다. 발이 지면에서 떨어지면 안 된다.
+  if (f.state === 'idle' && !f.guardHeld) {
+    const b = Math.sin(frame * 0.042 + (f === B ? 1.7 : 0));
+    ctx.scale(1 - b * 0.006, 1 + b * 0.012);
+  } else if (f.guardHeld) {
+    const b = Math.sin(frame * 0.075);       // 가드 중엔 더 얕고 빠르게
+    ctx.scale(1, 1 + b * 0.006);
   }
-  paint(rot, dx, dy, 1);
+  ctx.scale(f.dir, 1);                       // 원본은 오른쪽을 본다
+  // 걷기 컷의 좌우 어긋남 보정 — 반전 뒤에 적용해야 방향이 맞는다
+  const al = (WALK_ALIGN[f.kind] || {})[POSE_KEY[f.poseKey]];
+  if (al) ctx.translate(al * s, 0);
+  if (f.hitFlash > 0 && f.hitFlash % 4 > 1 && f.state !== 'ko') ctx.globalAlpha = .55;
+  ctx.drawImage(img, -STATE_CX * s, -STATE_GROUND * s, STATE_CW * s, STATE_CH * s);
+  ctx.restore();
 }
 
 // 리그로 그릴 수 있는 상태인가 — 대기와 이동만. 공격은 그린 포즈가 훨씬 낫다.
@@ -2421,21 +1795,18 @@ function drawRigPose(f, clipName) {
 
 // ── 무기 아우라 ────────────────────────────────────────────────
 // 기술마다 색과 세기를 다르게 준다. 색이 다르면 어떤 기술인지 눈으로 구분된다.
-// 기술이 정하는 것은 **세기**뿐이다. 색은 등급이 정한다.
-// 예전엔 진영(내편 파랑 / 상대 주황)으로 갈랐는데, 그러면 같은 장수를 키워도
-// 화면이 똑같았다. 1성과 다이아가 같은 빛을 내면 키운 보람이 안 보인다.
-const AURA_POWER = { light: 0.55, thrust: 0.75, heavy: 1.20 };
-function auraOf(f) {
-  const sheet = f.move && f.move.sheet;
-  if (!sheet) return null;
-  const info = SIDE_INFO[f.kind] || {};
-  const st = clamp(info.stars | 0, 1, 6) || 1;
-  const m = STAR_META[st];
-  // 강화도 조금 얹는다 — 같은 5성이라도 +5 가 더 밝다
-  const lvBoost = 1 + (clamp(info.lv | 0, 1, 6) - 1) * 0.05;
-  return { color: m.color, core: m.hot, glow: m.main,
-           power: (AURA_POWER[sheet] || 0.6) * STAR_POWER[st] * lvBoost };
-}
+const AURA = {
+  light:  { color: '#bfe6ff', core: '#ffffff', power: 0.55 },
+  thrust: { color: '#9fd0ff', core: '#eaf6ff', power: 0.75 },
+  heavy:  { color: '#ffd06a', core: '#fff3c8', power: 1.20 },
+};
+// 화웅은 도끼다 — 조운의 푸른 기운과 색을 갈라야 누가 뭘 쓰는지 즉시 읽힌다
+const AURA_BOSS = {
+  light:  { color: '#ffb08a', core: '#fff0e0', power: 0.62 },
+  thrust: { color: '#ff9a6a', core: '#ffe6d2', power: 0.80 },
+  heavy:  { color: '#ff6a3c', core: '#ffd8a8', power: 1.30 },
+};
+const auraOf = f => (f.kind === 'boss' ? AURA_BOSS : AURA)[f.move && f.move.sheet];
 
 // 예비동작 동안 창끝에 기가 모인다 — 크게 감을수록 밝아진다.
 // 예고(telegraph)가 눈에 보이는 신호로도 바뀌는 셈이라 읽고 대응하기 쉬워진다.
@@ -2491,46 +1862,12 @@ function drawSwingTrail(f) {
     ctx.beginPath(); ctx.moveTo(from[0], from[1]);
     ctx.quadraticCurveTo(cx0, cy0, to[0], to[1]); ctx.stroke();
   }
-  ctx.restore();
-}
-
-// 칼끝의 빛덩이만 몸 앞에 그린다.
-//
-// 예전엔 궤적 전체가 몸 앞이었다. 'lighter' 합성에 흰 코어라 지나가는 자리를
-// 통째로 하얗게 덮었고, 무기가 긴 장수(여포의 방천화극)는 궤적이 정확히
-// 무기 위를 지나서 **타격 프레임 동안 무기가 사라졌다가 다시 나타났다.**
-// 궤적은 '이미 지나온 자취'이니 몸 뒤가 맞다. 칼끝 빛만 앞에 남긴다 —
-// 그건 지금 칼이 있는 자리라 앞에 있어야 읽힌다. 반지름도 줄였다(34→20).
-function drawSwingTip(f) {
-  if (f.state !== 'active' || !f.move) return;
-  const a = auraOf(f); if (!a) return;
-  const to = tipOf(f); if (!to) return;
-  const t = clamp(f.st / f.move.active, 0, 1);
-  const fade = 1 - t * 0.65;
-  ctx.save();
-  ctx.globalCompositeOperation = 'lighter';
-  // 자취를 전부 뒤로 보내니 이번엔 베는 맛이 없었다. 앞에는 **얇고 옅은
-  // 색 획**만 한 겹 얹는다 — 흰 코어를 안 쓰니 무기 그림이 비쳐 보인다.
-  if (f.swingFrom) {
-    const from = f.swingFrom;
-    const mx = (from[0] + to[0]) / 2, my = (from[1] + to[1]) / 2;
-    const dx = to[0] - from[0], dy = to[1] - from[1];
-    const bow = f.move.sheet === 'thrust' ? 0.05 : 0.34;
-    ctx.globalAlpha = .26 * fade;
-    ctx.strokeStyle = a.color; ctx.lineWidth = 6 * a.power; ctx.lineCap = 'round';
-    ctx.shadowColor = a.color; ctx.shadowBlur = 16 * a.power;
-    ctx.beginPath(); ctx.moveTo(from[0], from[1]);
-    ctx.quadraticCurveTo(mx - dy * bow * f.dir, my + dx * bow * f.dir, to[0], to[1]);
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-  }
-  // 칼끝 빛 — 지금 칼이 있는 자리라 앞에 있어야 읽힌다
-  const r = 22 * a.power;
-  ctx.globalAlpha = .78 * fade;
-  const g = ctx.createRadialGradient(to[0], to[1], 0, to[0], to[1], r);
+  // 칼끝의 빛덩이
+  ctx.globalAlpha = .9 * fade;
+  const g = ctx.createRadialGradient(to[0], to[1], 0, to[0], to[1], 34 * a.power);
   g.addColorStop(0, a.core); g.addColorStop(.4, a.color); g.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = g;
-  ctx.beginPath(); ctx.arc(to[0], to[1], r, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(to[0], to[1], 34 * a.power, 0, Math.PI * 2); ctx.fill();
   ctx.restore();
 }
 
@@ -2547,9 +1884,8 @@ function drawFighter(f) {
   if (sp) {
     drawShadow(f);
     drawWindupAura(f);          // 창이 빛을 머금는다 (몸 뒤)
-    drawSwingTrail(f);          // 휘두른 자취 — 지나온 길이니 몸 뒤
     drawStatePose(f, sp);
-    drawSwingTip(f);            // 칼끝 빛 — 지금 칼이 있는 자리니 몸 앞
+    drawSwingTrail(f);          // 휘두른 자취 (몸 앞)
     // 저스트가드 유효 프레임은 포즈만으론 못 읽는다 — 빛나는 테두리를 한 겹 얹는다
     if (f.guardHeld && f.guardT <= GUARD_JUST) {
       ctx.save();
@@ -2611,22 +1947,6 @@ function drawFx() {
       ctx.strokeStyle = '#fff2cf'; ctx.lineWidth = Math.max(1, 9 * (1 - k));
       ctx.translate(p.x, p.y); ctx.scale(1 + k * .5, (1 - k * .35) * .55);
       ctx.beginPath(); ctx.arc(0, 0, p.r * (0.2 + k), 0, Math.PI * 2); ctx.stroke();
-      ctx.restore();
-    } else if (p.t === 'reach') {
-      // Short weapons get a narrow, forward-only energy extension to the
-      // actual hit point.  It lasts just through hit-stop: readable as force,
-      // never as a replacement weapon or a permanent beam.
-      const t = 1 - p.life / p.max;
-      ctx.save(); ctx.globalCompositeOperation = 'lighter';
-      ctx.lineCap = 'round';
-      ctx.globalAlpha = (1 - t) * .68;
-      ctx.strokeStyle = p.color; ctx.lineWidth = 8 * (1 - t * .45);
-      ctx.shadowColor = p.color; ctx.shadowBlur = 18;
-      ctx.beginPath(); ctx.moveTo(p.x0, p.y0); ctx.lineTo(p.x1, p.y1); ctx.stroke();
-      ctx.globalAlpha = (1 - t) * .92;
-      ctx.strokeStyle = p.core || '#fff8df'; ctx.lineWidth = 2.2;
-      ctx.shadowBlur = 0;
-      ctx.beginPath(); ctx.moveTo(p.x0, p.y0); ctx.lineTo(p.x1, p.y1); ctx.stroke();
       ctx.restore();
     } else if (p.t === 'ring') {
       const t = 1 - p.life / p.max;
@@ -2732,19 +2052,6 @@ function bumpHap() {
   el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
 }
 let bannerT = 0;
-// 연속타 표시. 콤보가 늘어날수록 소리도 높아진다.
-let comboTimer = 0;
-function showCombo(att) {
-  const el = $('combo');
-  if (!el) return;
-  $('comboN').textContent = att.comboN;
-  el.hidden = false;
-  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
-  clearTimeout(comboTimer);
-  comboTimer = setTimeout(() => { el.hidden = true; }, 720);
-  snd('combo', att.comboN);
-}
-
 function banner(text, color, weight) {
   if (weight < bannerT) return;
   bannerT = weight;
@@ -2761,17 +2068,6 @@ function eul(word) {
   return (c - 0xac00) % 28 ? '을' : '를';
 }
 
-// 콤보·무피격 보상. 별은 이 게임의 최고 화폐라 상한이 필요한데, 한 판
-// 최다 연타가 5~14 라 10 마다 1개면 사실상 판당 1개가 상한이 된다 —
-// 게임이 스스로 막아 준다.
-function duelStars(kind) {
-  if (kind !== 'win') return { combo: 0, perfect: 0, total: 0 };
-  const combo = Math.floor((P.maxCombo || 0) / 10);
-  const perfect = stats.taken <= 0 ? 1 : 0;
-  return { combo, perfect, total: combo + perfect };
-}
-
-let tallyTimers = [];
 function showResult(kind) {
   const ov = $('overlay');
   const title = kind === 'win' ? '승 리' : kind === 'lose' ? '패 배' : '무 승 부';
@@ -2781,99 +2077,12 @@ function showResult(kind) {
     : `${hap}합을 겨루었으나 승부가 나지 않았다.`;
   $('ovTitle').textContent = title;
   $('ovVs').style.display = 'none';
-
-  const st = duelStars(kind);
-  const rows = [
-    ['최다 연타', P.maxCombo || 0, ''],
-    ['유효타', stats.hits, ''],
-    ['저스트가드', stats.justs, ''],
-    ['받은 피해', stats.taken, ''],
-  ];
-  if (st.combo)   rows.push([`${st.combo * 10} 연타 달성`, st.combo, 'bonus']);
-  if (st.perfect) rows.push(['무피격 승리', st.perfect, 'bonus']);
-
-  $('ovText').innerHTML = line
-    + '<div id="tally">'
-    + rows.map((r, i) =>
-        `<div class="r ${r[2]}" data-i="${i}"><span>${r[0]}</span>`
-        + `<b data-to="${r[1]}">${r[2] === 'bonus' ? '★ 0' : '0'}</b></div>`).join('')
-    + (st.total ? '<div class="sep"></div>'
-        + `<div class="r total" data-i="${rows.length}"><span>획득</span>`
-        + `<b data-to="${st.total}">★ 0</b></div>` : '')
-    + '</div>';
-  runTally();
-  $('ovGo').textContent = EMBED ? '돌 아 가 기' : '다 시';
+  $('ovText').innerHTML = `${line}<br><br>
+    유효타 <b>${stats.hits}</b> · 가드 <b>${stats.guards}</b> · 저스트가드 <b>${stats.justs}</b> · 격돌 <b>${stats.clashes}</b><br>
+    받은 피해 <b>${stats.taken}</b> · 남은 체력 <b>${Math.max(0, Math.round(P.hp))}</b>`;
+  $('ovGo').textContent = '다 시';
   ov.hidden = false;
   phase = 'result';
-  reportResult(kind);
-}
-
-// ── 본편에 끼워 넣었을 때(iframe) ──────────────────────────────────
-// 본편은 45,000줄짜리 한 파일이다. 거기에 결투를 통째로 옮기면 이름 충돌
-// 위험이 크고, 결투만 따로 띄워 보는 지금의 개발 방식도 못 쓴다.
-// iframe 으로 얹고 결과만 postMessage 로 돌려준다.
-const EMBED = new URLSearchParams(location.search).get('embed') === '1';
-function post(type, data) {
-  if (!EMBED) return;
-  try { parent.postMessage(Object.assign({ src: 'duel', type }, data), '*'); } catch {}
-}
-function reportResult(kind) {
-  post('result', {
-    kind,                                   // 'win' | 'lose' | 'draw'
-    hap,                                    // 몇 합을 겨루었나
-    // 본편의 별 보상이 이 숫자 하나로 정해진다 — 신기록이면 그 아래 구간까지
-    // 전부 통과한 것으로 쳐서 별을 준다. 이기든 지든 무관하게 보낸다.
-    maxCombo: P.maxCombo || 0,
-    myHp: Math.max(0, P.hp / P.maxHp),      // 남은 체력 비율
-    foeHp: Math.max(0, B.hp / B.maxHp),
-    stats: { hits: stats.hits, guards: stats.guards, justs: stats.justs,
-             clashes: stats.clashes, taken: stats.taken },
-  });
-}
-// 결과 화면에서 '돌아가기' 를 누르면 본편으로 나간다
-if (EMBED) {
-  // 캡처 단계에서 먼저 받아 원래 핸들러(재시작)를 막는다 —
-  // 본편에서 들어온 결투는 '다시'가 아니라 '돌아가기'가 맞다.
-  $('ovGo').addEventListener('click', e => {
-    if (phase !== 'result') return;
-    e.stopImmediatePropagation(); e.preventDefault();
-    post('close', {});
-  }, true);
-  // 장수 선택 줄을 숨긴다 — 누구와 누가 싸울지는 본편이 정한다
-  const _pw = $('pickWrap'); if (_pw) _pw.style.display = 'none';
-  addEventListener('message', e => {
-    // 본편이 밖에서 닫을 수도 있다(뒤로가기 등)
-    if (e.data && e.data.src === 'host' && e.data.type === 'abort') post('close', { aborted: true });
-  });
-  post('ready', {});
-}
-
-// 한 줄씩 나타나며 숫자가 0 부터 올라간다. 그냥 결과만 적어 두면 눈이
-// 지나쳐 버린다 — 숫자가 세어지는 걸 보여 줘야 '내가 이만큼 했구나' 가 된다.
-function runTally() {
-  tallyTimers.forEach(clearTimeout); tallyTimers = [];
-  const rows = [...document.querySelectorAll('#tally .r')];
-  rows.forEach((el, i) => {
-    tallyTimers.push(setTimeout(() => {
-      el.classList.add('in');
-      const b = el.querySelector('b');
-      const to = +b.dataset.to || 0;
-      const star = b.textContent.indexOf('★') >= 0;
-      const total = el.classList.contains('total');
-      if (total) el.classList.add('pop');
-      if (to <= 0) { b.textContent = star ? '★ 0' : '0'; return; }
-      // 값이 클수록 빨리 센다 — 40 을 20단계로 세면 지루하다
-      const steps = Math.min(to, 20), dur = 420;
-      for (let k = 1; k <= steps; k++) {
-        tallyTimers.push(setTimeout(() => {
-          const v = Math.round(to * k / steps);
-          b.textContent = (star ? '★ ' : '') + v;
-          if (k === steps) snd(total ? 'just' : 'count', total ? undefined : 2);
-          else if (k % 3 === 0) snd('step');
-        }, dur * k / steps));
-      }
-    }, 260 + i * 200));
-  });
 }
 
 let touchMode = false;
@@ -2909,70 +2118,27 @@ function runIntro() {
   el.hidden = false;
   document.body.classList.add('introing');
 
-  const skip = $('iSkip');
-  skip.textContent = '화면을 누르면 건너뜁니다';
-  skip.classList.remove('wait');
-
   return new Promise(resolve => {
     const timers = [];
-    let played = false;                   // 대사·제목이 다 나왔는가
     const at = (ms, fn) => timers.push(setTimeout(() => { if (my === introToken) fn(); }, ms));
-    // 끝까지 한 번에 보여 준다 — 다 나오기 전에 눌렀을 때
-    const fastForward = () => {
-      timers.forEach(clearTimeout);
-      document.querySelectorAll('#intro .ifig').forEach(f => f.classList.add('in'));
-      for (const id of ['iLineL', 'iLineR', 'iTitle']) $(id).classList.add('in');
-      ready();
-    };
-    const ready = () => {
-      played = true;
-      skip.textContent = '화면을 눌러 시작';
-      skip.classList.add('wait');
-    };
     const done = () => {
       if (my !== introToken) return;
       introToken++;                       // 남은 타이머 무력화
       timers.forEach(clearTimeout);
-      // 여기서 화면을 내리지 않는다. 21컷이 아직 오는 중일 수 있고, 그러면
-      // 그 사이 무대에 그림자만(또는 엉뚱한 장수가) 서 있게 된다.
-      // startFight 가 로딩까지 끝난 뒤에 내린다.
-      skip.textContent = '들어가는 중…';
-      skip.classList.remove('wait');
-      el.removeEventListener('pointerdown', tap);
-      removeEventListener('keydown', tap);
+      el.hidden = true;
+      document.body.classList.remove('introing');
+      el.removeEventListener('pointerdown', done);
+      removeEventListener('keydown', done);
       resolve();
     };
-    // 저절로 넘어가지 않는다 — 손을 기다린다.
-    // 다 나오기 전에 누르면 끝까지 보여 주고, 그 뒤에 누르면 시작한다.
-    const tap = () => { if (my !== introToken) return; played ? done() : fastForward(); };
-    el.addEventListener('pointerdown', tap);
-    addEventListener('keydown', tap);
+    el.addEventListener('pointerdown', done);
+    addEventListener('keydown', done);
     at(30,   () => document.querySelectorAll('#intro .ifig').forEach(f => f.classList.add('in')));
     at(360,  () => { $('iLineL').classList.add('in'); snd('scrape'); });
     at(1180, () => { $('iLineR').classList.add('in'); snd('scrape'); });
     at(2020, () => { $('iTitle').classList.add('in'); snd('clash'); });
-    at(2600, ready);
+    at(2620, done);
   });
-}
-
-// 3 · 2 · 1 · FIGHT — 무대는 이미 보이고 두 장수가 마주 선 채로 센다.
-// phase 를 'ready' 로 두면 update 가 안 돌아 시계도 안 가고 입력도 안 먹는다.
-function runCountdown() {
-  const el = $('count'), tx = $('countTxt');
-  el.hidden = false;
-  const step = (text, go) => new Promise(res => {
-    tx.textContent = text;
-    tx.className = go ? 'fight' : '';
-    void tx.offsetWidth;                  // 애니메이션 재시작
-    tx.classList.add('pop');
-    snd(go ? 'go' : 'count', go ? undefined : (3 - +text));
-    setTimeout(res, go ? 700 : 620);
-  });
-  return (async () => {
-    for (const n of ['3', '2', '1']) await step(n, false);
-    await step('FIGHT', true);
-    el.hidden = true;
-  })();
 }
 
 async function startFight() {
@@ -2988,15 +2154,11 @@ async function startFight() {
   applyPickMeta();                   // 이름·초상은 즉시 — 그림을 기다릴 이유가 없다
   resetMatch();
   const loading = applyPicks();      // 21컷 로딩은 개막 뒤에서 나란히 돈다
-  await runIntro();                  // 손으로 눌러야 넘어간다(화면은 아직 안 내린다)
-  await loading;                     // 빨리 눌렀으면 그림이 올 때까지 개막을 유지
-  $('intro').hidden = true;          // 이제야 무대를 보여 준다
-  document.body.classList.remove('introing');
+  await runIntro();
+  await loading;                     // 건너뛰었으면 여기서 잠깐 기다린다
   resetMatch();                      // 개막 중 남은 입력·타이머를 지우고 새로 선다
-  phase = 'ready';                   // 세는 동안 시계도 입력도 멈춘다
-  await runCountdown();
-  resetMatch();                      // 세는 동안 눌린 것이 있으면 지운다
   phase = 'fight';
+  banner('일 기 토', '#ffd45c', 1);
   // 조작 안내는 띄우지 않는다. 개막에서 이름과 대사를 보여 준 직후에
   // 'J 베기 · K 강베기' 같은 설명이 뜨면 연출이 통째로 깨진다.
   padLive();
@@ -3022,39 +2184,13 @@ fetch(bust('./assets/arcade_duel/lines.json'))
 
 fetch(bust('./assets/arcade_duel/generals.json')).then(r => r.json()).then(list => {
   ROSTER = list;
-  // 본편에서 들어올 땐 주소가 장수를 정한다(?p=lu_bu&b=hua_xiong).
-  // 없으면 기본값(조운·화웅)으로 둔다.
-  const q = new URLSearchParams(location.search);
-  const want = { player: q.get('p'), boss: q.get('b') };
   for (const [sel, side] of [['pickP', 'player'], ['pickB', 'boss']]) {
     const el = $(sel);
-    const pickId = list.some(g => g.id === want[side]) ? want[side] : DEFAULT_SIDE[side];
     el.innerHTML = list.map(g =>
-      `<option value="${g.id}"${g.id === pickId ? ' selected' : ''}>` +
+      `<option value="${g.id}"${g.id === DEFAULT_SIDE[side] ? ' selected' : ''}>` +
       `${g.name}${g.side ? '' : ' · 정면'}${g.full ? '' : ' · 부분'}</option>`).join('');
   }
 }).catch(() => { $('pickWrap').style.display = 'none'; });
-
-// 등급·강화 선택. 본편에서 넘어올 땐 주소로 받고(?pStar=5&pLv=4), 이 화면만
-// 따로 열었을 땐 여기서 고른다 — 키운 장수가 얼마나 다른지 바로 볼 수 있어야 한다.
-const Q = new URLSearchParams(location.search);
-for (const [sel, side, qs, ql] of [['starP', 'player', 'pStar', 'pLv'],
-                                   ['starB', 'boss',   'bStar', 'bLv']]) {
-  const st = $(sel), lvEl = $(sel.replace('star', 'lv'));
-  st.innerHTML = [1, 2, 3, 4, 5, 6].map(n =>
-    `<option value="${n}">${n === 6 ? '◆ 다이아' : '★'.repeat(n)}</option>`).join('');
-  lvEl.innerHTML = [1, 2, 3, 4, 5, 6].map(n =>
-    `<option value="${n}">${n === 1 ? '강화 없음' : '+' + (n - 1)}</option>`).join('');
-  st.value = String(clamp(+Q.get(qs) || 1, 1, 6));
-  lvEl.value = String(clamp(+Q.get(ql) || 1, 1, 6));
-  const apply = () => {
-    SIDE_INFO[side].stars = +st.value;
-    SIDE_INFO[side].lv = +lvEl.value;
-  };
-  st.addEventListener('change', apply);
-  lvEl.addEventListener('change', apply);
-  apply();
-}
 
 // 고른 장수를 실제로 불러온다. 완본이 아니면 원래 등록(조운·화웅)을 그대로 쓴다.
 // 고른 장수의 '숫자'만 먼저 반영한다 — 그림을 기다리지 않는다.
@@ -3064,9 +2200,7 @@ function applyPickMeta() {
   for (const [sel, side] of [['pickP', 'player'], ['pickB', 'boss']]) {
     const g = ROSTER.find(x => x.id === $(sel).value);
     if (!g) continue;
-    // 새 포즈 세트가 전부 디코드될 때까지는 현재 장수를 유지한다.
-    // 여기서 POSE_SET 을 비우면 로딩 중 그림자만 남아 "사라졌다가 나온다"로 보인다.
-    // loadGeneral() 이 성공한 순간에만 세트를 원자적으로 교체한다.
+    // resetMatch() 가 기본값으로 되돌리므로 여기 저장해 둔다
     SIDE_INFO[side].id = g.id;
     SIDE_INFO[side].name = g.name;
     if (g.war) SIDE_INFO[side].war = g.war;
@@ -3133,22 +2267,8 @@ function syncUnit() {
   document.documentElement.style.setProperty('--u', u.toFixed(4) + 'px');
   document.documentElement.style.setProperty('--playh', (H * PLAY_RATIO).toFixed(1));
 }
-// 조작부가 설 자리가 남는가. 남지 않으면 세로로 돌려 달라고 하고 결투를 세운다.
-// 임계값 1.45 는 수식에서 나온다 — 비율 1.667 아래에서 패드 높이는
-// (화면높이 - 화면폭) 이고, 그게 화면 높이의 28% 는 돼야 버튼이 들어간다.
-let rotPaused = false;
-function checkOrientation() {
-  const el = $('rotate');
-  if (!el) return;
-  const tooShort = wrapEl.clientHeight / Math.max(1, wrapEl.clientWidth) < 1.45;
-  el.hidden = !tooShort;
-  if (tooShort && phase === 'fight') { phase = 'paused'; rotPaused = true; }
-  else if (!tooShort && rotPaused && phase === 'paused') { phase = 'fight'; rotPaused = false; }
-}
-new ResizeObserver(() => { syncUnit(); checkOrientation(); }).observe(wrapEl);
-addEventListener('orientationchange', () => setTimeout(checkOrientation, 120));
+new ResizeObserver(syncUnit).observe(wrapEl);
 syncUnit();
-checkOrientation();
 
 // 조작계 감지는 '실제로 무엇을 썼는가'로 — 로드 시점의 미디어쿼리만 믿으면
 // 태블릿·에뮬레이터·터치 가능한 노트북에서 틀린 UI가 뜬다.
@@ -3200,33 +2320,46 @@ function useKeys() { touchMode = false; keysEl.style.display = ''; }
   };
   let dashArm = 0;
 
-  // 스틱 자리는 **고정**이다. 짚은 자리로 스틱이 따라오게 해 봤는데,
-  // 조작할 때마다 스틱이 다른 데로 가서 '내 손이 어디 있는지'를 매번 다시
-  // 확인해야 했다. 액션 게임에 고정형을 권하는 이유가 이것이다 —
-  // 손가락이 자리를 외우면 화면을 안 봐도 된다.
-  // 대신 잡는 범위는 스틱 원보다 넓게 둔다(왼쪽 구역 전체) — 조금 빗나가도
-  // 잡히되, 중심은 늘 같은 자리다.
+  // 고정형 스틱은 '어디를 눌러야 하는지' 가 분명해서 액션 게임에 권장되지만,
+  // 정확히 그 자리를 짚어야 한다는 게 폰에서는 그대로 부담이 된다.
+  // 둘을 섞는다 — 집 자리는 점선으로 늘 보이고(고정형의 장점), 왼쪽 영역
+  // 아무 데나 짚으면 스틱이 거기로 옮겨 온다(동적형의 장점).
   const home = el.parentElement;
+  const place = (e) => {
+    const hr = home.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    const half = r.width / 2;
+    // 손가락이 구역 밖에 가깝게 닿아도 스틱이 잘리지 않도록 가둔다
+    const px = clamp(e.clientX, hr.left + half, hr.right - half);
+    const py = clamp(e.clientY, hr.top + half, hr.bottom - half);
+    el.style.left = (px - hr.left - half) + 'px';
+    el.style.top  = (py - hr.top - half) + 'px';
+    el.style.position = 'absolute';
+    el.style.margin = '0';
+  };
+  const gohome = () => { el.style.position = ''; el.style.left = el.style.top = ''; };
+
   const grab = e => {
     e.preventDefault();
     if (pid !== null) return;
     pid = e.pointerId;
+    place(e);
     try { el.setPointerCapture(pid); } catch {}   // 캡처 실패해도 조작은 되게
     const r = el.getBoundingClientRect();
     unit = r.width / 112;            // CSS 에서 112*var(--u) 로 잡아 둔 지름
     cx = r.left + r.width / 2; cy = r.top + r.height / 2;
     el.classList.add('on');
-    padHold(pid, true);
+    padLive();
     move(e);
   };
+  // 스틱 자신뿐 아니라 '왼쪽 구역' 전체가 받는다
   home.addEventListener('pointerdown', grab);
   el.addEventListener('pointermove', move);
   home.addEventListener('pointermove', move);
   for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) {
     const up = e => {
       if (pid === null || e.pointerId !== pid) return;
-      padHold(pid, false);
-      pid = null; dashArm = 0; clear();
+      pid = null; dashArm = 0; clear(); gohome();
     };
     el.addEventListener(ev, up);
     home.addEventListener(ev, up);
@@ -3269,9 +2402,6 @@ loadAssets(CORE_ASSETS, p => { goBtn.textContent = '불러오는 중 ' + Math.ro
     goBtn.disabled = false;
     goBtn.textContent = '결 투';
     loadAssets(restAssets);          // 나머지는 뒤에서 계속 받는다
-    // 본편에서 들어왔으면 시작 화면을 거치지 않는다 — 이미 '일기토를 걸겠다'를
-    // 고르고 들어온 참이라 한 번 더 누르게 하면 흐름이 끊긴다.
-    if (EMBED) startFight();
   });
 </script>
 </body>

@@ -81,3 +81,10 @@ asset_img/refs/
 # patch_general.py 가 남기는 중간 산출물 (원본 시트와 분리 컷)
 asset_img/patch_*/
 asset_img/**/*_patch_green.png
+
+# 브라우저 검수용 임시 프로필 (크롬이 생성)
+.chrome_review_profile/
+
+# 파이썬 캐시
+tools/__pycache__/
+__pycache__/

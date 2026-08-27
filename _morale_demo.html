@@ -1,0 +1,422 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-store">
+<title>사기 붕괴 모션 데모 — 해롱해롱</title>
+<!--
+  일기토 승리 뒤 '사기 붕괴' 부대를 어떻게 보여줄지 판단용 데모.
+  본편 코드는 건드리지 않았다. 여기서 고른 값만 나중에 옮긴다.
+
+  중요 — 병사 그림은 본편의 진짜 스프라이트가 아니라 비슷하게 만든 대역이다.
+  판단해야 할 것은 '그림'이 아니라 **움직임**이다. 움직임을 만드는 수식은
+  본편에 넣을 것과 완전히 같다:
+
+      w = sin(t * 속도 + seed) * 좌우진폭          ← 좌우로 비틀
+      b = |sin(t * 속도 * 0.5 + seed)| * 상하진폭   ← 위아래로 휘청
+      ctx.drawImage(스프라이트, x + w, y - b)
+
+  본편의 drawSoldierCached 도 '구워둔 캔버스를 drawImage 로 붙이는' 한 줄이라,
+  좌표에 값만 더하는 이 방식은 드로우콜이 하나도 안 늘어난다. 화면 아래
+  카운터가 그걸 보여준다 — 정상 부대와 해롱 부대의 드로우콜이 같아야 한다.
+-->
+<style>
+:root{ --gold:#ffd45c; --line:rgba(255,205,120,.22); }
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#0a0705;color:#f2e4cf;overflow:hidden;
+  font:14px/1.55 -apple-system,BlinkMacSystemFont,"Malgun Gothic",system-ui,sans-serif;
+  -webkit-tap-highlight-color:transparent;user-select:none}
+#wrap{position:relative;width:100vw;height:100dvh;overflow:hidden}
+canvas{display:block;width:100%;height:100%}
+
+/* ── 조작 패널 ─────────────────────────────────────────── */
+#panel{position:absolute;left:0;right:0;bottom:0;z-index:5;
+  background:linear-gradient(180deg,rgba(10,7,5,.72),rgba(10,7,5,.96));
+  border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  display:grid;gap:7px}
+#panel.min{transform:translateY(calc(100% - 34px))}
+#panel{transition:transform .22s ease}
+#tog{position:absolute;right:10px;top:-30px;width:auto;padding:4px 12px;
+  border:1px solid var(--line);background:rgba(10,7,5,.9);color:var(--gold);
+  font:inherit;font-size:12px;cursor:pointer;border-radius:4px 4px 0 0}
+.row{display:flex;align-items:center;gap:9px}
+.row>label{flex:0 0 84px;font-size:12px;color:#c9a86a;font-weight:700}
+.row>input[type=range]{flex:1;min-width:0;accent-color:#ffb43a}
+.row>b{flex:0 0 42px;text-align:right;font-size:12.5px;color:var(--gold);font-variant-numeric:tabular-nums}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:5px 11px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;
+  border:1px solid #6b4f26;background:#20120699;color:#e8d3a4;border-radius:999px}
+.chip.on{border-color:var(--gold);background:#7a4a12;color:#fff6d2}
+.chip.warn.on{border-color:#ff8a5c;background:#6b2a12;color:#ffd8c4}
+#stat{font-size:11.5px;color:#9c8a6a;letter-spacing:.02em}
+#stat b{color:#9de2ff;font-variant-numeric:tabular-nums}
+#stat i{color:#ff9a5c;font-style:normal}
+</style>
+
+<div id="wrap">
+  <canvas id="cv"></canvas>
+  <div id="panel">
+    <button id="tog">접기</button>
+    <div class="row"><label>좌우 비틀</label><input id="ax" type="range" min="0" max="10" step="0.5" value="3"><b id="axv">3</b></div>
+    <div class="row"><label>위아래 휘청</label><input id="ay" type="range" min="0" max="8" step="0.5" value="2"><b id="ayv">2</b></div>
+    <div class="row"><label>속도</label><input id="sp" type="range" min="1" max="14" step="0.5" value="6"><b id="spv">6</b></div>
+    <div class="row"><label>기울기(구움)</label><input id="tl" type="range" min="0" max="0.7" step="0.02" value="0.40"><b id="tlv">0.40</b></div>
+    <div class="chips">
+      <button class="chip on" data-t="anim">구운 애니메이션</button>
+      <button class="chip on" data-t="mark">머리 위 별고리</button>
+      <button class="chip" data-t="curl">돼지꼬리</button>
+      <button class="chip on" data-t="aura">발밑 오라</button>
+      <button class="chip warn" data-t="rot">기울이기 (안 씀 · 비교용)</button>
+      <button class="chip on" data-t="pale">창백하게</button>
+    </div>
+    <div id="stat"></div>
+  </div>
+</div>
+
+<script>
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const $ = id => document.getElementById(id);
+let DPR = 1, W = 0, H = 0;
+function resize(){
+  DPR = Math.min(devicePixelRatio || 1, 2);
+  W = cv.clientWidth; H = cv.clientHeight;
+  cv.width = W * DPR; cv.height = H * DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  SPRITES.clear();                 // DPR 이 바뀌면 스프라이트를 다시 굽는다(본편과 같다)
+}
+addEventListener('resize', resize);
+
+// ── 옵션 ──────────────────────────────────────────────
+const OPT = { anim:true, mark:true, curl:false, aura:true, rot:false, pale:true };
+document.querySelectorAll('.chip').forEach(b=>{
+  b.onclick = ()=>{ const k=b.dataset.t; OPT[k]=!OPT[k]; b.classList.toggle('on',OPT[k]); };
+});
+const AX=$('ax'), AY=$('ay'), SP=$('sp');
+const amp = ()=>({ x:+AX.value, y:+AY.value, s:+SP.value });
+[[AX,'axv'],[AY,'ayv'],[SP,'spv']].forEach(([el,out])=>{
+  const sync=()=>$(out).textContent=el.value; el.oninput=sync; sync();
+});
+// 구운 기울기 — 바꾸면 스프라이트를 다시 굽는다(캐시를 비운다).
+// 실제 게임에선 값이 고정이라 굽기는 딱 한 번이다.
+const TL=$('tl');
+let BAKE_TILT = +TL.value;
+TL.oninput = ()=>{ BAKE_TILT = +TL.value; $('tlv').textContent = (+TL.value).toFixed(2);
+  SPRITES.clear(); bakes = 0; };
+$('tlv').textContent = BAKE_TILT.toFixed(2);
+$('tog').onclick = ()=>{ const p=$('panel'); p.classList.toggle('min');
+  $('tog').textContent = p.classList.contains('min') ? '펼치기' : '접기'; };
+
+// ══════════════════════════════════════════════════════
+//  병사 스프라이트 — 본편처럼 "한 번 구워서 캐시, 그 뒤엔 붙여넣기만"
+//  (그림은 대역. 판단할 것은 움직임이다)
+// ══════════════════════════════════════════════════════
+const SPRITES = new Map();
+function bake(unit, color, leader, variant, pale, frame){
+  // frame >= 0 이면 '해롱해롱' 자세를 통째로 구워 넣는다.
+  // 기울기·창백·별을 전부 여기서 처리하면, 그리는 쪽은 여전히 drawImage 한 줄이다.
+  const s = (leader ? 6.0 : 4.5) * DPR;
+  const F = frame >= 0 ? (frame / DAZE_FRAMES) * Math.PI * 2 : 0;
+  const tilt = frame >= 0 ? Math.sin(F) * BAKE_TILT : 0;      // 몸이 기우는 각
+  const sag  = frame >= 0 ? (1 - Math.cos(F)) * s * 0.16 : 0; // 무릎이 꺾이는 정도
+  const pad = frame >= 0 ? s*(2.2 + BAKE_TILT*2.6) : 0;      // 기운 몸·별이 잘리지 않게
+  const Wd = Math.ceil(s*4.4+pad)+4, Ht = Math.ceil(s*5.8+pad)+4;
+  const cx = Wd/2, cy = Ht*0.62;
+  const off = document.createElement('canvas');
+  off.width = Wd; off.height = Ht;
+  const o = off.getContext('2d');
+  const OL='#1a0a08', OLW=0.6*DPR;
+  const skin = pale ? '#b9b2ad' : '#e8c896';
+  const fc   = pale ? mix(color,'#8a8a96',.62) : color;
+  const seed = variant*1.71;
+
+  o.fillStyle='rgba(0,0,0,.4)';
+  o.beginPath(); o.ellipse(cx, cy+s*1.75, s*1.4, s*0.42, 0,0,Math.PI*2); o.fill();
+
+  // 여기서부터 몸통 — 발을 축으로 기울인다. 이 save/restore 는 '굽는 시점'에
+  // 한 번만 도는 것이라, 매 프레임 도는 것과 비용이 전혀 다르다.
+  o.save();
+  o.translate(cx, cy+s*1.7); o.rotate(tilt); o.translate(-cx, -(cy+s*1.7));
+  o.translate(0, sag);
+
+  if(unit==='cavalry'){                       // 말
+    const g=o.createLinearGradient(0,cy,0,cy+s*1.4);
+    g.addColorStop(0, pale?'#6a6259':'#8a5828'); g.addColorStop(1, pale?'#3a352f':'#4a2810');
+    o.fillStyle=g; o.beginPath(); o.ellipse(cx, cy+s*0.85, s*1.3, s*0.55,0,0,Math.PI*2); o.fill();
+    o.strokeStyle=OL; o.lineWidth=OLW; o.stroke();
+    o.fillStyle= pale?'#2f2b26':'#3a1f0c';
+    o.fillRect(cx-s*1.15, cy+s*1.2, s*0.28, s*0.7);
+    o.fillRect(cx+s*0.85, cy+s*1.2, s*0.28, s*0.7);
+  } else {                                     // 다리
+    o.fillStyle= pale?'#43403c':'#5a3a1a';
+    o.fillRect(cx-s*0.42, cy+s*0.55, s*0.34, s*1.15);
+    o.fillRect(cx+s*0.08, cy+s*0.55, s*0.34, s*1.15);
+  }
+  const bodyY = unit==='cavalry' ? cy-s*0.55 : cy;
+  o.fillStyle=fc;                              // 몸통
+  o.beginPath(); roundRect(o, cx-s*0.62, bodyY-s*0.75, s*1.24, s*1.42, s*0.24); o.fill();
+  o.strokeStyle=OL; o.lineWidth=OLW; o.stroke();
+  o.fillStyle=skin;                            // 머리
+  o.beginPath(); o.arc(cx, bodyY-s*1.18, s*0.46, 0, Math.PI*2); o.fill();
+  o.strokeStyle=OL; o.stroke();
+  o.fillStyle= pale?'#7d7568':'#d4a850';       // 투구
+  o.beginPath(); o.arc(cx, bodyY-s*1.30, s*0.50, Math.PI, 0); o.fill();
+
+  o.strokeStyle= pale?'#8d867c':'#cfd6dd';     // 무기
+  o.lineWidth=0.9*DPR; o.lineCap='round';
+  o.beginPath();
+  if(unit==='archer'){ o.arc(cx+s*0.95, bodyY-s*0.1, s*0.72, -1.1, 1.1); }
+  else { o.moveTo(cx+s*0.72, bodyY+s*0.7); o.lineTo(cx+s*0.72, bodyY-s*1.9); }
+  o.stroke();
+  if(leader){                                   // 대장 깃발
+    o.fillStyle= pale?'#9a8f80':'#ffd45c';
+    o.beginPath(); o.moveTo(cx-s*0.75,bodyY-s*1.9); o.lineTo(cx-s*0.75,bodyY-s*2.9);
+    o.lineTo(cx-s*1.75,bodyY-s*2.45); o.closePath(); o.fill();
+  }
+  o.restore();
+
+  // 머리 위를 도는 별 — 이것도 구워 넣는다. 따로 그리면 병사마다 드로우콜이 붙는다.
+  if(frame >= 0){
+    const hy = (unit==='cavalry' ? cy-s*0.55 : cy) - s*1.95;
+    for(let k=0;k<3;k++){
+      const a2 = F + k*(Math.PI*2/3);
+      const sx = cx + Math.cos(a2)*s*0.95;
+      const sy = hy + Math.sin(a2)*s*0.30;
+      const sc = 0.62 + Math.sin(a2)*0.26;          // 뒤로 돌 땐 작아진다
+      star(o, sx, sy, s*0.30*sc, Math.sin(a2)>0 ? '#ffe071' : '#b99a4a');
+    }
+  }
+  return { canvas:off, cx, cy };
+}
+const DAZE_FRAMES = 8;                              // 한 바퀴를 몇 컷으로 나눌지
+function star(c,x,y,r,fill){
+  c.fillStyle=fill; c.beginPath();
+  for(let i=0;i<10;i++){
+    const rr = i%2 ? r*0.42 : r, a = -Math.PI/2 + i*Math.PI/5;
+    i ? c.lineTo(x+Math.cos(a)*rr, y+Math.sin(a)*rr)
+      : c.moveTo(x+Math.cos(a)*rr, y+Math.sin(a)*rr);
+  }
+  c.closePath(); c.fill();
+}
+function roundRect(c,x,y,w,h,r){ c.beginPath();
+  c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r);
+  c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
+function mix(a,b,t){ const p=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));
+  const A=p(a),B=p(b); return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join(''); }
+
+let drawCalls = 0, bakes = 0;
+function sprite(unit,color,leader,variant,pale,frame){
+  const f = (frame===undefined) ? -1 : frame;
+  const key = unit+'|'+color+'|'+(leader?1:0)+'|'+variant+'|'+DPR+'|'+(pale?1:0)+'|'+f+'|'+BAKE_TILT;
+  let e = SPRITES.get(key);
+  if(!e){ e = bake(unit,color,leader,variant,pale,f); SPRITES.set(key,e); bakes++; }
+  return e;
+}
+
+// ══════════════════════════════════════════════════════
+//  부대 배치 — 본편처럼 seed 기반 고정 좌표(매 프레임 재계산 안 함)
+// ══════════════════════════════════════════════════════
+function positions(seed, n, radius, minDist){
+  const out=[]; let s=((seed*1000)|0)%233280; if(s<0)s+=233280;
+  for(let k=0;k<n;k++){
+    let placed=false;
+    for(let a=0;a<60 && !placed;a++){
+      s=(s*9301+49297)%233280; const ang=(s/233280)*Math.PI*2;
+      s=(s*9301+49297)%233280; const rr=Math.sqrt(s/233280)*radius;
+      const px=Math.cos(ang)*rr, py=Math.sin(ang)*rr*0.62;
+      if(out.every(p=>(p[0]-px)**2+(p[1]-py)**2 >= minDist*minDist)){ out.push([px,py]); placed=true; }
+    }
+    if(!placed){ const ring=minDist*(1+Math.floor(k/7)), ang=k*2.399963+seed;
+      out.push([Math.cos(ang)*ring, Math.sin(ang)*ring*0.62]); }
+  }
+  return out;
+}
+const COLOR_FOE = '#c1443a';
+const GROUPS = [
+  { label:'정상 부대',   dazed:false, unit:'spear',   n:22, seed:3.1 },
+  { label:'해롱해롱 부대', dazed:true,  unit:'spear',   n:22, seed:7.7 },
+  { label:'정상 수비대',  dazed:false, unit:'archer',  n:16, seed:5.3, garrison:true },
+  { label:'해롱 수비대',  dazed:true,  unit:'archer',  n:16, seed:9.9, garrison:true },
+];
+const POS = new Map();
+
+// ── 성 ────────────────────────────────────────────────
+function drawCastle(x,y,r,dazed,t){
+  ctx.save();
+  ctx.fillStyle='rgba(0,0,0,.34)';
+  ctx.beginPath(); ctx.ellipse(x,y+r*0.62,r*1.06,r*0.34,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#3a2c1e'; ctx.strokeStyle='#7a6244'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.ellipse(x,y,r,r*0.62,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#4c3a26';
+  ctx.fillRect(x-r*0.30, y-r*0.92, r*0.60, r*0.62);
+  ctx.strokeRect(x-r*0.30, y-r*0.92, r*0.60, r*0.62);
+  // 깃발 — 사기가 꺾이면 축 처져 흔들린다
+  const fw = dazed ? Math.sin(t*3)*0.30 : 0;
+  const droop = dazed ? r*0.16 : 0;
+  ctx.translate(x, y-r*0.92); ctx.rotate(fw*0.32);
+  ctx.strokeStyle='#c9a86a'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,-r*0.58); ctx.stroke();
+  ctx.fillStyle = dazed ? '#7a5a4a' : COLOR_FOE;
+  ctx.beginPath(); ctx.moveTo(0,-r*0.58); ctx.lineTo(r*0.46,-r*0.44+droop);
+  ctx.lineTo(0,-r*0.30); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  drawCalls += 4;
+}
+
+// ══════════════════════════════════════════════════════
+//  핵심 — 여기가 본편에 그대로 옮겨질 부분
+// ══════════════════════════════════════════════════════
+function drawGroup(g, cx, cy, t){
+  const a = amp();
+  const key = g.seed+'|'+g.n;
+  if(!POS.has(key)) POS.set(key, positions(g.seed, g.n, g.garrison?34:52, g.garrison?11:13));
+  const pts = POS.get(key);
+
+  // 발밑 오라 — 부대당 1 드로우콜
+  if(g.dazed && OPT.aura){
+    const pulse = 0.5 + Math.sin(t*3)*0.16;
+    const gr = ctx.createRadialGradient(cx,cy+6,2,cx,cy+6,g.garrison?46:66);
+    gr.addColorStop(0,`rgba(190,130,255,${0.30*pulse})`);
+    gr.addColorStop(1,'rgba(190,130,255,0)');
+    ctx.fillStyle=gr;
+    ctx.beginPath(); ctx.ellipse(cx,cy+6,g.garrison?46:66,(g.garrison?46:66)*0.52,0,0,Math.PI*2); ctx.fill();
+    drawCalls++;
+  }
+
+  pts.forEach((p,i)=>{
+    const leader = i===0 && !g.garrison;
+    const seed = g.seed + i*1.37;
+    // 구운 애니메이션이면 시간에 따라 컷을 넘긴다. 병사마다 위상을 달리해
+    // 대열 전체가 같은 박자로 흔들리지 않게 한다.
+    const fr = (g.dazed && OPT.anim)
+      ? ((Math.floor(t*a.s*1.6 + i*2.3) % DAZE_FRAMES) + DAZE_FRAMES) % DAZE_FRAMES
+      : undefined;
+    const sp = sprite(g.unit, COLOR_FOE, leader, i%3, g.dazed && OPT.pale, fr);
+    const x = cx + p[0], y = cy + p[1];
+
+    // ★ 해롱해롱 — 좌표에 값만 더한다. 드로우콜은 그대로 1.
+    let w = 0, b = 0;
+    if(g.dazed){
+      w = Math.sin(t*a.s + seed) * a.x;
+      b = Math.abs(Math.sin(t*a.s*0.5 + seed)) * a.y;
+    }
+
+    if(g.dazed && OPT.rot){
+      // 기울이기 — save/rotate/restore 가 병사마다 붙는다. 이게 비싼 쪽.
+      const tilt = Math.sin(t*a.s*0.7 + seed) * 0.22;
+      ctx.save(); ctx.translate(x+w, y-b); ctx.rotate(tilt);
+      ctx.drawImage(sp.canvas, -sp.cx, -sp.cy);
+      ctx.restore();
+      drawCalls += 3;
+    } else {
+      ctx.drawImage(sp.canvas, x + w - sp.cx, y - b - sp.cy);
+      drawCalls++;
+    }
+  });
+
+  // 부대 표식 — 부대당 1 드로우콜
+  if(g.dazed && OPT.mark){
+    // 꿀밤 맞은 그림 — 머리 위에서 별이 타원을 그리며 돈다.
+    // 뒤로 넘어간 별은 작고 어둡게 그려야 '돈다'로 읽힌다. 같은 크기로 그리면
+    // 그냥 별이 여러 개 깜빡이는 것으로 보인다.
+    const top = cy - (g.garrison ? 52 : 66);
+    const bob = Math.sin(t*2.4) * 3;
+    const RX  = g.garrison ? 30 : 40;          // 고리 반지름
+    const RY  = RX * 0.34;                      // 눕혀서 원근을 만든다
+    const N   = 5;
+    const spin = t * 2.2;
+    const order = [];
+    for(let k=0;k<N;k++){
+      const a2 = spin + k*(Math.PI*2/N);
+      order.push({ a2, d: Math.sin(a2) });      // d>0 = 앞쪽
+    }
+    order.sort((p,q)=>p.d-q.d);                 // 뒤에 있는 것부터 그린다
+    for(const o of order){
+      const sx = cx + Math.cos(o.a2)*RX;
+      const sy = top + bob + Math.sin(o.a2)*RY;
+      const dep = (o.d + 1) / 2;                // 0(뒤) ~ 1(앞)
+      const r = (g.garrison ? 7 : 9) * (0.52 + dep*0.68);
+      ctx.globalAlpha = 0.42 + dep*0.58;
+      star(ctx, sx, sy, r, dep > 0.5 ? '#ffe071' : '#c9a24a');
+      drawCalls++;
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  if(g.dazed && OPT.curl){
+    // 돼지꼬리 — 만화에서 정신 나갔을 때 머리 위에 도는 소용돌이.
+    // 부대당 선 하나라 값이 싸다.
+    const top = cy - (g.garrison ? 50 : 64);
+    const bob = Math.sin(t*2.4) * 3;
+    const spin = t * 2.6;
+    const R = g.garrison ? 13 : 17;
+    ctx.save();
+    ctx.translate(cx, top + bob);
+    ctx.rotate(spin);
+    ctx.strokeStyle = '#ffe071';
+    ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.shadowColor = 'rgba(255,200,90,.55)'; ctx.shadowBlur = 7;
+    ctx.beginPath();
+    const TURNS = 2.15, STEPS = 44;
+    for(let k=0;k<=STEPS;k++){
+      const u = k/STEPS;
+      const a2 = u * TURNS * Math.PI*2;
+      const rr = R * u;
+      const px = Math.cos(a2)*rr, py = Math.sin(a2)*rr*0.62;
+      k ? ctx.lineTo(px,py) : ctx.moveTo(px,py);
+    }
+    ctx.stroke();
+    ctx.restore();
+    drawCalls += 2;
+  }
+
+
+  // 이름표
+  ctx.font='700 12px system-ui'; ctx.textAlign='center'; ctx.textBaseline='top';
+  ctx.fillStyle = g.dazed ? '#d8a8ff' : '#c9a86a';
+  ctx.fillText(g.label, cx, cy + (g.garrison?42:56));
+  drawCalls++;
+}
+
+// ── 루프 ──────────────────────────────────────────────
+let t0 = null, fps = 0, fAcc = 0, fN = 0;
+function frame(now){
+  requestAnimationFrame(frame);
+  if(t0===null) t0=now;
+  const t = (now-t0)/1000;
+  const dt = Math.min(now-(frame._l||now),100); frame._l=now;
+  fAcc += dt; fN++;
+  if(fAcc>=500){ fps = Math.round(1000/(fAcc/fN)); fAcc=0; fN=0; }
+
+  drawCalls = 0;
+  // 배경
+  const bg = ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#1b1610'); bg.addColorStop(1,'#0a0705');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(70,55,32,.20)';
+  ctx.beginPath(); ctx.ellipse(W/2,H*0.42,W*0.62,H*0.30,0,0,Math.PI*2); ctx.fill();
+
+  const panelH = document.getElementById('panel').classList.contains('min') ? 34 : 168;
+  const usable = H - panelH;
+  const colL = W*0.27, colR = W*0.73;
+  const rowA = usable*0.30, rowB = usable*0.74;
+
+  // 위 — 야전 부대
+  drawGroup(GROUPS[0], colL, rowA, t);
+  drawGroup(GROUPS[1], colR, rowA, t);
+  // 아래 — 성 수비대
+  drawCastle(colL, rowB-34, 42, false, t);
+  drawCastle(colR, rowB-34, 42, true,  t);
+  drawGroup(GROUPS[2], colL, rowB, t);
+  drawGroup(GROUPS[3], colR, rowB, t);
+
+  // 가운데 구분선
+  ctx.strokeStyle='rgba(255,205,120,.14)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(W/2,10); ctx.lineTo(W/2,usable-10); ctx.stroke();
+
+  $('stat').innerHTML =
+    `드로우콜 <b>${drawCalls}</b> · ${fps}fps · 구운 스프라이트 <b>${bakes}</b>개` +
+    (OPT.rot ? ' · <i>기울이기 켬 — 병사마다 save/rotate/restore 3배</i>' : '') +
+    '';
+}
+resize();
+requestAnimationFrame(frame);
+</script>
