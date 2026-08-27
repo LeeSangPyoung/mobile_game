@@ -1574,6 +1574,15 @@ function applyHit(att, def) {
   const edge = def.x - att.dir * bodyR(def);
   hx = att.dir > 0 ? Math.max(hx, edge) : Math.min(hx, edge);
   const hy = footY(def) - 165;
+  // Equal move ranges may extend beyond a short weapon's painted tip.  Do not
+  // let the contact burst appear as a detached hit: bridge only that missing
+  // segment with a quick, thin weapon-energy streak.  Long weapons keep their
+  // real tip untouched, so this never hides a spear or draws over its shaft.
+  if (tp && (hx - tp[0]) * att.dir > 18) {
+    const aura = auraOf(att) || { color: '#ffe6b0', core: '#fff8df' };
+    fx.push({ t: 'reach', x0: tp[0], y0: tp[1], x1: hx, y1: hy,
+              life: 8, max: 8, color: aura.color, core: aura.core });
+  }
 
   // 저스트가드 — 가드를 '눌러둔' 게 아니라 '맞춰 넣은' 경우
   if (def.guardHeld && def.guardT <= GUARD_JUST && !helpless(def)) {
@@ -2589,6 +2598,22 @@ function drawFx() {
       ctx.strokeStyle = '#fff2cf'; ctx.lineWidth = Math.max(1, 9 * (1 - k));
       ctx.translate(p.x, p.y); ctx.scale(1 + k * .5, (1 - k * .35) * .55);
       ctx.beginPath(); ctx.arc(0, 0, p.r * (0.2 + k), 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
+    } else if (p.t === 'reach') {
+      // Short weapons get a narrow, forward-only energy extension to the
+      // actual hit point.  It lasts just through hit-stop: readable as force,
+      // never as a replacement weapon or a permanent beam.
+      const t = 1 - p.life / p.max;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.lineCap = 'round';
+      ctx.globalAlpha = (1 - t) * .68;
+      ctx.strokeStyle = p.color; ctx.lineWidth = 8 * (1 - t * .45);
+      ctx.shadowColor = p.color; ctx.shadowBlur = 18;
+      ctx.beginPath(); ctx.moveTo(p.x0, p.y0); ctx.lineTo(p.x1, p.y1); ctx.stroke();
+      ctx.globalAlpha = (1 - t) * .92;
+      ctx.strokeStyle = p.core || '#fff8df'; ctx.lineWidth = 2.2;
+      ctx.shadowBlur = 0;
+      ctx.beginPath(); ctx.moveTo(p.x0, p.y0); ctx.lineTo(p.x1, p.y1); ctx.stroke();
       ctx.restore();
     } else if (p.t === 'ring') {
       const t = 1 - p.life / p.max;
