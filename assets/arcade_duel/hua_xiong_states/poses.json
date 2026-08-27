@@ -6,22 +6,16 @@
  "bodyH": 542,
  "poses": {
   "heavy_impact": {
-   "tipX": 1105,
-   "tipY": 856,
-   "footL": 865,
-   "footR": 1105
+   "tipX": 984,
+   "tipY": 860
   },
   "heavy_recovery": {
-   "tipX": 946,
-   "tipY": 500,
-   "footL": 709,
-   "footR": 785
+   "tipX": 1128,
+   "tipY": 913
   },
   "heavy_windup": {
-   "tipX": 548,
-   "tipY": 315,
-   "footL": 699,
-   "footR": 866
+   "tipX": 352,
+   "tipY": 246
   },
   "idle": {
    "tipX": 873,
