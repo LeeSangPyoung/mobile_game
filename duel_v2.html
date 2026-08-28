@@ -1345,11 +1345,13 @@ const DIFF = {
 // 시작값이 너무 물렀다 — 3장에서 한 대도 안 맞고 이겼다는 제보. 반응 26프레임
 // (0.43초)에 공격성 0.32 면 상대가 거의 안 덤빈다. 기존 '쉬움'(반응 22 ·
 // 공격성 0.42 · 가드 0.55 · 패링 0.06) 수준을 바닥으로 깐다.
-const DIFF_START = { dmgOut:1.12, dmgIn:0.82, react:21, aggro:0.46, guard:0.56, parry:0.08 };
+// 한 번 더 올린다 — 여전히 쉽다는 제보. 반응을 3프레임 당기고 공격성·가드를
+// 함께 올린다. 초반이 기존 '보통'과 '쉬움' 사이쯤이 된다.
+const DIFF_START = { dmgOut:1.06, dmgIn:0.90, react:18, aggro:0.55, guard:0.64, parry:0.12 };
 // 가드 0.94 는 너무 높다 — 체력이 늘어 타수가 필요해진 뒤로는 그 벽에 막혀
 // 시간초과(무승부)만 난다. 기존 '어려움'(0.86) 선으로 되돌리고, 난이도는
 // 반응속도(26->7)와 패링(2%->42%)이 담당하게 둔다.
-const DIFF_END   = { dmgOut:0.82, dmgIn:1.34, react: 7, aggro:0.92, guard:0.86, parry:0.42 };
+const DIFF_END   = { dmgOut:0.78, dmgIn:1.42, react: 6, aggro:0.95, guard:0.88, parry:0.48 };
 // 곡선을 여기서 또 씌우지 않는다 — 본편이 넘겨주는 p 가 이미 본편의
 // 난이도 곡선(chEnemyBase 0.50→0.90)을 정규화한 값이라, 초반 완만·후반
 // 가파름이 그 안에 들어 있다. 여기서 한 번 더 굽히면 두 번 굽는 셈이다.
@@ -2143,7 +2145,8 @@ function updateAI() {
     return;
   }
   // 닿는 거리 — 골라둔 간격의 기술을 먼저 쓴다
-  if (ai.t % 9 === 0 && Math.random() < diff.aggro) {
+  // 9프레임마다 굴리면 닿는 거리에 서 있어도 한참 안 친다. 7로 좁힌다.
+  if (ai.t % 7 === 0 && Math.random() < diff.aggro) {
     const order = ai.pocket === 'light' ? ['light', 'thrust'] : ['thrust', 'light'];
     for (const k of order) {
       if (!canReach(k)) continue;
