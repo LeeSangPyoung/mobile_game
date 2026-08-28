@@ -112,7 +112,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 /* 세로 배치: 결투 화면(위 60%) 아래의 빈 영역이 조작부다.
    가로일 때처럼 화면 맨 아래에만 붙이면 손가락이 캐릭터를 가린다. */
 #pad{position:absolute;left:0;right:0;top:calc(var(--playh) * var(--u));bottom:0;z-index:7;
-  padding:calc(14*var(--u)) calc(14*var(--u)) calc(14*var(--u) + var(--safe-b));
+  padding:calc(14*var(--u)) calc(18*var(--u)) calc(14*var(--u) + var(--safe-b));
   display:flex;justify-content:space-between;align-items:center;pointer-events:none}
 #pad.hide{display:none}
 .cluster{display:flex;gap:calc(12*var(--u));align-items:center;pointer-events:auto}
@@ -154,7 +154,10 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 
 /* ── 하우징 ─────────────────────────────────────────────── */
 .cluster{position:relative;pointer-events:auto}
-.cluster::before{content:'';position:absolute;inset:calc(-13*var(--u));
+/* 하우징이 좌우로 크게 번지면 스틱 판과 버튼 판이 맞닿아 보인다.
+   위아래는 그대로 두고 좌우만 좁힌다. */
+.cluster::before{content:'';position:absolute;
+  inset:calc(-13*var(--u)) calc(-8*var(--u));
   border-radius:calc(34*var(--u));z-index:-1;
   background:
     radial-gradient(120% 90% at 50% -10%,rgba(255,255,255,.055),rgba(255,255,255,0) 60%),
@@ -164,7 +167,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
              inset 0 1px 0 rgba(255,255,255,.10),
              inset 0 calc(-10*var(--u)) calc(18*var(--u)) rgba(0,0,0,.35);
   backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
-.cluster.moves::before{border-radius:50%;inset:calc(-11*var(--u))}
+.cluster.moves::before{border-radius:50%;inset:calc(-9*var(--u))}
 
 /* ── 액션 버튼 ──────────────────────────────────────────── */
 /* 컨테이너는 px 하한(min-width)을 쓰는데 버튼 위치는 --u 단위였다. --u 가
@@ -177,7 +180,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
    (하우징 ::before 가 좌우로 13*u 씩 더 번지므로 그만큼 여유를 뺀다) */
 .cluster.acts{width:max(203px,calc(203*var(--u)));
   height:max(195px,calc(195*var(--u)));
-  max-width:calc(52% - 30*var(--u))}
+  max-width:46%}
 .cluster.acts .ps{position:absolute}
 /* 정삼각형(꼭짓점 위). 중심 (98,43) (36,152) (160,152) — 세 변 125px.
      ○ 찌르기
@@ -228,7 +231,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 .cluster.moves{display:flex;align-items:center;justify-content:center}
 #stick{position:relative;border-radius:50%;
   width:max(112px,calc(150*var(--u)));height:max(112px,calc(150*var(--u)));
-  max-width:calc(38vw - 24*var(--u));
+  max-width:30%;
   background:
     radial-gradient(100% 100% at 50% 0%,rgba(255,255,255,.10),rgba(255,255,255,0) 44%),
     radial-gradient(closest-side,rgba(16,26,40,.72),rgba(6,10,17,.80));
