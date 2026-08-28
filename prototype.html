@@ -13231,7 +13231,7 @@
         해당 장수 <b>등용 확률 상승</b> (전투 종료 후 포로 등용에 적용)</dd></div>
       <div><dt class="warn">패배시</dt><dd class="warn"><b>아군 전체 사기 붕괴</b> — 10초간 공격·방어 <b>30%</b> 감소</dd></div>
       <div><dt>보상</dt>
-        <dd id="dkComboTerm">승리 <b>★1</b> · 무피격 승리 <b>★1</b> 추가</dd></div>
+        <dd id="dkComboTerm">무피격 승리 <b>★1</b></dd></div>
     </dl>
 
     <div class="dk-btns">
@@ -46329,7 +46329,8 @@ function __startRenderLoop() {
   // 2~6 이라 '10 Combo 당 ★1' 이 **한 번도 안 나왔다** — 매판 들어오는
   // 동력으로 만든 규칙이 죽어 있었다. 서로 주고받게 밸런스를 맞춘 이상
   // 연타는 길게 못 간다. 그래서 문턱을 낮추고 갈래를 늘린다.
-  const WIN_STAR       = 1;    // 이기면 무조건 — 할 이유가 생긴다
+  // 이기기만 해도 ★ 를 주면 '그냥 이기면 되는' 콘텐츠가 된다.
+  // 보상은 **잘 싸웠는가**에만 붙인다 — 무피격 · 연타 · 신기록.
   const PERFECT_STAR   = 1;    // 한 대도 안 맞고 이겼다
   const COMBO_PER_STAR = 5;    // 10 은 닿지 않았다
   const starsForCombo = now => Math.floor((now | 0) / COMBO_PER_STAR);
@@ -46601,7 +46602,7 @@ function __startRenderLoop() {
     // '승패 무관'을 맨 앞에 한 번만 둔다 — 두 줄 다 해당되는 조건이라
     // 한 줄에만 붙이면 나머지 줄은 승리 조건인 것처럼 읽힌다.
     $('dkComboTerm').innerHTML =
-      `승리 <b>★1</b> · 무피격 승리 <b>★1</b> 추가` +
+      `무피격 승리 <b>★1</b>` +
       `<br><span class="free">승패 무관</span> — 5 Combo 당 <b>★1</b>` +
       (best ? `, 최고 기록 <b>${best}</b> 갱신 시 <b>★ 추가</b>`
             : `, 첫 기록 달성 시 <b>★ 추가</b>`);
@@ -46690,11 +46691,10 @@ function __startRenderLoop() {
     const prev = bestCombo();
     const always = starsForCombo(now);
     const rec = starsForRecord(prev, now);
-    const winS = (kind === 'win') ? WIN_STAR : 0;
     // 무피격 승리 — 받은 피해가 0 이어야 한다
     const perfect = (kind === 'win' && r && r.stats && (r.stats.taken | 0) <= 0) ? PERFECT_STAR : 0;
     if (rec > 0) setBestCombo(now);
-    const total = always + rec + winS + perfect;
+    const total = always + rec + perfect;
     if (total > 0) SAVE.starsAvailable = (SAVE.starsAvailable | 0) + total;
 
     // 2) 사기 붕괴 — 전장에 돌아가는 순간부터 10초

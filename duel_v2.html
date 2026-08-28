@@ -2943,12 +2943,12 @@ function showResult(kind) {
   const st = duelStars(kind);
   const newRec = EMBED && mc > BEST_IN;
   // 본편 규칙과 같아야 한다 — 10 Combo 당 ★1(매판) + 신기록 구간 합산(한 번).
-  // 본편과 같은 규칙 — 승리 ★1 · 무피격 ★1 · 5 Combo 당 ★1 · 신기록 합산
+  // 본편과 같은 규칙 — 무피격 ★1 · 5 Combo 당 ★1 · 신기록 합산.
+  // 이기기만 해도 주면 '그냥 이기면 되는' 콘텐츠가 된다. 잘 싸운 것에만 붙인다.
   const always  = EMBED ? Math.floor(mc / 5) : 0;
   const recAdd  = EMBED ? recordStars(mc, BEST_IN) : 0;
-  const winS    = (EMBED && kind === 'win') ? 1 : 0;
   const perfect = (EMBED && kind === 'win' && stats.taken <= 0) ? 1 : 0;
-  const gained  = EMBED ? (always + recAdd + winS + perfect) : st.total;
+  const gained  = EMBED ? (always + recAdd + perfect) : st.total;
 
   const rows = [
     ['유효타', stats.hits, ''],
@@ -2956,7 +2956,6 @@ function showResult(kind) {
     ['피해량', stats.taken, ''],
   ];
   if (EMBED) {
-    if (winS)    rows.push(['승리', winS, 'bonus']);
     if (perfect) rows.push(['무피격 승리 (Perfect)', perfect, 'bonus']);
     if (always)  rows.push(['5 Combo 당 ★1', always, 'bonus']);
     if (recAdd)  rows.push([`신기록 (이전 ${BEST_IN})`, recAdd, 'bonus']);
