@@ -112,7 +112,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 /* 세로 배치: 결투 화면(위 60%) 아래의 빈 영역이 조작부다.
    가로일 때처럼 화면 맨 아래에만 붙이면 손가락이 캐릭터를 가린다. */
 #pad{position:absolute;left:0;right:0;top:calc(var(--playh) * var(--u));bottom:0;z-index:7;
-  padding:calc(14*var(--u)) calc(18*var(--u)) calc(14*var(--u) + var(--safe-b));
+  padding:calc(14*var(--u)) calc(15*var(--u)) calc(14*var(--u) + var(--safe-b));
   display:flex;justify-content:space-between;align-items:center;pointer-events:none}
 #pad.hide{display:none}
 .cluster{display:flex;gap:calc(12*var(--u));align-items:center;pointer-events:auto}
@@ -137,9 +137,9 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 .cluster.acts [data-act="thrust"]{left:calc(74*var(--u));  top:0}
 .cluster.acts [data-act="guard"] {left:0;                  top:calc(128*var(--u))}
 .cluster.acts [data-act="light"] {left:calc(141*var(--u)); top:calc(121*var(--u))}
-.ps{width:max(52px,calc(86*var(--u)));height:max(52px,calc(86*var(--u)))}
-.ps.big{width:max(60px,calc(100*var(--u)));height:max(60px,calc(100*var(--u)))}
-.ps.big .sym{font-size:max(22px,calc(34*var(--u)))}
+.ps{width:max(52px,calc(94*var(--u)));height:max(52px,calc(94*var(--u)))}
+.ps.big{width:max(60px,calc(110*var(--u)));height:max(60px,calc(110*var(--u)))}
+.ps.big .sym{font-size:max(22px,calc(38*var(--u)))}
 /* ═══ 조작 패드 ═══════════════════════════════════════════════
    버튼 세 개를 허공에 띄워 놓으면 '불규칙한 동그라미'로 보인다. 실제 패드는
    버튼이 **하우징 안에 박혀** 있고, 그 하우징이 손이 갈 자리를 알려 준다.
@@ -182,9 +182,12 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 /* 두 하우징이 서로 넘지 않게 폭에 천장을 둔다. 버튼 자리는 컨테이너 대비
    %로 잡혀 있어서, 컨테이너가 줄면 삼각형 배치가 그대로 따라 줄어든다.
    (하우징 ::before 가 좌우로 13*u 씩 더 번지므로 그만큼 여유를 뺀다) */
-.cluster.acts{width:calc(212*var(--u));
-  height:calc(204*var(--u));
-  max-width:46%}
+/* 판 크기 — 겹치지도, 너무 벌어지지도 않는 자리를 찾는다.
+   212*u 는 CSS 360 폰에서 141px 이라 틈이 68px 로 휑했다. 244*u 로 키우면
+   163px, 틈 38px — 손이 자연스럽게 두 판에 얹힌다. */
+.cluster.acts{width:calc(244*var(--u));
+  height:calc(234*var(--u));
+  max-width:48%}
 .cluster.acts .ps{position:absolute}
 /* 정삼각형(꼭짓점 위). 중심 (98,43) (36,152) (160,152) — 세 변 125px.
      ○ 찌르기
@@ -236,8 +239,8 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 #stick{position:relative;border-radius:50%;
   /* 여기도 px 하한을 빼고 --u 를 따른다. 하한이 있으면 좁은 폰에서
      스틱만 커져 버튼 판을 밀어낸다. */
-  width:calc(156*var(--u));height:calc(156*var(--u));
-  max-width:30%;
+  width:calc(176*var(--u));height:calc(176*var(--u));
+  max-width:32%;
   background:
     radial-gradient(100% 100% at 50% 0%,rgba(255,255,255,.10),rgba(255,255,255,0) 44%),
     radial-gradient(closest-side,rgba(16,26,40,.72),rgba(6,10,17,.80));

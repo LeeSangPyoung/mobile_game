@@ -67,7 +67,13 @@ def duel_root_refs():
 def main():
     keep_root = duel_root_refs()
     if os.path.isdir(DST):
-        shutil.rmtree(DST)
+        # app/www 를 무엇이 붙들고 있으면(로컬 서버·브라우저) 중간에 실패하고
+        # **반쯤 만들어진 www 로 빌드가 그대로 진행된다**(APK 13MB 로 나왔다).
+        # 지우기부터 실패시켜 그 자리에서 멈추게 한다.
+        try:
+            shutil.rmtree(DST)
+        except OSError as e:
+            raise SystemExit('www 를 지울 수 없습니다 - 로컬 서버나 브라우저가 app/www 를 붙들고 있는지 확인하세요: %s' % e)
 
     n_copy = n_conv = n_shrink = n_skip = 0
     b_src = b_dst = 0
