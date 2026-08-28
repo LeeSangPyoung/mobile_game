@@ -122,7 +122,11 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
    높이가 128px 이어야 한다. 격자로는 이 비율을 못 맞춰서 좌표로 놓는다. */
 .cluster.acts{position:relative;
   width:calc(237*var(--u));height:calc(217*var(--u));
-  min-width:237px;min-height:217px}
+  /* px 하한을 두면 CSS 폭 360 인 폰에서 이 판 하나가 화면의 66% 를 먹어
+     스틱 판과 맞닿는다(실측 -13px). CSS 규칙상 min-width 가 max-width 를
+     이기므로 천장을 씌워도 소용이 없다. 하한을 없애고 --u 를 따르게 둔다 —
+     버튼 자리는 컨테이너 대비 % 라 모양은 그대로 줄어든다. */
+  min-width:0;min-height:0}
 .cluster.acts .ps{position:absolute}
 /* 정삼각형(꼭짓점이 위) — 중심 간 거리가 세 변 모두 148px 이다.
           ○ 찌르기
@@ -133,9 +137,9 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 .cluster.acts [data-act="thrust"]{left:calc(74*var(--u));  top:0}
 .cluster.acts [data-act="guard"] {left:0;                  top:calc(128*var(--u))}
 .cluster.acts [data-act="light"] {left:calc(141*var(--u)); top:calc(121*var(--u))}
-.ps{width:max(58px,calc(82*var(--u)));height:max(58px,calc(82*var(--u)))}
-.ps.big{width:max(68px,calc(96*var(--u)));height:max(68px,calc(96*var(--u)))}
-.ps.big .sym{font-size:max(24px,calc(34*var(--u)))}
+.ps{width:max(52px,calc(86*var(--u)));height:max(52px,calc(86*var(--u)))}
+.ps.big{width:max(60px,calc(100*var(--u)));height:max(60px,calc(100*var(--u)))}
+.ps.big .sym{font-size:max(22px,calc(34*var(--u)))}
 /* ═══ 조작 패드 ═══════════════════════════════════════════════
    버튼 세 개를 허공에 띄워 놓으면 '불규칙한 동그라미'로 보인다. 실제 패드는
    버튼이 **하우징 안에 박혀** 있고, 그 하우징이 손이 갈 자리를 알려 준다.
@@ -178,8 +182,8 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 /* 두 하우징이 서로 넘지 않게 폭에 천장을 둔다. 버튼 자리는 컨테이너 대비
    %로 잡혀 있어서, 컨테이너가 줄면 삼각형 배치가 그대로 따라 줄어든다.
    (하우징 ::before 가 좌우로 13*u 씩 더 번지므로 그만큼 여유를 뺀다) */
-.cluster.acts{width:max(203px,calc(203*var(--u)));
-  height:max(195px,calc(195*var(--u)));
+.cluster.acts{width:calc(212*var(--u));
+  height:calc(204*var(--u));
   max-width:46%}
 .cluster.acts .ps{position:absolute}
 /* 정삼각형(꼭짓점 위). 중심 (98,43) (36,152) (160,152) — 세 변 125px.
@@ -230,7 +234,9 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 /* ── 아날로그 스틱 ──────────────────────────────────────── */
 .cluster.moves{display:flex;align-items:center;justify-content:center}
 #stick{position:relative;border-radius:50%;
-  width:max(112px,calc(150*var(--u)));height:max(112px,calc(150*var(--u)));
+  /* 여기도 px 하한을 빼고 --u 를 따른다. 하한이 있으면 좁은 폰에서
+     스틱만 커져 버튼 판을 밀어낸다. */
+  width:calc(156*var(--u));height:calc(156*var(--u));
   max-width:30%;
   background:
     radial-gradient(100% 100% at 50% 0%,rgba(255,255,255,.10),rgba(255,255,255,0) 44%),
