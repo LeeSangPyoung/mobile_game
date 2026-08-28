@@ -12955,7 +12955,7 @@
                   100%{transform:translate(0,0) scale(1);opacity:1}}
 /* 이름표 — 초상 안에 두면 초상 폭을 따라 가운데로 밀려난다.
    말구름과 같은 왼쪽 5% 선에 맞춰 화면 기준으로 붙인다. */
-#duelCutin .dc-name{position:absolute;left:0;right:auto;top:47%;
+#duelCutin .dc-name{position:absolute;left:0;right:auto;top:7%;
   white-space:nowrap;text-align:left;
   padding:7px 20px 8px 14px;
   background:linear-gradient(90deg,rgba(140,28,12,.96),rgba(140,28,12,.08));
@@ -12967,14 +12967,17 @@
 #duelCutin .dc-name small{display:block;font-size:clamp(11px,3vw,13px);color:#ffc86a}
 
 /* 말구름 — 왼쪽 위. 초상과 겹치지 않게 폭을 절반 아래로 묶는다 */
-#duelCutin .dc-left{position:absolute;left:5%;top:14%;width:min(56%,360px)}
+/* 말구름은 장수가 말하는 것처럼 보여야 한다 — 그 **왼쪽 위**에 두고
+   꼬리를 오른쪽 아래(장수 쪽)로 내린다. 화면 꼭대기에 붙여 놓으면
+   누가 하는 말인지 안 읽힌다. */
+#duelCutin .dc-left{position:absolute;left:5%;top:30%;width:min(56%,360px)}
 /* 말구름 — 누런 종이빛. 순백은 어두운 전장 위에서 너무 튄다 */
 #duelCutin .dc-bubble{position:relative;
   padding:14px 16px 12px;background:linear-gradient(180deg,#fbf0cf,#ecd9a8);
   color:#241705;border-radius:16px;border:1px solid rgba(140,100,40,.5);
   box-shadow:0 14px 34px rgba(0,0,0,.6);
   animation:dcBub .4s .22s cubic-bezier(.2,.9,.3,1) both}
-#duelCutin .dc-bubble::after{content:'';position:absolute;right:24px;bottom:-9px;
+#duelCutin .dc-bubble::after{content:'';position:absolute;right:16px;bottom:-9px;
   width:18px;height:18px;background:#ecd9a8;transform:rotate(45deg);
   border-right:1px solid rgba(140,100,40,.5);border-bottom:1px solid rgba(140,100,40,.5)}
 #duelCutin .dc-bubble p{margin:0 0 6px;font-size:clamp(15px,4.2vw,19px);line-height:1.55;
@@ -46281,6 +46284,7 @@ function __startRenderLoop() {
   const LOYALTY_DROP = 25;      // 이기면 그 장수 등용 충성도 -25 (확률 +25%p)
   const CHECK_MS     = 900;     // 조건 살피는 주기
   const MIN_GAP_MS   = 25000;   // 한 번 뜬 뒤 최소 이 간격은 두고 다음을 본다
+  const MIN_SIM_SEC  = 45;      // 판이 이만큼 굴러간 뒤부터 청해 온다(초)
 
   // 한 판에 몇 번이나 청해올까 — **보너스 게임**이다. 적장이 5명이라고 5번
   // 다 걸어오면 전투가 일기토에 잡아먹힌다. 판마다 몫을 미리 뽑아 두고,
@@ -46351,15 +46355,17 @@ function __startRenderLoop() {
     //   · 적 부대의 homeCastle 을 봤는데, 적 AI 가 보내는 부대엔 그 값이 없다.
     // 사기 붕괴가 이제 진영 단위라 성별로 따질 이유도 없다 — 어디든 붙어 있으면 된다.
     const nowSec = (typeof simTime === 'number') ? simTime : 0;
-    // '전투가 벌어지고 있는가'를 넓게 본다. _engaged 는 부대가 부딪히는 **찰나**에만
-    // 참이라, 0.9초마다 보는 검사로는 놓치기 일쑤였다(3판 내내 한 번도 안 떴다).
-    // 플레이어가 부대를 내보냈다는 것 자체가 '전투 중'이라는 뜻이다 —
-    // 그때 청해 오면 이겨서 받은 10초가 헛돌 일도 없다.
+    // **전투가 무르익었을 때** 청해 와야 한다. 시작하자마자 오면 양쪽 다 아직
+    // 몸을 안 풀어서 애매하다 — 일기토의 묘미는 화력이 부딪히는 한복판이다.
+    //   · 판이 열리고 MIN_SIM_SEC 은 지나야 한다
+    //   · 그리고 실제로 붙어 있어야 한다(교전·공성)
+    // _engaged 는 찰나에만 참이지만 0.9초마다 보므로 긴 전투에선 반드시 걸린다.
+    // 예전에 한 번도 안 걸린 건 이 판정이 아니라 시계 단위·homeCastle 이 틀려서였다.
+    if (nowSec < MIN_SIM_SEC) return [];
     const arr = Array.isArray(armies) ? armies : [];
     const fighting =
-      arr.some(a => a && !a.dying && a._engaged) ||            // 지금 붙어 있다
-      arr.some(a => a && !a.dying && a._sieging) ||            // 성을 밀고 있다
-      arr.some(a => a && !a.dying && a.owner === 1);           // 내 부대가 나가 있다
+      arr.some(a => a && !a.dying && a._engaged) ||            // 부대가 맞붙었다
+      arr.some(a => a && !a.dying && a._sieging);              // 성을 밀고 있다
     return castles.filter(c => {
       if (!c || c.owner !== 2 || c._duelDone || c._commanderUid == null) return false;
       if (c._lastSiegeT != null && (nowSec - c._lastSiegeT) < 3) return true;   // 공성당하는 중

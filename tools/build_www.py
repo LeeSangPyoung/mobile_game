@@ -145,6 +145,32 @@ TEST_BOOT = ("<script>/* TEST BUILD */try{"
              "}catch(e){}</script>")
 
 
+# assets 밖에 있는데 게임이 부르는 것들. 예전엔 assets/ 만 복사해서
+# duel/sfx.js 가 앱에 없었고, import('./duel/sfx.js') 가 조용히 실패해
+# **소리가 통째로 안 났다**(리그 애니메이션도 같이 죽는다).
+EXTRA_DIRS = ['duel']
+
+
+def copy_extras():
+    for d in EXTRA_DIRS:
+        if not os.path.isdir(d):
+            print('  (없음) %s' % d)
+            continue
+        dst = os.path.join('app/www', d)
+        if os.path.isdir(dst):
+            shutil.rmtree(dst)
+        # 게임이 쓰는 것만 — 테스트 페이지는 뺀다
+        os.makedirs(dst, exist_ok=True)
+        n = 0
+        for f in sorted(os.listdir(d)):
+            src = os.path.join(d, f)
+            if not os.path.isfile(src) or not f.endswith('.js'):
+                continue
+            shutil.copy2(src, os.path.join(dst, f))
+            n += 1
+        print('  %s : %d개 복사' % (d, n))
+
+
 def rewrite_html(test=False):
     """index.html(=prototype 사본) 안의 .png/.jpg 경로를 .webp 로 바꾼다.
        원본 prototype.html 은 손대지 않는다."""
@@ -171,6 +197,7 @@ def rewrite_html(test=False):
 if __name__ == '__main__':
     _test = '--test' in sys.argv
     main()
+    copy_extras()
     rewrite_html(_test)
     tot = sum(os.path.getsize(os.path.join(r, f))
               for r, _, fs in os.walk('app/www') for f in fs)

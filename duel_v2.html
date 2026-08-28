@@ -1086,9 +1086,13 @@ const CHAR_REACH = { player: null, boss: null };
 // only when the same move always reaches the same distance. Pose tips still
 // drive the visual trail; this is collision and AI spacing only.
 const reachOf = (f, key) => {
-  // 연격(combo)은 그림만 강베기이고 사거리는 베기를 따른다 — chainOf 가 그 뜻이다
-  const k = (MOVES[key] && MOVES[key].chainOf) || key;
-  return MOVES[k].reach;
+  // 연격(combo)은 그림만 강베기이고 사거리는 베기를 따른다 — chainOf 가 그 뜻이다.
+  // chainOf 가 MOVES 에 없는 이름('slash')을 가리켜 **연격이 나갈 때마다 예외가
+  // 터지고 있었다.** loop 가 맨 앞에서 다음 프레임을 예약하는 덕에 게임이 멈추진
+  // 않았지만, 그 프레임의 남은 처리가 통째로 날아갔다. 없는 이름이면 자기 것을 쓴다.
+  const m = MOVES[key];
+  const chained = m && m.chainOf ? MOVES[m.chainOf] : null;
+  return ((chained || m || MOVES.light).reach);
 };
 for (const [who, kind, dir] of [['s', 'player', 'zhao_yun_states'], ['h', 'boss', 'hua_xiong_states']]) {
   fetch(bust(`./assets/arcade_duel/${dir}/poses.json`)).then(r => r.json())
@@ -1291,7 +1295,7 @@ const MOVES = {
   //   따라붙으며 베는 그림이기도 하니 앞으로 나가는 게 맞다.
   combo:  { startup: 10, active: 5, recovery: 20, dmg: 19, reach: 223, push: 16, stam: 16,
             label: '연격',   guardChip: 6,   stunAdd: 18, sheet: 'heavy',  arc: 'heavy',
-            chainOf: 'slash', lunge: 7 },
+            chainOf: 'light', lunge: 7 },
 };
 // 연격이 이어지는 시간. 1타가 닿고 이 안에 다시 누르면 콤보가 성립한다.
 const CHAIN_HIT = 20, CHAIN_GUARD = 16;
@@ -1312,7 +1316,10 @@ const DIFF = {
 // 양 끝은 쉬움/어려움보다 조금 더 벌린다 — 첫 판은 확실히 배울 수 있게,
 // 끝 판은 지금 '어려움'보다 한 뼘 더. 그래야 1000판이 다 다르게 느껴진다.
 const DIFF_START = { dmgOut:1.22, dmgIn:0.68, react:26, aggro:0.32, guard:0.44, parry:0.02 };
-const DIFF_END   = { dmgOut:0.82, dmgIn:1.34, react: 7, aggro:0.92, guard:0.94, parry:0.42 };
+// 가드 0.94 는 너무 높다 — 체력이 늘어 타수가 필요해진 뒤로는 그 벽에 막혀
+// 시간초과(무승부)만 난다. 기존 '어려움'(0.86) 선으로 되돌리고, 난이도는
+// 반응속도(26->7)와 패링(2%->42%)이 담당하게 둔다.
+const DIFF_END   = { dmgOut:0.82, dmgIn:1.34, react: 7, aggro:0.92, guard:0.86, parry:0.42 };
 // 곡선을 여기서 또 씌우지 않는다 — 본편이 넘겨주는 p 가 이미 본편의
 // 난이도 곡선(chEnemyBase 0.50→0.90)을 정규화한 값이라, 초반 완만·후반
 // 가파름이 그 안에 들어 있다. 여기서 한 번 더 굽히면 두 번 굽는 셈이다.
@@ -1410,15 +1417,26 @@ function resetMatch() {
   // 무력에 곱하면 warMul 이 비율만 보므로 '상대적으로' 얼마나 센가가 되고,
   // 체력에 곱하면 '얼마나 버티는가'가 된다. 두 축이 다 움직여야 성장이
   // 한쪽으로 치우치지 않는다.
-  const pm = growMul(pi.stars, pi.lv), bm = growMul(bi.stars, bi.lv);
+  // 성장을 무력·체력에 **둘 다** 곱하면 격차가 배수비의 2.4 제곱으로 튄다.
+  // ★1 대 다이아만렙(배수비 5)이면 필요 타수가 47배 — 약자는 255대를 꽂아야
+  // 해서 시도할 이유가 없고, 강자는 5대면 끝나 긴장이 없다. 양쪽 다 지루하다.
+  //   · 무력에서는 뺀다 → 격차가 **선형**이 된다(2배 때리면 2배 갚는다)
+  //     장수 개성은 남는다. 원본 무력이 62~100 이라 여포/사마의가 1.38배 차이.
+  //   · 체력에만, 그것도 압축해서 곱한다 → 최대 1.8배
+  // 계수 0.20 은 'KO 가 나야 재밌다'에서 나온 값이다. 약자가 30대(45~75초)면
+  // 눕힐 수 있고, 양쪽 만렙이면 시계가 80초로 늘어 시간초과가 잘 안 난다.
+  const DUEL_GROW_K = 0.20;
+  const duelGrow = m => 1 + (m - 1) * DUEL_GROW_K;
+  const pm = duelGrow(growMul(pi.stars, pi.lv)), bm = duelGrow(growMul(bi.stars, bi.lv));
   // 성장 배수는 체력에도 곱해지므로 결판까지 걸리는 시간도 같이 늘어난다.
   // 60초 고정으로 두면 다이아+5 끼리는 시간 초과로 끝난다(실측: 60초 시점에
   // 상대 체력 73/560 남음). 배수를 건드리지 않고 시계만 늘려 결판이 나게 한다.
   // 제곱근인 이유: 체력은 배수만큼 늘지만 데미지도 같이 늘어서, 실제로
   // 길어지는 건 배수 전체가 아니라 그 뿌리 정도다.
-  MATCH_SEC = Math.round(60 * clamp(Math.sqrt((pm + bm) / 2), 1, 2.4));
-  P = makeFighter('player', { name: pi.name, war: pi.war * pm, x: STAGE_W / 2 - 190, dir: 1, hp: Math.round(pi.hp * pm), spd: pi.spd, stam: pi.stam });
-  B = makeFighter('boss',   { name: bi.name, war: bi.war * bm, x: STAGE_W / 2 + 190, dir: -1, hp: Math.round(bi.hp * bm), spd: bi.spd, stam: bi.stam });
+  MATCH_SEC = Math.round(60 * clamp(Math.sqrt((pm + bm) / 2), 1, 1.6));
+  // 무력은 원본 그대로 — 성장은 체력에만 실린다
+  P = makeFighter('player', { name: pi.name, war: pi.war, x: STAGE_W / 2 - 190, dir: 1, hp: Math.round(pi.hp * pm), spd: pi.spd, stam: pi.stam });
+  B = makeFighter('boss',   { name: bi.name, war: bi.war, x: STAGE_W / 2 + 190, dir: -1, hp: Math.round(bi.hp * bm), spd: bi.spd, stam: bi.stam });
   cam = { x: STAGE_W / 2, zoom: 1, shakeX: 0, shakeY: 0, punch: 0 };
   frame = 0; hitStop = 0; slowmo = 0; hap = 0; clockFrames = MATCH_SEC * FPS;
   fx = []; dust = [];
