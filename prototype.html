@@ -13097,6 +13097,7 @@
 .dk-terms .sub{color:#a98f66;font-size:.92em}
 .dk-terms dt .free{display:block;margin-top:2px;font-size:.82em;font-weight:700;
   color:#9de2ff;letter-spacing:0}
+.dk-terms dd .free{color:#9de2ff;font-weight:700}
 
 .dk-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .dk-btn{min-height:50px;padding:12px 22px;font:inherit;font-size:clamp(14px,3.4vw,16px);
@@ -13229,8 +13230,8 @@
       <div><dt>승리시</dt><dd><b>적군 전체 사기 붕괴</b> — 10초간 공격·방어 <b>30%</b> 감소<br>
         해당 장수 <b>등용 확률 상승</b> (전투 종료 후 포로 등용에 적용)</dd></div>
       <div><dt class="warn">패배시</dt><dd class="warn"><b>아군 전체 사기 붕괴</b> — 10초간 공격·방어 <b>30%</b> 감소</dd></div>
-      <div><dt>Combo<br><span class="free">(승패무관)</span></dt>
-        <dd id="dkComboTerm">10 Combo 당 <b>★1</b></dd></div>
+      <div><dt>보상</dt>
+        <dd id="dkComboTerm">승리 <b>★1</b> · 무피격 승리 <b>★1</b> 추가</dd></div>
     </dl>
 
     <div class="dk-btns">
@@ -46294,9 +46295,10 @@ function __startRenderLoop() {
   // 한 판에 몇 번이나 청해올까 — **보너스 게임**이다. 적장이 5명이라고 5번
   // 다 걸어오면 전투가 일기토에 잡아먹힌다. 판마다 몫을 미리 뽑아 두고,
   // 그 횟수를 다 쓰면 그 판에는 더 안 온다.
-  //   0회 30% · 1회 45% · 2회 20% · 3회 5%   (평균 1.0)
+  //   0회 20% · 1회 50% · 2회 24% · 3회 6%   (평균 1.16)
   // 0 이 있어야 '올 수도 있고 안 올 수도 있다'가 되어 왔을 때 반갑다.
-  const QUOTA_ODDS = [0.30, 0.45, 0.20, 0.05];
+  // 30% 였을 땐 두 판 내리 안 오는 일이 잦아(9%) 있는 줄도 모르고 지나쳤다.
+  const QUOTA_ODDS = [0.20, 0.50, 0.24, 0.06];
   function rollQuota() {
     let r = Math.random();
     for (let n = 0; n < QUOTA_ODDS.length; n++) { r -= QUOTA_ODDS[n]; if (r < 0) return n; }
@@ -46323,9 +46325,13 @@ function __startRenderLoop() {
     for (let n = prev + 1; n <= now; n++) s += n;
     return s;
   }
-  // 10 Combo 마다 ★1 — **매판 받는다.** 신기록 보상은 언젠가 벽에 부딪히지만
-  // 이건 매번 들어와서, 일기토를 계속 하게 만드는 실제 동력이 된다.
-  const COMBO_PER_STAR = 10;
+  // 보상은 네 갈래다. 예전엔 콤보 하나뿐이었는데, 실측해 보니 최다 연타가
+  // 2~6 이라 '10 Combo 당 ★1' 이 **한 번도 안 나왔다** — 매판 들어오는
+  // 동력으로 만든 규칙이 죽어 있었다. 서로 주고받게 밸런스를 맞춘 이상
+  // 연타는 길게 못 간다. 그래서 문턱을 낮추고 갈래를 늘린다.
+  const WIN_STAR       = 1;    // 이기면 무조건 — 할 이유가 생긴다
+  const PERFECT_STAR   = 1;    // 한 대도 안 맞고 이겼다
+  const COMBO_PER_STAR = 5;    // 10 은 닿지 않았다
   const starsForCombo = now => Math.floor((now | 0) / COMBO_PER_STAR);
 
   // ── 이 장수로 일기토를 치를 수 있나 ────────────────────────────────
@@ -46594,11 +46600,11 @@ function __startRenderLoop() {
     const best = bestCombo();
     // '승패 무관'을 맨 앞에 한 번만 둔다 — 두 줄 다 해당되는 조건이라
     // 한 줄에만 붙이면 나머지 줄은 승리 조건인 것처럼 읽힌다.
-    // '승패무관'은 라벨(dt)에 붙어 있다 — 아래 두 줄 다 해당되는 조건이다.
     $('dkComboTerm').innerHTML =
-      `10 Combo 당 <b>★1</b>` +
-      (best ? `<br>최고 기록 <b>${best}</b> 갱신 시 <b>★ 추가</b>`
-            : `<br>첫 기록 달성 시 <b>★ 추가</b>`);
+      `승리 <b>★1</b> · 무피격 승리 <b>★1</b> 추가` +
+      `<br><span class="free">승패 무관</span> — 5 Combo 당 <b>★1</b>` +
+      (best ? `, 최고 기록 <b>${best}</b> 갱신 시 <b>★ 추가</b>`
+            : `, 첫 기록 달성 시 <b>★ 추가</b>`);
 
     $('duelAsk').hidden = false;
   }
@@ -46684,8 +46690,12 @@ function __startRenderLoop() {
     const prev = bestCombo();
     const always = starsForCombo(now);
     const rec = starsForRecord(prev, now);
+    const winS = (kind === 'win') ? WIN_STAR : 0;
+    // 무피격 승리 — 받은 피해가 0 이어야 한다
+    const perfect = (kind === 'win' && r && r.stats && (r.stats.taken | 0) <= 0) ? PERFECT_STAR : 0;
     if (rec > 0) setBestCombo(now);
-    if (always + rec > 0) SAVE.starsAvailable = (SAVE.starsAvailable | 0) + always + rec;
+    const total = always + rec + winS + perfect;
+    if (total > 0) SAVE.starsAvailable = (SAVE.starsAvailable | 0) + total;
 
     // 2) 사기 붕괴 — 전장에 돌아가는 순간부터 10초
     if (kind === 'win') {
@@ -46704,7 +46714,7 @@ function __startRenderLoop() {
     try { saveProgress(); } catch (_) {}
     try { refreshTopStats(); } catch (_) {}
 
-    const star = (always + rec) > 0 ? `<br>★<b>${always + rec}</b> 획득` : '';
+    const star = total > 0 ? `<br>★<b>${total}</b> 획득` : '';
     resumeGate(
       (kind === 'win'
         ? '전장으로 돌아간다.<br><b>적군 전체 사기 붕괴</b>가 지금부터 10초간 이어진다.'
@@ -46788,10 +46798,16 @@ function __startRenderLoop() {
 
   // 스테이지가 바뀌면 판당 상태를 비운다 — 충성도 할인은 그 판에서만 유효하고,
   // 성의 _duelDone 은 성 객체와 함께 새로 만들어지므로 따로 지울 게 없다.
-  let lastStage = null;
+  // 판이 새로 시작됐는가. 스테이지 번호만 보면 **같은 판을 다시 할 때** 몫이
+  // 새로 안 뽑힌다 — 첫 판에 0 이 나오면 재도전해도 영영 0 이라 일기토가
+  // 다시는 안 뜬다. simTime 은 판마다 0 으로 돌아가니 그것도 같이 본다.
+  let lastStage = null, lastSim = 0;
   setInterval(() => {
     try {
-      if (currentStage !== lastStage) {
+      const nowSim = (typeof simTime === 'number') ? simTime : 0;
+      const restarted = nowSim + 0.5 < lastSim;      // 시계가 되감겼다 = 새 판
+      lastSim = nowSim;
+      if (currentStage !== lastStage || restarted) {
         lastStage = currentStage;
         window._duelBeaten = {};
         quota = rollQuota();

@@ -172,8 +172,12 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
    그보다 좁게 배치돼 **셋이 왼쪽으로 쏠렸다**.
    삼각형 좌표를 전부 컨테이너 대비 % 로 바꾼다 — 컨테이너가 어떤 크기가
    되든 삼각형 모양이 그대로 유지된다. */
+/* 두 하우징이 서로 넘지 않게 폭에 천장을 둔다. 버튼 자리는 컨테이너 대비
+   %로 잡혀 있어서, 컨테이너가 줄면 삼각형 배치가 그대로 따라 줄어든다.
+   (하우징 ::before 가 좌우로 13*u 씩 더 번지므로 그만큼 여유를 뺀다) */
 .cluster.acts{width:max(203px,calc(203*var(--u)));
-  height:max(195px,calc(195*var(--u)))}
+  height:max(195px,calc(195*var(--u)));
+  max-width:calc(52% - 30*var(--u))}
 .cluster.acts .ps{position:absolute}
 /* 정삼각형(꼭짓점 위). 중심 (98,43) (36,152) (160,152) — 세 변 125px.
      ○ 찌르기
@@ -224,6 +228,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 .cluster.moves{display:flex;align-items:center;justify-content:center}
 #stick{position:relative;border-radius:50%;
   width:max(112px,calc(150*var(--u)));height:max(112px,calc(150*var(--u)));
+  max-width:calc(38vw - 24*var(--u));
   background:
     radial-gradient(100% 100% at 50% 0%,rgba(255,255,255,.10),rgba(255,255,255,0) 44%),
     radial-gradient(closest-side,rgba(16,26,40,.72),rgba(6,10,17,.80));
@@ -1382,7 +1387,7 @@ function makeFighter(kind, opts) {
     inv: 0, hitFlash: 0, guardFlash: 0,
     walkClock: 0,
     lean: 0,
-    ai: { t: 0, plan: 'wait', react: 0, pocket: 'thrust', pocketUntil: 0 },
+    ai: { t: 0, plan: 'wait', react: 0, seen: '', pocket: 'thrust', pocketUntil: 0 },
     chain: null, chainT: 0,          // 이어치기 창 — 'hit' 이면 연격, 'guard' 면 강베기
     comboN: 0, maxCombo: 0,          // 지금 이어가는 연타 · 이 판의 최다 연타
   };
@@ -2027,6 +2032,17 @@ function updateAI() {
   if (helpless(B) || busy(B) || B.state === 'dash' || B.state === 'backstep' || B.state === 'dodge') { ai.t++; return; }
   ai.t++;
 
+  // ── 반응 시계 ────────────────────────────────────────────────────
+  // 예전엔 12프레임마다 diff.react(21~29)로 **리셋**했다. 다 세기도 전에
+  // 되돌아가니 0 에 닿을 수가 없고, 그래서 AI 는 **가드도 처벌도 영영 못 했다** —
+  // 그냥 걸어와서 때리기만 하는 바보로 보인 게 이 한 줄 때문이다.
+  // 사람은 '상대 동작이 바뀌는 것을 보고' 반응한다. 그 순간에만 시계를 잡고,
+  // 매 프레임 하나씩 깎아 0 이 되면 그때 움직인다.
+  if (P.state !== ai.seen) {
+    ai.seen = P.state;
+    ai.react = diff.react + (Math.random() * 6 | 0);
+  } else if (ai.react > 0) ai.react--;
+
   // 디버그: 상대를 가만히 세워둔다. 내 동작만 천천히 보고 싶을 때.
   //   ?dummy=1  가만히 서 있기만 (공격·이동 없음)
   //   ?dummy=2  거리는 유지하되 공격은 안 함
@@ -2041,7 +2057,7 @@ function updateAI() {
   // 예전엔 300·330·420 같은 상수였는데, 무대와 리치가 바뀌면 같이 틀어진다.
   // 자기 리치를 기준으로 잡으면 창을 쓰는 장수는 더 멀리서 반응한다.
   const RT = reachOf(B, 'thrust');
-  if (P.state === 'recover' && dist < RT && ai.react-- <= 0) {
+  if (P.state === 'recover' && dist < RT && ai.react <= 0) {
     // 강베기는 사람과 마찬가지로 직접 못 고른다 — 베기가 막혔을 때만 나간다.
     // AI 만 마음대로 쓰면 규칙이 둘이 되어 '왜 저건 되지?' 가 된다.
     if (dist < reachOf(B, 'light')) { attackWith(B, 'light'); return; }
@@ -2052,7 +2068,7 @@ function updateAI() {
 
   // 플레이어가 칼을 뽑았다 → 막거나 뺀다
   if (P.state === 'windup' && dist < RT + 30) {
-    if (ai.react > 0) { ai.react--; }
+    if (ai.react > 0) { /* 아직 반응 전 */ }
     else if (Math.random() < diff.guard) {
       B.guardHeld = true;
       if (B.guardT === 0) B.guardT = Math.random() < diff.parry ? 0 : GUARD_JUST + 4;  // 가끔 저스트가드
@@ -2066,8 +2082,6 @@ function updateAI() {
       return;
     } else if (Math.random() < .25) { startDash(B, -B.dir); return; }
   }
-
-  if (ai.t % 12 === 0) ai.react = diff.react + (Math.random() * 8 | 0);
 
   // 깊이 정렬 — 축이 어긋나면 아무리 붙어도 안 맞는다.
   // 무조건 즉시 정렬하면 '비켜서기'가 무의미해지므로, 난이도만큼만 빠르게 따라온다.
@@ -2929,9 +2943,12 @@ function showResult(kind) {
   const st = duelStars(kind);
   const newRec = EMBED && mc > BEST_IN;
   // 본편 규칙과 같아야 한다 — 10 Combo 당 ★1(매판) + 신기록 구간 합산(한 번).
-  const always = EMBED ? Math.floor(mc / 10) : 0;
-  const recAdd = EMBED ? recordStars(mc, BEST_IN) : 0;
-  const gained = EMBED ? (always + recAdd) : st.total;
+  // 본편과 같은 규칙 — 승리 ★1 · 무피격 ★1 · 5 Combo 당 ★1 · 신기록 합산
+  const always  = EMBED ? Math.floor(mc / 5) : 0;
+  const recAdd  = EMBED ? recordStars(mc, BEST_IN) : 0;
+  const winS    = (EMBED && kind === 'win') ? 1 : 0;
+  const perfect = (EMBED && kind === 'win' && stats.taken <= 0) ? 1 : 0;
+  const gained  = EMBED ? (always + recAdd + winS + perfect) : st.total;
 
   const rows = [
     ['유효타', stats.hits, ''],
@@ -2939,8 +2956,10 @@ function showResult(kind) {
     ['피해량', stats.taken, ''],
   ];
   if (EMBED) {
-    if (always) rows.push(['10 Combo 당 ★1', always, 'bonus']);
-    if (recAdd) rows.push([`신기록 (이전 ${BEST_IN})`, recAdd, 'bonus']);
+    if (winS)    rows.push(['승리', winS, 'bonus']);
+    if (perfect) rows.push(['무피격 승리 (Perfect)', perfect, 'bonus']);
+    if (always)  rows.push(['5 Combo 당 ★1', always, 'bonus']);
+    if (recAdd)  rows.push([`신기록 (이전 ${BEST_IN})`, recAdd, 'bonus']);
   } else {
     if (st.combo)   rows.push([`${st.combo * 10} Combo 달성`, st.combo, 'bonus']);
     if (st.perfect) rows.push(['무피격 승리', st.perfect, 'bonus']);
