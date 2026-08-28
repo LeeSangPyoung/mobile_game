@@ -136,8 +136,13 @@ def main():
 # 한 줄을 심어 주소를 바꿔 둔다. 이게 먼저 돌고 본 스크립트가 파싱되므로
 # location.search 를 읽는 쪽에서 정상적으로 잡힌다.
 #   전 스테이지 해금 · 튜토리얼 완료 · 일기토 49명 ★5~◆다이아 +5 로 시작.
-TEST_BOOT = ("<script>/* TEST BUILD */try{if(location.search.indexOf('test=')<0)"
-             "history.replaceState(null,'',location.pathname+'?test=1')}catch(e){}</script>")
+#   한 번만 붙인다 — 셋업이 끝나면 location.replace 로 주소를 지우는데,
+#   표식이 없으면 그때 또 ?test=1 을 붙여 무한 새로고침이 된다(검은 화면).
+TEST_BOOT = ("<script>/* TEST BUILD */try{"
+             "if(!localStorage.getItem('__testBuildDone')"
+             "&&location.search.indexOf('test=')<0)"
+             "history.replaceState(null,'',location.pathname+'?test=1')"
+             "}catch(e){}</script>")
 
 
 def rewrite_html(test=False):
@@ -171,4 +176,4 @@ if __name__ == '__main__':
               for r, _, fs in os.walk('app/www') for f in fs)
     print('app/www 전체 %.0f MB' % (tot / 1048576))
     if _test:
-        print('*** 시험 빌드 — 전 스테이지 해금 / 일기토 49명 ★5~◆ +5 ***')
+        print('*** TEST BUILD: all stages unlocked / 49 duel generals at 5-star~diamond +5 ***')

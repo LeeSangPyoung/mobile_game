@@ -46345,12 +46345,25 @@ function __startRenderLoop() {
   //   이기고 돌아와도 아무 일이 안 일어난다. 그래서 붙어 있을 때만 청한다.
   function engagedCastles() {
     if (!Array.isArray(castles)) return [];
-    const now = performance.now();
+    // 전장이 실제로 붙어 있는가. 예전엔 두 조건이 **둘 다 죽어 있었다**:
+    //   · _lastSiegeT 는 simTime(초)인데 performance.now()(밀리초)와 비교했다.
+    //     5만 대 30 을 빼니 영영 성립하지 않았다.
+    //   · 적 부대의 homeCastle 을 봤는데, 적 AI 가 보내는 부대엔 그 값이 없다.
+    // 사기 붕괴가 이제 진영 단위라 성별로 따질 이유도 없다 — 어디든 붙어 있으면 된다.
+    const nowSec = (typeof simTime === 'number') ? simTime : 0;
+    // '전투가 벌어지고 있는가'를 넓게 본다. _engaged 는 부대가 부딪히는 **찰나**에만
+    // 참이라, 0.9초마다 보는 검사로는 놓치기 일쑤였다(3판 내내 한 번도 안 떴다).
+    // 플레이어가 부대를 내보냈다는 것 자체가 '전투 중'이라는 뜻이다 —
+    // 그때 청해 오면 이겨서 받은 10초가 헛돌 일도 없다.
+    const arr = Array.isArray(armies) ? armies : [];
+    const fighting =
+      arr.some(a => a && !a.dying && a._engaged) ||            // 지금 붙어 있다
+      arr.some(a => a && !a.dying && a._sieging) ||            // 성을 밀고 있다
+      arr.some(a => a && !a.dying && a.owner === 1);           // 내 부대가 나가 있다
     return castles.filter(c => {
       if (!c || c.owner !== 2 || c._duelDone || c._commanderUid == null) return false;
-      if (c._lastSiegeT != null && (now - c._lastSiegeT) < 1500) return true;   // 공성당하는 중
-      return Array.isArray(armies) && armies.some(a =>
-        a && a.owner === 2 && a.homeCastle === c && a._engaged && !a.dying);    // 소속 부대가 붙었다
+      if (c._lastSiegeT != null && (nowSec - c._lastSiegeT) < 3) return true;   // 공성당하는 중
+      return fighting;
     });
   }
 
@@ -46811,8 +46824,13 @@ function __startRenderLoop() {
       SAVE.nextGeneralUid = uid;
       SAVE.lastDeployGenerals = mine.slice(0, 10);
       saveProgress();
+      // 표식을 남긴다 — 이게 없으면 주입 스크립트가 다시 ?test=1 을 붙여
+      // 새로고침이 무한히 돌고 화면이 검은 채로 멈춘다.
+      try { localStorage.setItem('__testBuildDone', '1'); } catch (_) {}
       location.replace(location.pathname);     // 깨끗한 주소로 — 메뉴에서 시작
     };
+    // 이미 적용됐으면 아무것도 하지 않는다
+    try { if (localStorage.getItem('__testBuildDone')) return; } catch (_) {}
     prepFull();
   }
 
