@@ -103,6 +103,12 @@ def main():
             if in_duel_root and keep_root is not None and f not in keep_root:
                 n_skip += 1
                 continue
+            # 같은 이름의 .webp 가 이미 원본에 있으면 png/jpg 는 건너뛴다.
+            # 안 그러면 둘 다 같은 .webp 이름으로 나가 서로 덮어쓴다.
+            _base, _ext = os.path.splitext(f)
+            if _ext.lower() in CONVERT_EXT and os.path.exists(os.path.join(root, _base + '.webp')):
+                n_skip += 1
+                continue
 
             b_src += sz
             ext = os.path.splitext(f)[1].lower()

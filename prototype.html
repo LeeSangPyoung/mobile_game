@@ -13798,7 +13798,7 @@ function rarityBgUrl(id, stars) {
   if (st >= 6) {
     // 다이아몬드 — 업로드한 다크 배경 10종을 캐릭터별 고정 변형으로 사용
     const v = (hashGeneralId(String(id || '')) % 10) + 1;   // 1..10
-    return "url('./assets/generals/rarity_bg/diamond" + v + ".png?v=4')";
+    return "url('./assets/generals/rarity_bg/diamond" + v + ".webp?v=5')";
   }
   const s = Math.max(1, Math.min(5, st));
   const set = rarityBgSet(id);
@@ -18573,7 +18573,11 @@ function resetStage() {
           c._commanderUid = inst.uid;
           c._commanderRank = 1;
           getGeneralFaceImage(def.id);
-          stageEnemies.push(def);
+          // 포로 명단은 **싸운 그 장수 그대로** 나와야 한다. 예전엔 def(정의)만 넘겨
+          // 포로 화면에서 rollStars() 로 별을 다시 굴렸고, 일기토에서 만난 ★4 황개가
+          // 포로 목록엔 ★3 으로 뜨는 식으로 매번 어긋났다. 원본 def 는 공용이라
+          // 건드리지 않고 사본에 실제 인스턴스 등급을 실어 보낸다.
+          stageEnemies.push({ ...def, stars: instanceStars(inst), lv: inst.lv });
         }
       }
     });
