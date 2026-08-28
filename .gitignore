@@ -88,3 +88,7 @@ asset_img/**/*_patch_green.png
 # 파이썬 캐시
 tools/__pycache__/
 __pycache__/
+
+# 일기토 축소본 비교용 임시 사본 (축소는 tools/build_www.py 가 빌드 때 한다)
+assets/arcade_duel_640/
+_duel_640.html

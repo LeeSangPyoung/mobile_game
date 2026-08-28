@@ -39,12 +39,21 @@ if(-not (Test-Path (Join-Path $root 'app/node_modules'))){
 } else { Write-Host "node_modules 존재 — 건너뜀" }
 
 # [4] 웹 자산 → 앱 번들 소스 재생성 (app/www 는 git 제외)
-Step "www 재생성 (prototype + assets)"
+#   예전엔 robocopy /MIR 로 assets 를 통째로 미러했는데, assets 가 2.1GB 로 자라
+#   AAB 가 509MB 가 됐다(Play 기본 설치 한도 200MB). 지금은 tools/build_www.py 가
+#   (a) 참조 0건 폴더와 발주 원본(*_source.*)을 빼고
+#   (b) 일기토 컷을 1280x1024 -> 640x512 로 줄이고 (화면엔 403px 로 그려진다)
+#   (c) PNG/JPG 를 WEBP 로 바꾸면서 index.html 의 경로까지 같이 고친다.
+#   원본 assets/ 와 prototype.html 은 건드리지 않는다 — 사본만 손본다.
+Step "www 재생성 (prototype + assets 최적화)"
 Copy-Item (Join-Path $root 'prototype.html') (Join-Path $root 'app/www/index.html') -Force
-$wwwAssets = Join-Path $root 'app/www/assets'
-# robocopy /MIR: 원본 assets 를 www/assets 로 미러(불필요분 정리). 종료코드 <8 은 정상.
-robocopy (Join-Path $root 'assets') $wwwAssets /MIR /NFL /NDL /NJH /NJS /NP | Out-Null
-if($LASTEXITCODE -ge 8){ throw "assets 동기화 실패(robocopy $LASTEXITCODE)" } else { $global:LASTEXITCODE = 0 }
+if(Test-Path (Join-Path $root 'duel_v2.html')){
+  Copy-Item (Join-Path $root 'duel_v2.html') (Join-Path $root 'app/www/duel_v2.html') -Force
+}
+Push-Location $root
+python tools/build_www.py
+if($LASTEXITCODE -ne 0){ Pop-Location; throw "www 최적화 실패(build_www.py $LASTEXITCODE)" }
+Pop-Location
 if(Test-Path (Join-Path $root 'img')){ Copy-Item (Join-Path $root 'img') (Join-Path $root 'app/www/img') -Recurse -Force -ErrorAction SilentlyContinue }
 
 # [5] capacitor 동기화

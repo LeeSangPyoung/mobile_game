@@ -40,9 +40,14 @@ body{display:grid;place-items:stretch}
 /* 세로 전용. 갤럭시(폭 360~412, 19.5:9~20:9)를 기준으로 잡되 고정 비율을 쓰지 않는다 —
    기기마다 비율이 달라서 aspect-ratio 를 박으면 어딘가에는 반드시 검은 여백이 생긴다.
    화면을 그대로 채우고, 캔버스 논리 해상도(H)를 화면 비율에 맞춰 JS 가 정한다. */
-#wrap{position:relative;width:100vw;height:100dvh;max-width:min(100vw,560px);margin:0 auto;
+/* 결투판의 폭 — 예전엔 100vw 를 그대로 썼다. 그러면 넓고 낮은 창(가로·데스크톱)
+   에서 세로비가 1.45 아래로 떨어지고, 조작부(--playh 아래)가 화면 밖으로 밀려나
+   버튼을 아예 못 눌렀다. 그래서 '세로로 돌려 주세요'로 막아 놨었다.
+   폭을 '높이/1.45' 로도 묶으면 **어떤 창에서도 비율이 보장**된다 — 넓은 화면에선
+   좌우가 남을 뿐 조작부 자리는 수식으로 확보된다. 막을 이유가 사라진다. */
+#wrap{position:relative;width:min(100vw,560px,calc(100dvh / 1.45));height:100dvh;margin:0 auto;
   background:#000;overflow:hidden;box-shadow:0 0 0 2px #2a1c10}
-#wrap:fullscreen{max-width:none}
+#wrap:fullscreen{width:min(100vw,calc(100dvh / 1.45))}
 canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06}
 
 /* ── HUD ───────────────────────────────────────────────────────────
@@ -143,6 +148,8 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
    그리고 조작부는 화면을 가리는 존재라 평소엔 물러나 있어야 한다
    (Apple HIG · 모바일 컨트롤 가이드 공통). 쉴 때 55%, 손을 대면 100%. */
 #pad{transition:opacity .22s ease}
+
+
 #pad:not(.live){opacity:.55}
 
 /* ── 하우징 ─────────────────────────────────────────────── */
@@ -277,6 +284,25 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 /* ── 오버레이(시작/결과) ───────────────────────────────────────── */
 #overlay{position:absolute;inset:0;z-index:12;display:grid;place-items:center;padding:20px;
   background:radial-gradient(circle at 50% 45%,#1b0d05e0,#050302f2);overflow-y:auto}
+/* 승패에 따라 전장 그림이 바뀐다. 같은 구도의 두 장이라 화면이 자연스럽게
+   갈아 끼워지고, 색만으로 결과가 먼저 읽힌다 — 붉은 일출 / 푸른 달밤.
+   글자가 먼저 읽혀야 하므로 위아래로 진하게 덮는다. */
+#overlay.win, #overlay.lose{background-size:cover;background-position:center;
+  background-repeat:no-repeat}
+#overlay.win{background-image:
+  linear-gradient(180deg,rgba(24,6,2,.86) 0%,rgba(30,9,3,.62) 34%,
+                  rgba(24,7,2,.72) 68%,rgba(12,4,1,.92) 100%),
+  url('./assets/battle/duel_win_bg.webp')}
+#overlay.lose{background-image:
+  linear-gradient(180deg,rgba(3,8,20,.88) 0%,rgba(5,12,28,.66) 34%,
+                  rgba(4,10,24,.74) 68%,rgba(2,5,14,.94) 100%),
+  url('./assets/battle/duel_lose_bg.webp')}
+/* 패배는 카드 테두리도 식은 색으로 — 금색 그대로면 이겼는지 졌는지 헷갈린다 */
+#overlay.lose .card{border-color:#7fa6d8;outline-color:#101a2a;
+  background:linear-gradient(180deg,rgba(14,24,44,.94),rgba(4,8,18,.90));
+  box-shadow:0 18px 60px #000,inset 0 0 0 2px rgba(127,166,216,.22)}
+#overlay.lose .card h1{color:#bcd8ff;text-shadow:3px 4px 0 #000}
+#overlay.win .card{background:linear-gradient(180deg,rgba(58,31,12,.94),rgba(20,9,3,.90))}
 #overlay[hidden]{display:none}
 .card{width:min(460px,94%);padding:clamp(18px,3vw,28px);text-align:center;
   border:3px solid var(--gold);outline:3px solid #2a1608;
@@ -332,7 +358,8 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 #rotate span{font-size:clamp(12px,3.4vw,15px);opacity:.62}
 
 /* 대기 문구 — 개막이 끝나면 여기서 손을 기다린다 */
-#intro .iskip.wait{color:#ffd45c;font-weight:700;font-size:clamp(13px,3.6vw,16px);
+#intro .iskip.wait{color:#ffd45c;font-weight:900;font-size:clamp(15px,4.2vw,19px);
+  text-shadow:0 2px 8px #000,0 0 18px rgba(255,170,60,.55);
   animation:iPulse 1.25s ease-in-out infinite}
 @keyframes iPulse{0%,100%{opacity:.45}50%{opacity:1}}
 
@@ -368,6 +395,27 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 /* ── 결과 정산 ─────────────────────────────────────────────
    이겼다는 걸 알려 주는 것만으로는 부족하다. 무엇을 잘해서 무엇을 받았는지
    한 줄씩 세어 보여 줘야 다음에도 노린다 — 오락실 격투 게임이 늘 하는 것. */
+/* COMBO — 이 판에서 제일 중요한 숫자. 표 한 줄로 두면 눈이 그냥 지나친다.
+   숫자를 크게 세우고 위에 라벨을 얹어 '기록판'처럼 보이게 한다. */
+#comboBig{position:relative;margin:calc(12*var(--u)) auto calc(4*var(--u));padding:calc(9*var(--u)) 0 calc(7*var(--u));
+  max-width:min(300px,86%);text-align:center;
+  border-top:1px solid rgba(255,205,120,.28);border-bottom:1px solid rgba(255,205,120,.28);
+  background:radial-gradient(90% 120% at 50% 50%,rgba(255,170,60,.12),rgba(0,0,0,0) 70%)}
+#comboBig i{display:block;font-style:normal;font-size:clamp(11px,2.9vw,13px);font-weight:900;
+  letter-spacing:.42em;text-indent:.42em;color:#c9a86a}
+#comboBig b{display:block;margin-top:calc(1*var(--u));font-size:clamp(40px,12vw,62px);line-height:1;
+  font-weight:900;color:#ffe6a8;font-variant-numeric:tabular-nums;
+  text-shadow:0 calc(3*var(--u)) 0 #6b3a08,0 0 calc(26*var(--u)) rgba(255,190,80,.55)}
+#comboBig u{display:block;margin-top:calc(5*var(--u));text-decoration:none;
+  font-size:clamp(11.5px,3vw,13px);font-weight:800;letter-spacing:.03em;color:#9fe8ff}
+#comboBig u.miss{color:#a89372;font-weight:600}
+/* 신기록이면 금빛으로 한 번 번쩍이고, 테두리가 살아난다 */
+#comboBig.rec{border-color:rgba(255,205,120,.75);
+  box-shadow:0 0 calc(30*var(--u)) rgba(255,180,60,.28) inset}
+#comboBig.rec b{color:#fff3c8;animation:recPop .8s cubic-bezier(.15,1.5,.4,1) both}
+#comboBig.rec i{color:#ffd45c}
+@keyframes recPop{0%{transform:scale(.5);opacity:0}55%{transform:scale(1.16);opacity:1}100%{transform:scale(1)}}
+
 #tally{margin:calc(6*var(--u)) 0 0;text-align:left;
   font-size:clamp(13px,3.4vw,16px);line-height:1.9}
 #tally .r{display:flex;justify-content:space-between;align-items:baseline;
@@ -383,6 +431,12 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 #tally .r.total{font-size:clamp(16px,4.4vw,20px)}
 #tally .r.total span{color:#ffd45c;font-weight:900;letter-spacing:.06em}
 #tally .r.total b{color:#ffd45c;text-shadow:0 0 calc(16*var(--u)) rgba(255,190,80,.8)}
+/* 전장에 생기는 일 — 결투가 끝나면 본편이 바로 이걸 적용한다 */
+#ovEff{margin-top:calc(12*var(--u));padding-top:calc(10*var(--u));text-align:left;
+  border-top:1px solid rgba(255,205,120,.22);
+  font-size:clamp(11.5px,3vw,13px);line-height:1.8;color:#ddc9a4;word-break:keep-all}
+#ovEff b{color:#ffd45c}
+#ovEff .bad{color:#ff9a6c;font-weight:800}
 #tally .r.total.pop b{animation:tPop .5s cubic-bezier(.15,1.5,.4,1) both}
 @keyframes tPop{0%{transform:scale(2.2);opacity:0}40%{transform:scale(1);opacity:1}100%{transform:scale(1)}}
 /* ── 개막 연출 ─────────────────────────────────────────────
@@ -430,9 +484,13 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 
 /* 격자 — 말상자 / 초상 / 제목이 각자 자기 행을 갖는다.
    예전엔 셋 다 절대 위치라 화면이 길어지면 말상자가 얼굴을 덮었다. */
+/* 행: 말구름 / 초상 / **시작 안내** / 제목 / 조작법
+   '화면을 눌러 시작'을 맨 아래에 두면 조작법에 가려 안 읽힌다.
+   제목 위로 올려서 눈이 제일 먼저 닿게 한다. */
 #intro .iwrap{position:absolute;inset:0;display:grid;
-  grid-template-rows:auto minmax(0,1fr) auto auto;
-  padding:max(12px,2.4vh) 0 max(28px,4.4vh);gap:.8vh}
+  grid-template-rows:auto minmax(0,1fr) auto auto auto;
+  padding:max(12px,2.4vh) 0 max(20px,3.2vh);gap:.7vh}
+
 
 /* 말상자를 절대 위치로 두면 행 높이가 줄어들 때 아래 행(초상)으로 넘친다 —
    실제로 430x932 에서 오른쪽 말상자가 장비 얼굴을 덮었다.
@@ -441,10 +499,13 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
   padding:0 4%;justify-content:flex-start;min-height:0}
 /* 말구름은 흰 바탕에 검은 글씨. 어두운 배경 위에서 대사가 가장 먼저
    읽혀야 하는데, 검은 구름은 배경에 묻혀 '창'이 아니라 '얼룩'으로 보였다. */
-#intro .iline{position:relative;max-width:74%;padding:11px 15px;border-radius:14px;
-  font-size:clamp(13px,3.8vw,18px);line-height:1.42;font-weight:700;
-  background:linear-gradient(180deg,#ffffff,#eee7dc);
-  color:#17110a;border:1px solid rgba(120,86,40,.35);
+/* 좌우 말구름이 서로 영역을 넘지 않게 **화면 절반 안쪽**으로 묶는다.
+   예전 74% 는 둘이 겹쳐 보였다. 길어지면 2~3줄로 접히게 두면 된다.
+   색은 순백 대신 누런 종이빛 — 어두운 전장 위에서 흰색은 너무 튄다. */
+#intro .iline{position:relative;max-width:54%;padding:11px 15px;border-radius:14px;
+  font-size:clamp(12.5px,3.4vw,17px);line-height:1.46;font-weight:700;
+  background:linear-gradient(180deg,#fbf0cf,#ecd9a8);
+  color:#241705;border:1px solid rgba(140,100,40,.5);
   box-shadow:0 10px 26px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.9);
   opacity:0;transform:translateY(10px);
   transition:opacity .22s ease,transform .3s cubic-bezier(.2,.9,.3,1)}
@@ -454,8 +515,8 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
    돌린 사각형은 구름과 같은 배경·같은 테두리를 그대로 쓰므로 한 몸이 된다.
    구름 쪽 두 변은 테두리를 지워야 경계선이 안 비친다. */
 #intro .iline::after{content:'';position:absolute;bottom:-8px;
-  width:16px;height:16px;background:#eee7dc;
-  border:1px solid rgba(120,86,40,.35);
+  width:16px;height:16px;background:#ecd9a8;
+  border:1px solid rgba(140,100,40,.5);
   border-top:0;border-left:0;
   transform:rotate(45deg);border-radius:0 0 4px 0}
 #intro .iline.l{align-self:flex-start;border-bottom-left-radius:4px}
@@ -588,8 +649,25 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#120b06
 body.introing #hud,
 body.introing #pad,
 body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
-#intro .iskip{position:absolute;left:0;right:0;bottom:14px;text-align:center;
-  font-size:12px;color:rgba(255,235,200,.42);letter-spacing:.05em}
+/* '화면을 눌러 시작' — 맨 아래에 두면 조작법에 가려 안 읽혔다.
+   제목 바로 위, 격자 한 행으로 올려 눈이 먼저 닿게 한다. */
+#intro .iskip{text-align:center;padding:2px 0;
+  font-size:clamp(12px,3.2vw,14px);color:rgba(255,235,200,.5);letter-spacing:.05em}
+/* 아주 낮은 창(폰 가로 등) — 세로비를 지키느라 결투판이 좁아진다.
+   그 좁은 폭에 터치 하한(버튼 58px · 클러스터 237px)이 픽셀로 박혀 있으면
+   버튼이 판 밖으로 밀려나 아예 못 누른다. 낮은 창에서만 하한을 풀어
+   --u 에 따라 같이 줄어들게 한다. 버튼이 작아지지만, 안 보이는 것보다 낫다. */
+@media (max-height: 520px) {
+  .ps{width:max(38px,calc(82*var(--u)));height:max(38px,calc(82*var(--u)))}
+  .ps.big{width:max(44px,calc(96*var(--u)));height:max(44px,calc(96*var(--u)))}
+  .ps.big .sym{font-size:max(15px,calc(34*var(--u)))}
+  /* 하한이 min-width 만이 아니라 width:max(203px,..) 로도 박혀 있다 — 둘 다 푼다 */
+  .cluster.acts{width:calc(203*var(--u));height:calc(195*var(--u));min-width:0;min-height:0}
+  .cluster.moves{min-width:0;min-height:0}
+  #stick{width:calc(150*var(--u));height:calc(150*var(--u));min-width:0;min-height:0}
+  #pad{padding:calc(8*var(--u)) calc(8*var(--u)) calc(8*var(--u) + var(--safe-b))}
+}
+
 </style>
 </head>
 <body>
@@ -661,6 +739,7 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
         <div class="ifig l"><img id="iImgL" alt=""><div class="iname" id="iNameL"></div></div>
         <div class="ifig r"><img id="iImgR" alt=""><div class="iname" id="iNameR"></div></div>
       </div>
+      <div class="iskip" id="iSkip">화면을 누르면 건너뜁니다</div>
       <div class="ititle" id="iTitle">일 기 토</div>
       <!-- 기초 가이드. 개막이 손을 기다리는 동안 읽으라고 아래에 둔다 —
            결투가 시작된 뒤에 띄우면 읽을 틈이 없다. -->
@@ -686,7 +765,6 @@ body.introing #util{opacity:0;pointer-events:none;transition:opacity .2s}
         </ul>
       </div>
     </div>
-    <div class="iskip" id="iSkip">화면을 누르면 건너뜁니다</div>
   </div>
 
   <!-- 3 · 2 · 1 · FIGHT -->
@@ -1225,7 +1303,35 @@ const DIFF = {
   normal: { label:'보통',   dmgOut:1.00, dmgIn:1.00, react:15, aggro:0.62, guard:0.72, parry:0.16 },
   hard:   { label:'어려움', dmgOut:0.88, dmgIn:1.20, react:10, aggro:0.80, guard:0.86, parry:0.30 },
 };
+
+// ── 본편에서 들어올 때의 난이도 — 스테이지마다 조금씩 오른다 ──────────
+// 쉬움/보통/어려움 셋으로 나누면 1~15장이 전부 같은 난이도가 되어 버린다.
+// 1000판이 있는데 세 칸으로 나누면 일기토가 매번 똑같이 느껴진다.
+// 그래서 주소로 진행도(?d=0~1)를 받아 여섯 값을 **연속으로** 보간한다.
+//
+// 양 끝은 쉬움/어려움보다 조금 더 벌린다 — 첫 판은 확실히 배울 수 있게,
+// 끝 판은 지금 '어려움'보다 한 뼘 더. 그래야 1000판이 다 다르게 느껴진다.
+const DIFF_START = { dmgOut:1.22, dmgIn:0.68, react:26, aggro:0.32, guard:0.44, parry:0.02 };
+const DIFF_END   = { dmgOut:0.82, dmgIn:1.34, react: 7, aggro:0.92, guard:0.94, parry:0.42 };
+// 곡선을 여기서 또 씌우지 않는다 — 본편이 넘겨주는 p 가 이미 본편의
+// 난이도 곡선(chEnemyBase 0.50→0.90)을 정규화한 값이라, 초반 완만·후반
+// 가파름이 그 안에 들어 있다. 여기서 한 번 더 굽히면 두 번 굽는 셈이다.
+function diffForProgress(p) {
+  const t = Math.min(1, Math.max(0, p));
+  const mix = k => DIFF_START[k] + (DIFF_END[k] - DIFF_START[k]) * t;
+  return {
+    label: '진행 ' + Math.round(p * 100) + '%',
+    dmgOut: mix('dmgOut'), dmgIn: mix('dmgIn'),
+    react: Math.round(mix('react')),
+    aggro: mix('aggro'), guard: mix('guard'), parry: mix('parry'),
+  };
+}
 let diff = DIFF.normal;
+// 본편이 넘겨준 진행도가 있으면 그것으로 시작한다.
+{
+  const _d = new URLSearchParams(location.search).get('d');
+  if (_d !== null && _d !== '') diff = diffForProgress(parseFloat(_d) || 0);
+}
 
 // 상대를 허수아비로 세워두는 디버그 스위치. 주소에 ?dummy=1 (또는 2) 을 붙이면 켜진다.
 // 콘솔에서 DUMMY 를 바꿔도 즉시 먹는다.
@@ -2781,28 +2887,74 @@ function showResult(kind) {
     : `${hap}합을 겨루었으나 승부가 나지 않았다.`;
   $('ovTitle').textContent = title;
   $('ovVs').style.display = 'none';
+  // 결과에 맞는 전장 그림으로 갈아 끼운다(무승부는 기존 어두운 바탕 그대로)
+  ov.classList.remove('win', 'lose');
+  if (kind === 'win' || kind === 'lose') ov.classList.add(kind);
 
+  const mc = P.maxCombo || 0;
+  // 별은 두 갈래다.
+  //   본편에서 들어온 판(EMBED) — 자기 최고 연타를 넘긴 만큼. 이기든 지든 인정한다.
+  //   따로 띄운 판           — 예전 방식(10연타마다 · 무피격 승리).
   const st = duelStars(kind);
+  const newRec = EMBED && mc > BEST_IN;
+  // 본편 규칙과 같아야 한다 — 10 Combo 당 ★1(매판) + 신기록 구간 합산(한 번).
+  const always = EMBED ? Math.floor(mc / 10) : 0;
+  const recAdd = EMBED ? recordStars(mc, BEST_IN) : 0;
+  const gained = EMBED ? (always + recAdd) : st.total;
+
   const rows = [
-    ['최다 연타', P.maxCombo || 0, ''],
     ['유효타', stats.hits, ''],
     ['저스트가드', stats.justs, ''],
-    ['받은 피해', stats.taken, ''],
+    ['피해량', stats.taken, ''],
   ];
-  if (st.combo)   rows.push([`${st.combo * 10} 연타 달성`, st.combo, 'bonus']);
-  if (st.perfect) rows.push(['무피격 승리', st.perfect, 'bonus']);
+  if (EMBED) {
+    if (always) rows.push(['10 Combo 당 ★1', always, 'bonus']);
+    if (recAdd) rows.push([`신기록 (이전 ${BEST_IN})`, recAdd, 'bonus']);
+  } else {
+    if (st.combo)   rows.push([`${st.combo * 10} Combo 달성`, st.combo, 'bonus']);
+    if (st.perfect) rows.push(['무피격 승리', st.perfect, 'bonus']);
+  }
+
+  // COMBO — 이 판에서 가장 중요한 숫자다. 표의 한 줄로 두면 눈이 지나친다.
+  const comboBlock =
+    `<div id="comboBig" class="${newRec ? 'rec' : ''}">`
+    + `<i>COMBO</i><b data-to="${mc}">0</b>`
+    + (EMBED
+        ? (newRec
+            ? `<u>신기록 달성! &nbsp;·&nbsp; 이전 최고 ${BEST_IN}</u>`
+            : (BEST_IN ? `<u class="miss">신기록 실패 — 최고 ${BEST_IN} Combo</u>`
+                       : `<u class="miss">첫 기록</u>`))
+        : '')
+    + '</div>';
+
+  // 전장 효과 문구를 **미리** 만든다. 예전엔 runTally() 뒤에 innerHTML += 로
+  // 붙였는데, 그러면 전체가 다시 파싱되면서 #tally·#comboBig 노드가 통째로
+  // 교체된다 — 타이머는 버려진 노드를 갱신하고, 화면엔 0 이 박힌 채 남았다.
+  let effHtml = '';
+  if (EMBED) {
+    const eff = [];
+    if (kind === 'win') {
+      eff.push('<b>적군 전체 사기 붕괴</b> — 복귀 후 10초간 공격·방어 30% 감소');
+      eff.push(`<b>${B.name}</b> 격파 — 전투 종료 후 <b>등용 확률 상승</b>`);
+    } else if (kind === 'lose') {
+      eff.push('<span class="bad">아군 전체 사기 붕괴</span> — 복귀 후 10초간 공격·방어 30% 감소');
+    }
+    if (eff.length) effHtml = '<div id="ovEff">' + eff.join('<br>') + '</div>';
+  }
 
   $('ovText').innerHTML = line
+    + comboBlock
     + '<div id="tally">'
     + rows.map((r, i) =>
         `<div class="r ${r[2]}" data-i="${i}"><span>${r[0]}</span>`
         + `<b data-to="${r[1]}">${r[2] === 'bonus' ? '★ 0' : '0'}</b></div>`).join('')
-    + (st.total ? '<div class="sep"></div>'
-        + `<div class="r total" data-i="${rows.length}"><span>획득</span>`
-        + `<b data-to="${st.total}">★ 0</b></div>` : '')
-    + '</div>';
+    + (gained ? '<div class="sep"></div>'
+        + `<div class="r total" data-i="${rows.length}"><span>${EMBED ? 'Combo 보상' : '획득'}</span>`
+        + `<b data-to="${gained}">★ 0</b></div>` : '')
+    + '</div>'
+    + effHtml;
   runTally();
-  $('ovGo').textContent = EMBED ? '돌 아 가 기' : '다 시';
+  $('ovGo').textContent = EMBED ? '전쟁터로 돌아가기' : '다 시';
   ov.hidden = false;
   phase = 'result';
   reportResult(kind);
@@ -2813,6 +2965,17 @@ function showResult(kind) {
 // 위험이 크고, 결투만 따로 띄워 보는 지금의 개발 방식도 못 쓴다.
 // iframe 으로 얹고 결과만 postMessage 로 돌려준다.
 const EMBED = new URLSearchParams(location.search).get('embed') === '1';
+// 본편이 넘겨주는 '지금까지의 최고 연타'. 이걸 넘겨야 별이 나온다 —
+// 보상은 신기록을 세운 만큼이고, 그 기준선을 여기서만 모르면 표시할 수가 없다.
+const BEST_IN = Math.max(0, +(new URLSearchParams(location.search).get('best')) || 0);
+// 신기록 N → 이전기록+1 부터 N 까지 전부 통과한 것으로 쳐서 합산한다.
+// 첫 판에 5연타면 1+2+3+4+5 = 15. 그 다음은 6연타를 해야 6 을 받는다.
+function recordStars(now, prev) {
+  if (now <= prev) return 0;
+  let t = 0;
+  for (let n = prev + 1; n <= now; n++) t += n;
+  return t;
+}
 function post(type, data) {
   if (!EMBED) return;
   try { parent.postMessage(Object.assign({ src: 'duel', type }, data), '*'); } catch {}
@@ -2839,8 +3002,14 @@ if (EMBED) {
     e.stopImmediatePropagation(); e.preventDefault();
     post('close', {});
   }, true);
-  // 장수 선택 줄을 숨긴다 — 누구와 누가 싸울지는 본편이 정한다
+  // 시작 화면을 통째로 감춘다. 본편에서 들어온 길에는 고를 것이 없다 —
+  // 누구와 누가 싸울지도, 난이도도 본편이 정한다. 예전엔 pickWrap 만 감춰서
+  // **난이도 고르는 줄이 한 순간 번쩍였다가** 결투로 넘어갔다.
+  // 다시 띄우는 건 결과 화면뿐이라, 그때 hidden 을 풀어 준다.
+  const _ov = $('overlay'); if (_ov) _ov.hidden = true;
   const _pw = $('pickWrap'); if (_pw) _pw.style.display = 'none';
+  const _df = $('ovDiff');  if (_df) _df.style.display = 'none';
+  const _ks = document.querySelector('.keys'); if (_ks) _ks.style.display = 'none';
   addEventListener('message', e => {
     // 본편이 밖에서 닫을 수도 있다(뒤로가기 등)
     if (e.data && e.data.src === 'host' && e.data.type === 'abort') post('close', { aborted: true });
@@ -2852,6 +3021,22 @@ if (EMBED) {
 // 지나쳐 버린다 — 숫자가 세어지는 걸 보여 줘야 '내가 이만큼 했구나' 가 된다.
 function runTally() {
   tallyTimers.forEach(clearTimeout); tallyTimers = [];
+  // COMBO 는 #tally 밖에 따로 세워 둔 블록이라 아래 선택자에 안 걸린다.
+  // 그대로 두면 화면에 0 이 박힌 채로 남는다 — 여기서 따로 세어 올린다.
+  const cb = document.querySelector('#comboBig b');
+  if (cb) {
+    const to = +cb.dataset.to || 0;
+    cb.textContent = '0';
+    if (to > 0) {
+      const steps = Math.min(to, 24), dur = 520;
+      for (let k = 1; k <= steps; k++) {
+        tallyTimers.push(setTimeout(() => {
+          cb.textContent = String(Math.round(to * k / steps));
+          if (k === steps) snd('just'); else if (k % 3 === 0) snd('step');
+        }, 120 + dur * k / steps));
+      }
+    }
+  }
   const rows = [...document.querySelectorAll('#tally .r')];
   rows.forEach((el, i) => {
     tallyTimers.push(setTimeout(() => {
@@ -3095,7 +3280,7 @@ $('ovGo').addEventListener('click', () => {
 });
 
 function togglePause() {
-  if (phase === 'fight') { phase = 'paused'; $('ovTitle').textContent = '일시정지'; $('ovVs').style.display = 'none'; $('ovText').textContent = '숨을 고른다.'; $('ovGo').textContent = '계 속'; $('overlay').hidden = false; }
+  if (phase === 'fight') { phase = 'paused'; $('overlay').classList.remove('win', 'lose'); $('ovTitle').textContent = '일시정지'; $('ovVs').style.display = 'none'; $('ovText').textContent = '숨을 고른다.'; $('ovGo').textContent = '계 속'; $('overlay').hidden = false; }
   else if (phase === 'paused') { $('overlay').hidden = true; phase = 'fight'; }
 }
 $('btnPause').addEventListener('click', togglePause);
@@ -3140,7 +3325,10 @@ let rotPaused = false;
 function checkOrientation() {
   const el = $('rotate');
   if (!el) return;
-  const tooShort = wrapEl.clientHeight / Math.max(1, wrapEl.clientWidth) < 1.45;
+  // 이제 #wrap 폭이 '높이/1.45' 로 묶여 있어 비율은 늘 1.45 이상이다.
+  // 그래서 이 안내는 사실상 안 뜬다 — 계산이 어긋나는 극단(높이가 거의 0 인
+  // 창 등)만 남겨 둔 마지막 안전망이다. 1.30 은 반올림 흔들림을 피하는 여유.
+  const tooShort = wrapEl.clientHeight / Math.max(1, wrapEl.clientWidth) < 1.30;
   el.hidden = !tooShort;
   if (tooShort && phase === 'fight') { phase = 'paused'; rotPaused = true; }
   else if (!tooShort && rotPaused && phase === 'paused') { phase = 'fight'; rotPaused = false; }
@@ -3157,7 +3345,9 @@ padEl.classList.remove('hide');
 function useTouch() { touchMode = true; padEl.classList.remove('hide'); keysEl.style.display = 'none'; }
 // 세로 전용이라 패드는 항상 보인다 — 아래 40%가 원래 조작부 자리다.
 // 키보드를 쓰더라도 패드를 숨기면 그 영역이 텅 빈 채로 남는다.
-function useKeys() { touchMode = false; keysEl.style.display = ''; }
+// 본편에서 들어온 판(EMBED)은 폰이다 — 'Shift 대시 · Esc 일시정지' 같은
+// 키보드 안내는 있을 자리가 아니다. 따로 띄워 볼 때만 보여 준다.
+function useKeys() { touchMode = false; keysEl.style.display = EMBED ? 'none' : ''; }
 
 // ── 아날로그 스틱 ───────────────────────────────────────────────────
 // 십자키는 손가락을 버튼 위에 정확히 얹어야 해서 폰에서 조작이 어려웠다.

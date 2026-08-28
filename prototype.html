@@ -12924,6 +12924,91 @@
    컷씬(#introDialog)과 같은 격으로 전장을 덮는다. z-index 는 그보다 위 —
    일기토는 전투 중에 끼어들고, 컷씬은 전투 전에만 뜨므로 겹칠 일은 없지만
    순서를 정해두면 나중에 헷갈리지 않는다. */
+/* ── 적장 컷인 ─────────────────────────────────────────────────────
+   오른쪽 아래로 적장이 튀어나오고 왼쪽에 말구름이 뜬다. 화면 어디를 눌러도
+   신청 카드로 넘어간다. 한 박자 쉬어 가는 자리라 정보는 최소로 둔다. */
+#duelCutin{position:fixed;inset:0;z-index:9250;overflow:hidden;
+  background:radial-gradient(120% 90% at 70% 100%,rgba(60,14,8,.72),rgba(4,2,1,.93));
+  font-family:'Noto Serif KR',serif;-webkit-tap-highlight-color:transparent;cursor:pointer}
+#duelCutin[hidden]{display:none}
+/* 등장 순간 붉게 한 번 번쩍 */
+#duelCutin .dc-flash{position:absolute;inset:0;background:rgba(255,120,60,.55);
+  animation:dcFlash .5s ease-out both;pointer-events:none}
+@keyframes dcFlash{0%{opacity:.9}100%{opacity:0}}
+
+/* 반신 초상 — 화면의 1/4 남짓(가로 절반 x 세로 절반). 오른쪽 아래에서 솟는다 */
+/* 반신 그림마다 아래 투명 여백이 0~18% 로 제각각이다(공손찬 172/960px).
+   bottom:0 으로 붙이면 여백이 큰 장수는 공중에 뜬 '다리 없는 귀신'이 된다.
+   JS 가 실제 픽셀을 재서 --dc-pad 에 넣어 주고, 그만큼 아래로 밀어 잘라 낸다. */
+#duelCutin .dc-portrait{position:absolute;right:-4%;bottom:0;
+  width:min(62vw,calc(62vh * 0.78));height:auto;
+  animation:dcRise .52s cubic-bezier(.15,1.35,.35,1) both}
+/* 그림마다 아래 투명 여백이 0~18% 로 다르다. 그대로 두면 여백이 큰 장수가
+   공중에 뜬 '다리 없는 귀신'이 된다. JS 가 알파를 훑어 그 비율(--dc-padf)을
+   넘겨주면, 이미지를 제 높이의 그만큼 아래로 밀어 화면 밖으로 잘라 낸다.
+   px 이 아니라 % 라서 레이아웃이 언제 잡히든 값이 어긋나지 않는다.
+   +1.5% 는 반올림으로 실 한 줄이 남는 것까지 확실히 없애는 여유다. */
+#duelCutin .dc-portrait img{display:block;width:100%;height:auto;
+  transform:translateY(calc((var(--dc-padf,0) * 100%) + 1.5%));
+  filter:drop-shadow(-6px 0 18px rgba(0,0,0,.75)) drop-shadow(0 0 26px rgba(255,120,50,.35))}
+@keyframes dcRise{0%{transform:translate(16%,26%) scale(.92);opacity:0}
+                  100%{transform:translate(0,0) scale(1);opacity:1}}
+/* 이름표 — 초상 안에 두면 초상 폭을 따라 가운데로 밀려난다.
+   말구름과 같은 왼쪽 5% 선에 맞춰 화면 기준으로 붙인다. */
+#duelCutin .dc-name{position:absolute;left:0;right:auto;top:47%;
+  white-space:nowrap;text-align:left;
+  padding:7px 20px 8px 14px;
+  background:linear-gradient(90deg,rgba(140,28,12,.96),rgba(140,28,12,.08));
+  border-left:4px solid #ffb43a;box-shadow:0 6px 20px rgba(0,0,0,.6);
+  animation:dcName .4s .34s cubic-bezier(.2,.9,.3,1) both}
+@keyframes dcName{0%{opacity:0;transform:translateX(-14px)}100%{opacity:1;transform:none}}
+#duelCutin .dc-name b{display:block;font-size:clamp(18px,5.2vw,26px);color:#fff3c4;
+  text-shadow:0 3px 0 #000,0 0 18px rgba(255,140,60,.6)}
+#duelCutin .dc-name small{display:block;font-size:clamp(11px,3vw,13px);color:#ffc86a}
+
+/* 말구름 — 왼쪽 위. 초상과 겹치지 않게 폭을 절반 아래로 묶는다 */
+#duelCutin .dc-left{position:absolute;left:5%;top:14%;width:min(56%,360px)}
+/* 말구름 — 누런 종이빛. 순백은 어두운 전장 위에서 너무 튄다 */
+#duelCutin .dc-bubble{position:relative;
+  padding:14px 16px 12px;background:linear-gradient(180deg,#fbf0cf,#ecd9a8);
+  color:#241705;border-radius:16px;border:1px solid rgba(140,100,40,.5);
+  box-shadow:0 14px 34px rgba(0,0,0,.6);
+  animation:dcBub .4s .22s cubic-bezier(.2,.9,.3,1) both}
+#duelCutin .dc-bubble::after{content:'';position:absolute;right:24px;bottom:-9px;
+  width:18px;height:18px;background:#ecd9a8;transform:rotate(45deg);
+  border-right:1px solid rgba(140,100,40,.5);border-bottom:1px solid rgba(140,100,40,.5)}
+#duelCutin .dc-bubble p{margin:0 0 6px;font-size:clamp(15px,4.2vw,19px);line-height:1.55;
+  font-weight:700;word-break:keep-all}
+#duelCutin .dc-bubble cite{display:block;text-align:right;font-style:normal;
+  font-size:12px;color:#6b5320}
+@keyframes dcBub{0%{opacity:0;transform:translateY(10px) scale(.96)}
+                 100%{opacity:1;transform:none}}
+
+/* 힌트 — 말구름 바로 아래, 그 폭 안에서 가운데 */
+/* 힌트는 말구름 바로 아래에 두되, 가운데는 **화면 전체** 기준으로 맞춘다.
+   .dc-left 가 왼쪽 5% 에 있으므로 그만큼 되밀고 100vw 를 차지하게 한다. */
+#duelCutin .dc-hint{margin-top:64px;width:100vw;margin-left:-5vw;text-align:center;
+  font-size:clamp(13px,3.6vw,15px);font-weight:800;letter-spacing:.04em;color:#ffd45c;
+  text-shadow:0 2px 8px #000,0 0 14px rgba(255,170,60,.5);
+  animation:dcHint 1.3s ease-in-out infinite}
+@keyframes dcHint{0%,100%{opacity:.45}50%{opacity:1}}
+
+/* ── 재개 관문 ─────────────────────────────────────────────────── */
+#duelResume{position:fixed;inset:0;z-index:9260;display:grid;place-items:center;
+  background:rgba(6,4,2,.62);cursor:pointer;-webkit-tap-highlight-color:transparent;
+  font-family:'Noto Serif KR',serif}
+#duelResume[hidden]{display:none}
+#duelResume .dr-box{text-align:center;padding:22px 26px;max-width:min(90%,420px);
+  animation:drIn .3s ease-out both}
+@keyframes drIn{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:none}}
+#duelResume .dr-msg{margin-bottom:16px;font-size:clamp(13px,3.6vw,16px);line-height:1.75;
+  color:#f0dcb4;word-break:keep-all;text-shadow:0 2px 8px #000}
+#duelResume .dr-msg b{color:#ffd45c}
+#duelResume .dr-msg .bad{color:#ff9a6c;font-weight:800}
+#duelResume .dr-tap{font-size:clamp(15px,4.2vw,19px);font-weight:900;letter-spacing:.06em;
+  color:#ffd45c;text-shadow:0 2px 10px #000,0 0 18px rgba(255,170,60,.55);
+  animation:dcHint 1.3s ease-in-out infinite}
+
 #duelAsk, #duelPick, #duelDone{
   position:fixed;inset:0;z-index:9200;display:grid;place-items:center;padding:18px;
   background:radial-gradient(circle at 50% 42%,rgba(28,14,6,.90),rgba(5,3,2,.96));
@@ -12932,53 +13017,164 @@
 #duelFrame{position:fixed;inset:0;z-index:9300;width:100%;height:100%;border:0;background:#0a0604}
 #duelFrame[hidden]{display:none}
 
-.dk-card{width:min(430px,96%);padding:clamp(16px,3.4vw,24px);text-align:center;
-  border:3px solid #ffd45c;outline:3px solid #2a1608;
-  background:linear-gradient(180deg,rgba(58,31,12,.96),rgba(20,9,3,.94));
-  box-shadow:0 18px 60px #000,inset 0 0 0 2px rgba(255,212,92,.2);
-  font-family:'Noto Serif KR',serif}
-.dk-card.wide{width:min(560px,96%)}
-.dk-tag{display:inline-block;margin-bottom:10px;padding:3px 14px;font-size:12px;font-weight:800;
-  letter-spacing:.22em;color:#ffe9b0;background:#7a2a12;border:1px solid #d89a4a}
-.dk-card h2{margin:2px 0 8px;font-size:clamp(24px,5.4vw,34px);letter-spacing:.16em;
-  color:#ffd45c;text-shadow:3px 4px 0 #000}
-.dk-vs{display:flex;align-items:center;justify-content:center;gap:clamp(8px,3vw,18px);margin:6px 0 12px}
-.dk-side{flex:0 1 118px;min-width:0}
-.dk-side img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top center;
-  border:2px solid #8a6a3a;background:#1a1008;display:block}
-.dk-side b{display:block;margin-top:5px;font-size:14px;color:#fff3c4;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dk-side small{display:block;font-size:11.5px;color:#e0ac4e;letter-spacing:.06em}
-.dk-x{flex:0 0 auto;font-size:clamp(18px,4vw,26px);color:#c9503a;text-shadow:0 0 12px #ff5a2e}
-.dk-card p{margin:0 0 12px;font-size:clamp(13px,3.2vw,15px);line-height:1.7;
-  color:#f0dcb4;word-break:keep-all}
-.dk-reward{margin:0 0 14px;padding:9px 11px;font-size:clamp(11.5px,2.9vw,13px);line-height:1.75;
-  color:#e6d4ae;background:rgba(0,0,0,.34);border:1px solid rgba(255,205,120,.24);word-break:keep-all}
-.dk-reward b{color:#ffd45c}
-.dk-reward span{color:#9de2ff}
-.dk-btns{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
-.dk-btn{min-height:48px;padding:11px 24px;font:inherit;font-size:clamp(14px,3.2vw,16px);
-  font-weight:800;letter-spacing:.10em;cursor:pointer;border:2px solid #b99450}
-.dk-btn.go{border:3px solid #fff0ad;color:#2a1200;
-  background:linear-gradient(#e8ab2c,#a86a10);box-shadow:0 5px 0 #4a2a06,0 10px 26px rgba(0,0,0,.66)}
-.dk-btn.go:active{transform:translateY(4px);box-shadow:0 1px 0 #4a2a06}
+/* 카드 바탕 — 전장 그림(戰/將 깃발·성벽·연기)을 깔고 그 위에 어둡게 덮는다.
+   그림에 이미 금테가 그려져 있어 따로 귀퉁이 장식을 얹지 않는다.
+   글자가 먼저 읽혀야 하므로 위아래로 진하게, 가운데는 옅게 덮는다. */
+.dk-card{position:relative;width:min(440px,95%);padding:clamp(20px,4vw,30px) clamp(16px,4vw,26px) clamp(16px,3vw,22px);
+  text-align:center;font-family:'Noto Serif KR',serif;
+  border:1px solid #a8783a;
+  background-image:
+    linear-gradient(180deg,rgba(10,6,3,.62) 0%,rgba(12,7,4,.42) 26%,
+                    rgba(12,7,4,.52) 62%,rgba(8,5,2,.78) 100%),
+    url('./assets/battle/duel_ask_bg.webp');
+  background-size:cover,cover;
+  background-position:center,center top;
+  background-repeat:no-repeat,no-repeat;
+  box-shadow:0 24px 70px rgba(0,0,0,.85)}
+/* 장수 고르기도 신청 화면과 같은 규격이다. 화면이 바뀔 때 상자 크기가
+   출렁이면 흐름이 끊긴다. 대신 목록 높이를 넉넉히 줘서 스크롤을 줄인다. */
+.dk-card.wide{width:min(440px,95%)}
+
+/* 표제 — 전각 한자에 자간을 벌려 도장처럼 */
+.dk-seal{display:inline-block;margin-bottom:14px;padding:5px 18px 6px;
+  font-size:clamp(14px,3.4vw,17px);font-weight:900;letter-spacing:.22em;text-indent:.22em;
+  color:#ffe9b0;background:linear-gradient(180deg,#8f3216,#5e1d0b);
+  border:1px solid #d8a24a;box-shadow:0 2px 0 rgba(0,0,0,.6),inset 0 1px 0 rgba(255,220,150,.35)}
+.dk-lead{margin:0 0 16px;font-size:clamp(13px,3.2vw,15px);line-height:1.75;
+  color:#e6d2ae;word-break:keep-all;text-shadow:0 2px 8px #000,0 0 14px rgba(0,0,0,.8)}
+
+/* 대치 */
+.dk-vs{display:flex;align-items:flex-start;justify-content:center;gap:clamp(6px,2.6vw,16px);margin:0 0 16px}
+.dk-side{flex:0 1 132px;min-width:0}
+.dk-portrait{position:relative;border:2px solid #7a5a2e;background:#120b05;
+  box-shadow:0 6px 18px rgba(0,0,0,.6)}
+.dk-side.foe .dk-portrait{border-color:#8d3b2c}
+.dk-side.mine .dk-portrait{border-color:#3f6f9e}
+/* 반신 그림은 아래 투명 여백이 0~18% 로 제각각이다. 상자에 비율을 주고
+   이미지 높이를 여백만큼 키워(--fit) 아래를 잘라 내면 어느 장수든 꽉 찬다.
+   --fit 은 JS(fitBottom)가 알파를 실측해 넣는다. */
+.dk-portrait{aspect-ratio:3/4;overflow:hidden}
+.dk-portrait img{display:block;width:100%;height:calc(100% * var(--fit,1));
+  object-fit:cover;object-position:center top}
+.dk-band{position:absolute;left:0;right:0;bottom:0;padding:3px 0 4px;font-style:normal;
+  font-size:11px;font-weight:800;letter-spacing:.16em;color:#ffe0d4;
+  background:linear-gradient(180deg,rgba(141,59,44,.0),rgba(141,59,44,.92))}
+.dk-band.ally{color:#dcecff;background:linear-gradient(180deg,rgba(63,111,158,0),rgba(63,111,158,.92))}
+.dk-side b{display:block;margin-top:7px;font-size:clamp(14px,3.4vw,17px);color:#fff3c4;
+  text-shadow:0 2px 0 #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dk-side small{display:block;margin-top:2px;font-size:12px;color:#e0ac4e;letter-spacing:.04em}
+.dk-x{flex:0 0 auto;align-self:center;padding-top:22px}
+.dk-x span{display:block;font-size:clamp(13px,3vw,16px);font-weight:900;letter-spacing:.08em;
+  color:#c9503a;text-shadow:0 0 14px rgba(255,90,46,.75)}
+
+/* 도발 — 인용부호를 크게 깔아 '대사'로 읽히게 */
+/* 대사창 — 큰 인용부호를 ::before 로 얹었더니 content 이스케이프가 뭉개져
+   제어문자(U+0081)가 들어갔고, 화면엔 붉은 네모+C 로 나왔다. 장식을 빼도
+   왼쪽 선과 어두운 바탕만으로 '대사'로 읽힌다. 선도 금색으로 낮춘다. */
+.dk-quote{position:relative;margin:0 0 16px;padding:12px 16px 10px 16px;text-align:left;
+  border-left:3px solid rgba(216,162,74,.85);background:rgba(0,0,0,.62)}
+.dk-quote p{margin:0 0 5px;font-size:clamp(14px,3.5vw,16.5px);line-height:1.7;
+  color:#fdf1d6;word-break:keep-all}
+.dk-quote cite{display:block;text-align:right;font-style:normal;
+  font-size:12px;color:#c9a86a;letter-spacing:.04em}
+
+/* 조건 — 목록이 아니라 '약조'처럼 */
+.dk-terms{margin:0 0 18px;text-align:left;padding:2px 12px;
+  background:rgba(0,0,0,.52);border:1px solid rgba(255,205,120,.10)}
+.dk-terms>div{display:flex;gap:10px;padding:8px 0;border-top:1px solid rgba(255,205,120,.16)}
+.dk-terms>div:last-child{border-bottom:1px solid rgba(255,205,120,.16)}
+.dk-terms dt{flex:0 0 66px;font-size:12.5px;font-weight:800;letter-spacing:.06em;
+  color:#e0ac4e;padding-top:1px}
+.dk-terms dd{margin:0;flex:1 1 auto;font-size:clamp(12px,3vw,13.5px);line-height:1.72;
+  color:#ddc9a4;word-break:keep-all}
+.dk-terms b{color:#ffd45c;font-weight:800}
+.dk-terms dt.warn{color:#ff8a5c}
+.dk-terms dd.warn{color:#e8bda8}
+.dk-terms dd.warn b{color:#ff9a6c}
+.dk-terms .sub{color:#a98f66;font-size:.92em}
+.dk-terms dt .free{display:block;margin-top:2px;font-size:.82em;font-weight:700;
+  color:#9de2ff;letter-spacing:0}
+
+.dk-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.dk-btn{min-height:50px;padding:12px 22px;font:inherit;font-size:clamp(14px,3.4vw,16px);
+  font-weight:800;letter-spacing:.10em;cursor:pointer;border:2px solid #8a6a3a;
+  touch-action:manipulation}
+.dk-btn.go{flex:1 1 auto;max-width:220px;border:2px solid #ffe6a8;color:#2a1200;
+  background:linear-gradient(180deg,#f0b93a,#a86a10);
+  box-shadow:0 4px 0 #4a2a06,0 10px 26px rgba(0,0,0,.66),inset 0 1px 0 rgba(255,255,255,.45)}
+.dk-btn.go:active{transform:translateY(3px);box-shadow:0 1px 0 #4a2a06}
 .dk-btn.go:disabled{cursor:default;filter:grayscale(.7) brightness(.62)}
 .dk-btn.go:disabled:active{transform:none}
+.dk-btn.ghost{flex:0 1 150px;background:rgba(28,17,8,.8);color:#cbb08a}
+.dk-btn.ghost:active{transform:translateY(2px)}
 .dk-btn.ghost{background:rgba(32,18,6,.7);color:#e8d3a4}
 .dk-note{margin-top:10px;font-size:11.5px;color:#a98f66}
 
 /* 장수 고르기 — 카드가 작으면 얼굴이 안 보이고, 크면 스크롤이 길어진다.
    3열 고정에 세로 스크롤을 준다. */
-.dp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
-  max-height:min(46vh,320px);overflow-y:auto;margin:0 0 14px;padding:2px}
+.dp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;
+  max-height:min(58vh,520px);overflow-y:auto;overscroll-behavior:contain;
+  margin:0 0 14px;padding:2px}
+/* 얇은 스크롤막대 — 기본 막대는 카드 한 칸을 잡아먹는다 */
+.dp-grid::-webkit-scrollbar{width:6px}
+.dp-grid::-webkit-scrollbar-thumb{background:rgba(216,162,74,.5);border-radius:3px}
+.dp-grid::-webkit-scrollbar-track{background:rgba(0,0,0,.3)}
 .dp-card{padding:6px;cursor:pointer;border:2px solid #6b4f26;background:rgba(24,14,6,.72);
   text-align:center}
 .dp-card.sel{border-color:#ffd45c;background:#5c3a10;box-shadow:0 0 14px rgba(255,180,58,.4)}
-.dp-card img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top center;
-  background:#1a1008;display:block}
+.dp-card .dp-img{position:relative;aspect-ratio:1/1;overflow:hidden;background:#1a1008}
+.dp-card img{display:block;width:100%;height:calc(100% * var(--fit,1));
+  object-fit:cover;object-position:center top}
 .dp-card b{display:block;margin-top:4px;font-size:12px;color:#f0dcb4;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dp-card small{display:block;font-size:10.5px;color:#e0ac4e}
+.dp-card u{display:block;margin-top:1px;text-decoration:none;font-size:10.5px;
+  color:#9fc7e8;letter-spacing:-.01em}
+.dp-card.sel u{color:#cfe6ff}
+/* 고른 장수의 상세 — 이름·등급 / 일기토 스탯 / 전투력 비교 세 줄 */
+#dpInfo .dp-name{font-size:15px;font-weight:900;color:#ffd45c;margin-right:6px}
+#dpInfo .dp-stat,#dpInfo .dp-vs{display:block;margin-top:3px;font-size:12px;color:#c9b08a}
+#dpInfo .dp-stat b,#dpInfo .dp-vs b{color:#f0dcb4;font-weight:800}
+#dpInfo .dp-vs em{font-style:normal;color:#a98f66}
+#dpInfo i.up{font-style:normal;font-weight:900;color:#7fe08a}
+#dpInfo i.dn{font-style:normal;font-weight:900;color:#ff8a5c}
+/* 신청 화면 초상 아래 전투력 */
+.dk-side small em{display:block;margin-top:1px;font-style:normal;
+  font-size:11px;color:#9fc7e8;letter-spacing:0}
+
+/* 폰에서는 신청 카드가 830px 를 먹어 화면(542~834)을 넘겼다. 세로가 넉넉지
+   않은 기기에서 전반을 압축한다 — 초상·자간·여백을 함께 줄여야 효과가 난다.
+   한 군데만 줄이면 다른 데가 그만큼 늘어나 결국 안 들어간다. */
+@media (max-height: 900px) {
+  .dk-card{padding:14px 14px 12px}
+  .dk-seal{margin-bottom:8px;padding:4px 14px 5px;font-size:13px}
+  .dk-lead{margin-bottom:10px;font-size:12.5px;line-height:1.5}
+  .dk-vs{margin-bottom:10px;gap:8px}
+  .dk-side{flex:0 1 108px}
+  .dk-side b{margin-top:4px;font-size:13px}
+  .dk-side small{font-size:11px}
+  .dk-side small em{font-size:10px}
+  .dk-quote{margin-bottom:10px;padding:9px 12px 8px 12px}
+  .dk-quote p{font-size:13.5px;line-height:1.5;margin-bottom:3px}
+  .dk-quote cite{font-size:11px}
+  .dk-terms{margin-bottom:12px;padding:1px 10px}
+  .dk-terms>div{padding:6px 0;gap:8px}
+  .dk-terms dt{flex:0 0 58px;font-size:11.5px}
+  .dk-terms dd{font-size:11.5px;line-height:1.55}
+  .dk-terms dt .free{font-size:.8em}
+  .dk-btn{min-height:44px;padding:10px 18px;font-size:14px}
+  .dk-note{margin-top:7px;font-size:10.5px}
+  .dp-grid{max-height:min(52vh,420px)}
+}
+/* 아주 낮은 화면(가로·작은 폰)은 더 조인다 */
+@media (max-height: 660px) {
+  .dk-vs{margin-bottom:8px}
+  .dk-side{flex:0 1 92px}
+  .dk-lead{display:none}          /* 대사가 같은 말을 한다 — 리드는 접는다 */
+  .dk-quote p{font-size:12.5px}
+  .dk-terms dd{font-size:11px}
+}
+
 </style>
 
 <!-- ═══ 일기토 ═══════════════════════════════════════════════════════
@@ -12986,24 +13182,59 @@
      결투 자체는 duel_v2.html 이 통째로 맡는다. 본편에 옮겨 심지 않는 이유는
      (a) 45,000줄짜리 한 파일이라 이름 충돌 위험이 크고 (b) 결투만 따로 띄워
      보는 개발 방식을 못 쓰게 되기 때문이다. 결과만 postMessage 로 받는다. -->
+<!-- 적장 컷인 — 신청 카드가 갑자기 뜨면 '이게 뭐지'가 된다.
+     먼저 적장이 화면 오른쪽 아래로 튀어나오면서 왼쪽에 대사를 던지고,
+     한 번 탭해야 신청으로 넘어간다. -->
+<div id="duelCutin" hidden>
+  <div class="dc-flash"></div>
+  <div class="dc-left">
+    <div class="dc-bubble">
+      <p id="dcTaunt">한판 붙자!</p>
+      <cite id="dcWho">적장</cite>
+    </div>
+    <div class="dc-hint">탭하여 계속 ▸</div>
+  </div>
+  <div class="dc-portrait">
+    <img id="dcImg" alt="">
+  </div>
+  <span class="dc-name"><b id="dcName">적장</b><small id="dcTier">★</small></span>
+</div>
+
 <div id="duelAsk" hidden>
   <div class="dk-card">
-    <div class="dk-tag">일기토</div>
+    <div class="dk-seal">일 기 토</div>
+    <div class="dk-lead" id="dkLead">적진에서 한 장수가 말을 몰고 나선다.</div>
+
     <div class="dk-vs">
-      <div class="dk-side"><img id="dkFoeImg" alt=""><b id="dkFoeName">적장</b><small id="dkFoeTier">★1</small></div>
-      <div class="dk-x">⚔</div>
-      <div class="dk-side"><img id="dkMineImg" alt=""><b id="dkMineName">아군</b><small id="dkMineTier">★1</small></div>
+      <div class="dk-side foe">
+        <div class="dk-portrait"><img id="dkFoeImg" alt=""><i class="dk-band">적장</i></div>
+        <b id="dkFoeName">적장</b><small id="dkFoeTier">★</small>
+      </div>
+      <div class="dk-x"><span>VS</span></div>
+      <div class="dk-side mine">
+        <div class="dk-portrait"><img id="dkMineImg" alt=""><i class="dk-band ally">아군</i></div>
+        <b id="dkMineName">아군</b><small id="dkMineTier">★</small>
+      </div>
     </div>
-    <p id="dkLine">적장이 일기토를 청한다.</p>
-    <div class="dk-reward">
-      이기면 <b>적군의 사기가 무너지고</b>(10초) 그 장수를 <b>더 쉽게 등용</b>한다<br>
-      <span>연타 신기록을 세우면 ★을 받는다 — 지더라도</span>
-    </div>
+
+    <blockquote class="dk-quote">
+      <p id="dkTaunt">이름을 걸어라. 결판을 짓겠다.</p>
+      <cite id="dkTauntWho">적장</cite>
+    </blockquote>
+
+    <dl class="dk-terms">
+      <div><dt>승리시</dt><dd><b>적군 전체 사기 붕괴</b> — 10초간 공격·방어 <b>30%</b> 감소<br>
+        해당 장수 <b>등용 확률 상승</b> (전투 종료 후 포로 등용에 적용)</dd></div>
+      <div><dt class="warn">패배시</dt><dd class="warn"><b>아군 전체 사기 붕괴</b> — 10초간 공격·방어 <b>30%</b> 감소</dd></div>
+      <div><dt>Combo<br><span class="free">(승패무관)</span></dt>
+        <dd id="dkComboTerm">10 Combo 당 <b>★1</b></dd></div>
+    </dl>
+
     <div class="dk-btns">
-      <button id="dkNo" class="dk-btn ghost">물러선다</button>
-      <button id="dkYes" class="dk-btn go">받아친다</button>
+      <button id="dkNo" class="dk-btn ghost">거 절</button>
+      <button id="dkYes" class="dk-btn go">수 락</button>
     </div>
-    <div class="dk-note">물러서도 잃는 것은 없다</div>
+    <div class="dk-note">거절해도 불이익은 없습니다 — 다만 얻는 것도 없습니다</div>
   </div>
 </div>
 
@@ -13013,13 +13244,23 @@
     <p id="dpInfo">일기토에 나설 장수를 고르시오</p>
     <div id="dpGrid" class="dp-grid"></div>
     <div class="dk-btns">
-      <button id="dpBack" class="dk-btn ghost">물러선다</button>
-      <button id="dpGo" class="dk-btn go" disabled>출 전</button>
+      <button id="dpBack" class="dk-btn ghost">뒤로가기</button>
+      <button id="dpGo" class="dk-btn go" disabled>선택완료</button>
     </div>
   </div>
 </div>
 
 <iframe id="duelFrame" allow="autoplay" hidden></iframe>
+
+<!-- 재개 관문 — 결투가 끝나거나 거절한 뒤 전장이 갑자기 다시 굴러가면
+     당황스럽다. 한 번 탭해야 시계가 다시 도는 자리를 둔다.
+     사기 붕괴 10초도 여기서 시작한다 — 그래야 온전히 10초를 쓴다. -->
+<div id="duelResume" hidden>
+  <div class="dr-box">
+    <div class="dr-msg" id="drMsg"></div>
+    <div class="dr-tap">탭하여 계속 ▸</div>
+  </div>
+</div>
 
 <div id="duelDone" hidden>
   <div class="dk-card">
@@ -15821,17 +16062,66 @@ function mpUpgMul(owner, key) {
 //   배수 필드는 매 틱 다시 계산되므로 atkMul 에 직접 쓰면 다음 틱에 지워진다.
 //   그래서 성에 만료시각(_moraleUntil) 하나만 두고, 계산 **맨 끝에** 한 겹 곱한다.
 const MORALE_MUL = 0.7, MORALE_MS = 10000;
-function castleMoraleBroken(c) {
-  return !!(c && c._moraleUntil && performance.now() < c._moraleUntil);
+// 진영 단위로 건다. 예전엔 '일기토를 건 성과 그 소속 부대'만 흔들었는데,
+// 그러면 이기든 지든 체감이 작았다. 일기토는 판을 뒤집는 한 판이라
+// **그 편 전체**가 흔들려야 무게가 맞는다 — 이길 값도 질 값도 커진다.
+//   _moraleSide[1] = 아군 만료시각 / [2] = 적군 만료시각
+const _moraleSide = { 1: 0, 2: 0 };
+function sideMoraleBroken(owner) {
+  return !!(_moraleSide[owner] && performance.now() < _moraleSide[owner]);
 }
-function armyMoraleBroken(a) {
-  // homeCastle = 이 부대가 나온 성. 다른 성을 점령하면 그 성으로 바뀌는데,
-  // 그건 '원래 군세를 떠났다'는 뜻이라 사기 효과에서 빠지는 게 자연스럽다.
-  return !!(a && a.owner === 2 && castleMoraleBroken(a.homeCastle));
+function castleMoraleBroken(c) { return !!(c && sideMoraleBroken(c.owner)); }
+function armyMoraleBroken(a) { return !!(a && !a.dying && sideMoraleBroken(a.owner)); }
+function breakMoraleSide(owner) {
+  if (owner !== 1 && owner !== 2) return;
+  _moraleSide[owner] = performance.now() + MORALE_MS;
 }
-function breakMorale(c) {
-  if (!c) return;
-  c._moraleUntil = performance.now() + MORALE_MS;
+// 예전 이름 — 성 하나를 받던 자리. 그 성의 진영 전체로 넘긴다.
+function breakMorale(c) { if (c) breakMoraleSide(c.owner); }
+// 사기가 꺾인 것을 눈에 보이게 — 꿀밤 맞은 그림처럼 별이 머리 위를 돈다.
+//   비용은 대상 하나당 별 5 + 오라 1 = 6 드로우콜. 부대·성 단위라 병사 수와 무관하다.
+//   (병사를 하나씩 흔들려면 스프라이트를 새로 구워야 해서 여기선 안 한다)
+function drawMoraleFx(ent, x, y, r) {
+  const t = performance.now() * 0.001;
+  // 성은 스프라이트가 위로 크게 뻗어 있어서(size = r*3.3, 위로 r*1.78) 고리를
+  // 지붕보다 더 높이 올려야 가리지 않는다. 부대는 그만큼 안 높아도 된다.
+  const isCastle = !!(ent && ent.owner !== undefined && !ent.isArmy);
+  const R = Math.max(30, r * (isCastle ? 1.55 : 1.70)), RY = R * 0.36;
+  const top = y - r * (isCastle ? 2.25 : 1.6);
+  const bob = Math.sin(t * 2.4) * r * 0.05;
+
+  // 발밑 오라 — 어느 부대가 걸렸는지 멀리서도 보인다
+  const pulse = 0.5 + Math.sin(t * 3) * 0.16;
+  const g = ctx.createRadialGradient(x, y, 2, x, y, R * 1.25);
+  g.addColorStop(0, 'rgba(190,130,255,' + (0.30 * pulse).toFixed(3) + ')');
+  g.addColorStop(1, 'rgba(190,130,255,0)');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(x, y + r * 0.15, R * 1.3, R * 0.52, 0, 0, Math.PI * 2); ctx.fill();
+
+  // 별 다섯이 타원 궤도를 돈다. 뒤로 넘어간 별은 작고 어둡게 그려야 '돈다'로
+  // 읽힌다 — 같은 크기로 그리면 그냥 깜빡이는 것으로 보인다.
+  const spin = t * 2.2, N = 5, arr = [];
+  for (let k = 0; k < N; k++) {
+    const a = spin + k * (Math.PI * 2 / N);
+    arr.push({ a, d: Math.sin(a) });
+  }
+  arr.sort((p1, p2) => p1.d - p2.d);            // 뒤에 있는 것부터
+  for (const o of arr) {
+    const sx = x + Math.cos(o.a) * R;
+    const sy = top + bob + Math.sin(o.a) * RY;
+    const dep = (o.d + 1) / 2;
+    const rad = Math.max(7, r * 0.33) * (0.52 + dep * 0.68);
+    ctx.globalAlpha = 0.42 + dep * 0.58;
+    ctx.fillStyle = dep > 0.5 ? '#ffe071' : '#c9a24a';
+    ctx.beginPath();
+    for (let i = 0; i < 10; i++) {
+      const rr = i % 2 ? rad * 0.42 : rad, ang = -Math.PI / 2 + i * Math.PI / 5;
+      const px = sx + Math.cos(ang) * rr, py = sy + Math.sin(ang) * rr;
+      i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+    }
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
 }
 // 사기가 꺾이면 공격도 방어도 같이 내려간다. 방어가 분모라서, 내가 주는 피해는
 // 1/0.7 = 43% 늘고 내가 받는 피해는 30% 준다 — 10초간 교전 효율이 약 2배.
@@ -15844,7 +16134,7 @@ function armyCombatMul(a, key) {
 }
 function castleCombatMul(c, key) {
   const m = window._mpMode ? mpUpgMul(c.owner, key) : (c.owner === 1 ? upgVal(key) * commanderCastleMult(c, key) : 1);
-  return (MORALE_KEYS[key] && c && c.owner === 2 && castleMoraleBroken(c)) ? m * MORALE_MUL : m;
+  return (MORALE_KEYS[key] && castleMoraleBroken(c)) ? m * MORALE_MUL : m;
 }
 function releaseCastleCommander(c) {
   if (!c) return;
@@ -18267,7 +18557,11 @@ function resetStage() {
       if (def) {
         used.add(def.id);
         // 적군은 chapter에 따라 lv 보정 (1~3 정도)
-        const enemyLv = 1 + Math.min(2, Math.max(0, Math.floor(Math.random() * ch)));
+        // 일기토 가능한 장수는 챕터에 맞춰 강화도까지 올린다(1~6).
+        // 나머지는 예전 그대로 — 전장 밸런스를 건드리지 않는다.
+        const enemyLv = DUEL_IDS.has(def.id)
+          ? rollCommanderLv(ch)
+          : 1 + Math.min(2, Math.max(0, Math.floor(Math.random() * ch)));
         const inst = makeEnemyInstance(def.id, enemyLv);
         if (inst) {
           // 별 등급도 챕터를 따른다 — 초반엔 ★1~2, 후반엔 ★4~5. 다이아는 안 나온다.
@@ -23108,11 +23402,31 @@ function pickDuelCommander(excludeIds, ch) {
   for (let i = 0; i < pool.length; i++) { r -= w[i]; if (r <= 0) return getGeneralById(pool[i].id); }
   return getGeneralById(pool[pool.length - 1].id);
 }
+// 챕터 → 진행도(0~1). 본편 난이도 곡선(chEnemyBase 0.50→0.90)을 정규화한다.
+// 일기토 난이도·적장 등급·적장 강화도가 모두 이 하나를 따라간다.
+function duelChapterProgress(ch) {
+  try {
+    if (typeof chEnemyBase !== 'function') return 0;
+    return Math.min(1, Math.max(0, (chEnemyBase(ch) - 0.50) / 0.40));
+  } catch (_) { return 0; }
+}
+// 지휘관 강화도 — 예전엔 1 + min(2, random×ch) 라 **최대 3에서 멈췄다.**
+// 그래서 후반에 내 장수(★6+5 = 배수 5.0)가 적장(최대 3.4)을 수치로 앞질러,
+// AI 는 어려워지는데 일기토는 도로 쉬워졌다. 챕터를 따라 6까지 올린다.
+//   적 지휘관 버프는 본편 전투에 안 쓰인다(commanderCastleMult 가 아군만 계산)
+//   — 그래서 이 값을 올려도 전장 밸런스는 그대로다. 일기토에만 영향이 간다.
+function rollCommanderLv(ch) {
+  const p = duelChapterProgress(ch);
+  const base = 1 + p * ((typeof ENHANCE_MAX_LV === 'number' ? ENHANCE_MAX_LV : 6) - 1);
+  const jitter = Math.random() * 1.4 - 0.7;          // 같은 챕터에서도 조금씩 다르게
+  return Math.max(1, Math.min(6, Math.round(base + jitter)));
+}
 // 지휘관 별 등급 — rollStars() 는 챕터 무관 고정(★1 41% … ★5 3%)이라 후반에도
 // ★1 이 흔했다. 지휘관만 챕터를 따르게 한다. 다이아(6)는 전 구간 안 나온다.
 function rollCommanderStars(ch) {
-  const p = Math.min(1, Math.max(0, (ch - 1) / Math.max(1, TOTAL_CAMPAIGN_CHAPTERS - 1)));
-  const c = 1 + p * 3.2, s = 1.25;
+  // 별도 본편 곡선을 따른다 — 챕터를 그냥 나누면 초반이 너무 빨리 오른다
+  const p = duelChapterProgress(ch);
+  const c = 1 + p * 3.4, s = 1.25;
   const w = [];
   for (let st = 1; st <= 5; st++) { const d = (st - c) / s; w.push(Math.exp(-(d * d))); }
   let r = Math.random() * w.reduce((a, b) => a + b, 0);
@@ -26277,6 +26591,8 @@ function drawCastle(c) {
   drawCastleFire(c, x, y, r);
   drawCastleGarrison(c, x, y, r, f.flag);
   drawCastleCommanderBadge(c, x, y, r);
+  // 일기토에 진 성 — 수비대의 사기가 꺾였다
+  if (castleMoraleBroken(c)) drawMoraleFx(c, x, y, r);
 
   const isWei = _wo === 2;
 
@@ -27720,6 +28036,8 @@ function render(dt) {
       drawSoldierGroup(sx, sy, a.troops, a.unit, f.flag, 14 * DPR() * zoom, a.seed, marchAngle, attacking);
       drawCommanderBadge(a, sx, sy, marchAngle);
       drawArmyTroopCount(a, sx, sy, marchAngle);
+      // 일기토에 진 성에서 나온 부대 — 같이 흔들린다
+      if (armyMoraleBroken(a) && !a.dying) drawMoraleFx(a, sx, sy, 20 * DPR() * zoom);
     }
     if (_hiAlpha < 1) ctx.restore();
   }
@@ -45980,6 +46298,7 @@ function __startRenderLoop() {
   let pending = null;           // { castle, foeInst, foeDef }
   let mine = null;              // 고른 내 장수 { inst, def, stars, lv }
   let lastResult = null;
+  let moraleOnReturn = null;    // 복귀 순간 사기가 꺾일 진영 (1=아군 · 2=적군)
   let lastAskAt = 0;
   let busy = false;             // 신청~결과까지
 
@@ -45995,6 +46314,10 @@ function __startRenderLoop() {
     for (let n = prev + 1; n <= now; n++) s += n;
     return s;
   }
+  // 10 Combo 마다 ★1 — **매판 받는다.** 신기록 보상은 언젠가 벽에 부딪히지만
+  // 이건 매번 들어와서, 일기토를 계속 하게 만드는 실제 동력이 된다.
+  const COMBO_PER_STAR = 10;
+  const starsForCombo = now => Math.floor((now | 0) / COMBO_PER_STAR);
 
   // ── 이 장수로 일기토를 치를 수 있나 ────────────────────────────────
   const duelCapable = id => !!(typeof DUEL_IDS !== 'undefined' && DUEL_IDS.has && DUEL_IDS.has(id));
@@ -46008,7 +46331,11 @@ function __startRenderLoop() {
       if (!inst || !duelCapable(inst.id)) continue;
       const def = getGeneralById(inst.id);
       if (!def) continue;
-      out.push({ inst, def, stars: instanceStars(inst), lv: Math.max(1, inst.lv | 0 || 1) });
+      let pow = 0;
+      try { const og = getOwnedGeneral(uid); if (og) pow = Math.round(generalDetailPower(og)); } catch (_) {}
+      const duel = DUEL_ROSTER.find(g => g.id === inst.id) || {};
+      out.push({ inst, def, stars: instanceStars(inst), lv: Math.max(1, inst.lv | 0 || 1),
+                 pow, war: duel.war | 0, hp: duel.hp | 0, spd: duel.spd || 1, stam: duel.stam | 0 });
     }
     return out;
   }
@@ -46057,7 +46384,7 @@ function __startRenderLoop() {
     pending = { castle: c, foeInst, foeDef };
     busy = true; lastAskAt = performance.now();
     pause(true);
-    showAsk();
+    showCutin();
   }
 
   function pause(on) {
@@ -46065,49 +46392,223 @@ function __startRenderLoop() {
     document.body.classList.toggle('intro-dialog-active', !!on);
   }
 
+  // 일기토 난이도는 **본편 난이도 곡선을 그대로 따라간다.**
+  // 본편은 chEnemyBase(ch) 로 적 배율을 0.50→0.90 으로 올린다. 10챕터로
+  // 튜닝한 곡선을 50챕터에 펼친 것이라, 초반은 완만하고 후반이 가파르다
+  // (챕터15에서 0.17, 30에서 0.44, 50에서 1.00). 여기에 맞추면 전장이
+  // 어려워지는 만큼 일기토도 어려워져서 두 축이 따로 놀지 않는다.
+  //
+  // 챕터 단위로만 쓰면 20판 내내 같은 난이도가 된다. 챕터 안의 위치까지
+  // 섞어 **스테이지마다** 조금씩 오르게 한다.
+  const DUEL_BASE_LO = 0.50, DUEL_BASE_HI = 0.90;
+  function stageProgress() {
+    try {
+      if (typeof chEnemyBase !== 'function') return 0;
+      const ch = campaignChapterForIndex(currentStage);
+      const per = (typeof STAGES_PER_CHAPTER === 'number' ? STAGES_PER_CHAPTER : 20);
+      const off = (typeof campaignOffset === 'function') ? campaignOffset() : 0;
+      const local = (((currentStage | 0) - off) % per + per) % per;   // 0..19
+      // 이번 챕터와 다음 챕터의 적 배율 사이를 챕터 내 위치로 보간한다
+      const a = chEnemyBase(ch), b = chEnemyBase(ch + 1);
+      const raw = a + (b - a) * (local / per);
+      const p = (raw - DUEL_BASE_LO) / (DUEL_BASE_HI - DUEL_BASE_LO);
+      return Math.min(1, Math.max(0, p));
+    } catch (_) { return 0; }
+  }
+
   const bustOf = def => def.bust || `./assets/generals/faces/${def.id}.png`;
+  function foePower(inst) {
+    try {
+      const d = getGeneralById(inst.id);
+      if (!d) return 0;
+      return Math.round(generalDetailPower({ ...d, uid: inst.uid, lv: inst.lv | 0 || 1,
+                                             stars: instanceStars(inst) }));
+    } catch (_) { return 0; }
+  }
   const tierText = (stars, lv) =>
     (stars >= 6 ? '◆' : '★'.repeat(Math.max(1, stars | 0))) + (lv > 1 ? ' +' + (lv - 1) : '');
+
+  // 받침 유무로 조사를 고른다. '우금이(가)' 같은 표기는 게임 문장이 아니다.
+  function hasJong(name) {
+    const c = (name || '').trim().slice(-1).charCodeAt(0);
+    if (!(c >= 0xAC00 && c <= 0xD7A3)) return false;
+    return (c - 0xAC00) % 28 !== 0;
+  }
+  const iGa   = n => n + (hasJong(n) ? '이' : '가');
+  const eunNn = n => n + (hasJong(n) ? '은' : '는');
+
+  // 장수별 도발 — assets/arcade_duel/lines.json. [0]=거는 쪽, [1]=받아치는 쪽.
+  let DUEL_LINES = null;
+  fetch('./assets/arcade_duel/lines.json').then(r => r.json())
+    .then(j => { DUEL_LINES = j; }).catch(() => {});
+  function tauntOf(gid, idx) {
+    const L = DUEL_LINES && DUEL_LINES.lines && DUEL_LINES.lines[gid];
+    const D = DUEL_LINES && DUEL_LINES._default;
+    const pick = (L && L[idx]) || (D && D[idx]);
+    return pick || '이름을 걸어라. 여기서 결판을 짓자.';
+  }
+
+  // 신청 카드 앞에 한 박자 — 적장이 튀어나와 한마디 던지고, 탭해야 넘어간다.
+  // 그림 아래쪽 투명 여백이 몇 % 인지 재서, 그만큼 화면 밖으로 밀어낸다.
+  // 캔버스로 알파를 훑는다 — 그림당 한 번이라 값이 싸고, 결과는 캐시한다.
+  const _padCache = new Map();
+  // 그림 아래 투명 여백만큼 이미지를 키워(--fit) 아래를 잘라 낸다.
+  // 상자가 object-fit:cover + overflow:hidden 이라 넘친 부분은 안 보인다.
+  function fitBottom(img) {
+    if (!img) return;
+    const run = () => {
+      const pct = bottomPadPct(img);
+      img.style.setProperty('--fit', (1 / Math.max(0.55, 1 - pct)).toFixed(3));
+    };
+    if (img.complete && img.naturalWidth) run(); else img.addEventListener('load', run, { once: true });
+  }
+  function bottomPadPct(img) {
+    const key = img.currentSrc || img.src;
+    if (_padCache.has(key)) return _padCache.get(key);
+    let pct = 0;
+    try {
+      const W = 96, H = 128;
+      const cv = document.createElement('canvas');
+      cv.width = W; cv.height = H;
+      const c = cv.getContext('2d', { willReadFrequently: true });
+      c.drawImage(img, 0, 0, W, H);
+      const d = c.getImageData(0, 0, W, H).data;
+      let last = H - 1;
+      for (let y = H - 1; y >= 0; y--) {
+        let any = false;
+        for (let x = 0; x < W; x++) { if (d[(y * W + x) * 4 + 3] > 8) { any = true; break; } }
+        if (any) { last = y; break; }
+      }
+      pct = (H - 1 - last) / H;
+    } catch (_) { pct = 0; }
+    _padCache.set(key, pct);
+    return pct;
+  }
+  function measureBottomPad(img) {
+    const key = img.src;
+    const apply = pct => {
+      const box = $('duelCutin');
+      if (box) box.style.setProperty('--dc-padf', pct.toFixed(4));
+    };
+    if (_padCache.has(key)) return apply(_padCache.get(key));
+    let pct = 0;
+    try {
+      const W = 96, H = 128;
+      const cv = document.createElement('canvas');
+      cv.width = W; cv.height = H;
+      const c = cv.getContext('2d', { willReadFrequently: true });
+      c.drawImage(img, 0, 0, W, H);
+      const d = c.getImageData(0, 0, W, H).data;
+      let last = H - 1;
+      for (let y = H - 1; y >= 0; y--) {
+        let any = false;
+        for (let x = 0; x < W; x++) { if (d[(y * W + x) * 4 + 3] > 8) { any = true; break; } }
+        if (any) { last = y; break; }
+      }
+      pct = (H - 1 - last) / H;
+    } catch (_) { pct = 0; }      // 다른 출처 이미지면 읽기가 막힌다 — 그땐 0
+    _padCache.set(key, pct);
+    apply(pct);
+  }
+
+  function showCutin() {
+    const { foeInst, foeDef } = pending;
+    const img = $('dcImg');
+    $('duelCutin').style.setProperty('--dc-padf', '0');
+    img.onload = () => { measureBottomPad(img); };
+    img.src = bustOf(foeDef);
+    if (img.complete && img.naturalWidth) measureBottomPad(img);
+    $('dcName').textContent = foeDef.name;
+    $('dcTier').textContent = tierText(instanceStars(foeInst), foeInst.lv | 0 || 1)
+      + ' · 전투력 ' + foePower(foeInst);
+    $('dcTaunt').textContent = tauntOf(foeInst.id, 0);
+    $('dcWho').textContent = '— ' + foeDef.name;
+    const el = $('duelCutin');
+    el.hidden = false;
+    // 애니메이션을 다시 태우려면 클래스를 한 번 떼었다 붙여야 한다
+    el.querySelectorAll('.dc-flash,.dc-portrait,.dc-bubble').forEach(n => {
+      const a = n.style.animation; n.style.animation = 'none';
+      void n.offsetWidth; n.style.animation = a || '';
+    });
+    let done = false;
+    const go = e => {
+      if (done) return;
+      e.preventDefault(); e.stopPropagation();
+      done = true;
+      el.hidden = true;
+      showAsk();
+    };
+    // 처음 0.35초는 안 받는다 — 뜨자마자 누르던 손가락에 스킵되지 않게
+    setTimeout(() => {
+      if (done) return;
+      el.addEventListener('pointerdown', go, { once: true });
+      el.addEventListener('click', go, { once: true });
+    }, 350);
+  }
 
   function showAsk() {
     const { foeInst, foeDef } = pending;
     const list = myDuelGenerals();
     mine = list[0] || null;
-    $('dkFoeImg').src = bustOf(foeDef);
+
+    $('dkFoeImg').src = bustOf(foeDef); fitBottom($('dkFoeImg'));
     $('dkFoeName').textContent = foeDef.name;
-    $('dkFoeTier').textContent = tierText(instanceStars(foeInst), foeInst.lv | 0 || 1);
+    $('dkFoeTier').innerHTML = tierText(instanceStars(foeInst), foeInst.lv | 0 || 1)
+      + `<em>전투력 ${foePower(foeInst)}</em>`;
     if (mine) {
-      $('dkMineImg').src = bustOf(mine.def);
+      $('dkMineImg').src = bustOf(mine.def); fitBottom($('dkMineImg'));
       $('dkMineName').textContent = mine.def.name;
-      $('dkMineTier').textContent = tierText(mine.stars, mine.lv);
+      $('dkMineTier').innerHTML = tierText(mine.stars, mine.lv) + `<em>전투력 ${mine.pow}</em>`;
     }
-    $('dkLine').innerHTML = `<b style="color:#ffd45c">${foeDef.name}</b>이(가) 앞으로 나서 일기토를 청한다.`;
+
+    $('dkLead').textContent =
+      `적진에서 ${iGa(foeDef.name)} 단기로 나서 일기토를 청했다.`;
+    $('dkTaunt').textContent = tauntOf(foeInst.id, 0);
+    $('dkTauntWho').textContent = '— ' + foeDef.name;
+
+    // 연타 조건은 지금 기록에 따라 문장이 달라져야 한다
     const best = bestCombo();
-    $('dkLine').innerHTML += best
-      ? `<br><span style="font-size:.86em;color:#9de2ff">내 연타 최고 ${best} — 다음은 ${best + 1}부터</span>`
-      : '';
+    // '승패 무관'을 맨 앞에 한 번만 둔다 — 두 줄 다 해당되는 조건이라
+    // 한 줄에만 붙이면 나머지 줄은 승리 조건인 것처럼 읽힌다.
+    // '승패무관'은 라벨(dt)에 붙어 있다 — 아래 두 줄 다 해당되는 조건이다.
+    $('dkComboTerm').innerHTML =
+      `10 Combo 당 <b>★1</b>` +
+      (best ? `<br>최고 기록 <b>${best}</b> 갱신 시 <b>★ 추가</b>`
+            : `<br>첫 기록 달성 시 <b>★ 추가</b>`);
+
     $('duelAsk').hidden = false;
   }
+
 
   // ── 장수 고르기 ────────────────────────────────────────────────────
   function showPick() {
     const list = myDuelGenerals();
     const grid = $('dpGrid');
+    // 카드에 전투력까지 실어야 고를 수 있다 — 이름과 별만 있으면 다 똑같아 보인다.
     grid.innerHTML = list.map((g, i) =>
-      `<div class="dp-card" data-i="${i}"><img src="${bustOf(g.def)}" alt="">` +
-      `<b>${g.def.name}</b><small>${tierText(g.stars, g.lv)}</small></div>`).join('');
+      `<div class="dp-card" data-i="${i}"><div class="dp-img"><img src="${bustOf(g.def)}" alt=""></div>` +
+      `<b>${g.def.name}</b><small>${tierText(g.stars, g.lv)}</small>` +
+      `<u>전투력 ${g.pow}</u></div>`).join('');
+    grid.querySelectorAll('img').forEach(fitBottom);
     mine = null;
     $('dpGo').disabled = true;
     $('dpInfo').textContent = '일기토에 나설 장수를 고르시오';
     grid.querySelectorAll('.dp-card').forEach(el => {
-      el.onclick = () => {
+      tap(el, () => {                      // 카드도 click 만으론 폰에서 안 눌린다
         grid.querySelectorAll('.dp-card').forEach(x => x.classList.remove('sel'));
         el.classList.add('sel');
         mine = list[+el.dataset.i];
         $('dpGo').disabled = false;
-        $('dpInfo').innerHTML = `<b style="color:#ffd45c">${mine.def.name}</b> 출전 — ` +
-          `상대는 ${pending.foeDef.name}`;
-      };
+        const fp = foePower(pending.foeInst);
+        const diff = mine.pow - fp;
+        const sign = diff > 0 ? `<i class="up">+${diff}</i>` : diff < 0 ? `<i class="dn">${diff}</i>` : '';
+        $('dpInfo').innerHTML =
+          `<span class="dp-name">${mine.def.name}</span> ${tierText(mine.stars, mine.lv)}` +
+          `<span class="dp-stat">무력 <b>${mine.war}</b> · 체력 <b>${mine.hp}</b>` +
+          ` · 공속 <b>${(+mine.spd).toFixed(2)}</b> · 기력 <b>${mine.stam}</b></span>` +
+          `<span class="dp-vs">전투력 <b>${mine.pow}</b> ${sign}` +
+          ` <em>vs ${pending.foeDef.name} ${fp}</em></span>`;
+      });
     });
     $('duelPick').hidden = false;
   }
@@ -46120,6 +46621,12 @@ function __startRenderLoop() {
       p: mine.def.id, b: foeDef.id,
       pStar: String(mine.stars), pLv: String(mine.lv),
       bStar: String(instanceStars(foeInst)), bLv: String(foeInst.lv | 0 || 1),
+      // 지금까지의 최고 연타 — 결투 결과 화면이 '신기록인가'를 그 자리에서
+      // 보여주려면 기준선을 알아야 한다. 별 지급은 여기(본편)가 다시 계산한다.
+      best: String(bestCombo()),
+      // 캠페인 진행도(0~1). 일기토 AI 가 이 값으로 **스테이지마다 조금씩**
+      // 강해진다. 쉬움/보통/어려움 셋으로 끊으면 1~15장이 전부 같아진다.
+      d: stageProgress().toFixed(4),
     });
     lastResult = null;
     const fr = $('duelFrame');
@@ -46141,67 +46648,119 @@ function __startRenderLoop() {
   });
 
   // ── 결과 반영 ──────────────────────────────────────────────────────
+  // 결투 결과창은 **일기토 화면이 이미 보여 줬다**(COMBO·보상·전장 효과).
+  // 여기서 또 띄우면 같은 내용을 두 번 읽게 된다. 보상만 조용히 적용하고
+  // 곧장 재개 관문으로 넘긴다.
   function applyResult(r) {
     const kind = r ? r.kind : 'draw';
     const foeDef = pending ? pending.foeDef : null;
-    const lines = [];
 
-    // 1) 연타 신기록 → 별. 이기든 지든 무관하다. 일기토 안의 순수 연타만 본다.
+    // 1) Combo — 10 당 ★1(매판) + 신기록 구간 합산(한 번). 승패 무관.
     const now = r ? (r.maxCombo | 0) : 0;
     const prev = bestCombo();
-    const gained = starsForRecord(prev, now);
-    if (gained > 0) {
-      setBestCombo(now);
-      SAVE.starsAvailable = (SAVE.starsAvailable | 0) + gained;
-      lines.push(`<b>${now}연타</b> — 최고 기록 경신! ★<b>${gained}</b> 획득`);
-    } else if (now > 0) {
-      lines.push(`<span>${now}연타 — 최고 기록 ${prev} 을(를) 넘지 못했다</span>`);
-    }
+    const always = starsForCombo(now);
+    const rec = starsForRecord(prev, now);
+    if (rec > 0) setBestCombo(now);
+    if (always + rec > 0) SAVE.starsAvailable = (SAVE.starsAvailable | 0) + always + rec;
 
+    // 2) 사기 붕괴 — 전장에 돌아가는 순간부터 10초
     if (kind === 'win') {
-      // 2) 그 성과 소속 부대의 사기가 무너진다 (10초)
-      if (pending && pending.castle) breakMorale(pending.castle);
-      lines.push('적군의 <b>사기가 무너진다</b> — 10초간 공격·방어 30% 감소');
-      // 3) 그 장수를 더 쉽게 등용한다 (포로 화면에서 반영)
+      moraleOnReturn = 2;                        // 적군 전체
+      // 3) 꺾은 장수는 등용이 쉬워진다 (이번 스테이지 동안만)
       if (foeDef) {
         window._duelBeaten = window._duelBeaten || {};
         window._duelBeaten[foeDef.id] = LOYALTY_DROP;
-        lines.push(`꺾인 <b>${foeDef.name}</b> — 이번 전투가 끝나면 <b>더 쉽게 등용</b>할 수 있다`);
       }
+    } else if (kind === 'lose') {
+      moraleOnReturn = 1;                        // 아군 전체
+    } else {
+      moraleOnReturn = null;
     }
 
     try { saveProgress(); } catch (_) {}
     try { refreshTopStats(); } catch (_) {}
 
-    $('ddTitle').textContent = kind === 'win' ? '승 리' : kind === 'lose' ? '패 배' : '무 승 부';
-    $('ddTitle').style.color = kind === 'win' ? '#ffd45c' : kind === 'lose' ? '#ff8a5c' : '#d8c39c';
-    $('ddLine').textContent = r
-      ? `${r.hap | 0}합을 겨루었다.`
-      : '승부가 나지 않았다.';
-    $('ddEff').innerHTML = lines.length ? lines.join('<br>') : '얻은 것도 잃은 것도 없다';
-    $('duelDone').hidden = false;
+    const star = (always + rec) > 0 ? `<br>★<b>${always + rec}</b> 획득` : '';
+    resumeGate(
+      (kind === 'win'
+        ? '전장으로 돌아간다.<br><b>적군 전체 사기 붕괴</b>가 지금부터 10초간 이어진다.'
+        : kind === 'lose'
+          ? '전장으로 돌아간다.<br><span class="bad">아군 전체 사기 붕괴</span>가 지금부터 10초간 이어진다.'
+          : '전장으로 돌아간다.') + star);
   }
 
+
+  // 전장을 다시 굴리기 전에 한 번 세운다. 사기 붕괴도 여기서 시작해야
+  // 10초를 온전히 쓴다 — 안내를 읽는 동안 시계가 흐르면 안 된다.
+  function resumeGate(msg) {
+    const el = $('duelResume');
+    $('drMsg').innerHTML = msg || '';
+    el.hidden = false;
+    let done = false;
+    const go = e => {
+      if (done) return;
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      done = true;
+      el.hidden = true;
+      if (moraleOnReturn) { breakMoraleSide(moraleOnReturn); moraleOnReturn = null; }
+      pending = null; mine = null; lastResult = null;
+      busy = false;
+      pause(false);
+    };
+    setTimeout(() => {
+      if (done) return;
+      el.addEventListener('pointerdown', go, { once: true });
+      el.addEventListener('click', go, { once: true });
+    }, 300);
+  }
+
+  // 결과창을 안 쓰므로 남은 건 안전망뿐 — 혹시 열려 있으면 닫고 재개시킨다.
   function finish() {
     $('duelDone').hidden = true;
-    pending = null; mine = null; lastResult = null;
-    busy = false;
-    pause(false);
+    resumeGate('전장으로 돌아간다.');
   }
 
   // ── 버튼 ───────────────────────────────────────────────────────────
-  $('dkNo').onclick = () => {
-    // 물러서도 잃는 것은 없다. 벌금을 붙이면 선택이 아니라 강제가 된다.
+  // click 만 걸면 **폰에서 안 눌린다.** 일시정지에 쓰는 window._introDialogActive 가
+  // 켜져 있으면 pointerDownWrap 이 touchstart 에 preventDefault() 를 하는데,
+  // 그러면 브라우저가 click 을 합성하지 않는다. 마우스는 mousedown 에
+  // preventDefault 해도 click 이 나서 PC 에선 멀쩡했고 터치에서만 죽었다.
+  // 그래서 pointerdown 으로도 받는다 — 컷씬 오버레이도 같은 이유로 그렇게 한다.
+  function tap(el, fn) {
+    if (!el) return;
+    let last = 0;
+    const h = e => {
+      e.preventDefault(); e.stopPropagation();
+      const now = performance.now();
+      if (now - last < 350) return;      // pointerdown 뒤 click 이 또 오는 경우 방지
+      last = now;
+      fn(e);
+    };
+    el.addEventListener('pointerdown', h);
+    el.addEventListener('click', h);
+  }
+
+  const closeAll = () => {
+    ['duelCutin', 'duelAsk', 'duelPick', 'duelDone'].forEach(id => { const e = $(id); if (e) e.hidden = true; });
+  };
+  tap($('dkNo'), () => {
+    // 거절에는 불이익이 없다. 다만 전장이 갑자기 굴러가지 않게 한 번 세운다.
     $('duelAsk').hidden = true;
-    pending = null; busy = false; pause(false);
-  };
-  $('dkYes').onclick = () => { $('duelAsk').hidden = true; showPick(); };
-  $('dpBack').onclick = () => {
+    moraleOnReturn = null;
+    resumeGate('일기토를 거절했다.<br>잃은 것도 얻은 것도 없다.');
+  });
+  tap($('dkYes'), () => { $('duelAsk').hidden = true; showPick(); });
+  // 뒤로가기 — 게임으로 바로 나가지 않고 **거절/수락 화면으로 되돌아간다.**
+  // 장수를 잘못 골랐을 때 신청 자체를 취소해야 하는 건 과했다.
+  // 거기서 '거절'을 누르면 그때 전장으로 돌아간다.
+  tap($('dpBack'), () => {
     $('duelPick').hidden = true;
-    pending = null; mine = null; busy = false; pause(false);
-  };
-  $('dpGo').onclick = () => { if (mine) { $('duelPick').hidden = true; openDuel(); } };
-  $('ddBack').onclick = finish;
+    mine = null;
+    if (pending) showAsk();
+    else { busy = false; pause(false); }
+  });
+  tap($('dpGo'), () => { if (mine) { $('duelPick').hidden = true; openDuel(); } });
+  tap($('ddBack'), finish);
 
   // 스테이지가 바뀌면 판당 상태를 비운다 — 충성도 할인은 그 판에서만 유효하고,
   // 성의 _duelDone 은 성 객체와 함께 새로 만들어지므로 따로 지울 게 없다.
@@ -46212,11 +46771,50 @@ function __startRenderLoop() {
         lastStage = currentStage;
         window._duelBeaten = {};
         quota = rollQuota();
-        if (busy) { closeDuel(); $('duelAsk').hidden = $('duelPick').hidden = $('duelDone').hidden = true; finish(); }
+        if (busy) {
+          closeDuel();
+          ['duelCutin', 'duelAsk', 'duelPick', 'duelDone', 'duelResume']
+            .forEach(id => { const e = $(id); if (e) e.hidden = true; });
+          moraleOnReturn = null; pending = null; mine = null; lastResult = null;
+          busy = false; pause(false);
+        }
       }
       tryAsk();
     } catch (_) {}
   }, CHECK_MS);
+
+  // ── ?test=1 — 시험용 전체 해금 ────────────────────────────────────
+  //   모든 장 클리어 · 튜토리얼 완료 · 일기토 49명을 ★5~◆다이아 +5 로 보유.
+  //   난이도 곡선을 후반까지 실제로 밟아 보려면 이 상태가 필요하다.
+  //   **시험 빌드에서만 주입된다**(tools/build_www.py --test). 배포본엔 없다.
+  if (new URLSearchParams(location.search).get('test') === '1') {
+    const prepFull = () => {
+      if (!DUEL_ROSTER.length) return setTimeout(prepFull, 120);
+      const total = (typeof TOTAL_CAMPAIGN_CHAPTERS === 'number' ? TOTAL_CAMPAIGN_CHAPTERS : 50)
+                  * (typeof STAGES_PER_CHAPTER === 'number' ? STAGES_PER_CHAPTER : 20);
+      SAVE.unlocked = Math.max(SAVE.unlocked | 0, total + 1);      // 전 스테이지 해금
+      SAVE.tutorialDone = SAVE.tutorialPrompted = SAVE.starterPicked = true;
+      SAVE.gold = Math.max(SAVE.gold | 0, 9999999);
+      SAVE.starsAvailable = Math.max(SAVE.starsAvailable | 0, 9999);
+      if (!Array.isArray(SAVE.generals)) SAVE.generals = [];
+      let uid = (SAVE.nextGeneralUid | 0) || 1;
+      const have = new Map(SAVE.generals.map(g => [g && g.id, g]));
+      const mine = [];
+      // 강한 순서대로 앞 12명은 ◆다이아 +5, 나머지는 ★5 +5
+      DUEL_ROSTER.slice().reverse().forEach((g, i) => {
+        const st = i < 12 ? 6 : 5, lv = 6;
+        let inst = have.get(g.id);
+        if (!inst) { inst = { uid: uid++, id: g.id, lv, stars: st }; SAVE.generals.push(inst); have.set(g.id, inst); }
+        else { inst.stars = st; inst.lv = lv; }
+        mine.push(inst.uid);
+      });
+      SAVE.nextGeneralUid = uid;
+      SAVE.lastDeployGenerals = mine.slice(0, 10);
+      saveProgress();
+      location.replace(location.pathname);     // 깨끗한 주소로 — 메뉴에서 시작
+    };
+    prepFull();
+  }
 
   // ── ?duel=1 — 일기토 흐름을 확인하기 위한 개발용 준비 ────────────────
   //   ?unlock=1 은 로스터 앞 30명만 주고 출전 편성을 안 건드린다. 그러면
@@ -46235,18 +46833,80 @@ function __startRenderLoop() {
       const have = new Map(SAVE.generals.map(g => [g && g.id, g]));
       const mine = [];
       // 강한 쪽부터 10명은 출전시킨다 — 편성 칸이 10개다.
+      // 등급을 섞어서 준다 — 전원 ★4 +2 로 주면 카드가 다 똑같아 보여서
+      // 등급·강화 표시가 제대로 나오는지 확인이 안 된다.
+      // 강한 순서대로 ◆다이아 → ★5 → ★4 → ★3 … 로 깔고 강화도 달리한다.
+      const TIERS = [[6, 6], [6, 4], [5, 6], [5, 3], [4, 5], [4, 2], [3, 4], [3, 1], [2, 3], [2, 1]];
       const order = DUEL_ROSTER.slice().reverse();
-      for (const g of order) {
+      order.forEach((g, i) => {
+        const [st, lv] = TIERS[i] || [1 + (i % 3), 1 + (i % 4)];
         let inst = have.get(g.id);
-        if (!inst) { inst = { uid: uid++, id: g.id, lv: 3, stars: 4 }; SAVE.generals.push(inst); have.set(g.id, inst); }
+        if (!inst) { inst = { uid: uid++, id: g.id, lv, stars: st }; SAVE.generals.push(inst); have.set(g.id, inst); }
+        else { inst.stars = st; inst.lv = lv; }
         mine.push(inst.uid);
-      }
+      });
       SAVE.nextGeneralUid = uid;
       SAVE.lastDeployGenerals = mine.slice(0, 10);
       saveProgress();
-      location.replace(location.pathname);
+      // 준비가 끝나면 곧장 전쟁으로 — 튜토리얼·메뉴를 거치지 않는다.
+      location.replace(location.pathname + '?war=1');
     };
     prep();
+  }
+
+  // ── ?war=1 — 전쟁모드로 바로 진입 (개발용) ──────────────────────────
+  //   폰에서는 콘솔을 못 쓰니 '일기토 호출' 버튼도 같이 띄운다.
+  if (new URLSearchParams(location.search).get('war') === '1') {
+    // startStage() 는 준비 전에 부르면 조용히 아무것도 안 한다 —
+    // 부른 것으로 끝내지 말고 **실제로 들어갔는지**(body.in-game) 보고 재시도한다.
+    const inGame = () => document.body.classList.contains('in-game');
+    let tries = 0;
+    const go = () => {
+      if (inGame()) return afterEnter();
+      if (++tries > 60) return;                       // 약 18초까지만
+      if (typeof startStage === 'function'
+          && Array.isArray(SAVE.lastDeployGenerals) && SAVE.lastDeployGenerals.length) {
+        try { selectedStage = 1; currentStage = 1; startStage(); } catch (_) {}
+      }
+      setTimeout(go, 300);
+    };
+    function afterEnter() {
+      // 개막 컷씬은 건너뛴다 — 일기토만 보려고 들어온 길이다
+      setTimeout(() => {
+        try {
+          if (typeof cinematic !== 'undefined' && cinematic) cinematic = null;
+          const o = document.getElementById('introDialog');
+          if (o) o.style.display = 'none';
+          window._introDialogActive = false;
+          document.body.classList.remove('intro-dialog-active');
+        } catch (_) {}
+        quota = Math.max(quota, 3);          // 시험 중엔 몫을 넉넉히
+        devButton();
+      }, 1800);
+    }
+    setTimeout(go, 1200);
+  }
+
+  // 폰에서 콘솔 없이 일기토를 띄우는 버튼
+  function devButton() {
+    if (document.getElementById('duelDevBtn')) return;
+    const b = document.createElement('button');
+    b.id = 'duelDevBtn';
+    b.textContent = '⚔ 일기토';
+    b.style.cssText = 'position:fixed;left:10px;bottom:calc(10px + env(safe-area-inset-bottom));' +
+      'z-index:9100;padding:11px 16px;font:800 14px/1 system-ui;letter-spacing:.06em;' +
+      'color:#2a1200;background:linear-gradient(#e8ab2c,#a86a10);border:2px solid #fff0ad;' +
+      'box-shadow:0 4px 0 #4a2a06,0 8px 20px rgba(0,0,0,.6);cursor:pointer';
+    const fire = e => {
+      e.preventDefault(); e.stopPropagation();
+      const r = window._forceDuel();
+      if (typeof r === 'string' && r.indexOf('띄웠다') < 0) {
+        b.textContent = r.length > 18 ? r.slice(0, 18) : r;
+        setTimeout(() => { b.textContent = '⚔ 일기토'; }, 2500);
+      }
+    };
+    b.addEventListener('pointerdown', fire);
+    document.body.appendChild(b);
   }
 
   // 디버그 — 콘솔에서 즉시 띄운다. 조건(교전 중)을 무시한다.
@@ -46259,7 +46919,7 @@ function __startRenderLoop() {
     if (quota <= 0) quota = 1;          // 디버그는 몫을 무시한다
     pending = { castle: c, foeInst, foeDef: getGeneralById(foeInst.id) };
     busy = true; lastAskAt = performance.now();
-    pause(true); showAsk();
+    pause(true); showCutin();
     return '띄웠다 — ' + pending.foeDef.name;
   };
 })();
