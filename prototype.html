@@ -23420,20 +23420,25 @@ function duelChapterProgress(ch) {
 //   — 그래서 이 값을 올려도 전장 밸런스는 그대로다. 일기토에만 영향이 간다.
 function rollCommanderLv(ch) {
   const p = duelChapterProgress(ch);
-  const base = 1 + p * ((typeof ENHANCE_MAX_LV === 'number' ? ENHANCE_MAX_LV : 6) - 1);
+  // 강화도도 +1 부터 시작한다(lv 2). ★3 인데 강화가 0 이면 여전히 물렁하다.
+  const LO = 2;
+  const base = LO + p * ((typeof ENHANCE_MAX_LV === 'number' ? ENHANCE_MAX_LV : 6) - LO);
   const jitter = Math.random() * 1.4 - 0.7;          // 같은 챕터에서도 조금씩 다르게
-  return Math.max(1, Math.min(6, Math.round(base + jitter)));
+  return Math.max(LO, Math.min(6, Math.round(base + jitter)));
 }
 // 지휘관 별 등급 — rollStars() 는 챕터 무관 고정(★1 41% … ★5 3%)이라 후반에도
 // ★1 이 흔했다. 지휘관만 챕터를 따르게 한다. 다이아(6)는 전 구간 안 나온다.
 function rollCommanderStars(ch) {
-  // 별도 본편 곡선을 따른다 — 챕터를 그냥 나누면 초반이 너무 빨리 오른다
+  // **일기토 상대는 ★3 부터 시작한다.** 3장에서 ★1 이 나오니 한 대도 안 맞고
+  // 이겼다 — 결투가 아니라 처형이었다. 일기토는 '이름난 장수와 겨루는 자리'라
+  // 밑바닥을 깔아 두는 게 맞다. 본편 곡선은 그 위에서 ★3 → ★5 로 올린다.
   const p = duelChapterProgress(ch);
-  const c = 1 + p * 3.4, s = 1.25;
+  const c = 3 + p * 2.4, s = 1.05;
+  const LO = 3;                      // 일기토 상대의 밑바닥
   const w = [];
-  for (let st = 1; st <= 5; st++) { const d = (st - c) / s; w.push(Math.exp(-(d * d))); }
+  for (let st = LO; st <= 5; st++) { const d = (st - c) / s; w.push(Math.exp(-(d * d))); }
   let r = Math.random() * w.reduce((a, b) => a + b, 0);
-  for (let st = 1; st <= 5; st++) { r -= w[st - 1]; if (r <= 0) return st; }
+  for (let st = LO; st <= 5; st++) { r -= w[st - LO]; if (r <= 0) return st; }
   return 5;
 }
 function pickRandomEnemyGeneral(excludeIds) {
