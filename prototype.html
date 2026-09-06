@@ -45439,7 +45439,7 @@ function __startRenderLoop() {
   function connect() {
     if (M.ws && (M.ws.readyState === 0 || M.ws.readyState === 1)) return;
     var ws = new WebSocket(serverUrl()); M.ws = ws;
-    ws.onopen = function () { M.ready = true; var uid = localStorage.getItem('mp_uid'); if (uid) send({ t: 'hello', uid: uid }); else if (M.phase === 'idle' || M.phase === 'nick') showNick(); if (M._q && M._q.length) { var q = M._q; M._q = []; for (var i = 0; i < q.length; i++) try { M.ws.send(JSON.stringify(q[i])); } catch (_) {} } };
+    ws.onopen = function () { M.ready = true; var uid = localStorage.getItem('mp_uid'); if (uid) send({ t: 'hello', uid: uid, token: localStorage.getItem('acc_token') || undefined }); else if (M.phase === 'idle' || M.phase === 'nick') showNick(); if (M._q && M._q.length) { var q = M._q; M._q = []; for (var i = 0; i < q.length; i++) try { M.ws.send(JSON.stringify(q[i])); } catch (_) {} } };
     ws.onclose = function () {
       M.ready = false;
       if (M.active && M.phase === 'battle' && !M._resultDone) {
@@ -45458,6 +45458,8 @@ function __startRenderLoop() {
   function onServer(m) {
     if (m.t === 'welcome') {
       M.uid = m.uid; M.nick = m.nick; localStorage.setItem('mp_uid', m.uid);
+      // 서버가 토큰을 실어 보내면 챙겨 둔다. 다음 접속부터 이걸로 신원을 증명한다.
+      if (m.token) { try { localStorage.setItem('acc_uid', m.uid); localStorage.setItem('acc_token', m.token); } catch (_) {} }
       M.stats = { wins: m.wins, draws: m.draws || 0, losses: m.losses };
       if (M._reconnecting) {
         // 전투 중 재접속 — 서버 resumeMatch를 잠깐 기다림. 안 오면(유예 만료로 방 소멸) 포기.

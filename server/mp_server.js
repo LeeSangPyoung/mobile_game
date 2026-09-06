@@ -50,6 +50,9 @@ for (const sql of [
 // 세이브가 폰 안에만 있어서, 기기를 바꾸거나 앱을 지우면 처음부터였다.
 // uid 는 users 와 같은 값을 쓴다 — 멀티 계정과 세이브 계정이 따로 놀면 어긋난다.
 db.exec("CREATE TABLE IF NOT EXISTS accounts(uid TEXT PRIMARY KEY, token_hash TEXT NOT NULL, pgs_id TEXT UNIQUE, google_sub TEXT UNIQUE, created INTEGER, last_seen INTEGER)");
+// mp_strict=1 이면 멀티 hello 에도 토큰을 요구한다. 토큰을 이해하는
+// 클라이언트가 한 번 증명하면 켜진다 — 옛 클라이언트는 그때까지 통과.
+for (const sql of ["ALTER TABLE accounts ADD COLUMN mp_strict INTEGER DEFAULT 0"]) { try { db.exec(sql); } catch (_) {} }
 // data 는 클라의 localStorage['save'] 원문 그대로. 항목을 골라 담지 않는다 —
 // 골라 담으면 나중에 SAVE 에 항목이 늘 때 조용히 빠진다.
 db.exec("CREATE TABLE IF NOT EXISTS saves(uid TEXT PRIMARY KEY, rev INTEGER NOT NULL, data TEXT NOT NULL, size INTEGER, updated INTEGER, cid TEXT, device TEXT, summary TEXT)");
@@ -642,10 +645,19 @@ function onMessage(ws, m) {
         //   그게 곧 '남의 진행도를 덮어쓸 수 있다' 가 된다.
         let issued = null;
         const acc = db.prepare('SELECT * FROM accounts WHERE uid=?').get(u.uid);
-        if (acc) {
+        if (!acc) {
+          // 처음 보는 계정 — 토큰을 만들어 welcome 에 실어 보낸다.
+          // 옛 클라이언트는 이 값을 무시한다. 그래도 끊기지 않는다(아래 참고).
+          issued = createAccount(u.uid).token;
+        } else if (m.token) {
+          // 토큰을 보냈다 = 새 클라이언트. 맞아야 통과하고, 이후로는 엄격해진다.
           if (!authAccount(u.uid, m.token)) { ws.sendJson({ t: 'error', code: 'noauth', msg: '인증에 실패했습니다' }); return; }
+          if (!acc.mp_strict) { try { db.prepare('UPDATE accounts SET mp_strict=1 WHERE uid=?').run(u.uid); } catch (_) {} }
+        } else if (acc.mp_strict) {
+          // 한 번 토큰을 쓰던 계정이 갑자기 안 보낸다 — 남이 uid 만 들고 온 것이다.
+          ws.sendJson({ t: 'error', code: 'noauth', msg: '인증에 실패했습니다' }); return;
         } else {
-          // 예전부터 쓰던 계정 — 여기서 한 번만 토큰을 만들어 준다(1회 유예).
+          // 아직 업데이트 안 한 유저. 지금까지처럼 통과시키고 토큰만 다시 쥐여 준다.
           issued = createAccount(u.uid).token;
         }
         ws.uid = u.uid; ws.nick = u.nick; ws.power = u.power || DEFAULT_POWER;
@@ -665,8 +677,9 @@ function onMessage(ws, m) {
       const uid = 'u' + crypto.randomBytes(8).toString('hex');
       try { db.prepare('INSERT INTO users(uid,nick,wins,losses,created,power) VALUES(?,?,0,0,?,?)').run(uid, nick, Date.now(), DEFAULT_POWER); }
       catch (_) { ws.sendJson({ t: 'error', code: 'dup', msg: '이미 사용중인 닉네임입니다' }); return; }
-      // 새 계정에는 처음부터 토큰을 쥐여 준다.
+      // 새 계정에는 처음부터 토큰을 쥐여 주고, 곧바로 엄격 모드로 둔다.
       const _tok = createAccount(uid).token;
+      try { db.prepare('UPDATE accounts SET mp_strict=1 WHERE uid=?').run(uid); } catch (_) {}
       ws.uid = uid; ws.nick = nick; ws.power = DEFAULT_POWER;
       ws.sendJson({ t: 'welcome', uid, nick, wins: 0, losses: 0, power: DEFAULT_POWER, draws: 0, token: _tok });
       return;
