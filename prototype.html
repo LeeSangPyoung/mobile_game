@@ -47004,5 +47004,154 @@ function __startRenderLoop() {
   };
 })();
 </script>
+<script>
+/* ── 세이브 클라우드 보관 (1단계) ─────────────────────────────────────
+   유저는 이 코드가 있는 줄도 모른다. 화면도, 팝업도, 지연도 없다.
+   하는 일은 하나 — 로컬 세이브의 사본을 서버에도 둔다.
+
+   원칙: **로컬이 주인이다.** 서버가 로컬을 덮는 경로는 여기 없다.
+         동기화가 실패하면 그냥 실패한 채로 둔다. 게임은 지금과 똑같이
+         로컬 세이브로 돌아간다.
+─────────────────────────────────────────────────────────────────── */
+(function () {
+  'use strict';
+  var K_UID = 'acc_uid', K_TOK = 'acc_token';
+  var PUSH_DELAY = 10000;          // 몰아서 올린다. 판을 연달아 깨도 한 번만.
+
+  function base() {
+    try {
+      // 시험용 우회 — ?srv=http://127.0.0.1:8099 로 로컬 서버를 가리킨다.
+      // 운영에서는 이 주소가 붙을 일이 없다.
+      var q = new URLSearchParams(location.search).get('srv');
+      if (q) return q.replace(/\/$/, '');
+      var isApp = (location.protocol === 'capacitor:' || !!window.Capacitor
+                || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+      return isApp ? 'https://games.wooriban.org' : '';
+    } catch (e) { return ''; }
+  }
+  function ls(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  var uid = ls(K_UID), token = ls(K_TOK);
+  var serverRev = null;            // 서버가 들고 있는 판 번호. 모르면 null.
+  var timer = null, busy = false, pending = false;
+
+  function raw() { return ls('save') || ''; }
+
+  // 올릴 때 함께 남기는 요약. 항목 수나 장수 수가 갑자기 줄면 서버에서 바로 보인다.
+  function summarize(txt) {
+    try {
+      var o = JSON.parse(txt || '{}');
+      return {
+        keys: Object.keys(o).length,
+        generals: (o.generals || []).length,
+        stars: o.starsAvailable | 0,
+        gold: o.gold | 0,
+        unlocked: o.unlocked | 0,
+        bytes: txt.length
+      };
+    } catch (e) { return { bytes: (txt || '').length }; }
+  }
+
+  function device() {
+    try { return (navigator.userAgent.match(/Android[^;]*;\s*([^)]+?)\s*(?:Build|\))/) || [])[1] || ''; }
+    catch (e) { return ''; }
+  }
+
+  function post(path, body) {
+    return fetch(base() + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    }).then(function (r) { return r.json().then(function (j) { j._status = r.status; return j; }); });
+  }
+
+  // 계정이 없으면 하나 받는다. 앱 첫 실행에 딱 한 번.
+  function ensureAccount() {
+    if (uid && token) return Promise.resolve(true);
+    return post('/auth/anon', { cid: ls('cid') || '', device: device() })
+      .then(function (j) {
+        if (!j || !j.ok || !j.uid) return false;
+        uid = j.uid; token = j.token;
+        lsSet(K_UID, uid); lsSet(K_TOK, token);
+        return true;
+      }).catch(function () { return false; });
+  }
+
+  // 서버 판 번호만 알아 온다. **내려받은 데이터로 로컬을 덮지 않는다.**
+  function learnServerRev() {
+    if (!uid || !token) return Promise.resolve();
+    return fetch(base() + '/save/get?uid=' + encodeURIComponent(uid) + '&token=' + encodeURIComponent(token))
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (j && j.ok) serverRev = j.rev | 0; })
+      .catch(function () {});
+  }
+
+  function push() {
+    if (busy) { pending = true; return Promise.resolve(); }
+    var txt = raw();
+    if (!txt) return Promise.resolve();
+    busy = true;
+    return ensureAccount().then(function (ok) {
+      if (!ok) return;
+      var send = function () {
+        return post('/save/put', {
+          uid: uid, token: token,
+          rev: (serverRev == null ? undefined : serverRev),
+          data: txt, summary: summarize(txt),
+          cid: ls('cid') || '', device: device()
+        }).then(function (j) {
+          if (j && j.ok) { serverRev = j.rev | 0; return; }
+          // 그 사이 다른 기기가 올렸다. 1단계에서는 로컬을 살린다 —
+          // 어느 쪽을 택할지 묻는 화면은 3단계에서 만든다.
+          if (j && j._status === 409) { serverRev = j.rev | 0; return send(); }
+        });
+      };
+      return (serverRev == null ? learnServerRev() : Promise.resolve()).then(send);
+    }).catch(function () {}).then(function () {
+      busy = false;
+      if (pending) { pending = false; schedule(0); }
+    });
+  }
+
+  function schedule(delay) {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(function () { timer = null; push(); }, delay == null ? PUSH_DELAY : delay);
+  }
+
+  // 저장이 일어나면 올릴 예약을 건다. saveProgress 하나만 감싸면
+  // 스테이지 클리어·등용·강화가 전부 걸린다 — 네 곳을 따로 걸면 언젠가 빠진다.
+  try {
+    var origSave = window.saveProgress;
+    if (typeof origSave === 'function') {
+      window.saveProgress = function () {
+        var r = origSave.apply(this, arguments);
+        try { schedule(); } catch (e) {}
+        return r;
+      };
+    }
+  } catch (e) {}
+
+  // 앱이 내려갈 때는 기다리지 않고 바로 올린다. 여기서 놓치면 다 놓친다.
+  function flush() { if (timer) { clearTimeout(timer); timer = null; } push(); }
+  try {
+    document.addEventListener('visibilitychange', function () { if (document.hidden) flush(); });
+    window.addEventListener('pagehide', flush);
+    window.addEventListener('blur', flush);
+  } catch (e) {}
+
+  // 시작. 게임을 막지 않도록 한 박자 뒤에 조용히 돈다.
+  setTimeout(function () {
+    ensureAccount().then(function (ok) { if (ok) return learnServerRev().then(push); });
+  }, 3000);
+
+  window.CloudSave = {
+    status: function () {
+      return { uid: uid, hasToken: !!token, serverRev: serverRev, bytes: raw().length, summary: summarize(raw()) };
+    },
+    flush: flush
+  };
+})();
+</script>
 </body>
 </html>

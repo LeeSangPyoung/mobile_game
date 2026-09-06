@@ -46,6 +46,63 @@ for (const sql of [
   "ALTER TABLE installs ADD COLUMN andver TEXT",    // UA에서 파싱한 안드로이드 버전
 ]) { try { db.exec(sql); } catch (_) {} }
 
+// ── 계정 + 세이브 보관 ───────────────────────────────────────────────────
+// 세이브가 폰 안에만 있어서, 기기를 바꾸거나 앱을 지우면 처음부터였다.
+// uid 는 users 와 같은 값을 쓴다 — 멀티 계정과 세이브 계정이 따로 놀면 어긋난다.
+db.exec("CREATE TABLE IF NOT EXISTS accounts(uid TEXT PRIMARY KEY, token_hash TEXT NOT NULL, pgs_id TEXT UNIQUE, google_sub TEXT UNIQUE, created INTEGER, last_seen INTEGER)");
+// data 는 클라의 localStorage['save'] 원문 그대로. 항목을 골라 담지 않는다 —
+// 골라 담으면 나중에 SAVE 에 항목이 늘 때 조용히 빠진다.
+db.exec("CREATE TABLE IF NOT EXISTS saves(uid TEXT PRIMARY KEY, rev INTEGER NOT NULL, data TEXT NOT NULL, size INTEGER, updated INTEGER, cid TEXT, device TEXT, summary TEXT)");
+// 잘못 덮었을 때 되돌리기용. uid 당 최근 5개만 남긴다.
+db.exec("CREATE TABLE IF NOT EXISTS save_history(id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT, rev INTEGER, data TEXT, updated INTEGER)");
+try { db.exec("CREATE INDEX IF NOT EXISTS idx_savehist ON save_history(uid, rev)"); } catch (_) {}
+
+const SAVE_MAX = 256 * 1024;        // 실측 3KB, 만렙도 30KB. 256KB면 넉넉하다
+const SAVE_HISTORY_KEEP = 5;
+
+const newToken = () => crypto.randomBytes(32).toString('hex');
+const hashToken = (t) => crypto.createHash('sha256').update(String(t || '')).digest('hex');
+
+// 계정을 만든다. uid 는 멀티와 같은 규칙(u + 16hex).
+function createAccount(existingUid) {
+  const uid = existingUid || ('u' + crypto.randomBytes(8).toString('hex'));
+  const token = newToken();
+  const now = Date.now();
+  db.prepare('INSERT INTO accounts(uid,token_hash,created,last_seen) VALUES(?,?,?,?) ON CONFLICT(uid) DO UPDATE SET token_hash=excluded.token_hash, last_seen=excluded.last_seen')
+    .run(uid, hashToken(token), now, now);
+  // 멀티 쪽 users 행도 없으면 만들어 둔다(닉네임은 나중에 로비에서 정한다)
+  try {
+    if (!db.prepare('SELECT uid FROM users WHERE uid=?').get(uid)) {
+      db.prepare('INSERT INTO users(uid,nick,wins,losses,created,power) VALUES(?,?,0,0,?,?)')
+        .run(uid, null, now, DEFAULT_POWER);
+    }
+  } catch (_) {}
+  return { uid, token };
+}
+
+// 토큰이 맞아야 그 계정이다. 맞지 않으면 null.
+function authAccount(uid, token) {
+  if (!uid || !token) return null;
+  const a = db.prepare('SELECT * FROM accounts WHERE uid=?').get(String(uid));
+  if (!a) return null;
+  const given = hashToken(token), want = String(a.token_hash || '');
+  if (given.length !== want.length) return null;
+  if (!crypto.timingSafeEqual(Buffer.from(given), Buffer.from(want))) return null;
+  try { db.prepare('UPDATE accounts SET last_seen=? WHERE uid=?').run(Date.now(), a.uid); } catch (_) {}
+  return a;
+}
+
+// uid 당 분당 6회. 정상 플레이로는 절대 안 걸리고, 폭주만 걸린다.
+const putHits = new Map();
+function putAllowed(uid) {
+  const now = Date.now(), win = 60000;
+  const arr = (putHits.get(uid) || []).filter((t) => now - t < win);
+  if (arr.length >= 6) { putHits.set(uid, arr); return false; }
+  arr.push(now); putHits.set(uid, arr);
+  if (putHits.size > 5000) putHits.clear();   // 메모리 상한
+  return true;
+}
+
 // ── 전투력 기반 매칭 파라미터 ────────────────────────────────────────────
 const DEFAULT_POWER = 1000;      // 전투력 미보고 시 기본값
 const TOL_BASE = 200;            // 최초 허용 전투력차
@@ -157,6 +214,64 @@ const server = http.createServer((req, res) => {
       sendJson(200, { ok: true });
     });
     return;
+  }
+  // ── 계정 발급(익명) ──
+  //   앱이 처음 켜질 때 말없이 한 번. 유저는 이런 게 있는 줄도 모른다.
+  if (p === '/auth/anon' && req.method === 'POST') {
+    readBody((j) => {
+      try {
+        const acc = createAccount(null);
+        const cid = String(j.cid || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40);
+        if (cid) { try { db.prepare('UPDATE saves SET cid=? WHERE uid=?').run(cid, acc.uid); } catch (_) {} }
+        sendJson(200, { ok: true, uid: acc.uid, token: acc.token });
+      } catch (e) { sendJson(500, { ok: false, err: 'create' }); }
+    });
+    return;
+  }
+  // ── 세이브 올리기 ──
+  //   몸통이 기본 readBody 상한(10KB)보다 클 수 있어 따로 읽는다.
+  if (p === '/save/put' && req.method === 'POST') {
+    let body = '';
+    req.on('data', (c) => { body += c; if (body.length > SAVE_MAX + 4096) req.destroy(); });
+    req.on('end', () => {
+      let j; try { j = JSON.parse(body || '{}'); } catch (_) { j = {}; }
+      const acc = authAccount(j.uid, j.token);
+      if (!acc) return sendJson(401, { ok: false, err: 'auth' });
+      if (!putAllowed(acc.uid)) return sendJson(429, { ok: false, err: 'rate' });
+      const data = String(j.data || '');
+      if (!data || data.length > SAVE_MAX) return sendJson(400, { ok: false, err: 'size' });
+      try { JSON.parse(data); } catch (_) { return sendJson(400, { ok: false, err: 'json' }); }
+      const cur = db.prepare('SELECT rev, data, updated FROM saves WHERE uid=?').get(acc.uid);
+      const curRev = cur ? (cur.rev | 0) : 0;
+      // 내가 읽어 간 판(baseRev)이 지금 서버 판과 다르면 그 사이에 다른 기기가 올렸다.
+      // 말없이 덮지 않는다 — 어느 쪽을 살릴지는 사람이 고른다.
+      const baseRev = (j.rev == null) ? curRev : (j.rev | 0);
+      if (cur && baseRev !== curRev) {
+        return sendJson(409, { ok: false, err: 'conflict', rev: curRev,
+                               data: cur.data, updated: cur.updated });
+      }
+      const now = Date.now(), rev = curRev + 1;
+      if (cur) {   // 덮기 전에 한 벌 남긴다
+        try {
+          db.prepare('INSERT INTO save_history(uid,rev,data,updated) VALUES(?,?,?,?)').run(acc.uid, cur.rev, cur.data, cur.updated);
+          db.prepare('DELETE FROM save_history WHERE uid=? AND id NOT IN (SELECT id FROM save_history WHERE uid=? ORDER BY id DESC LIMIT ?)').run(acc.uid, acc.uid, SAVE_HISTORY_KEEP);
+        } catch (_) {}
+      }
+      const summary = (j.summary && typeof j.summary === 'object') ? JSON.stringify(j.summary).slice(0, 500) : null;
+      db.prepare('INSERT INTO saves(uid,rev,data,size,updated,cid,device,summary) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(uid) DO UPDATE SET rev=excluded.rev, data=excluded.data, size=excluded.size, updated=excluded.updated, cid=excluded.cid, device=excluded.device, summary=excluded.summary')
+        .run(acc.uid, rev, data, data.length, now,
+             String(j.cid || '').slice(0, 40), String(j.device || '').slice(0, 60), summary);
+      sendJson(200, { ok: true, rev });
+    });
+    return;
+  }
+  // ── 세이브 내려받기 ──
+  if (p === '/save/get') {
+    const acc = authAccount(u.searchParams.get('uid'), u.searchParams.get('token'));
+    if (!acc) return sendJson(401, { ok: false, err: 'auth' });
+    const row = db.prepare('SELECT rev, data, updated, device, summary FROM saves WHERE uid=?').get(acc.uid);
+    if (!row) return sendJson(200, { ok: true, rev: 0, data: null });
+    return sendJson(200, { ok: true, rev: row.rev, data: row.data, updated: row.updated, device: row.device, summary: row.summary });
   }
   // ── 활성 깜짝 이벤트 조회(게임 폴링). 테스트 이벤트는 지정 cid에만 보임. ──
   if (p === '/live_event') {
@@ -518,7 +633,30 @@ function onMessage(ws, m) {
   if (!m || typeof m.t !== 'string') return;
   ws._lastMsgAt = Date.now();   // 상대 이탈 판정용 — 실제 메시지(턴 릴레이 포함) 수신 시각
   if (m.t === 'hello') {
-    if (m.uid) { const u = db.prepare('SELECT * FROM users WHERE uid=?').get(m.uid); if (u) { if (u.banned) { ws.sendJson({ t: 'error', code: 'banned', msg: '차단된 계정입니다' }); return; } ws.uid = u.uid; ws.nick = u.nick; ws.power = u.power || DEFAULT_POWER; ws.sendJson({ t: 'welcome', uid: u.uid, nick: u.nick, wins: u.wins, losses: u.losses, power: u.power, draws: u.draws }); try { tryResumeRoom(ws); } catch (_) {} try { evictStaleSessions(ws); } catch (_) {}  return; } }
+    if (m.uid) {
+      const u = db.prepare('SELECT * FROM users WHERE uid=?').get(m.uid);
+      if (u) {
+        if (u.banned) { ws.sendJson({ t: 'error', code: 'banned', msg: '차단된 계정입니다' }); return; }
+        // 신원 확인 — uid 만으로는 안 된다. 토큰이 있어야 그 사람이다.
+        //   예전엔 uid 만 맞으면 통과했다. 세이브가 서버에 있는 지금은
+        //   그게 곧 '남의 진행도를 덮어쓸 수 있다' 가 된다.
+        let issued = null;
+        const acc = db.prepare('SELECT * FROM accounts WHERE uid=?').get(u.uid);
+        if (acc) {
+          if (!authAccount(u.uid, m.token)) { ws.sendJson({ t: 'error', code: 'noauth', msg: '인증에 실패했습니다' }); return; }
+        } else {
+          // 예전부터 쓰던 계정 — 여기서 한 번만 토큰을 만들어 준다(1회 유예).
+          issued = createAccount(u.uid).token;
+        }
+        ws.uid = u.uid; ws.nick = u.nick; ws.power = u.power || DEFAULT_POWER;
+        const w = { t: 'welcome', uid: u.uid, nick: u.nick, wins: u.wins, losses: u.losses, power: u.power, draws: u.draws };
+        if (issued) w.token = issued;
+        ws.sendJson(w);
+        try { tryResumeRoom(ws); } catch (_) {}
+        try { evictStaleSessions(ws); } catch (_) {}
+        return;
+      }
+    }
     if (m.nick != null) {
       const v = validateNick(m.nick);
       if (v.err) { ws.sendJson({ t: 'error', code: 'nick', msg: v.err }); return; }
@@ -527,7 +665,11 @@ function onMessage(ws, m) {
       const uid = 'u' + crypto.randomBytes(8).toString('hex');
       try { db.prepare('INSERT INTO users(uid,nick,wins,losses,created,power) VALUES(?,?,0,0,?,?)').run(uid, nick, Date.now(), DEFAULT_POWER); }
       catch (_) { ws.sendJson({ t: 'error', code: 'dup', msg: '이미 사용중인 닉네임입니다' }); return; }
-      ws.uid = uid; ws.nick = nick; ws.power = DEFAULT_POWER; ws.sendJson({ t: 'welcome', uid, nick, wins: 0, losses: 0, power: DEFAULT_POWER, draws: 0 }); return;
+      // 새 계정에는 처음부터 토큰을 쥐여 준다.
+      const _tok = createAccount(uid).token;
+      ws.uid = uid; ws.nick = nick; ws.power = DEFAULT_POWER;
+      ws.sendJson({ t: 'welcome', uid, nick, wins: 0, losses: 0, power: DEFAULT_POWER, draws: 0, token: _tok });
+      return;
     }
     ws.sendJson({ t: 'error', code: 'login', msg: '로그인 실패' });
   }
