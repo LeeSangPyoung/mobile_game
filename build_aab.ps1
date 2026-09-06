@@ -27,7 +27,9 @@ if($BumpVersion){
   $g = Get-Content $gradle -Raw
   $g = [regex]::Replace($g, 'versionCode\s+(\d+)', { param($m) 'versionCode ' + ([int]$m.Groups[1].Value + 1) })
   $g = [regex]::Replace($g, 'versionName\s+"(\d+)\.(\d+)\.(\d+)"', { param($m) 'versionName "' + $m.Groups[1].Value + '.' + $m.Groups[2].Value + '.' + ([int]$m.Groups[3].Value + 1) + '"' })
-  Set-Content $gradle $g -Encoding utf8
+  # -Encoding utf8 은 Windows PowerShell 5.1 에서 BOM 을 붙인다.
+  # gradle 이 그 BOM 을 글자로 읽어 빌드가 첫 줄에서 죽는다. BOM 없이 쓴다.
+  [IO.File]::WriteAllText($gradle, $g, (New-Object Text.UTF8Encoding $false))
 }
 $verLine = (Select-String -Path $gradle -Pattern 'versionCode|versionName').Line -join ' / '
 Write-Host "버전: $verLine"

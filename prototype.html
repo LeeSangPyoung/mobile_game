@@ -13118,6 +13118,11 @@
    3열 고정에 세로 스크롤을 준다. */
 .dp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;
   max-height:min(58vh,520px);overflow-y:auto;overscroll-behavior:contain;
+  touch-action:pan-y;-webkit-overflow-scrolling:touch}
+/* 전역 * { touch-action:none } 때문에 손가락이 닿는 자식(카드 속 img)이
+   먼저 걸려 스크롤이 죽는다. 다른 목록들과 같이 자식까지 되살린다. */
+.dp-grid *{touch-action:pan-y}
+.dp-grid{
   margin:0 0 14px;padding:2px}
 /* 얇은 스크롤막대 — 기본 막대는 카드 한 칸을 잡아먹는다 */
 .dp-grid::-webkit-scrollbar{width:6px}
@@ -21242,6 +21247,7 @@ function pointerDown(e) {
 }
 
 function pointerMove(e) {
+  if (_inDuelUI(e)) return;
   if (!document.body.classList.contains('in-game')) return;
   // 핀치 우선
   const pinch = getPinchInfo(e);
@@ -21294,6 +21300,7 @@ function _mySide() { return window._mpMode ? (window._mpMySide || 1) : 1; }
 // 렌더 색상용 표시-소유주 — 게스트(2)는 1↔2를 뒤바꿔 '내 편=파랑'으로 보이게(중립 0은 유지).
 function _dispOwner(o) { if (window._mpMode && window._mpMySide === 2) { return o === 1 ? 2 : (o === 2 ? 1 : o); } return o; }
 function pointerUp(e) {
+  if (_inDuelUI(e)) return;
   if (!document.body.classList.contains('in-game')) return;
   // 핀치 → 일반으로 복귀
   if (pinchActive) {
@@ -23140,16 +23147,10 @@ function checkWin() {
     const isReclear = prevStars > 0;
     const goldGain = Math.floor(baseGain * (isReclear ? 0.40 : 1));   // 재클리어 25%→40% (막힌 유저의 골드 파밍이 의미있게 — 골드→별 교환과 연동)
     SAVE.gold = (SAVE.gold || 0) + goldGain;
-    // 강화 재료 공급 — 일반 스테이지 '첫 클리어' 시 50% 확률로 ★1 잡장수 1명.
-    //   (재클리어 제외 = 무한 파밍 방지. 막힌 유저는 골드→별→등용 경로로 재료 확보 가능)
-    if (!isReclear && !window._mpMode && !window._botMatch
-        && !(STAGES[currentStage] && STAGES[currentStage].isTutorial) && Math.random() < 0.5) {
-      try {
-        const _pool = GENERAL_ROSTER.filter(Boolean);
-        const _pick = _pool[Math.floor(Math.random() * _pool.length)];
-        if (_pick) { addOwnedGeneral(_pick.id, 1, 1); showSelectToast(`강화 재료 획득 — ${_pick.name}`, '#9fd0ff'); }
-      } catch (_) {}
-    }
+    // (제거) 첫 클리어 시 ★1 장수를 그냥 쥐여 주던 '강화 재료 공급'.
+    //   장수는 포로를 잡아 등용해야 얻는 것인데, 이 길만 절차를 통째로 건너뛰었다.
+    //   게다가 뽑기 풀이 전체 명단 200명이라 관우·여포도 공짜로 나왔다.
+    //   재료는 등용·골드→별 경로로만 구한다.
     // 오늘의 첫 승리 보너스 — 재클리어도 인정(막힌 유저가 못 받으면 역설), 튜토리얼·온라인 제외
     let _firstWinBonus = 0;
     if (!window._mpMode && !window._botMatch && !(STAGES[currentStage] && STAGES[currentStage].isTutorial)) {
@@ -23184,16 +23185,9 @@ function checkWin() {
         SAVE.gold = (SAVE.gold || 0) + chBonusGold;
         SAVE.starsAvailable = (SAVE.starsAvailable || 0) + 5;
         starsGained += 5;
-        // 재료용 일반 장수 5명 지급(★1 고정 — 레어 인플레 없이 강화 재료 공급). 3→5 상향: 강화 1회에 최대 5장 소모라 3명으론 1회도 못 함
-        let _genGiven = 0;
-        try {
-          const pool = GENERAL_ROSTER.filter(Boolean);
-          for (let n = 0; n < 5; n++) {
-            const pick = pool[Math.floor(Math.random() * pool.length)];
-            if (pick) { addOwnedGeneral(pick.id, 1, 1); _genGiven++; }
-          }
-        } catch (_) {}
-        window._chapterBonus = { gold: chBonusGold, stars: 5, ch: _ch, gens: _genGiven };
+        // (제거) 여기서도 ★1 장수 5명을 그냥 얹어 줬다 — 위와 같은 이유로 뺀다.
+        //   챕터 보너스는 골드와 별로만 준다.
+        window._chapterBonus = { gold: chBonusGold, stars: 5, ch: _ch, gens: 0 };
       }
     }
     // === 오늘의 별(전역 일일 상한) 보상 — 재도전(등급 미갱신)일 때만, 자격 판(추천/마스터)에 한해 ===
@@ -23235,7 +23229,7 @@ function checkWin() {
           })();
           const _isAlliance = !!(_curStage && _curStage.alliance);
           let _winTitle = _cb
-            ? `${_cb.ch}챕터 클리어! 보너스 +${_cb.gold.toLocaleString()}G · 별 ${_cb.stars}개 획득 · 장수 ${_cb.gens || 0}명`
+            ? `${_cb.ch}챕터 클리어! 보너스 +${_cb.gold.toLocaleString()}G · 별 ${_cb.stars}개 획득`
             : (isReclear
                 ? `${STAGES[currentStage].name} 재클리어! +${goldGain.toLocaleString()}G` + (starsGained > 0 ? ` · 별 ${starsGained}개 획득 (등급 갱신)` : '')
                 : (_isAlliance ? `동맹 협공을 깨고 승리! · ${STAGES[currentStage].name}`
@@ -23259,6 +23253,20 @@ function checkWin() {
             _winTitle += `\n★  클리어  ✓`;
             _winTitle += `\n★★  ${_fmtT(_sp.two)} 이내 클리어  ${_c2 ? '✓' : '✗'}`;
             _winTitle += `\n★★★  ${_cond3}  ${_c3 ? '✓' : '✗'}`;
+            // 일기토는 이 판 안에서 따로 굴러가는 판이라, 여기서 한 번 정산해 준다.
+            // 별은 결투가 끝나는 순간 이미 지급됐다 — 여기선 '이번 판에 얼마 벌었나'를 보여 준다.
+            const _dl = window._duelStageLog;
+            if (_dl && _dl.n > 0) {
+              const _rec = [];
+              if (_dl.win) _rec.push(`${_dl.win}승`);
+              if (_dl.lose) _rec.push(`${_dl.lose}패`);
+              if (_dl.draw) _rec.push(`${_dl.draw}무`);
+              _winTitle += `\n───── 일기토 ─────`;
+              _winTitle += `\n${_dl.n}전 ${_rec.join(' ')}` + (_dl.combo > 0 ? `  ·  최다 ${_dl.combo} Combo` : '');
+              _winTitle += _dl.stars > 0
+                ? `\n★ 일기토로 얻은 별  ${_dl.stars}개`
+                : `\n별 획득 없음 — 연타를 이어 가면 별이 나온다`;
+            }
           }
           // 승리 모달을 닫지 않고 보존 — 유틸 화면(장수관리/강화/전투력)에서 뒤로가기 시 동일 모달 재표시
           const _showVictoryModal = () => {
@@ -28569,7 +28577,19 @@ function loop(t) {
 
 // 디버그용 클릭 표시
 let lastClick = null;
+// 일기토 화면(신청·장수선택·결과)은 전장 위에 얹힐 뿐이라 body 는 계속 in-game 이다.
+// 그래서 지도 조작이 이 위의 터치까지 가로챈다. 특히 pointerDown 은 touchstart 마다
+// preventDefault() 를 걸어 브라우저 스크롤 제스처를 통째로 죽인다 — 목록이 안 굴러간
+// 이유가 이것이다(touch-action 을 켜도 소용없다). 이 위에서 난 터치는 그냥 흘려보낸다.
+function _inDuelUI(e) {
+  let t = e && e.target;
+  if (!t && e && e.touches && e.touches[0]) t = e.touches[0].target;
+  if (!t && e && e.changedTouches && e.changedTouches[0]) t = e.changedTouches[0].target;
+  if (!t || !t.closest) return false;
+  return !!t.closest('#duelCutin,#duelAsk,#duelPick,#duelResume,#duelDone,#duelFrame');
+}
 function pointerDownWrap(e) {
+  if (_inDuelUI(e)) return;
   if (window._introDialogActive) {
     e.preventDefault();
     e.stopPropagation();
@@ -46701,6 +46721,14 @@ function __startRenderLoop() {
     const total = always + rec + perfect;
     if (total > 0) SAVE.starsAvailable = (SAVE.starsAvailable | 0) + total;
 
+    // 이번 판 성적 적립 — 스테이지를 깨면 승리 결과창에 한 줄로 나온다.
+    const _log = (window._duelStageLog = window._duelStageLog
+      || { n: 0, win: 0, lose: 0, draw: 0, stars: 0, combo: 0 });
+    _log.n++;
+    if (kind === 'win') _log.win++; else if (kind === 'lose') _log.lose++; else _log.draw++;
+    _log.stars += total;
+    if (now > _log.combo) _log.combo = now;
+
     // 2) 사기 붕괴 — 전장에 돌아가는 순간부터 10초
     if (kind === 'win') {
       moraleOnReturn = 2;                        // 적군 전체
@@ -46814,6 +46842,9 @@ function __startRenderLoop() {
       if (currentStage !== lastStage || restarted) {
         lastStage = currentStage;
         window._duelBeaten = {};
+        // 이번 판 일기토 성적 — 승리 결과창에서 읽는다. 판이 바뀌거나
+        // 다시 시작하면 같이 비워야 지난 판 기록이 넘어오지 않는다.
+        window._duelStageLog = { n: 0, win: 0, lose: 0, draw: 0, stars: 0, combo: 0 };
         quota = rollQuota();
         if (busy) {
           closeDuel();

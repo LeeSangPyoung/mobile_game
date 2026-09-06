@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-// 릴리스 서명 — keystore.properties(git 제외)가 있을 때만 적용. 없으면 디버그 빌드는 그대로 동작.
+// 由대━???쒕챸 ??keystore.properties(git ?쒖쇅)媛 ?덉쓣 ?뚮쭔 ?곸슜. ?놁쑝硫??붾쾭洹?鍮뚮뱶??洹몃?濡??숈옉.
 def keystorePropsFile = rootProject.file("keystore.properties")
 def keystoreProps = new Properties()
 if (keystorePropsFile.exists()) {
@@ -14,8 +14,8 @@ android {
         applicationId "com.leesp.samgukgi"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 27
-        versionName "1.0.26"
+        versionCode 28
+        versionName "1.0.27"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -72,3 +72,4 @@ try {
 } catch(Exception e) {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
 }
+
